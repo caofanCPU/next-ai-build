@@ -1,5 +1,6 @@
 -- 第一步：彻底删除 nextai schema（连里面的表、序列、权限全炸）
-DROP SCHEMA IF EXISTS nextai CASCADE;
+-- 为防止误操作，该SQL注释掉，只有初始化时才使用！
+-- DROP SCHEMA IF EXISTS nextai CASCADE;
 
 -- 第二步：重新创建干净的 nextai schema
 CREATE SCHEMA nextai;
