@@ -1,5 +1,16 @@
 # @windrun-huaiin/ddaas-website
 
+## 11.0.2
+
+### Patch Changes
+
+- security(dependcy): CNVD-2025-29923 about NextJS Remote2Shell issue fixed
+- Updated dependencies
+  - @windrun-huaiin/base-ui@11.0.1
+  - @windrun-huaiin/third-ui@11.0.1
+  - @windrun-huaiin/lib@11.0.1
+  - @windrun-huaiin/shared-assets@11.0.1
+
 ## 11.0.1
 
 ### Patch Changes

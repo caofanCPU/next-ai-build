@@ -1,5 +1,11 @@
 # @windrun-huaiin/dev-scripts
 
+## 11.0.3
+
+### Patch Changes
+
+- security(dependcy): CNVD-2025-29923 about NextJS Remote2Shell issue fixed
+
 ## 11.0.2
 
 ### Patch Changes
