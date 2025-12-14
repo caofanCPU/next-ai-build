@@ -1,14 +1,16 @@
 {
   "name": "@windrun-huaiin/ddaas-website",
-  "version": "11.0.2",
+  "version": "11.0.3",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "prisma generate && next dev",
     "build": "pnpm generate-blog-index && prisma generate && next build",
     "build:dev": "pnpm generate-blog-index && prisma generate && next build",
     "build:prod": "prisma generate && next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
     "generate-blog-index": "dev-scripts generate-blog-index -v",
     "check-translations": "dev-scripts check-translations -v",
     "clean-translations": "dev-scripts clean-translations -v",

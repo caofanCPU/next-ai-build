@@ -1,4 +1,4 @@
-/* eslint-disable react/no-unescaped-entities */
+ 
 import Image from "next/image"
 import { getTranslations } from 'next-intl/server'
 import { globalLucideIcons as icons} from '@base-ui/components/global-icon'

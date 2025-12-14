@@ -126,7 +126,7 @@ export function getMDXComponents(
       <AutoTypeTable {...props} generator={typeTableGenerator} />
     ),
     // 全局处理图片放大
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     img: (props) => <ImageZoom {...(props as any)} />,
     // 全局配置的 Mermaid 组件
     Mermaid: (props) => (
