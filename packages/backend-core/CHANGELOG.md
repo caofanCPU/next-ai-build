@@ -1,5 +1,14 @@
 # @windrun-huaiin/backend-core
 
+## 11.0.3
+
+### Patch Changes
+
+- fix(stripe): update stripe API version to **2025-11-17.clover** in dependency package **stripe: 20.0.0**
+- Updated dependencies
+  - @windrun-huaiin/third-ui@11.0.2
+  - @windrun-huaiin/lib@11.0.1
+
 ## 11.0.2
 
 ### Patch Changes
