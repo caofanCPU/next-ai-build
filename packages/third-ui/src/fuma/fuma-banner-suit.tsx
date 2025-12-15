@@ -23,7 +23,7 @@ export async function FumaBannerSuit({
           height={heightValue}
           floating={floating}
         >
-          <p className="text-xl">{bannerText}</p>
+          <p className="text-sm sm:text-xl md:text-xl">{bannerText}</p>
         </Banner>
       ) : (
         <div

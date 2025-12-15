@@ -1,5 +1,14 @@
 # @windrun-huaiin/third-ui
 
+## 11.0.3
+
+### Patch Changes
+
+- fix(banner): banner text fixed size to improve responsiveness
+- Updated dependencies
+  - @windrun-huaiin/base-ui@11.0.1
+  - @windrun-huaiin/lib@11.0.1
+
 ## 11.0.2
 
 ### Patch Changes
