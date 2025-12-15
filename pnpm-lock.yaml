@@ -202,8 +202,8 @@ catalogs:
       specifier: ^3.15.0
       version: 3.15.0
     stripe:
-      specifier: 19.3.0
-      version: 19.3.0
+      specifier: 20.0.0
+      version: 20.0.0
     svix:
       specifier: ^1.81.0
       version: 1.81.0
@@ -426,7 +426,7 @@ importers:
         version: 3.15.0
       stripe:
         specifier: 'catalog:'
-        version: 19.3.0(@types/node@22.17.2)
+        version: 20.0.0(@types/node@22.17.2)
       svix:
         specifier: 'catalog:'
         version: 1.81.0
@@ -538,7 +538,7 @@ importers:
         version: 6.19.0(typescript@5.9.3)
       stripe:
         specifier: 'catalog:'
-        version: 19.3.0(@types/node@22.17.2)
+        version: 20.0.0(@types/node@22.17.2)
       svix:
         specifier: 'catalog:'
         version: 1.81.0
@@ -5441,8 +5441,8 @@ packages:
     resolution: {integrity: sha512-6fPc+R4ihwqP6N/aIv2f1gMH8lOVtWQHoqC4yK6oSDVVocumAsfCqjkXnqiYMhmMwS/mEHLp7Vehlt3ql6lEig==}
     engines: {node: '>=8'}
 
-  stripe@19.3.0:
-    resolution: {integrity: sha512-3MbqRkw5LXb4LWP1LgIEYxUAYhYDDU5pcHZj4Xha6VWPnN1wrUmQ7Htsgm8wR584s0hn1aQg1lYD0Hi+F37E5g==}
+  stripe@20.0.0:
+    resolution: {integrity: sha512-EaZeWpbJOCcDytdjKSwdrL5BxzbDGNueiCfHjHXlPdBQvLqoxl6AAivC35SPzTmVXJb5duXQlXFGS45H0+e6Gg==}
     engines: {node: '>=16'}
     peerDependencies:
       '@types/node': '>=16'
@@ -11222,7 +11222,7 @@ snapshots:
 
   strip-json-comments@3.1.1: {}
 
-  stripe@19.3.0(@types/node@22.17.2):
+  stripe@20.0.0(@types/node@22.17.2):
     dependencies:
       qs: 6.14.0
     optionalDependencies:
