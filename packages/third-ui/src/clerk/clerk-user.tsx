@@ -11,6 +11,8 @@ interface ClerkUserProps {
 interface ClerkUserData {
   signIn: string;
   signUp: string;
+  signUpBonus: string;
+  signUpBonusTooltip: string;
   terms: string;
   privacy: string;
   locale: string;
@@ -29,6 +31,8 @@ export async function ClerkUser({
   const data: ClerkUserData = {
     signIn: t('signIn'),
     signUp: t('signUp'),
+    signUpBonus: t('signUpBonus'),
+    signUpBonusTooltip: t('signUpBonusTooltip'),
     terms: t2('terms'),
     privacy: t2('privacy'),
     locale,

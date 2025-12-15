@@ -221,7 +221,7 @@ export function PricePlanInteractive({ data }: { data: PricePlanData }) {
       if (newBillingKey === 'monthly') {
         monthlyButton.className = cn(
           'min-w-[120px] px-6 py-2 font-medium transition text-lg relative',
-          'text-white bg-gradient-to-r from-purple-400 to-pink-500 hover:from-purple-500 hover:to-pink-600 dark:from-purple-500 dark:to-pink-600 dark:hover:from-purple-600 rounded-full shadow-sm'
+          'text-white bg-linear-to-r from-purple-400 to-pink-500 hover:from-purple-500 hover:to-pink-600 dark:from-purple-500 dark:to-pink-600 dark:hover:from-purple-600 rounded-full shadow-sm'
         );
       } else {
         monthlyButton.className = cn(
@@ -235,7 +235,7 @@ export function PricePlanInteractive({ data }: { data: PricePlanData }) {
       if (newBillingKey === 'yearly') {
         yearlyButton.className = cn(
           'min-w-[120px] px-6 py-2 font-medium transition text-lg relative',
-          'text-white bg-gradient-to-r from-purple-400 to-pink-500 hover:from-purple-500 hover:to-pink-600 dark:from-purple-500 dark:to-pink-600 dark:hover:from-purple-600 rounded-full shadow-sm'
+          'text-white bg-linear-to-r from-purple-400 to-pink-500 hover:from-purple-500 hover:to-pink-600 dark:from-purple-500 dark:to-pink-600 dark:hover:from-purple-600 rounded-full shadow-sm'
         );
       } else {
         yearlyButton.className = cn(

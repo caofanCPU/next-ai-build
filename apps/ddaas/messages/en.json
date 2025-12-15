@@ -396,7 +396,9 @@
   },
   "clerk": {
     "signIn": "Sign In",
-    "signUp": "Sign Up"
+    "signUp": "Sign Up",
+    "signUpBonus": "+2",
+    "signUpBonusTooltip": "Sign up and get 2 free credits!"
   },
   "linkPreview": {
     "blog": "Blog",

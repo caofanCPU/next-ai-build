@@ -1,5 +1,16 @@
 # @windrun-huaiin/ddaas-website
 
+## 11.0.4
+
+### Patch Changes
+
+- feat(clerk): add sign-up bonus feature with tooltip
+- Updated dependencies
+  - @windrun-huaiin/base-ui@11.0.1
+  - @windrun-huaiin/third-ui@11.0.2
+  - @windrun-huaiin/lib@11.0.1
+  - @windrun-huaiin/shared-assets@11.0.1
+
 ## 11.0.3
 
 ### Patch Changes

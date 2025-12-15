@@ -1,5 +1,14 @@
 # @windrun-huaiin/third-ui
 
+## 11.0.2
+
+### Patch Changes
+
+- feat(clerk): add sign-up bonus feature with tooltip
+- Updated dependencies
+  - @windrun-huaiin/base-ui@11.0.1
+  - @windrun-huaiin/lib@11.0.1
+
 ## 11.0.1
 
 ### Patch Changes

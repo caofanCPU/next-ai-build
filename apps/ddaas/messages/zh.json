@@ -392,7 +392,9 @@
   },
   "clerk": {
     "signIn": "登录",
-    "signUp": "注册"
+    "signUp": "注册",
+    "signUpBonus": "+2",
+    "signUpBonusTooltip": "注册就送2个积分!"
   },
   "linkPreview": {
     "blog": "真知见闻",
