@@ -1,5 +1,14 @@
 # @windrun-huaiin/third-ui
 
+## 11.0.5
+
+### Patch Changes
+
+- fix(XButton): simplify className handling using cn utility
+- Updated dependencies
+  - @windrun-huaiin/base-ui@11.0.1
+  - @windrun-huaiin/lib@11.0.1
+
 ## 11.0.4
 
 ### Patch Changes
