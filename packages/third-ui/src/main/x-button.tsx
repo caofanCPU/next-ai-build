@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, ReactNode } from 'react'
 import { globalLucideIcons as icons } from '@windrun-huaiin/base-ui/components/server'
+import { cn } from '@windrun-huaiin/lib/utils'
 
 // base button config
 interface BaseButtonConfig {
@@ -95,7 +96,14 @@ export function XButton(props: xButtonProps) {
       <button
         onClick={() => handleButtonClick(button.onClick)}
         disabled={isDisabled}
-        className={`w-full sm:w-auto ${minWidth} ${baseButtonClass} rounded-full ${isDisabled ? disabledClass : ''} ${className}`}
+        className={cn(
+          "w-full sm:w-auto",
+          minWidth,
+          baseButtonClass,
+          "rounded-full",
+          isDisabled && disabledClass,
+          className
+        )}
         title={button.text}
       >
         {isLoading ? (
@@ -120,12 +128,21 @@ export function XButton(props: xButtonProps) {
   const actualLoadingText = loadingText || mainButton.text?.trim() || 'Loading...'
 
   return (
-    <div className={`relative flex flex-col sm:flex-row items-stretch w-full sm:w-auto bg-neutral-200 dark:bg-neutral-800 rounded-2xl sm:rounded-full gap-2 sm:gap-0 ${className}`}>
+    <div className={cn(
+      "relative flex flex-col sm:flex-row items-stretch w-full sm:w-auto bg-neutral-200 dark:bg-neutral-800 rounded-2xl sm:rounded-full gap-2 sm:gap-0",
+      className
+    )}>
       {/* left main button */}
       <button
         onClick={() => handleButtonClick(mainButton.onClick)}
         disabled={isMainDisabled}
-        className={`flex-1 w-full ${baseButtonClass} rounded-full sm:rounded-l-full sm:rounded-r-none ${isMainDisabled ? disabledClass : ''} ${mainButtonClassName}`}
+        className={cn(
+          "flex-1 w-full",
+          baseButtonClass,
+          "rounded-full sm:rounded-l-full sm:rounded-r-none",
+          isMainDisabled && disabledClass,
+          mainButtonClassName
+        )}
         onMouseDown={e => { if (e.button === 2) e.preventDefault() }}
       >
         {isLoading ? (
@@ -144,7 +161,10 @@ export function XButton(props: xButtonProps) {
       {/* right dropdown button */}
       <button
         type="button"
-        className={`flex items-center justify-center w-full sm:w-10 py-2 bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-white cursor-pointer transition hover:bg-neutral-300 dark:hover:bg-neutral-700 rounded-full sm:rounded-none sm:rounded-r-full sm:border-l sm:border-neutral-300 sm:dark:border-neutral-700 ${dropdownButtonClassName}`}
+        className={cn(
+          "flex items-center justify-center w-full sm:w-10 py-2 bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-white cursor-pointer transition hover:bg-neutral-300 dark:hover:bg-neutral-700 rounded-full sm:rounded-none sm:rounded-r-full sm:border-l sm:border-neutral-300 sm:dark:border-neutral-700",
+          dropdownButtonClassName
+        )}
         onClick={e => { e.stopPropagation(); setMenuOpen(v => !v) }}
         aria-label="More actions"
         aria-expanded={menuOpen}
