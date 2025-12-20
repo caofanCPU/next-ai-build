@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect, ReactNode } from 'react'
+import React, { useState, useRef, useEffect, ReactNode } from 'react'
 import { globalLucideIcons as icons } from '@windrun-huaiin/base-ui/components/server'
 import { cn } from '@windrun-huaiin/lib/utils'
 
@@ -28,7 +28,7 @@ interface SingleButtonProps {
   loadingText?: string
   minWidth?: string
   className?: string
-  iconSizeValue?: number
+  iconClassName?: string
 }
 
 // split button config
@@ -41,7 +41,7 @@ interface SplitButtonProps {
   className?: string
   mainButtonClassName?: string
   dropdownButtonClassName?: string
-  iconSizeValue?: number
+  iconClassName?: string
 }
 
 type xButtonProps = SingleButtonProps | SplitButtonProps
@@ -51,16 +51,22 @@ export function XButton(props: xButtonProps) {
   const [menuOpen, setMenuOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
 
-  const { iconSizeValue } = props
-  const isCustomSize = iconSizeValue && Number.isInteger(iconSizeValue) && iconSizeValue > 0
+  const { iconClassName } = props
+  const defaultIconClass = "w-5 h-5"
+  const finalIconClass = iconClassName || defaultIconClass
 
-  const loadingIconClass = isCustomSize 
-    ? `w-${iconSizeValue} h-${iconSizeValue} mr-1 animate-spin`
-    : "w-5 h-5 mr-1 animate-spin"
+  const loadingIconClass = cn(finalIconClass, "mr-1 animate-spin")
 
-  const chevronIconClass = isCustomSize
-    ? `w-${iconSizeValue + 1} h-${iconSizeValue + 1}`
-    : "w-6 h-6"
+  const chevronIconClass = "w-6 h-6"
+
+  const renderIcon = (icon: ReactNode) => {
+    if (React.isValidElement<{ className?: string }>(icon)) {
+      return React.cloneElement(icon, {
+        className: cn(finalIconClass, icon.props.className),
+      });
+    }
+    return icon;
+  };
 
   // click outside to close menu
   useEffect(() => {
@@ -126,7 +132,7 @@ export function XButton(props: xButtonProps) {
           </>
         ) : (
           <>
-            {button.icon}
+            {renderIcon(button.icon)}
             <span>{button.text}</span>
           </>
         )}
@@ -165,7 +171,7 @@ export function XButton(props: xButtonProps) {
           </>
         ) : (
           <>
-            {mainButton.icon}
+            {renderIcon(mainButton.icon)}
             <span>{mainButton.text}</span>
           </>
         )}

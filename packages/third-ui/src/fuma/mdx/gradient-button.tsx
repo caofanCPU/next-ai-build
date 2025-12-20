@@ -12,7 +12,7 @@ export interface GradientButtonProps {
   align?: 'left' | 'center' | 'right';
   disabled?: boolean;
   className?: string;
-  iconSizeValue?: number;
+  iconClassName?: string;
   // for Link
   href?: string;
   openInNewTab?: boolean;
@@ -34,14 +34,13 @@ export function GradientButton({
   onClick,
   loadingText,
   preventDoubleClick = true,
-  iconSizeValue,
+  iconClassName,
 }: GradientButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
   const actualLoadingText = loadingText || title?.toString().trim() || 'Loading...'
 
-  const iconSizeClass = (iconSizeValue && Number.isInteger(iconSizeValue) && iconSizeValue > 0)
-    ? `h-${iconSizeValue} w-${iconSizeValue}`
-    : 'h-4 w-4';
+  const defaultIconClass = "h-4 w-4";
+  const finalIconClass = cn("text-white", iconClassName || defaultIconClass);
 
   // set justify class according to alignment
   const getAlignmentClass = () => {
@@ -89,7 +88,7 @@ export function GradientButton({
 
   const iconNode = (() => {
     if (isLoading) {
-      return <icons.Loader2 className={cn(iconSizeClass, 'text-white animate-spin')} />;
+      return <icons.Loader2 className={cn(finalIconClass, 'animate-spin')} />;
     }
 
     if (iconProvided) {
@@ -99,14 +98,14 @@ export function GradientButton({
 
       if (React.isValidElement<{ className?: string }>(icon)) {
         return React.cloneElement(icon, {
-          className: cn(iconSizeClass, 'text-white', icon.props.className),
+          className: cn(finalIconClass, icon.props.className),
         });
       }
 
       return icon;
     }
 
-    return <icons.ArrowRight className={cn(iconSizeClass, 'text-white')} />;
+    return <icons.ArrowRight className={cn(finalIconClass)} />;
   })();
 
   const shouldRenderIcon = iconNode !== null && iconNode !== undefined;
