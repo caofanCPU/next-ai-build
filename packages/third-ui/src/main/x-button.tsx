@@ -28,6 +28,7 @@ interface SingleButtonProps {
   loadingText?: string
   minWidth?: string
   className?: string
+  iconSizeValue?: number
 }
 
 // split button config
@@ -40,6 +41,7 @@ interface SplitButtonProps {
   className?: string
   mainButtonClassName?: string
   dropdownButtonClassName?: string
+  iconSizeValue?: number
 }
 
 type xButtonProps = SingleButtonProps | SplitButtonProps
@@ -48,6 +50,17 @@ export function XButton(props: xButtonProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
+
+  const { iconSizeValue } = props
+  const isCustomSize = iconSizeValue && Number.isInteger(iconSizeValue) && iconSizeValue > 0
+
+  const loadingIconClass = isCustomSize 
+    ? `w-${iconSizeValue} h-${iconSizeValue} mr-1 animate-spin`
+    : "w-5 h-5 mr-1 animate-spin"
+
+  const chevronIconClass = isCustomSize
+    ? `w-${iconSizeValue + 1} h-${iconSizeValue + 1}`
+    : "w-6 h-6"
 
   // click outside to close menu
   useEffect(() => {
@@ -108,7 +121,7 @@ export function XButton(props: xButtonProps) {
       >
         {isLoading ? (
           <>
-            <icons.Loader2 className="w-5 h-5 mr-1 animate-spin" />
+            <icons.Loader2 className={loadingIconClass} />
             <span>{actualLoadingText}</span>
           </>
         ) : (
@@ -147,7 +160,7 @@ export function XButton(props: xButtonProps) {
       >
         {isLoading ? (
           <>
-            <icons.Loader2 className="w-5 h-5 mr-1 animate-spin" />
+            <icons.Loader2 className={loadingIconClass} />
             <span>{actualLoadingText}</span>
           </>
         ) : (
@@ -169,7 +182,7 @@ export function XButton(props: xButtonProps) {
         aria-label="More actions"
         aria-expanded={menuOpen}
       >
-        <icons.ChevronDown className="w-6 h-6" />
+        <icons.ChevronDown className={chevronIconClass} />
       </button>
 
       {/* dropdown menu */}
