@@ -1,6 +1,5 @@
 'use client';
 
-import { Button } from "@windrun-huaiin/base-ui/ui";
 import { cn } from '@windrun-huaiin/lib/utils';
 import { globalLucideIcons as icons } from "@windrun-huaiin/base-ui/components/server";
 import Link from "next/link";
@@ -128,7 +127,12 @@ export function GradientButton({
       ? 'justify-center'
       : 'justify-start';
 
+  // Base styles extracted from Button component + size="lg" (h-11 px-8)
+  // Removed [&_svg] constraints
+  const baseButtonStyles = "inline-flex items-center gap-2 whitespace-nowrap h-11 px-8 ring-offset-background focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50";
+
   const buttonClassName = cn(
+    baseButtonStyles,
     'bg-linear-to-r from-purple-400 to-pink-500 hover:from-purple-500 hover:to-pink-600 dark:from-purple-500 dark:to-pink-600 dark:hover:from-purple-600 dark:hover:to-pink-700 text-white text-base font-bold shadow-lg hover:shadow-xl transition-all duration-300 rounded-full',
     alignmentClass,
     isDisabled && 'opacity-50 cursor-not-allowed',
@@ -139,31 +143,25 @@ export function GradientButton({
     <div className={`flex flex-row gap-3 ${getAlignmentClass()}`}>
       {onClick ? (
         // for click
-        <Button
-          size="lg"
+        <button
+          type="button"
           className={buttonClassName}
           onClick={handleClick}
           disabled={isDisabled}
         >
           {buttonContent}
-        </Button>
+        </button>
       ) : (
         // for Link
-        <Button
-          asChild
-          size="lg"
-          className={buttonClassName}
-          disabled={isDisabled}
+        <Link
+          href={href || "#"}
+          className={cn(buttonClassName, "no-underline hover:no-underline")}
+          {...(openInNewTab ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+          onClick={isDisabled ? (e) => e.preventDefault() : undefined}
+          aria-disabled={isDisabled}
         >
-          <Link
-            href={href || "#"}
-            className="no-underline hover:no-underline"
-            {...(openInNewTab ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-            onClick={isDisabled ? (e) => e.preventDefault() : undefined}
-          >
-            {buttonContent}
-          </Link>
-        </Button>
+          {buttonContent}
+        </Link>
       )}
     </div>
   );

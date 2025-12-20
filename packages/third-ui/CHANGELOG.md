@@ -1,5 +1,14 @@
 # @windrun-huaiin/third-ui
 
+## 11.0.8
+
+### Patch Changes
+
+- fix(gradientButton): fixed button's css style overrides issue
+- Updated dependencies
+  - @windrun-huaiin/base-ui@11.0.1
+  - @windrun-huaiin/lib@11.0.1
+
 ## 11.0.7
 
 ### Patch Changes
