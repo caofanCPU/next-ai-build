@@ -1,5 +1,6 @@
 import type { CSSProperties, ReactNode } from 'react';
 import { HomeLayout, type HomeLayoutProps } from 'fumadocs-ui/layouts/home';
+import { type LinkItemType } from 'fumadocs-ui/layouts/docs';
 import { FumaBannerSuit } from '@third-ui/fuma/fuma-banner-suit';
 import { Footer } from '@third-ui/main/footer';
 import { GoToTop } from '@third-ui/main/go-to-top';
@@ -10,6 +11,8 @@ import {
   type MobileBarAction,
   type MobileMenuAction,
 } from './custom-header';
+
+export type ExtendedLinkItem = LinkItemType & { mobilePinned?: boolean };
 
 // - bannerHeight/headerHeight 换成你项目期望的 rem 值即可（如果没有 Banner 就把 bannerHeight 设成 0）。
 // - layoutStyle 同时把变量传给 HomeLayout 的 main 元素，这样内容整体会往下错开，不需要 has-banner/no-banner class。
@@ -162,5 +165,21 @@ export function CustomHomeLayout({
         {showGoToTop ? goToTop ?? <GoToTop /> : null}
       </HomeLayout>
     </>
+  );
+}
+
+export function HomeTitle({
+  children,
+  className,
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <span
+      className={`font-medium in-[.uwu]:hidden in-[header]:text-[15px] ${className ?? ''}`}
+    >
+      {children}
+    </span>
   );
 }

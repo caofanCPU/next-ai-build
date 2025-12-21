@@ -1,5 +1,14 @@
 # @windrun-huaiin/third-ui
 
+## 11.0.9
+
+### Patch Changes
+
+- fix(style): components style responsive issues fixed
+- Updated dependencies
+  - @windrun-huaiin/base-ui@11.0.1
+  - @windrun-huaiin/lib@11.0.1
+
 ## 11.0.8
 
 ### Patch Changes

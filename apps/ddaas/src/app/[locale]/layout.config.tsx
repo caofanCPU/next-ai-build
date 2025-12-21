@@ -1,7 +1,6 @@
 import Preview from '@/../public/banner.png';
 import { globalLucideIcons as icons } from '@base-ui/components/global-icon';
 import { SiteIcon } from '@/lib/site-config';
-import { type LinkItemType } from 'fumadocs-ui/layouts/docs';
 import { BaseLayoutProps } from 'fumadocs-ui/layouts/shared';
 import { getTranslations } from 'next-intl/server';
 import Image from 'next/image';
@@ -9,8 +8,7 @@ import { ClerkUser } from '@third-ui/clerk/server';
 import { i18n } from '@/i18n';
 import { appConfig } from '@/lib/appConfig';
 import { CreditPopover } from '@/components/credit-popover';
-
-type ExtendedLinkItem = LinkItemType & { mobilePinned?: boolean };
+import { ExtendedLinkItem, HomeTitle } from '@third-ui/fuma/base';
 
 // 首页普通菜单
 export async function homeNavLinks(locale: string): Promise<ExtendedLinkItem[]> {
@@ -122,9 +120,9 @@ export async function baseOptions(locale: string): Promise<BaseLayoutProps> {
       title: (
         <>
           <SiteIcon />
-          <span className="font-medium in-[.uwu]:hidden in-[header]:text-[15px]">
+          <HomeTitle>
             {t('title')}
-          </span>
+          </HomeTitle>
         </>
       ),
       // 导航Header, 透明模式选项: none | top | always

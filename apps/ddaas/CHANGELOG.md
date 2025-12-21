@@ -1,5 +1,16 @@
 # @windrun-huaiin/ddaas-website
 
+## 11.0.5
+
+### Patch Changes
+
+- fix(style): components style responsive issues fixed
+- Updated dependencies
+  - @windrun-huaiin/base-ui@11.0.1
+  - @windrun-huaiin/third-ui@11.0.9
+  - @windrun-huaiin/lib@11.0.1
+  - @windrun-huaiin/shared-assets@11.0.1
+
 ## 11.0.4
 
 ### Patch Changes
