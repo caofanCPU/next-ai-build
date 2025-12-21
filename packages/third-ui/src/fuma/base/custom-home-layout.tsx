@@ -177,7 +177,7 @@ export function HomeTitle({
 }) {
   return (
     <span
-      className={`font-medium in-[.uwu]:hidden in-[header]:text-[15px] ${className ?? ''}`}
+      className={`font-medium in-[.uwu]:hidden in-[header]:text-[clamp(8px,3vw,15px)]! ${className ?? ''}`}
     >
       {children}
     </span>
