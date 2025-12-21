@@ -32,7 +32,7 @@ export function FooterEmail({ email, clickToCopyText, copiedText, children }: Fo
 
   return (
     <div className="relative group">
-      <div className="absolute left-2/3 -translate-x-1/4 bottom-full pb-1 hidden group-hover:block z-10">
+      <div className="absolute right-0 sm:right-auto sm:left-2/3 sm:-translate-x-1/4 bottom-full pb-1 hidden group-hover:block z-10">
         <div 
           className="bg-zinc-600 text-white text-xs rounded px-3 py-1 whitespace-nowrap shadow-lg cursor-pointer select-text"
           onMouseDown={handleCopy}

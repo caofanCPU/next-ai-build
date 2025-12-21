@@ -370,7 +370,7 @@ export function CreditOverviewClient({
         <div className="flex flex-col gap-2 sm:gap-3">
           <div className="flex items-center justify-start rounded-full ">
             <icons.Gem aria-hidden className="mr-2 h-6 w-6 sm:h-8 sm:w-8" />
-            <span className="text-sm font-medium sm:text-base">{translations.totalLabel}</span>
+            <span className="text-base sm:text-lg">{translations.totalLabel}</span>
           </div>
           <div className="flex justify-center text-3xl font-semibold leading-tight sm:text-4xl">
             {formatNumber(locale, data.totalBalance)}
@@ -405,7 +405,7 @@ export function CreditOverviewClient({
       {/* Credit Details Section */}
       <section className="relative flex flex-col gap-3 rounded-2xl border p-4 shadow-inner sm:gap-2 sm:p-5">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <h3 className="text-base font-semibold text-gray-500 dark:text-slate-100 sm:text-lg">
+          <h3 className="text-base text-gray-500 dark:text-slate-100 sm:text-lg">
             {translations.bucketsTitle}
           </h3>
           {hasBuckets ? (
@@ -437,7 +437,7 @@ export function CreditOverviewClient({
                   >
                     <div className="grid grid-cols-[1fr_auto] items-center gap-3 text-xs sm:text-sm">
                       <span className="flex min-w-0 items-center gap-2">
-                        <span className="max-w-full truncate rounded-full bg-purple-50 px-2 py-1 text-xs font-semibold text-purple-600 shadow-sm dark:bg-purple-500/20 dark:text-purple-100 sm:text-sm">
+                        <span className="max-w-full truncate rounded-full bg-purple-50 px-2 py-1 text-xs text-purple-600 shadow-sm dark:bg-purple-500/20 dark:text-purple-100 sm:text-sm">
                           {bucket.computedLabel}
                         </span>
                       </span>
@@ -451,7 +451,7 @@ export function CreditOverviewClient({
                       </span>
                     </div>
                     <div className="mt-3 flex justify-end gap-2">
-                      <span className="text-[11px] font-semibold text-gray-500 dark:text-slate-100 sm:text-xs">
+                      <span className="text-[11px] text-gray-500 dark:text-slate-100 sm:text-xs">
                       {translations.expiredAtLabel}: {bucket.expiresAt}
                       </span>
                     </div>

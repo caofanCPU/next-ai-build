@@ -1,5 +1,14 @@
 # @windrun-huaiin/third-ui
 
+## 11.1.1
+
+### Patch Changes
+
+- fix(style): style fixed in iphone devices
+- Updated dependencies
+  - @windrun-huaiin/base-ui@11.0.1
+  - @windrun-huaiin/lib@11.0.1
+
 ## 11.1.0
 
 ### Minor Changes
