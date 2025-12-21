@@ -1,5 +1,16 @@
 # @windrun-huaiin/ddaas-website
 
+## 11.0.6
+
+### Patch Changes
+
+- fix(footer): email now support click to copy
+- Updated dependencies
+  - @windrun-huaiin/base-ui@11.0.1
+  - @windrun-huaiin/third-ui@11.1.0
+  - @windrun-huaiin/lib@11.0.1
+  - @windrun-huaiin/shared-assets@11.0.1
+
 ## 11.0.5
 
 ### Patch Changes

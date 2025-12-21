@@ -1,5 +1,17 @@
 # @windrun-huaiin/third-ui
 
+## 11.1.0
+
+### Minor Changes
+
+- fix(footer): email now support click to copy
+
+### Patch Changes
+
+- Updated dependencies
+  - @windrun-huaiin/base-ui@11.0.1
+  - @windrun-huaiin/lib@11.0.1
+
 ## 11.0.11
 
 ### Patch Changes
