@@ -9,7 +9,7 @@ const intlMiddleware = createMiddleware({
   locales: appConfig.i18n.locales,
   // 默认语言配置
   defaultLocale: appConfig.i18n.defaultLocale,
-  localePrefix: "as-needed", // 改为 always，确保始终使用语言前缀
+  localePrefix: appConfig.i18n.localPrefixAsNeeded ? "as-needed" : "always", 
   localeDetection: false  // 添加此配置以禁用自动语言检测
 });
 
@@ -48,6 +48,33 @@ const publicApiRoutes = createRouteMatcher([
 // 完全不需要再包一层函数，也不需要手动 (req)
 export default clerkMiddleware(
   async (auth, req: NextRequest) => {
+    const { defaultLocale, locales } = appConfig.i18n;
+    const pathname = req.nextUrl.pathname;
+    const hasLocalePrefix = locales.some(
+      (loc) => pathname === `/${loc}` || pathname.startsWith(`/${loc}/`)
+    );
+
+    if (pathname.startsWith('/blog')) {
+      console.log('[middleware blog]', { pathname, hasLocalePrefix });
+    }
+
+    // 对于无语言前缀的页面请求，根据配置进行处理
+    // 避免落不到 [locale] 路由。
+    if (!hasLocalePrefix && !pathname.startsWith('/api/')) {
+      const url = req.nextUrl.clone();
+      url.pathname = `/${defaultLocale}${pathname}`;
+
+      if (appConfig.i18n.localPrefixAsNeeded) {
+        // as-needed: 内部rewrite，用户URL保持无前缀
+        console.log('[middleware rewrite]', { from: pathname, to: url.pathname });
+        return NextResponse.rewrite(url);
+      } else {
+        // always: 重定向给用户，让他们看到前缀URL
+        console.log('[middleware redirect]', { from: pathname, to: url.pathname });
+        return NextResponse.redirect(url);
+      }
+    }
+
     // 1. 处理需要认证的页面路由
     if (protectedPageRoutes(req)) {
       const { userId: clerkUserId } = await auth();

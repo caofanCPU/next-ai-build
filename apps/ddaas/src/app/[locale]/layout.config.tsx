@@ -6,10 +6,11 @@ import { getTranslations } from 'next-intl/server';
 import Image from 'next/image';
 import { ClerkUser } from '@third-ui/clerk/server';
 import { i18n } from '@/i18n';
-import { appConfig } from '@/lib/appConfig';
+import { appConfig, localPrefixAsNeeded, defaultLocale } from '@/lib/appConfig';
 import { CreditPopover } from '@/components/credit-popover';
 import { ExtendedLinkItem, HomeTitle } from '@third-ui/fuma/base';
 import { getOptionalAuth } from '@third-ui/clerk/patch/optional-auth';
+import { getAsNeededLocalizedUrl } from '@windrun-huaiin/lib';
 
 // 首页普通菜单
 export async function homeNavLinks(locale: string): Promise<ExtendedLinkItem[]> {
@@ -18,11 +19,11 @@ export async function homeNavLinks(locale: string): Promise<ExtendedLinkItem[]> 
   return [
     {
       text: t1('blog'),
-      url: `/${locale}/blog`,
+      url: getAsNeededLocalizedUrl(locale, '/blog', localPrefixAsNeeded, defaultLocale),
     },
     {
       text: t1('pricing'),
-      url: `/${locale}/pricing`,
+      url: getAsNeededLocalizedUrl(locale, '/pricing', localPrefixAsNeeded, defaultLocale),
     },
     {
       type: 'custom',
@@ -49,7 +50,7 @@ export async function levelNavLinks(locale: string): Promise<ExtendedLinkItem[]>
       type: 'menu',
       text: t1('docs'),
       // 文档落地页
-      url: `/${locale}/docs`,
+      url: getAsNeededLocalizedUrl(locale, '/docs', localPrefixAsNeeded, defaultLocale),
       items: [
         {
           menu: {
@@ -70,13 +71,13 @@ export async function levelNavLinks(locale: string): Promise<ExtendedLinkItem[]>
           },
           text: 'FumaDocs',
           description: 'Learn to use Fumadocs on your docs site.',
-          url: `/${locale}/docs/introduction`,
+          url: getAsNeededLocalizedUrl(locale, '/docs/introduction', localPrefixAsNeeded, defaultLocale),
         },
         {
           icon: <icons.ShieldUser />,
           text: 'FumaMDX',
           description: 'FumaMDX tips',
-          url: `/${locale}/docs//introduction/fuma-mdx`,
+          url: getAsNeededLocalizedUrl(locale, '/docs/introduction/fuma-mdx', localPrefixAsNeeded, defaultLocale),
           menu: {
             className: 'lg:col-start-2 lg:row-start-1',
           },
@@ -85,7 +86,7 @@ export async function levelNavLinks(locale: string): Promise<ExtendedLinkItem[]>
           icon: <icons.Snippets />,
           text: 'Quick generation',
           description: 'MDX Snippets',
-          url: `/${locale}/docs/introduction/mdx-snippets`,
+          url: getAsNeededLocalizedUrl(locale, '/docs/introduction/mdx-snippets', localPrefixAsNeeded, defaultLocale),
           menu: {
             className: 'lg:col-start-2 lg:row-start-2',
           },
@@ -94,7 +95,7 @@ export async function levelNavLinks(locale: string): Promise<ExtendedLinkItem[]>
           icon: <icons.Highlighter />,
           text: 'Codeblock',
           description: 'Codeblock full case',
-          url: `/${locale}/docs/introduction/mdx-shiki`,
+          url: getAsNeededLocalizedUrl(locale, '/docs/introduction/mdx-shiki', localPrefixAsNeeded, defaultLocale),
           menu: {
             className: 'lg:col-start-3 lg:row-start-1',
           },
@@ -103,7 +104,7 @@ export async function levelNavLinks(locale: string): Promise<ExtendedLinkItem[]>
           icon: <icons.Mmd />,
           text: 'Graph',
           description: 'Mermaid showcase.',
-          url: `/${locale}/docs/introduction/mdx-mermaid`,
+          url: getAsNeededLocalizedUrl(locale, '/docs/introduction/mdx-mermaid', localPrefixAsNeeded, defaultLocale),
           menu: {
             className: 'lg:col-start-3 lg:row-start-2',
           },
@@ -118,7 +119,7 @@ export async function baseOptions(locale: string): Promise<BaseLayoutProps> {
   return {
     // 导航Header配置
     nav: {
-      url: `/${locale}`,
+      url: getAsNeededLocalizedUrl(locale, '/', localPrefixAsNeeded, defaultLocale),
       title: (
         <>
           <SiteIcon />
