@@ -16,6 +16,11 @@
       "import": "./dist/clerk/server.mjs",
       "require": "./dist/clerk/server.js"
     },
+    "./clerk/patch/optional-auth": {
+      "types": "./dist/clerk/patch/optional-auth.d.ts",
+      "import": "./dist/clerk/patch/optional-auth.mjs",
+      "require": "./dist/clerk/patch/optional-auth.js"
+    },
     "./fingerprint": {
       "types": "./dist/clerk/fingerprint/index.d.ts",
       "import": "./dist/clerk/fingerprint/index.mjs",

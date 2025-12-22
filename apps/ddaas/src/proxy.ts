@@ -9,7 +9,7 @@ const intlMiddleware = createMiddleware({
   locales: appConfig.i18n.locales,
   // 默认语言配置
   defaultLocale: appConfig.i18n.defaultLocale,
-  localePrefix: "always", // 改为 always，确保始终使用语言前缀
+  localePrefix: "as-needed", // 改为 always，确保始终使用语言前缀
   localeDetection: false  // 添加此配置以禁用自动语言检测
 });
 
@@ -87,13 +87,6 @@ export default clerkMiddleware(
     }
 
     // 5. 其他路由使用默认的国际化中间件处理
-    // handle root path to default locale permanent redirect
-    if (req.nextUrl.pathname === "/") {
-      return NextResponse.redirect(
-        new URL(`/${appConfig.i18n.defaultLocale}`, req.url),
-        301
-      );
-    }
 
     // handle trailing slash redirect
     if (req.nextUrl.pathname.length > 1 && req.nextUrl.pathname.endsWith("/")) {

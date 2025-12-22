@@ -9,6 +9,7 @@ import peerDepsExternal from 'rollup-plugin-peer-deps-external';
 const entries = [
   'src/clerk/index.ts',
   'src/clerk/server.ts',
+  'src/clerk/patch/optional-auth.ts',
   'src/clerk/fingerprint/index.ts',
   'src/clerk/fingerprint/server.ts',
   'src/main/index.ts',

@@ -9,10 +9,12 @@ import { i18n } from '@/i18n';
 import { appConfig } from '@/lib/appConfig';
 import { CreditPopover } from '@/components/credit-popover';
 import { ExtendedLinkItem, HomeTitle } from '@third-ui/fuma/base';
+import { getOptionalAuth } from '@third-ui/clerk/patch/optional-auth';
 
 // 首页普通菜单
 export async function homeNavLinks(locale: string): Promise<ExtendedLinkItem[]> {
   const t1 = await getTranslations({ locale: locale, namespace: 'linkPreview' });
+  const { userId } = await getOptionalAuth();
   return [
     {
       text: t1('blog'),
@@ -26,7 +28,7 @@ export async function homeNavLinks(locale: string): Promise<ExtendedLinkItem[]> 
       type: 'custom',
       secondary: true,
       mobilePinned: true,
-      children: <CreditPopover locale={locale} />,
+      children: userId ? <CreditPopover locale={locale} /> : null,
     },
     {
       type: 'custom',
