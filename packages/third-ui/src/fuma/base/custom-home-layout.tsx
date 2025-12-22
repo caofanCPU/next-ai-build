@@ -86,6 +86,14 @@ export interface CustomHomeLayoutProps {
    * Customize the order of header action items.
    */
   actionOrders?: HeaderActionOrders;
+  /**
+   * Whether localePrefix is set to 'as-needed' (default: true)
+   */
+  localPrefixAsNeeded?: boolean;
+  /**
+   * The default locale for the application (default: 'en')
+   */
+  defaultLocale?: string;
   children?: ReactNode;
 }
 
@@ -112,6 +120,8 @@ export function CustomHomeLayout({
   style,
   floatingNav = false,
   actionOrders,
+  localPrefixAsNeeded = true,
+  defaultLocale = 'en',
 }: CustomHomeLayoutProps) {
   const resolvedBannerHeight = bannerHeight ?? (showBanner ? 3 : 0.5);
   const resolvedPaddingTop =
@@ -161,7 +171,7 @@ export function CustomHomeLayout({
         style={layoutStyle}
       >
         {children}
-        {showFooter ? footer ?? <Footer locale={locale} /> : null}
+        {showFooter ? footer ?? <Footer locale={locale} localPrefixAsNeeded={localPrefixAsNeeded} defaultLocale={defaultLocale} /> : null}
         {showGoToTop ? goToTop ?? <GoToTop /> : null}
       </HomeLayout>
     </>

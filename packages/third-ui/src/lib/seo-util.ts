@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next';
 import fs from 'fs';
 import path from 'path';
+import { getAsNeededLocalizedUrl } from '@windrun-huaiin/lib';
 
 /**
  * Generate robots.txt content
@@ -23,13 +24,17 @@ export function generateRobots(baseUrl: string): MetadataRoute.Robots {
  * @param locales - Supported locales array
  * @param mdxSourceDir - MDX source directory path
  * @param openMdxSEOSiteMap - Whether to include MDX content in sitemap, default is true
+ * @param localPrefixAsNeeded - Whether localePrefix is set to 'as-needed' (default: true)
+ * @param defaultLocale - The default locale for the application (default: 'en')
  * @returns Sitemap entries
  */
 export function generateSitemap(
   baseUrl: string,
   locales: string[],
   mdxSourceDir: string,
-  openMdxSEOSiteMap: boolean = true
+  openMdxSEOSiteMap: boolean = true,
+  localPrefixAsNeeded: boolean = true,
+  defaultLocale: string = 'en'
 ): MetadataRoute.Sitemap {
   // 2. handle index.mdx (blog start page) and other slugs
   const blogRoutes: MetadataRoute.Sitemap = [];
@@ -46,16 +51,18 @@ export function generateSitemap(
         for (const locale of locales) {
           for (const f of blogFiles) {
             if (f === 'index.mdx') {
+              const localizedPath = getAsNeededLocalizedUrl(locale, '/blog', localPrefixAsNeeded, defaultLocale);
               blogRoutes.push({
-                url: `${baseUrl}/${locale}/blog`,
+                url: `${baseUrl}${localizedPath}`,
                 lastModified: new Date(),
                 changeFrequency: 'daily',
                 priority: 1.0
               });
             } else {
               const slug = f.replace(/\.mdx$/, '');
+              const localizedPath = getAsNeededLocalizedUrl(locale, `/blog/${slug}`, localPrefixAsNeeded, defaultLocale);
               blogRoutes.push({
-                url: `${baseUrl}/${locale}/blog/${slug}`,
+                url: `${baseUrl}${localizedPath}`,
                 lastModified: new Date(),
                 changeFrequency: f === 'ioc.mdx' ? 'daily' : 'monthly',
                 priority: 0.8
@@ -71,12 +78,15 @@ export function generateSitemap(
   }
 
   // 3. main page (all language versions)
-  const mainRoutes = locales.map(locale => ({
-    url: `${baseUrl}/${locale}`,
-    lastModified: new Date(),
-    changeFrequency: 'weekly' as const,
-    priority: 1.0
-  }));
+  const mainRoutes = locales.map(locale => {
+    const localizedPath = getAsNeededLocalizedUrl(locale, '/', localPrefixAsNeeded, defaultLocale);
+    return {
+      url: `${baseUrl}${localizedPath}`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly' as const,
+      priority: 1.0
+    };
+  });
 
   return openMdxSEOSiteMap ? [...mainRoutes, ...blogRoutes] : [...mainRoutes];
 }
@@ -98,21 +108,25 @@ export function createRobotsHandler(baseUrl: string) {
  * @param locales - Supported locales array
  * @param mdxSourceDir - MDX source directory path, default is empty
  * @param openMdxSEOSiteMap - Whether to include MDX content in sitemap, default is true
+ * @param localPrefixAsNeeded - Whether localePrefix is set to 'as-needed' (default: true)
+ * @param defaultLocale - The default locale for the application (default: 'en')
  * @returns Sitemap handler function
  */
 export function createSitemapHandler(
   baseUrl: string,
   locales: string[],
   mdxSourceDir: string = '',
-  openMdxSEOSiteMap: boolean = true
+  openMdxSEOSiteMap: boolean = true,
+  localPrefixAsNeeded: boolean = true,
+  defaultLocale: string = 'en'
 ) {
   // force static generation
   const sitemapHandler = function sitemap(): MetadataRoute.Sitemap {
-    return generateSitemap(baseUrl, locales, mdxSourceDir, openMdxSEOSiteMap);
+    return generateSitemap(baseUrl, locales, mdxSourceDir, openMdxSEOSiteMap, localPrefixAsNeeded, defaultLocale);
   };
-  
+
   // Add static generation directive
   (sitemapHandler as any).dynamic = 'force-static';
-  
+
   return sitemapHandler;
 }

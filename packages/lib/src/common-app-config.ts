@@ -58,6 +58,7 @@ export function createCommonAppConfig(options?: {
     i18n: {
       locales: locales as readonly string[],
       defaultLocale,
+      localPrefixAsNeeded: process.env.NEXT_PUBLIC_I18N_LOCALE_PREFIX_AS_NEEDED !== 'false',
       localeLabels: getLocaleLabels(locales),
       detector: {
         storageKey: process.env.NEXT_PUBLIC_I18N_STORAGE_KEY || 'language-preference-status',

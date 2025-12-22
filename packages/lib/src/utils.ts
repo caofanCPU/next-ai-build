@@ -39,7 +39,7 @@ export function formatTimestamp(timestamp: string, formatter: string) {
      console.error("Error formatting date:", error);
      return fail;
   }
-} 
+}
 
 // Only allow pasting plain text, prohibit style content
 export function handlePastePlainText(e: React.ClipboardEvent<HTMLElement>) {
@@ -58,4 +58,26 @@ export function handlePastePlainText(e: React.ClipboardEvent<HTMLElement>) {
   range.collapse(true);
   selection.removeAllRanges();
   selection.addRange(range);
+}
+
+// Generates localized URL based on locale and locale prefix configuration
+// Supports both 'as-needed' and 'always' localePrefix configurations
+// @param locale - Current locale (e.g., 'en', 'zh', 'ja')
+// @param path - Base path (e.g., '/blog', '/docs')
+// @param localPrefixAsNeeded - Whether localePrefix is set to 'as-needed' (default: true)
+// @param defaultLocale - The default locale for the application (default: 'en')
+// @example
+//   getAsNeededLocalizedUrl('en', '/blog', true, 'en')   // Returns '/blog'
+//   getAsNeededLocalizedUrl('zh', '/blog', true, 'en')   // Returns '/zh/blog'
+//   getAsNeededLocalizedUrl('en', '/blog', false, 'en')  // Returns '/en/blog'
+export function getAsNeededLocalizedUrl(
+  locale: string,
+  path: string,
+  localPrefixAsNeeded: boolean = true,
+  defaultLocale: string = 'en'
+): string {
+  if (localPrefixAsNeeded && locale === defaultLocale) {
+    return path;
+  }
+  return `/${locale}${path}`;
 }

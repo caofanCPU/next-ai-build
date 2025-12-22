@@ -2,6 +2,7 @@ import { DocsBody, DocsDescription, DocsPage, DocsTitle } from 'fumadocs-ui/page
 import { ReactNode, ReactElement, cloneElement } from 'react';
 import { TocFooterWrapper } from '@third-ui/fuma/mdx/toc-footer-wrapper';
 import type { LLMCopyButtonProps, LLMCopyButton } from '@third-ui/fuma/mdx/toc-base';
+import { getAsNeededLocalizedUrl } from '@windrun-huaiin/lib';
 
 interface FumaPageParams {
   /* 
@@ -36,7 +37,7 @@ interface FumaPageParams {
    * The fallback page component to use when the page is not found
    */
   FallbackPage: React.ComponentType<{ siteIcon: ReactNode }>;
-  /* 
+  /*
    * Supported locales for generating alternates metadata, defaults to ['en']
    */
   supportedLocales?: string[];
@@ -49,6 +50,16 @@ interface FumaPageParams {
 
   // default false, for mobile style can cause issue
   showTableOfContentPopover?: boolean;
+
+  /*
+   * Whether localePrefix is set to 'as-needed' (default: true)
+   */
+  localPrefixAsNeeded?: boolean;
+
+  /*
+   * The default locale for the application (default: 'en')
+   */
+  defaultLocale?: string;
 }
 
 export function createFumaPage({
@@ -64,11 +75,14 @@ export function createFumaPage({
   showBreadcrumb = true,
   showTableOfContent = true,
   showTableOfContentPopover = false,
+  localPrefixAsNeeded = true,
+  defaultLocale = 'en',
 }: FumaPageParams) {
   const Page = async function Page({ params }: { params: Promise<{ locale: string; slug?: string[] }> }) {
     const { slug, locale } = await params;
     const page = mdxContentSource.getPage(slug, locale);
     if (!page) {
+      console.log('[FumaPage] missing page', { slug, locale, available: mdxContentSource.pageTree?.[locale]?.children?.map((c: any) => c.url) });
       return <FallbackPage siteIcon={siteIcon} />;
     }
 
@@ -129,14 +143,15 @@ export function createFumaPage({
     const baseRoute = mdxSourceDir.replace('src/mdx/', '');
     // build the current page path
     const currentPath = slug ? slug.join('/') : '';
-    const currentUrl = `${baseUrl}/${locale}/${baseRoute}${currentPath ? `/${currentPath}` : ''}`;
+    const localizedPath = getAsNeededLocalizedUrl(locale || defaultLocale, `/${baseRoute}${currentPath ? `/${currentPath}` : ''}`, localPrefixAsNeeded, defaultLocale);
+    const currentUrl = `${baseUrl}${localizedPath}`;
 
     // generate the seo language map
     const seoLanguageMap: Record<string, string> = {};
 
-    
     supportedLocales.forEach(loc => {
-      seoLanguageMap[loc] = `${baseUrl}/${loc}/${baseRoute}${currentPath ? `/${currentPath}` : ''}`;
+      const seoPath = getAsNeededLocalizedUrl(loc, `/${baseRoute}${currentPath ? `/${currentPath}` : ''}`, localPrefixAsNeeded, defaultLocale);
+      seoLanguageMap[loc] = `${baseUrl}${seoPath}`;
     });
 
     return {

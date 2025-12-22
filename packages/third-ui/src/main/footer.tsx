@@ -3,6 +3,7 @@ import { globalLucideIcons as icons } from '@windrun-huaiin/base-ui/components/s
 import Link from "next/link";
 import { FooterEmail } from './footer-email';
 import { safeT } from '../lib/t-intl';
+import { getAsNeededLocalizedUrl } from '@windrun-huaiin/lib';
 
 interface FooterData {
   terms: string;
@@ -15,7 +16,13 @@ interface FooterData {
   copiedText: string;
 }
 
-export async function Footer({ locale }: { locale: string }) {
+interface FooterProps {
+  locale: string;
+  localPrefixAsNeeded?: boolean;
+  defaultLocale?: string;
+}
+
+export async function Footer({ locale, localPrefixAsNeeded = true, defaultLocale = 'en' }: FooterProps) {
   const tFooter = await getTranslations({ locale, namespace: 'footer' });
   
   const company = safeT(tFooter, 'company', '');
@@ -36,11 +43,11 @@ export async function Footer({ locale }: { locale: string }) {
       <footer>
         <div className="w-full flex flex-col items-center justify-center px-4 py-8 space-y-3">
           <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-2 text-xs sm:text-sm sm:gap-x-6">
-            <Link href={`/${locale}/legal/terms`} className="flex items-center space-x-1 hover:underline">
+            <Link href={getAsNeededLocalizedUrl(locale, "/legal/terms", localPrefixAsNeeded, defaultLocale)} className="flex items-center space-x-1 hover:underline">
               <icons.ReceiptText className="h-3.5 w-3.5"/>
               <span>{data.terms}</span>
             </Link>
-            <Link href={`/${locale}/legal/privacy`} className="flex items-center space-x-1 hover:underline">
+            <Link href={getAsNeededLocalizedUrl(locale, "/legal/privacy", localPrefixAsNeeded, defaultLocale)} className="flex items-center space-x-1 hover:underline">
               <icons.ShieldUser className="h-3.5 w-3.5"/>
               <span>{data.privacy}</span>
             </Link>
