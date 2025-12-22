@@ -1,5 +1,11 @@
 # @windrun-huaiin/dev-scripts
 
+## 12.0.0
+
+### Major Changes
+
+- feature(locale): support as-needed localPrefix by `NEXT_PUBLIC_I18N_LOCALE_PREFIX_AS_NEEDED`
+
 ## 11.0.3
 
 ### Patch Changes

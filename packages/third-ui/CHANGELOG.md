@@ -1,5 +1,17 @@
 # @windrun-huaiin/third-ui
 
+## 12.0.0
+
+### Major Changes
+
+- feature(locale): support as-needed localPrefix by `NEXT_PUBLIC_I18N_LOCALE_PREFIX_AS_NEEDED`
+
+### Patch Changes
+
+- Updated dependencies
+  - @windrun-huaiin/base-ui@12.0.0
+  - @windrun-huaiin/lib@12.0.0
+
 ## 11.1.1
 
 ### Patch Changes
