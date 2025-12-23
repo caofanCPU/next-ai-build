@@ -6,7 +6,7 @@ import { getTranslations } from 'next-intl/server';
 import Image from 'next/image';
 import { ClerkUser } from '@third-ui/clerk/server';
 import { i18n } from '@/i18n';
-import { appConfig, localPrefixAsNeeded, defaultLocale } from '@/lib/appConfig';
+import { appConfig, localePrefixAsNeeded, defaultLocale } from '@/lib/appConfig';
 import { CreditPopover } from '@/components/credit-popover';
 import { ExtendedLinkItem, HomeTitle } from '@third-ui/fuma/base';
 import { getOptionalAuth } from '@third-ui/clerk/patch/optional-auth';
@@ -19,11 +19,11 @@ export async function homeNavLinks(locale: string): Promise<ExtendedLinkItem[]> 
   return [
     {
       text: t1('blog'),
-      url: getAsNeededLocalizedUrl(locale, '/blog', localPrefixAsNeeded, defaultLocale),
+      url: getAsNeededLocalizedUrl(locale, '/blog', localePrefixAsNeeded, defaultLocale),
     },
     {
       text: t1('pricing'),
-      url: getAsNeededLocalizedUrl(locale, '/pricing', localPrefixAsNeeded, defaultLocale),
+      url: getAsNeededLocalizedUrl(locale, '/pricing', localePrefixAsNeeded, defaultLocale),
     },
     {
       type: 'custom',
@@ -50,7 +50,7 @@ export async function levelNavLinks(locale: string): Promise<ExtendedLinkItem[]>
       type: 'menu',
       text: t1('docs'),
       // 文档落地页
-      url: getAsNeededLocalizedUrl(locale, '/docs', localPrefixAsNeeded, defaultLocale),
+      url: getAsNeededLocalizedUrl(locale, '/docs', localePrefixAsNeeded, defaultLocale),
       items: [
         {
           menu: {
@@ -71,13 +71,13 @@ export async function levelNavLinks(locale: string): Promise<ExtendedLinkItem[]>
           },
           text: 'FumaDocs',
           description: 'Learn to use Fumadocs on your docs site.',
-          url: getAsNeededLocalizedUrl(locale, '/docs/introduction', localPrefixAsNeeded, defaultLocale),
+          url: getAsNeededLocalizedUrl(locale, '/docs/introduction', localePrefixAsNeeded, defaultLocale),
         },
         {
           icon: <icons.ShieldUser />,
           text: 'FumaMDX',
           description: 'FumaMDX tips',
-          url: getAsNeededLocalizedUrl(locale, '/docs/introduction/fuma-mdx', localPrefixAsNeeded, defaultLocale),
+          url: getAsNeededLocalizedUrl(locale, '/docs/introduction/fuma-mdx', localePrefixAsNeeded, defaultLocale),
           menu: {
             className: 'lg:col-start-2 lg:row-start-1',
           },
@@ -86,7 +86,7 @@ export async function levelNavLinks(locale: string): Promise<ExtendedLinkItem[]>
           icon: <icons.Snippets />,
           text: 'Quick generation',
           description: 'MDX Snippets',
-          url: getAsNeededLocalizedUrl(locale, '/docs/introduction/mdx-snippets', localPrefixAsNeeded, defaultLocale),
+          url: getAsNeededLocalizedUrl(locale, '/docs/introduction/mdx-snippets', localePrefixAsNeeded, defaultLocale),
           menu: {
             className: 'lg:col-start-2 lg:row-start-2',
           },
@@ -95,7 +95,7 @@ export async function levelNavLinks(locale: string): Promise<ExtendedLinkItem[]>
           icon: <icons.Highlighter />,
           text: 'Codeblock',
           description: 'Codeblock full case',
-          url: getAsNeededLocalizedUrl(locale, '/docs/introduction/mdx-shiki', localPrefixAsNeeded, defaultLocale),
+          url: getAsNeededLocalizedUrl(locale, '/docs/introduction/mdx-shiki', localePrefixAsNeeded, defaultLocale),
           menu: {
             className: 'lg:col-start-3 lg:row-start-1',
           },
@@ -104,7 +104,7 @@ export async function levelNavLinks(locale: string): Promise<ExtendedLinkItem[]>
           icon: <icons.Mmd />,
           text: 'Graph',
           description: 'Mermaid showcase.',
-          url: getAsNeededLocalizedUrl(locale, '/docs/introduction/mdx-mermaid', localPrefixAsNeeded, defaultLocale),
+          url: getAsNeededLocalizedUrl(locale, '/docs/introduction/mdx-mermaid', localePrefixAsNeeded, defaultLocale),
           menu: {
             className: 'lg:col-start-3 lg:row-start-2',
           },
@@ -119,7 +119,7 @@ export async function baseOptions(locale: string): Promise<BaseLayoutProps> {
   return {
     // 导航Header配置
     nav: {
-      url: getAsNeededLocalizedUrl(locale, '/', localPrefixAsNeeded, defaultLocale),
+      url: getAsNeededLocalizedUrl(locale, '/', localePrefixAsNeeded, defaultLocale),
       title: (
         <>
           <SiteIcon />

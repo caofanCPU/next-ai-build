@@ -67,7 +67,7 @@ export function handlePastePlainText(e: React.ClipboardEvent<HTMLElement>) {
 // - All other paths have no trailing slash: '/blog', '/zh/blog', '/en'
 // @param locale - Current locale (e.g., 'en', 'zh', 'ja')
 // @param path - Base path (e.g., '/', '/blog', '/docs', or '' treated as '/')
-// @param localPrefixAsNeeded - Whether localePrefix is set to 'as-needed' (default: true)
+// @param localePrefixAsNeeded - Whether localePrefix is set to 'as-needed' (default: true)
 // @param defaultLocale - The default locale for the application (default: 'en')
 // @example
 //   getAsNeededLocalizedUrl('en', '/', true, 'en')       // Returns '/'
@@ -79,7 +79,7 @@ export function handlePastePlainText(e: React.ClipboardEvent<HTMLElement>) {
 export function getAsNeededLocalizedUrl(
   locale: string,
   path: string,
-  localPrefixAsNeeded: boolean = true,
+  localePrefixAsNeeded: boolean = true,
   defaultLocale: string = 'en'
 ): string {
   // Normalize path: empty string or undefined treated as '/'
@@ -96,7 +96,7 @@ export function getAsNeededLocalizedUrl(
   }
 
   // Return based on locale prefix configuration
-  if (localPrefixAsNeeded && locale === defaultLocale) {
+  if (localePrefixAsNeeded && locale === defaultLocale) {
     return normalizedPath;
   }
 

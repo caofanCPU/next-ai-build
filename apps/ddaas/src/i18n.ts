@@ -5,7 +5,7 @@ import type { I18nConfig } from 'fumadocs-core/i18n';
 export const i18n: I18nConfig = {
   defaultLanguage: appConfig.i18n.defaultLocale,
   languages: appConfig.i18n.locales as unknown as string[],
-  hideLocale: appConfig.i18n.localPrefixAsNeeded ? "default-locale" : "never",
+  hideLocale: appConfig.i18n.localePrefixAsNeeded ? "default-locale" : "never",
 }
 
 // Can be imported from a shared config

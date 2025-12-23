@@ -1,5 +1,5 @@
 import { baseOptions, homeNavLinks, levelNavLinks } from '@/app/[locale]/layout.config';
-import { showBanner, localPrefixAsNeeded, defaultLocale } from '@/lib/appConfig';
+import { showBanner, localePrefixAsNeeded, defaultLocale } from '@/lib/appConfig';
 import { fingerprintConfig } from '@windrun-huaiin/backend-core/lib';
 import { FingerprintProvider } from '@third-ui/clerk/fingerprint';
 import { CustomHomeLayout } from '@third-ui/fuma/base';
@@ -46,7 +46,7 @@ export default async function Layout({
     <FingerprintProvider config={fingerprintConfig}>
       <CustomHomeLayout
         locale={locale}
-        localPrefixAsNeeded={localPrefixAsNeeded}
+        localePrefixAsNeeded={localePrefixAsNeeded}
           defaultLocale={defaultLocale}
         options={homeLayoutOptions}
         showBanner={showBanner}

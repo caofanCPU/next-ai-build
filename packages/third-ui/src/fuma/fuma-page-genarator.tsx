@@ -54,7 +54,7 @@ interface FumaPageParams {
   /*
    * Whether localePrefix is set to 'as-needed' (default: true)
    */
-  localPrefixAsNeeded?: boolean;
+  localePrefixAsNeeded?: boolean;
 
   /*
    * The default locale for the application (default: 'en')
@@ -75,7 +75,7 @@ export function createFumaPage({
   showBreadcrumb = true,
   showTableOfContent = true,
   showTableOfContentPopover = false,
-  localPrefixAsNeeded = true,
+  localePrefixAsNeeded = true,
   defaultLocale = 'en',
 }: FumaPageParams) {
   const Page = async function Page({ params }: { params: Promise<{ locale: string; slug?: string[] }> }) {
@@ -143,14 +143,14 @@ export function createFumaPage({
     const baseRoute = mdxSourceDir.replace('src/mdx/', '');
     // build the current page path
     const currentPath = slug ? slug.join('/') : '';
-    const localizedPath = getAsNeededLocalizedUrl(locale || defaultLocale, `/${baseRoute}${currentPath ? `/${currentPath}` : ''}`, localPrefixAsNeeded, defaultLocale);
+    const localizedPath = getAsNeededLocalizedUrl(locale || defaultLocale, `/${baseRoute}${currentPath ? `/${currentPath}` : ''}`, localePrefixAsNeeded, defaultLocale);
     const currentUrl = `${baseUrl}${localizedPath}`;
 
     // generate the seo language map
     const seoLanguageMap: Record<string, string> = {};
 
     supportedLocales.forEach(loc => {
-      const seoPath = getAsNeededLocalizedUrl(loc, `/${baseRoute}${currentPath ? `/${currentPath}` : ''}`, localPrefixAsNeeded, defaultLocale);
+      const seoPath = getAsNeededLocalizedUrl(loc, `/${baseRoute}${currentPath ? `/${currentPath}` : ''}`, localePrefixAsNeeded, defaultLocale);
       seoLanguageMap[loc] = `${baseUrl}${seoPath}`;
     });
 

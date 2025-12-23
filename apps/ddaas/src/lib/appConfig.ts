@@ -8,7 +8,7 @@ export const appConfig = {
 // export i18n helpers
 export const { isSupportedLocale, getValidLocale, generatedLocales} = createI18nHelpers(appConfig.i18n);
 
-export const { localPrefixAsNeeded, defaultLocale } = appConfig.i18n;
+export const { localePrefixAsNeeded, defaultLocale } = appConfig.i18n;
 
 // export shortcuts
 export const { iconColor, watermark, showBanner, clerkPageBanner, clerkAuthInModal, placeHolderImage } = appConfig.shortcuts;

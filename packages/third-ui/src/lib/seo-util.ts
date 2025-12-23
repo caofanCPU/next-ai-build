@@ -34,7 +34,7 @@ export function generateRobots(baseUrl: string): MetadataRoute.Robots {
  * @param locales - Supported locales array
  * @param mdxSourceDir - MDX source directory path
  * @param openMdxSEOSiteMap - Whether to include MDX content in sitemap, default is true
- * @param localPrefixAsNeeded - Whether localePrefix is set to 'as-needed' (default: true)
+ * @param localePrefixAsNeeded - Whether localePrefix is set to 'as-needed' (default: true)
  * @param defaultLocale - The default locale for the application (default: 'en')
  * @returns Sitemap entries
  */
@@ -43,7 +43,7 @@ export function generateSitemap(
   locales: string[],
   mdxSourceDir: string,
   openMdxSEOSiteMap: boolean = true,
-  localPrefixAsNeeded: boolean = true,
+  localePrefixAsNeeded: boolean = true,
   defaultLocale: string = 'en'
 ): MetadataRoute.Sitemap {
   // 2. handle index.mdx (blog start page) and other slugs
@@ -61,7 +61,7 @@ export function generateSitemap(
         for (const locale of locales) {
           for (const f of blogFiles) {
             if (f === 'index.mdx') {
-              const localizedPath = getAsNeededLocalizedUrl(locale, '/blog', localPrefixAsNeeded, defaultLocale);
+              const localizedPath = getAsNeededLocalizedUrl(locale, '/blog', localePrefixAsNeeded, defaultLocale);
               blogRoutes.push({
                 url: `${baseUrl}${localizedPath}`,
                 lastModified: new Date(),
@@ -70,7 +70,7 @@ export function generateSitemap(
               });
             } else {
               const slug = f.replace(/\.mdx$/, '');
-              const localizedPath = getAsNeededLocalizedUrl(locale, `/blog/${slug}`, localPrefixAsNeeded, defaultLocale);
+              const localizedPath = getAsNeededLocalizedUrl(locale, `/blog/${slug}`, localePrefixAsNeeded, defaultLocale);
               blogRoutes.push({
                 url: `${baseUrl}${localizedPath}`,
                 lastModified: new Date(),
@@ -89,7 +89,7 @@ export function generateSitemap(
 
   // 3. main page (all language versions)
   const mainRoutes = locales.map(locale => {
-    const localizedPath = getAsNeededLocalizedUrl(locale, '/', localPrefixAsNeeded, defaultLocale);
+    const localizedPath = getAsNeededLocalizedUrl(locale, '/', localePrefixAsNeeded, defaultLocale);
     return {
       url: `${baseUrl}${localizedPath}`,
       lastModified: new Date(),
@@ -118,7 +118,7 @@ export function createRobotsHandler(baseUrl: string) {
  * @param locales - Supported locales array
  * @param mdxSourceDir - MDX source directory path, default is empty
  * @param openMdxSEOSiteMap - Whether to include MDX content in sitemap, default is true
- * @param localPrefixAsNeeded - Whether localePrefix is set to 'as-needed' (default: true)
+ * @param localePrefixAsNeeded - Whether localePrefix is set to 'as-needed' (default: true)
  * @param defaultLocale - The default locale for the application (default: 'en')
  * @returns Sitemap handler function
  */
@@ -127,12 +127,12 @@ export function createSitemapHandler(
   locales: string[],
   mdxSourceDir: string = '',
   openMdxSEOSiteMap: boolean = true,
-  localPrefixAsNeeded: boolean = true,
+  localePrefixAsNeeded: boolean = true,
   defaultLocale: string = 'en'
 ) {
   // force static generation
   const sitemapHandler = function sitemap(): MetadataRoute.Sitemap {
-    return generateSitemap(baseUrl, locales, mdxSourceDir, openMdxSEOSiteMap, localPrefixAsNeeded, defaultLocale);
+    return generateSitemap(baseUrl, locales, mdxSourceDir, openMdxSEOSiteMap, localePrefixAsNeeded, defaultLocale);
   };
 
   // Add static generation directive

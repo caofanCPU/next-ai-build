@@ -8,7 +8,7 @@ interface ClerkProviderClientProps {
   children: React.ReactNode;
   locale: string;
   // Whether localePrefix is set to 'as-needed' (default: true)
-  localPrefixAsNeeded?: boolean;
+  localePrefixAsNeeded?: boolean;
   // The default locale used by the host app (default: 'en')
   defaultLocale?: string;
   signInUrl?: string;
@@ -21,7 +21,7 @@ interface ClerkProviderClientProps {
 export function ClerkProviderClient({
   children,
   locale,
-  localPrefixAsNeeded = true,
+  localePrefixAsNeeded = true,
   defaultLocale = 'en',
   signInUrl,
   signUpUrl,
@@ -35,7 +35,7 @@ export function ClerkProviderClient({
     clerkIntl.en;
 
   // In as-needed mode, skip prefixing for the default locale so /sign-in stays unprefixed.
-  const shouldPrefixLocale = localPrefixAsNeeded ? locale !== defaultLocale : true;
+  const shouldPrefixLocale = localePrefixAsNeeded ? locale !== defaultLocale : true;
   const localeSegment = shouldPrefixLocale && locale ? `/${locale}` : '';
 
   const buildUrl = (path?: string) =>

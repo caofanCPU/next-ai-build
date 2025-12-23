@@ -13,7 +13,7 @@ import { FingerprintProvider } from '@third-ui/clerk/fingerprint';
 import { CustomHomeLayout } from '@third-ui/fuma/base';
 import { type HomeLayoutProps } from 'fumadocs-ui/layouts/home';
 import { ReactNode } from 'react';
-import { clerkPageBanner, localPrefixAsNeeded, defaultLocale } from '@/lib/appConfig';
+import { clerkPageBanner, localePrefixAsNeeded, defaultLocale } from '@/lib/appConfig';
 
 async function homeOptions(locale: string): Promise<HomeLayoutProps>{
   const resolvedBaseOptions = await baseOptions(locale);
@@ -46,7 +46,7 @@ export default async function RootLayout({
     <FingerprintProvider config={fingerprintConfig}>
       <CustomHomeLayout
           locale={locale}
-          localPrefixAsNeeded={localPrefixAsNeeded}
+          localePrefixAsNeeded={localePrefixAsNeeded}
           defaultLocale={defaultLocale}
           options={homeLayoutOptions}
           showBanner={clerkPageBanner}

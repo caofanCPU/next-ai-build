@@ -6,6 +6,6 @@ export default createSitemapHandler(
   appConfig.i18n.locales as string[],
   appConfig.mdxSourceDir.blog,
   true,
-  appConfig.i18n.localPrefixAsNeeded,
+  appConfig.i18n.localePrefixAsNeeded,
   appConfig.i18n.defaultLocale
 );

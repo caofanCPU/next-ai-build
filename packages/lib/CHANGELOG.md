@@ -1,5 +1,11 @@
 # @windrun-huaiin/lib
 
+## 12.1.0
+
+### Minor Changes
+
+- fix(locale): `localPrefixAsNeeded` rename to `localePrefixAsNeeded`
+
 ## 12.0.1
 
 ### Patch Changes

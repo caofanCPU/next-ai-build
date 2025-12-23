@@ -89,7 +89,7 @@ export interface CustomHomeLayoutProps {
   /**
    * Whether localePrefix is set to 'as-needed' (default: true)
    */
-  localPrefixAsNeeded?: boolean;
+  localePrefixAsNeeded?: boolean;
   /**
    * The default locale for the application (default: 'en')
    */
@@ -120,7 +120,7 @@ export function CustomHomeLayout({
   style,
   floatingNav = false,
   actionOrders,
-  localPrefixAsNeeded = true,
+  localePrefixAsNeeded = true,
   defaultLocale = 'en',
 }: CustomHomeLayoutProps) {
   const resolvedBannerHeight = bannerHeight ?? (showBanner ? 3 : 0.5);
@@ -171,7 +171,7 @@ export function CustomHomeLayout({
         style={layoutStyle}
       >
         {children}
-        {showFooter ? footer ?? <Footer locale={locale} localPrefixAsNeeded={localPrefixAsNeeded} defaultLocale={defaultLocale} /> : null}
+        {showFooter ? footer ?? <Footer locale={locale} localePrefixAsNeeded={localePrefixAsNeeded} defaultLocale={defaultLocale} /> : null}
         {showGoToTop ? goToTop ?? <GoToTop /> : null}
       </HomeLayout>
     </>

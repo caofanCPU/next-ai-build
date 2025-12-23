@@ -1,5 +1,19 @@
 # @windrun-huaiin/ddaas-website
 
+## 12.1.0
+
+### Minor Changes
+
+- fix(locale): `localPrefixAsNeeded` rename to `localePrefixAsNeeded`
+
+### Patch Changes
+
+- Updated dependencies
+  - @windrun-huaiin/base-ui@12.0.0
+  - @windrun-huaiin/third-ui@12.1.0
+  - @windrun-huaiin/lib@12.1.0
+  - @windrun-huaiin/shared-assets@12.0.0
+
 ## 12.0.1
 
 ### Patch Changes
