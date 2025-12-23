@@ -117,8 +117,8 @@ export function createFumaPage({
         toc={page.data.toc}
         article={{ className: 'max-sm:pb-16' }}
       >
-        <DocsTitle>{page.title}</DocsTitle>
-        <DocsDescription className="mb-2">{page.description}</DocsDescription>
+        <DocsTitle>{page.data.title}</DocsTitle>
+        <DocsDescription className="mb-2">{page.data.description}</DocsDescription>
         <DocsBody className="text-fd-foreground/80">
           <MDX components={getMDXComponents()} />
         </DocsBody>
@@ -156,8 +156,8 @@ export function createFumaPage({
 
     return {
       metadataBase: new URL(baseUrl),
-      title: page.title,
-      description: page.description,
+      title: page.data.title,
+      description: page.data.description,
       alternates: {
         canonical: currentUrl,
         languages: seoLanguageMap
