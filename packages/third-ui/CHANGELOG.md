@@ -1,5 +1,14 @@
 # @windrun-huaiin/third-ui
 
+## 12.0.3
+
+### Patch Changes
+
+- fix(scripts): fuma mdx page SEO info issue fixed
+- Updated dependencies
+  - @windrun-huaiin/base-ui@12.0.0
+  - @windrun-huaiin/lib@12.0.1
+
 ## 12.0.2
 
 ### Patch Changes
