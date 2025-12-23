@@ -62,22 +62,48 @@ export function handlePastePlainText(e: React.ClipboardEvent<HTMLElement>) {
 
 // Generates localized URL based on locale and locale prefix configuration
 // Supports both 'as-needed' and 'always' localePrefix configurations
+// Ensures URLs have proper trailing slash handling:
+// - Root path (domain only) has trailing slash: '/'
+// - All other paths have no trailing slash: '/blog', '/zh/blog', '/en'
 // @param locale - Current locale (e.g., 'en', 'zh', 'ja')
-// @param path - Base path (e.g., '/blog', '/docs')
+// @param path - Base path (e.g., '/', '/blog', '/docs', or '' treated as '/')
 // @param localPrefixAsNeeded - Whether localePrefix is set to 'as-needed' (default: true)
 // @param defaultLocale - The default locale for the application (default: 'en')
 // @example
+//   getAsNeededLocalizedUrl('en', '/', true, 'en')       // Returns '/'
+//   getAsNeededLocalizedUrl('zh', '/', true, 'en')       // Returns '/zh'
 //   getAsNeededLocalizedUrl('en', '/blog', true, 'en')   // Returns '/blog'
 //   getAsNeededLocalizedUrl('zh', '/blog', true, 'en')   // Returns '/zh/blog'
-//   getAsNeededLocalizedUrl('en', '/blog', false, 'en')  // Returns '/en/blog'
+//   getAsNeededLocalizedUrl('en', '/blog/', true, 'en')  // Returns '/blog'
+//   getAsNeededLocalizedUrl('en', '/', false, 'en')      // Returns '/en'
 export function getAsNeededLocalizedUrl(
   locale: string,
   path: string,
   localPrefixAsNeeded: boolean = true,
   defaultLocale: string = 'en'
 ): string {
-  if (localPrefixAsNeeded && locale === defaultLocale) {
-    return path;
+  // Normalize path: empty string or undefined treated as '/'
+  let normalizedPath = (path || '/').trim();
+
+  // Ensure path starts with '/'
+  if (!normalizedPath.startsWith('/')) {
+    normalizedPath = '/' + normalizedPath;
   }
-  return `/${locale}${path}`;
+
+  // Remove trailing slashes except for root path '/'
+  if (normalizedPath !== '/' && normalizedPath.endsWith('/')) {
+    normalizedPath = normalizedPath.replace(/\/+$/, '');
+  }
+
+  // Return based on locale prefix configuration
+  if (localPrefixAsNeeded && locale === defaultLocale) {
+    return normalizedPath;
+  }
+
+  // Add locale prefix, but avoid double trailing slash when path is '/'
+  if (normalizedPath === '/') {
+    return `/${locale}`;
+  }
+
+  return `/${locale}${normalizedPath}`;
 }

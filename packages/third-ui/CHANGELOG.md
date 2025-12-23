@@ -1,5 +1,14 @@
 # @windrun-huaiin/third-ui
 
+## 12.0.1
+
+### Patch Changes
+
+- feature(locale): enforce logical ability
+- Updated dependencies
+  - @windrun-huaiin/base-ui@12.0.0
+  - @windrun-huaiin/lib@12.0.0
+
 ## 12.0.0
 
 ### Major Changes
