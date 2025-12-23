@@ -71,7 +71,7 @@ export async function generateNextjsArchitecture(
     const indentedFilesContent = filesContent.split('\n').map(line => line ? '  ' + line : '').join('\n')
     const mdx = frontmatter + '<Files>\n' + indentedFilesContent + '</Files>\n'
     // output to blog directory
-    const outputMdxPath = join(blogDir, 'nextjs-architecture.mdx')
+    const outputMdxPath = join(blogDir, 'readme.mdx')
     writeFileSync(outputMdxPath, mdx)
     logger.success(`Successfully generated ${outputMdxPath}`)
     logger.saveToFile('generate-nextjs-architecture.log', cwd)

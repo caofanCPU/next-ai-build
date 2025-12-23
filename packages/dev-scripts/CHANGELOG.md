@@ -1,5 +1,11 @@
 # @windrun-huaiin/dev-scripts
 
+## 12.0.2
+
+### Patch Changes
+
+- fix(scripts): readme.mdx rename
+
 ## 12.0.1
 
 ### Patch Changes
