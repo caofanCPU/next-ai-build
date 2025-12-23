@@ -89,7 +89,8 @@ export const DEFAULT_CONFIG: DevScriptsConfig = {
     "components": "页面组件",
     "lib": "工具包",
     "mdx": "FumaMDX文档",
-    "middleware.ts": "中间件入口",
+    "middleware.ts": "旧版中间件入口",
+    "proxy.ts": "中间件入口",
     "i18n.ts": "多语言配置",
     "globals.css": "全局样式",
     "layout.config.tsx": "布局配置",
@@ -112,8 +113,12 @@ export const DEFAULT_CONFIG: DevScriptsConfig = {
     "site-config.ts": "网站图标配置",
     "ioc.mdx": "月度/统计",
     "meta.json": "FumaMDX元数据",
-    "nextjs-architecture.mdx": "Next.js项目结构",
+    "readme.mdx": "Next.js项目结构",
     ".github": "GitHub 配置目录",
-    "workflows": "CI/CD 工作流配置"
+    "workflows": "CI/CD 工作流配置",
+    "fumadocs-ui@15.3.3.patch": "fumadocs-ui版本15.3.3补丁",
+    "fumadocs-ui@16.0.9.patch": "fumadocs-ui版本16.0.9补丁",
+    "fumadocs-core@16.0.9.patch": "fumadocs-core版本16.0.9补丁",
+    ".env.local.txt": "config example"
   }
 } 

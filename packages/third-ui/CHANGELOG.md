@@ -1,5 +1,14 @@
 # @windrun-huaiin/third-ui
 
+## 12.0.2
+
+### Patch Changes
+
+- fix(website): robots generate txt
+- Updated dependencies
+  - @windrun-huaiin/base-ui@12.0.0
+  - @windrun-huaiin/lib@12.0.1
+
 ## 12.0.1
 
 ### Patch Changes

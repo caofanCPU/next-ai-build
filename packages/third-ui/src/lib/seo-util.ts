@@ -10,10 +10,20 @@ import { getAsNeededLocalizedUrl } from '@windrun-huaiin/lib';
  */
 export function generateRobots(baseUrl: string): MetadataRoute.Robots {
   return {
-    rules: {
-      userAgent: "*",
-      allow: "/",
-    },
+    rules: [
+      // General search engine rules
+      {
+        userAgent: "*",
+        allow: "/",
+        disallow: ["/admin/", "/api/"],
+      },
+      // AI crawler rules
+      {
+        userAgent: ["GPTBot", "Anthropic-AI", "Claude-Web", "PerplexityBot", "GoogleOther", "DuckAssistBot", "CohereBot", "xAI-Bot", "BingBot-AI", "HuggingFaceBot", "Bytespider", "meta-externalagent"],
+        allow: ["/llms.txt", "/llms-full.txt", "/en/"],
+        disallow: ["/user-content/", "/sign-in/", "/sign-up/", "/waitlist/", "/en/blog/", "/en/legal/"],
+      },
+    ],
     sitemap: `${baseUrl}/sitemap.xml`,
   };
 }

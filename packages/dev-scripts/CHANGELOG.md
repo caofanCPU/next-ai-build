@@ -1,5 +1,11 @@
 # @windrun-huaiin/dev-scripts
 
+## 12.0.1
+
+### Patch Changes
+
+- fix(website): robots generate txt
+
 ## 12.0.0
 
 ### Major Changes
