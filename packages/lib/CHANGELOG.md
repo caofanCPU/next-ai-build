@@ -1,5 +1,11 @@
 # @windrun-huaiin/lib
 
+## 12.0.1
+
+### Patch Changes
+
+- feature(locale): enforce logical ability
+
 ## 12.0.0
 
 ### Major Changes
