@@ -26,7 +26,6 @@ export async function generateMetadata({
     title: t('webTitle'),
     description: t('webDescription'),
     keywords: t('keywords'),
-    metadataBase: new URL(appConfig.baseUrl),
     alternates: {
       canonical: `${appConfig.baseUrl}${getAsNeededLocalizedUrl(locale, '/', localPrefixAsNeeded, defaultLocale)}`,
       languages: {
