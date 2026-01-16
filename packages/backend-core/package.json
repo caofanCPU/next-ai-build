@@ -93,6 +93,9 @@
   "dependencies": {
     "@clerk/nextjs": "catalog:",
     "@prisma/client": "catalog:",
+    "@upstash/redis": "catalog:",
+    "@upstash/qstash": "catalog:",
+    "@upstash/lock": "catalog:",
     "@windrun-huaiin/lib": "workspace:^",
     "@windrun-huaiin/third-ui": "workspace:^",
     "next": "catalog:",
