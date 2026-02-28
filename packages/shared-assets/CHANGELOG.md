@@ -1,5 +1,11 @@
 # @windrun-huaiin/shared-assets
 
+## 13.0.0
+
+### Major Changes
+
+- feat(upgrade): update dependencies packages and uniform version to v13.x
+
 ## 12.0.0
 
 ### Major Changes

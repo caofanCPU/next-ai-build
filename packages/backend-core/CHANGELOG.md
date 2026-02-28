@@ -1,5 +1,17 @@
 # @windrun-huaiin/backend-core
 
+## 13.0.0
+
+### Major Changes
+
+- feat(upgrade): update dependencies packages and uniform version to v13.x
+
+### Patch Changes
+
+- Updated dependencies
+  - @windrun-huaiin/third-ui@13.0.0
+  - @windrun-huaiin/lib@13.0.0
+
 ## 12.0.0
 
 ### Major Changes
