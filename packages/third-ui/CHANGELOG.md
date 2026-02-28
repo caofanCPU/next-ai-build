@@ -1,5 +1,14 @@
 # @windrun-huaiin/third-ui
 
+## 13.0.1
+
+### Patch Changes
+
+- fix(mermaid): locked version 11.2.1 cause latested version force used 'mermaid-js/parser → langium → vscode-languageserver-protocol → vscode-jsonrpc'
+- Updated dependencies
+  - @windrun-huaiin/base-ui@13.0.0
+  - @windrun-huaiin/lib@13.0.0
+
 ## 13.0.0
 
 ### Major Changes
