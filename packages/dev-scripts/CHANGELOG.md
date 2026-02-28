@@ -1,5 +1,11 @@
 # @windrun-huaiin/dev-scripts
 
+## 13.0.1
+
+### Patch Changes
+
+- fix(cli): create-diaomao App as CLI command 'zcy=npx @windrun-huaiin/dev-scripts create-diaomao-app'
+
 ## 13.0.0
 
 ### Major Changes

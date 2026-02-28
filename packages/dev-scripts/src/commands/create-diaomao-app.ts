@@ -77,43 +77,22 @@ export async function createDiaomaoApp(targetDir: string) {
       await writeFile(templateFile, changesetContent, 'utf8');
       console.log('Created changeset template file: d8-template.mdx');
     }
-    
+
     // read and modify package.json
     const pkgPath = path.join(destDir, 'package.json');
     const pkg = await readJson(pkgPath);
     pkg.name = path.basename(targetDir);
     pkg.version = "1.0.0";
     pkg.private = true;
-    
-    // add pnpm configuration for standalone project
-    pkg.pnpm = {
-      "onlyBuiltDependencies": [
-        "@clerk/shared",
-        "@parcel/watcher",
-        "@tailwindcss/oxide",
-        "core-js",
-        "esbuild",
-        "sharp",
-        "unrs-resolver"
-      ],
-      "overrides": {
-        "@types/react": "19.1.2",
-        "@types/react-dom": "19.1.3"
-      },
-      "patchedDependencies": {
-        "fumadocs-ui@15.3.3": "patches/fumadocs-ui@15.3.3.patch"
-      }
-    };
 
     // remove standalone-specific scripts for non-monorepo scenario
     if (pkg.scripts) {
       delete pkg.scripts['djvp'];
     }
-    
-    
+
     // remove publish related config
     delete pkg.publishConfig;
-    delete pkg.files;
+    if (pkg.files) delete pkg.files;
     await writeJson(pkgPath, pkg, { spaces: 2 });
 
     console.log('Installing dependencies...');
