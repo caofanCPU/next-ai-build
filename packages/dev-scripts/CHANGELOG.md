@@ -1,5 +1,12 @@
 # @windrun-huaiin/dev-scripts
 
+## 13.1.0
+
+### Minor Changes
+
+- feat(cli): create-diaomao App as CLI command 'zcy=npx @windrun-huaiin/dev-scripts create-diaomao-app'
+  - support '--schema(-s)' for schema
+
 ## 13.0.1
 
 ### Patch Changes

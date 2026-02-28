@@ -171,9 +171,10 @@ program
 program
   .command('create-diaomao-app <project-name>')
   .description('create a new diaomao app from template')
-  .action(async (projectName) => {
+  .option('-s, --schema <name>', 'Database schema name (optional, defaults to project name)')
+  .action(async (projectName, options) => {
     try {
-      await createDiaomaoApp(projectName)
+      await createDiaomaoApp(projectName, options)
     } catch (error) {
       console.error('Error:', error)
       if (typeof process !== 'undefined') {

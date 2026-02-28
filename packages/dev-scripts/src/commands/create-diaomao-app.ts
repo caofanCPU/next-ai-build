@@ -3,11 +3,12 @@ import path from 'path';
 import { execSync } from 'child_process';
 import os from 'os';
 
-export async function createDiaomaoApp(targetDir: string) {
-  if (!targetDir) {
-    console.error('Usage: create-diaomao-app <project-name>');
-    process.exit(1);
-  }
+type CreateDiaomaoOptions = {
+  schema?: string;
+};
+
+export async function createDiaomaoApp(targetDir: string, options: CreateDiaomaoOptions = {}) {
+  const schemaName = options.schema || path.basename(targetDir);
   
   const cwd = process.cwd();
   const cwdPackageJson = path.join(cwd, 'package.json');
@@ -66,7 +67,34 @@ export async function createDiaomaoApp(targetDir: string) {
     const envPath = path.join(destDir, '.env.local');
     if (await pathExists(envTxtPath)) {
       await rename(envTxtPath, envPath);
-      console.log('Renamed .env.local.txt to .env.local');
+      console.log('🍻🍻Renamed .env.local.txt to .env.local');
+    }
+
+    // Try to 'generate prisma/schema.prisma'
+    const prismaDir = path.join(destDir, 'prisma');
+    const schemaPath = path.join(prismaDir, 'schema.prisma');
+
+    await ensureDir(prismaDir); 
+
+    // Check prisma dir, if exists then not genarate
+    if (!(await pathExists(schemaPath))) {
+      const schemaContent = [
+        'generator client {',
+        '  provider = "prisma-client-js"',
+        '}',
+        '',
+        'datasource db {',
+        '  provider = "postgresql"',
+        '  url      = env("DATABASE_URL")',
+        `  schemas  = ["${schemaName}", "public"]`,
+        '}',
+        '',
+      ].join('\n');
+
+      await writeFile(schemaPath, schemaContent, 'utf8');
+      console.log(`🍻🍻Generated initial prisma/schema.prisma with schema: ${schemaName}`);
+    } else {
+      console.log('prisma/schema.prisma already exists in template, skipping generation');
     }
     
     // handle .changeset folder if exists
@@ -75,7 +103,7 @@ export async function createDiaomaoApp(targetDir: string) {
       const templateFile = path.join(changesetDir, 'd8-template.mdx');
       const changesetContent = `---\n"${path.basename(targetDir)}": major\n---\n\nfeat(init): app created by @windrun-huaiin/diaomao`;
       await writeFile(templateFile, changesetContent, 'utf8');
-      console.log('Created changeset template file: d8-template.mdx');
+      console.log('🍻🍻Created changeset template file: d8-template.mdx');
     }
 
     // read and modify package.json
@@ -88,6 +116,16 @@ export async function createDiaomaoApp(targetDir: string) {
     // remove standalone-specific scripts for non-monorepo scenario
     if (pkg.scripts) {
       delete pkg.scripts['djvp'];
+
+      // Repalce 'core-sync-sql' command's '--schema diaomao'
+      const scriptKey = 'core-sync-sql';
+      if (pkg.scripts[scriptKey]) {
+        pkg.scripts[scriptKey] = pkg.scripts[scriptKey].replace(
+          '--schema diaomao',
+          `--schema ${schemaName}`
+        );
+        console.log(`Updated ${scriptKey} script: --schema ${schemaName}`);
+  }
     }
 
     // remove publish related config
@@ -109,6 +147,8 @@ export async function createDiaomaoApp(targetDir: string) {
         }
       }
 
+      console.log('🍻🍻Installed dependencies!');
+
       console.log('Initializing Git repository...');
       
       // initialize git
@@ -120,14 +160,18 @@ export async function createDiaomaoApp(targetDir: string) {
         console.warn('Failed to initialize Git repository. Please initialize manually.');
       }
 
-    console.log(`\n✅ Project created: ${destDir}`);
+    console.log(`\n🍻🍻 Project created: ${destDir}`);
     console.log(`\nNext steps:`);
     
     console.log(`  cd ${targetDir}`);
+    console.log(`  🍎🍎NOTE: if you want to update @windrun-huaiin packages, please run pnpm windrun`);
+    console.log(`  ⚠️⚠️NOTE: please check .env.local file and set your own env!`);
+    console.log(`  ⚠️⚠️NOTE: USE 'pnpm core-list-route' for viewing latested api routes`);
+    console.log(`  ⚠️⚠️NOTE: USE 'pnpm core-sync-route' for syncing latested api routes`);
+    console.log(`  ⚠️⚠️NOTE: USE 'pnpm core-sync-schema' for appendding basic prisma models`);
+    console.log(`  ⚠️⚠️NOTE: USE 'pnpm core-sync-sql' for initing sql`);
     console.log(`  pnpm build`);
     console.log(`  pnpm dev`);
-    console.log(`  NOTE: if you want to update @windrun-huaiin packages, please run pnpm windrun`);
-    console.log(`  NOTE: please check .env.local file and set your own env!`);
   } catch (error) {
     console.error('Failed to create project:', error);
     process.exit(1);
