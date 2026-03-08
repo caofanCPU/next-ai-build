@@ -1,48 +1,18 @@
-import { Lock } from '@upstash/lock';
-import type { Redis } from '@upstash/redis';
 import { withRedis } from '../upstash-config';
 
-type UpstashLock = {
-  acquire: (key: string, ttlMs: number) => Promise<string | null>;
-  release: (key: string, token: string) => Promise<boolean>;
-};
+const unlockScript = `
+if redis.call("get", KEYS[1]) == ARGV[1] then
+  return redis.call("del", KEYS[1])
+else
+  return 0
+end
+`;
 
-let cachedLock: UpstashLock | null = null;
-let cachedLockRedis: Redis | null = null;
-
-const createLock = (redis: Redis): UpstashLock => {
-  const LockCtor = Lock as unknown as new (...args: any[]) => UpstashLock;
+const generateToken = (): string => {
   try {
-    return new LockCtor({ redis });
+    return crypto.randomUUID();
   } catch {
-    return new LockCtor(redis);
-  }
-};
-
-const getLock = async (): Promise<UpstashLock | null> => {
-  return withRedis((redis) => {
-    if (cachedLock && cachedLockRedis === redis) {
-      return cachedLock;
-    }
-    cachedLock = createLock(redis);
-    cachedLockRedis = redis;
-    return cachedLock;
-  });
-};
-
-const withLockClient = async <T>(fn: (lock: UpstashLock) => Promise<T>): Promise<T | null> => {
-  const lock = await getLock();
-  if (!lock) {
-    return null;
-  }
-
-  try {
-    return await fn(lock);
-  } catch (error) {
-    // Lock internals may keep stale state when backend connectivity changes.
-    cachedLock = null;
-    cachedLockRedis = null;
-    throw error;
+    return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
   }
 };
 
@@ -50,14 +20,21 @@ const withLockClient = async <T>(fn: (lock: UpstashLock) => Promise<T>): Promise
  * Acquire a distributed lock. Returns the lock token or null when unavailable.
  */
 export const acquireLock = async (key: string, ttlMs: number): Promise<string | null> => {
-  return withLockClient((lock) => lock.acquire(key, ttlMs));
+  return withRedis(async (redis) => {
+    const token = generateToken();
+    const result = await redis.set(key, token, { nx: true, px: ttlMs });
+    return result === 'OK' ? token : null;
+  });
 };
 
 /**
  * Release a distributed lock. Returns false when the lock client is unavailable.
  */
 export const releaseLock = async (key: string, token: string): Promise<boolean> => {
-  const result = await withLockClient((lock) => lock.release(key, token));
+  const result = await withRedis(async (redis) => {
+    const released = await redis.eval(unlockScript, [key], [token]);
+    return Number(released) === 1;
+  });
   return result ?? false;
 };
 
@@ -69,7 +46,7 @@ export const withLock = async <T>(
   ttlMs: number,
   fn: () => Promise<T> | T
 ): Promise<T | null> => {
-  const token = await withLockClient((lock) => lock.acquire(key, ttlMs));
+  const token = await acquireLock(key, ttlMs);
   if (!token) {
     return null;
   }
@@ -77,6 +54,6 @@ export const withLock = async <T>(
   try {
     return await fn();
   } finally {
-    await withLockClient((lock) => lock.release(key, token));
+    await releaseLock(key, token);
   }
 };
