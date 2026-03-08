@@ -1,6 +1,6 @@
 import { Lock } from '@upstash/lock';
 import type { Redis } from '@upstash/redis';
-import { getRedis } from '../upstash-config';
+import { withRedis } from '../upstash-config';
 
 type UpstashLock = {
   acquire: (key: string, ttlMs: number) => Promise<string | null>;
@@ -8,7 +8,7 @@ type UpstashLock = {
 };
 
 let cachedLock: UpstashLock | null = null;
-let lockInitAttempted = false;
+let cachedLockRedis: Redis | null = null;
 
 const createLock = (redis: Redis): UpstashLock => {
   const LockCtor = Lock as unknown as new (...args: any[]) => UpstashLock;
@@ -19,44 +19,46 @@ const createLock = (redis: Redis): UpstashLock => {
   }
 };
 
-const getLock = (): UpstashLock | null => {
-  if (cachedLock) {
+const getLock = async (): Promise<UpstashLock | null> => {
+  return withRedis((redis) => {
+    if (cachedLock && cachedLockRedis === redis) {
+      return cachedLock;
+    }
+    cachedLock = createLock(redis);
+    cachedLockRedis = redis;
     return cachedLock;
-  }
-  if (lockInitAttempted) {
-    return null;
-  }
-  lockInitAttempted = true;
+  });
+};
 
-  const redis = getRedis();
-  if (!redis) {
+const withLockClient = async <T>(fn: (lock: UpstashLock) => Promise<T>): Promise<T | null> => {
+  const lock = await getLock();
+  if (!lock) {
     return null;
   }
 
-  cachedLock = createLock(redis);
-  return cachedLock;
+  try {
+    return await fn(lock);
+  } catch (error) {
+    // Lock internals may keep stale state when backend connectivity changes.
+    cachedLock = null;
+    cachedLockRedis = null;
+    throw error;
+  }
 };
 
 /**
  * Acquire a distributed lock. Returns the lock token or null when unavailable.
  */
 export const acquireLock = async (key: string, ttlMs: number): Promise<string | null> => {
-  const lock = getLock();
-  if (!lock) {
-    return null;
-  }
-  return lock.acquire(key, ttlMs);
+  return withLockClient((lock) => lock.acquire(key, ttlMs));
 };
 
 /**
  * Release a distributed lock. Returns false when the lock client is unavailable.
  */
 export const releaseLock = async (key: string, token: string): Promise<boolean> => {
-  const lock = getLock();
-  if (!lock) {
-    return false;
-  }
-  return lock.release(key, token);
+  const result = await withLockClient((lock) => lock.release(key, token));
+  return result ?? false;
 };
 
 /**
@@ -67,12 +69,7 @@ export const withLock = async <T>(
   ttlMs: number,
   fn: () => Promise<T> | T
 ): Promise<T | null> => {
-  const lock = getLock();
-  if (!lock) {
-    return null;
-  }
-
-  const token = await lock.acquire(key, ttlMs);
+  const token = await withLockClient((lock) => lock.acquire(key, ttlMs));
   if (!token) {
     return null;
   }
@@ -80,6 +77,6 @@ export const withLock = async <T>(
   try {
     return await fn();
   } finally {
-    await lock.release(key, token);
+    await withLockClient((lock) => lock.release(key, token));
   }
 };

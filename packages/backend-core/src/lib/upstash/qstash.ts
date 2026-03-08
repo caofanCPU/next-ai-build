@@ -1,8 +1,9 @@
 import { Receiver } from '@upstash/qstash';
-import { getQstash } from '../upstash-config';
+import { withQstash } from '../upstash-config';
 
 let cachedReceiver: Receiver | null = null;
-let receiverInitAttempted = false;
+let receiverWarnedMissingEnv = false;
+let receiverWarnedInitError = false;
 
 const isTruthy = (value: string | undefined): boolean =>
   value === '1' || value === 'true' || value === 'TRUE';
@@ -14,22 +15,33 @@ const getReceiver = (): Receiver | null => {
   if (cachedReceiver) {
     return cachedReceiver;
   }
-  if (receiverInitAttempted) {
-    return null;
-  }
-  receiverInitAttempted = true;
 
   const currentSigningKey = process.env.QSTASH_CURRENT_SIGNING_KEY;
   const nextSigningKey = process.env.QSTASH_NEXT_SIGNING_KEY;
   if (!currentSigningKey || !nextSigningKey) {
+    if (!receiverWarnedMissingEnv) {
+      receiverWarnedMissingEnv = true;
+      console.warn(
+        '[Upstash Config] QStash Receiver disabled: missing QSTASH_CURRENT_SIGNING_KEY or QSTASH_NEXT_SIGNING_KEY'
+      );
+    }
     return null;
   }
 
-  cachedReceiver = new Receiver({
-    currentSigningKey,
-    nextSigningKey,
-  });
-  return cachedReceiver;
+  try {
+    cachedReceiver = new Receiver({
+      currentSigningKey,
+      nextSigningKey,
+    });
+    return cachedReceiver;
+  } catch (error) {
+    if (!receiverWarnedInitError) {
+      receiverWarnedInitError = true;
+      const message = error instanceof Error ? error.message : String(error);
+      console.warn(`[Upstash Config] QStash Receiver init failed: ${message}`);
+    }
+    return null;
+  }
 };
 
 export type PublishBody = Record<string, unknown> | string | number | boolean | null;
@@ -43,16 +55,13 @@ export interface PublishMessageOptions {
  * Publish a message. Returns message id or null if QStash is unavailable.
  */
 export const publishMessage = async (options: PublishMessageOptions): Promise<string | null> => {
-  const client = getQstash();
-  if (!client) {
-    return null;
-  }
-
-  const result = await (client as any).publishJSON({
-    url: options.url,
-    body: options.body,
+  return withQstash(async (client) => {
+    const result = await (client as any).publishJSON({
+      url: options.url,
+      body: options.body,
+    });
+    return typeof result === 'string' ? result : result?.messageId ?? null;
   });
-  return typeof result === 'string' ? result : result?.messageId ?? null;
 };
 
 /**
@@ -61,17 +70,14 @@ export const publishMessage = async (options: PublishMessageOptions): Promise<st
 export const publishDelayedMessage = async (
   options: PublishMessageOptions & { delaySec: number }
 ): Promise<string | null> => {
-  const client = getQstash();
-  if (!client) {
-    return null;
-  }
-
-  const result = await (client as any).publishJSON({
-    url: options.url,
-    body: options.body,
-    delay: options.delaySec,
+  return withQstash(async (client) => {
+    const result = await (client as any).publishJSON({
+      url: options.url,
+      body: options.body,
+      delay: options.delaySec,
+    });
+    return typeof result === 'string' ? result : result?.messageId ?? null;
   });
-  return typeof result === 'string' ? result : result?.messageId ?? null;
 };
 
 export interface ScheduleMessageOptions extends PublishMessageOptions {
@@ -82,46 +88,42 @@ export interface ScheduleMessageOptions extends PublishMessageOptions {
  * Schedule a recurring message. Returns schedule id or null if QStash is unavailable.
  */
 export const scheduleMessage = async (options: ScheduleMessageOptions): Promise<string | null> => {
-  const client = getQstash();
-  if (!client) {
-    return null;
-  }
+  return withQstash(async (client) => {
+    const anyClient = client as any;
+    const result =
+      (await anyClient.schedules?.create?.({
+        url: options.url,
+        body: options.body,
+        cron: options.cron,
+      })) ??
+      (await anyClient.publishJSON?.({
+        url: options.url,
+        body: options.body,
+        cron: options.cron,
+      }));
 
-  const anyClient = client as any;
-  const result =
-    (await anyClient.schedules?.create?.({
-      url: options.url,
-      body: options.body,
-      cron: options.cron,
-    })) ??
-    (await anyClient.publishJSON?.({
-      url: options.url,
-      body: options.body,
-      cron: options.cron,
-    }));
-
-  return typeof result === 'string' ? result : result?.scheduleId ?? result?.id ?? null;
+    return typeof result === 'string' ? result : result?.scheduleId ?? result?.id ?? null;
+  });
 };
 
 /**
  * Cancel a scheduled message. Returns false if QStash is unavailable.
  */
 export const cancelSchedule = async (scheduleId: string): Promise<boolean> => {
-  const client = getQstash();
-  if (!client) {
+  const result = await withQstash(async (client) => {
+    const anyClient = client as any;
+    if (anyClient.schedules?.delete) {
+      await anyClient.schedules.delete(scheduleId);
+      return true;
+    }
+    if (anyClient.schedules?.remove) {
+      await anyClient.schedules.remove(scheduleId);
+      return true;
+    }
     return false;
-  }
+  });
 
-  const anyClient = client as any;
-  if (anyClient.schedules?.delete) {
-    await anyClient.schedules.delete(scheduleId);
-    return true;
-  }
-  if (anyClient.schedules?.remove) {
-    await anyClient.schedules.remove(scheduleId);
-    return true;
-  }
-  return false;
+  return result ?? false;
 };
 
 export interface VerifyQstashOptions {
