@@ -76,7 +76,7 @@ export default defineConfig([
       preserveModulesRoot: 'src',
       entryFileNames: '[name].js',
       chunkFileNames: '[name]-[hash].js',
-      exports: 'auto'
+      exports: 'named'
     }
   }
 ]);

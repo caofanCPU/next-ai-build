@@ -62,7 +62,7 @@ const createConfig = (format) => ({
     preserveModulesRoot: 'src',
     entryFileNames: format === 'es' ? '[name].mjs' : '[name].js',
     chunkFileNames: format === 'es' ? '[name]-[hash].mjs' : '[name]-[hash].js',
-    exports: 'auto'
+    exports: 'named'
   }
 });
 
