@@ -1,5 +1,14 @@
 # @windrun-huaiin/third-ui
 
+## 13.1.3
+
+### Patch Changes
+
+- fix(mermaid): mermaid graph now surpport mobile client
+- Updated dependencies
+  - @windrun-huaiin/base-ui@13.1.0
+  - @windrun-huaiin/lib@13.0.0
+
 ## 13.1.2
 
 ### Patch Changes
