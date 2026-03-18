@@ -1,6 +1,7 @@
 'use client';
 
 import { cn } from '@windrun-huaiin/lib/utils';
+import { themeButtonGradientClass, themeButtonGradientHoverClass } from '@windrun-huaiin/base-ui/lib';
 import { UserState, type MoneyPriceButtonProps } from './money-price-types';
 import React, { useState } from 'react';
 
@@ -263,9 +264,9 @@ export function MoneyPriceButton({
     'w-full h-11 md:h-12 px-5 md:px-8 mt-4 md:mt-auto inline-flex items-center justify-center text-white text-sm md:text-base font-bold tracking-wide shadow-md hover:shadow-lg transition-all duration-300 rounded-full',
     isDisabledByConfigOnly
       ? 'bg-gray-400 cursor-not-allowed'
-      : 'bg-linear-to-r from-purple-400 to-pink-500 dark:from-purple-500 dark:to-pink-600',
+      : themeButtonGradientClass,
     !isDisabledByConfigOnly && !isBusy &&
-      'hover:from-purple-500 hover:to-pink-600 dark:hover:from-purple-600 dark:hover:to-pink-700',
+      themeButtonGradientHoverClass,
     isBusy && !isDisabledByConfigOnly && 'opacity-70 cursor-not-allowed'
   );
 

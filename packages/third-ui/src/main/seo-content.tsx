@@ -3,6 +3,7 @@ import { getTranslations } from 'next-intl/server';
 import { cn } from '@windrun-huaiin/lib/utils';
 import { richText } from './rich-text-expert';
 import { responsiveSection } from './section-layout';
+import { themeIconColor } from '@windrun-huaiin/base-ui/lib';
 
 interface SeoSection {
   id: string;
@@ -50,7 +51,7 @@ export async function SeoContent({
   return (
     <section id="seo" className={cn(responsiveSection, sectionClassName)}>
       <h2 className="text-3xl md:text-4xl font-bold text-center mb-8">
-        {data.title} <span className="text-purple-500">{data.eyesOn}</span>
+        {data.title} <span className={themeIconColor}>{data.eyesOn}</span>
       </h2>
       <h3 className="text-center text-gray-600 dark:text-gray-400 mb-12 text-lg">
         {data.description}

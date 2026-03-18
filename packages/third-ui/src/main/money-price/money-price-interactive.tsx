@@ -18,6 +18,7 @@ import {
   type UserContext
 } from './money-price-types';
 import { redirectToCustomerPortal } from './customer-portal';
+import { themeButtonGradientClass, themeButtonGradientHoverClass } from '@windrun-huaiin/base-ui/lib';
 
 type BillingType = string;
 
@@ -400,7 +401,7 @@ export function MoneyPriceInteractive({
           {billingOptions.map(option => {
             const isActive = option.key === billingType;
             const buttonClasses = isActive
-              ? 'text-white bg-linear-to-r from-purple-400 to-pink-500 hover:from-purple-500 hover:to-pink-600 dark:from-purple-500 dark:to-pink-600 dark:hover:from-purple-600 rounded-full shadow-sm'
+              ? cn('text-white rounded-full shadow-sm', themeButtonGradientClass, themeButtonGradientHoverClass )
               : 'text-gray-800 dark:text-gray-200 hover:text-gray-900 dark:hover:text-gray-100 rounded-full';
             const showBadge = option.key === billingType && !!discountBadgeText;
 

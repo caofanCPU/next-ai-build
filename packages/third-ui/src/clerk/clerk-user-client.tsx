@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { ClerkLoaded, ClerkLoading, SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 import { globalLucideIcons as icons } from '@windrun-huaiin/base-ui/components/server';
+import { themeButtonGradientClass } from '@windrun-huaiin/base-ui/lib';
 import { SignUpButtonWithFingerprint } from './signup-button-with-fingerprint-client';
 
 interface ClerkUserData {
@@ -35,12 +36,12 @@ export function ClerkUserClient({ data }: { data: ClerkUserData }) {
                   <span
                     onMouseEnter={() => setShowTooltip(true)}
                     onMouseLeave={() => setShowTooltip(false)}
-                    className="absolute -top-0.5 sm:-top-1 -right-1.5 sm:-right-2 flex h-4 sm:h-5 min-w-4 sm:min-w-5 items-center justify-center rounded-full bg-linear-to-r from-purple-400 to-pink-500 dark:from-purple-500 dark:to-pink-600 px-1 sm:px-1.5 text-[9px] sm:text-[10px] font-bold text-white shadow-lg shadow-purple-500/30 ring-1 sm:ring-2 ring-white/80 dark:ring-white/10 cursor-default"
+                    className={`absolute -top-0.5 sm:-top-1 -right-1.5 sm:-right-2 flex h-4 sm:h-5 min-w-4 sm:min-w-5 items-center justify-center rounded-full ${themeButtonGradientClass} px-1 sm:px-1.5 text-[9px] sm:text-[10px] font-bold text-white shadow-lg ring-1 sm:ring-2 ring-white/80 dark:ring-white/10 cursor-default`}
                   >
                     {data.signUpBonus}
                   </span>
                   {showTooltip && data.signUpBonusTooltip && (
-                    <div className="absolute left-1/2 -translate-x-1/2 -translate-y-full -top-1.5 whitespace-nowrap rounded-lg bg-linear-to-r from-purple-500 to-pink-500 dark:from-purple-500 dark:to-pink-600 border border-white/30 dark:border-white/10 px-3 py-1.5 text-xs font-medium text-white shadow-lg shadow-purple-500/30 pointer-events-none">
+                    <div className={`absolute left-1/2 -translate-x-1/2 -translate-y-full -top-1.5 whitespace-nowrap rounded-lg ${themeButtonGradientClass} border border-white/30 dark:border-white/10 px-3 py-1.5 text-xs font-medium text-white shadow-lg pointer-events-none`}>
                       {data.signUpBonusTooltip}
                     </div>
                   )}

@@ -1,6 +1,7 @@
 'use client';
 
 import { globalLucideIcons as icons } from '@windrun-huaiin/base-ui/components/server';
+import { themeButtonGradientClass, themeButtonGradientHoverClass, themeIconColor } from '@windrun-huaiin/base-ui/lib';
 import { cn } from '@windrun-huaiin/lib/utils';
 import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import type { FingerprintContextType, FingerprintProviderProps } from './types';
@@ -164,7 +165,9 @@ export function FingerprintStatus() {
           aria-label="Fingerprint debug panel"
           className={cn(
             'fixed left-2 top-2 md:left-2 md:top-3 z-10000 inline-flex size-8 md:size-11 items-center justify-center rounded-full',
-            'bg-linear-to-r from-purple-400 to-pink-500 hover:from-purple-500 hover:to-pink-600 dark:from-purple-500 dark:to-pink-600 dark:hover:from-purple-600 dark:hover:to-pink-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300',
+            themeButtonGradientClass,
+            themeButtonGradientHoverClass,
+            'text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300',
           )}
         >
           <icons.Lightbulb className="size-6 text-white" />
@@ -186,7 +189,7 @@ export function FingerprintStatus() {
           >
             <header className="mb-4">
               <div className="flex items-start justify-between gap-3">
-                <div className="flex items-center gap-2 text-base font-bold tracking-wider text-purple-600 dark:text-purple-500">
+                <div className={cn("flex items-center gap-2 text-base font-bold tracking-wider", themeIconColor)}>
                   <icons.ShieldUser className="size-4" />
                   Fingerprint Debug Panel
                 </div>
@@ -223,7 +226,7 @@ export function FingerprintStatus() {
                 <PanelHeader
                   icon={<icons.Gem className="size-4" />}
                   title="积分信息"
-                  rightInfo={<span className="text-purple-600 dark:text-purple-500 font-semibold">{totalCredits}</span>}
+                  rightInfo={<span className={cn("font-semibold", themeIconColor)}>{totalCredits}</span>}
                 />
                 <div className="space-y-3">
                   {creditBuckets.length > 0 ? (
@@ -299,7 +302,7 @@ function PanelHeader({ icon, title, rightInfo }: { icon: React.ReactNode; title:
         <span className="flex size-6 items-center justify-center rounded-full bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300">
           {icon}
         </span>
-        <span className="rounded-full bg-purple-100 px-2 py-1 text-xs font-bold text-purple-600 dark:bg-purple-500/20 dark:text-purple-100">
+        <span className={cn("rounded-full bg-purple-100 px-2 py-1 text-xs font-bold", themeIconColor)}>
           {title}
         </span>
       </div>

@@ -1,6 +1,7 @@
 import { getTranslations } from 'next-intl/server';
 import { GradientButton } from "@third-ui/fuma/mdx/gradient-button";
 import { cn } from '@windrun-huaiin/lib/utils';
+import { themeIconColor } from '@windrun-huaiin/base-ui/lib';
 import { richText } from './rich-text-expert';
 import { responsiveSection } from './section-layout';
 
@@ -41,12 +42,12 @@ export async function CTA({
         bg-size[200%_auto] animate-cta-gradient-wave
         ">
         <h2 className="text-3xl md:text-4xl font-bold mb-6">
-          {data.title} <span className="text-purple-400">{data.eyesOn}</span>?
+          {data.title} <span className={themeIconColor}>{data.eyesOn}</span>?
         </h2>
         <p className="text-base sm:text-xl mx-auto mb-8 max-w-3xl">
           {data.description1}
           <br />
-          <span className="text-purple-400 text-xl sm:text-2xl">{data.description2}</span>
+          <span className={cn(themeIconColor, "text-xl sm:text-2xl")}>{data.description2}</span>
         </p>
         <GradientButton
           title={data.button}

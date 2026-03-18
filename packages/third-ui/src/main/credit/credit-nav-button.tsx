@@ -181,15 +181,19 @@ export function CreditNavButton({
             type="button"
             aria-label={`${formattedBalance} ${totalLabel}`}
             className={cn(
-              'group mx-2  sm:mx-1 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white pl-2 pr-4 py-1.5 text-sm font-semibold text-slate-700 shadow-sm transition-all dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100',
-              'hover:border-transparent hover:bg-linear-to-r hover:from-purple-500/90 hover:to-pink-500/90 hover:text-white hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-purple-500 dark:hover:from-purple-500 dark:hover:to-pink-500',
+              'group relative mx-2 sm:mx-1 inline-flex items-center gap-2 overflow-hidden rounded-full border border-slate-200 bg-white pl-2 pr-4 py-1.5 text-sm font-semibold text-slate-700 shadow-sm transition-all duration-200 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100',
+              'hover:-translate-y-0.5 hover:scale-[1.02] hover:border-transparent hover:text-white hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-slate-400 dark:focus-visible:ring-slate-500',
             )}
             ref={triggerRef}
           >
-            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-linear-to-br from-purple-400/20 to-pink-500/20 text-purple-600 transition-transform group-hover:scale-105 dark:text-purple-200">
+            <span
+              className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100 bg-linear-to-bl from-indigo-200/60 via-indigo-400/90 to-purple-200/50 dark:from-indigo-300/20 dark:via-slate-400 dark:to-slate-500/50"
+              aria-hidden="true"
+            />
+            <span className="relative z-10 flex h-6 w-6 items-center justify-center rounded-full bg-slate-100 text-slate-600 transition-transform duration-200 group-hover:scale-110 group-hover:bg-white/20 group-hover:text-white dark:bg-slate-800 dark:text-slate-200 dark:group-hover:bg-white/20 dark:group-hover:text-white">
               <icons.Gem className="h-3.5 w-3.5" />
             </span>
-            <span className="relative flex items-center">
+            <span className="relative z-10 flex items-center">
               <span className="text-base font-semibold leading-none">
                 {formattedBalance}
               </span>

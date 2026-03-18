@@ -5,6 +5,7 @@ import { GalleryInteractive } from './gallery-interactive';
 import { GalleryDesktopGrid } from './gallery-desktop-grid';
 import { GalleryMobileSwiper } from './gallery-mobile-swiper';
 import type { GalleryProps, GalleryData } from './gallery-types';
+import { themeIconColor } from '@windrun-huaiin/base-ui/lib';
 
 export async function Gallery({ locale, sectionClassName, button }: GalleryProps) {
   const t = await getTranslations({ locale, namespace: 'gallery' });
@@ -28,7 +29,7 @@ export async function Gallery({ locale, sectionClassName, button }: GalleryProps
   return (
     <section id="gallery" className={cn(responsiveSection, sectionClassName)}>
       <h2 className="text-3xl md:text-4xl font-bold text-center mb-6">
-        {data.titleL} <span className="text-purple-500">{data.eyesOn}</span> {data.titleR}
+        {data.titleL} <span className={themeIconColor}>{data.eyesOn}</span> {data.titleR}
       </h2>
       <p className="text-center max-w-2xl mx-auto mb-16">{data.description}</p>
 

@@ -1,4 +1,6 @@
 import React from 'react';
+import { cn } from '@windrun-huaiin/lib/utils';
+import { themeRichTextMarkClass } from '@windrun-huaiin/base-ui/lib';
 
 // default tag renderers
 const defaultTagRenderers = {
@@ -9,7 +11,7 @@ const defaultTagRenderers = {
   // text Underline
   u: (chunks: React.ReactNode) => <u>{chunks}</u>,
   // text Mark
-  mark: (chunks: React.ReactNode) => <mark className="bg-purple-300 dark:bg-purple-500 text-neutral-800 dark:text-neutral-300 px-1 rounded">{chunks}</mark>,
+  mark: (chunks: React.ReactNode) => <mark className={cn(themeRichTextMarkClass, "text-neutral-800 dark:text-neutral-300 px-1 rounded")}>{chunks}</mark>,
   // text Delete
   del: (chunks: React.ReactNode) => <del>{chunks}</del>,
   // text Subscript

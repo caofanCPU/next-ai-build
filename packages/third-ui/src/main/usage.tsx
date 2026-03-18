@@ -1,6 +1,7 @@
 import { getTranslations } from 'next-intl/server';
 import { cn } from '@windrun-huaiin/lib/utils';
-import { globalLucideIcons as icons, getGlobalIcon } from '@windrun-huaiin/base-ui/components/server'
+import { globalLucideIcons as icons, getGlobalIcon } from '@windrun-huaiin/base-ui/components/server';
+import { themeIconColor } from '@windrun-huaiin/base-ui/lib';
 import { richText } from './rich-text-expert';
 import { responsiveSection } from './section-layout';
 
@@ -49,7 +50,7 @@ export async function Usage({
   return (
     <section id="usage" className={cn(responsiveSection, sectionClassName)}>
       <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">
-        {data.title} <span className="text-purple-500">{data.eyesOn}</span>
+        {data.title} <span className={themeIconColor}>{data.eyesOn}</span>
       </h2>
       <p className="text-center text-gray-600 dark:text-gray-400 mb-12 text-base sm:text-lg mx-auto max-w-3xl">
         {data.description}
@@ -61,7 +62,7 @@ export async function Usage({
             return (
               <div key={step.id} data-usage-step={step.id} className="flex items-start">
                 <div className="shrink-0 mr-4">
-                  <Icon className="w-8 h-8 text-purple-500" />
+                  <Icon className="w-8 h-8" />
                 </div>
                 <div>
                   <h3 className="text-xl font-semibold mb-3 text-gray-900 dark:text-gray-100 flex items-center">

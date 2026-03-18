@@ -2,6 +2,7 @@ import { getTranslations } from 'next-intl/server';
 import { cn } from '@windrun-huaiin/lib/utils';
 import { richText } from './rich-text-expert';
 import { responsiveSection } from './section-layout';
+import { themeIconColor } from '@windrun-huaiin/base-ui/lib';
 
 interface TipSection {
   id: string;
@@ -51,7 +52,7 @@ export async function Tips({
   return (
     <section id="tips" className={cn(responsiveSection, sectionClassName)}>
       <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">
-        {data.title} <span className="text-purple-500">{data.eyesOn}</span>
+        {data.title} <span className={themeIconColor}>{data.eyesOn}</span>
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12 bg-gray-50 dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 rounded-2xl p-8 md:p-12 shadow-sm dark:shadow-none">
         {[data.leftColumn, data.rightColumn].map((column: TipSection[], colIndex) => (

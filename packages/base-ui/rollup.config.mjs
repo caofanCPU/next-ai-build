@@ -8,6 +8,7 @@ import peerDepsExternal from 'rollup-plugin-peer-deps-external';
 // Define export point
 const entries = [
   'src/ui/index.ts',
+  'src/lib/index.ts',
   'src/components/index.ts',
   'src/components/script/index.ts',
   'src/components/server.ts'

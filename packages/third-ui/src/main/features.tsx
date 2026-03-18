@@ -1,6 +1,7 @@
 import { getTranslations } from 'next-intl/server';
 import { getGlobalIcon } from '@windrun-huaiin/base-ui/components/server';
 import { globalLucideIcons as icons } from '@windrun-huaiin/base-ui/components/server';
+import { themeIconColor } from '@windrun-huaiin/base-ui/lib';
 import { cn } from '@windrun-huaiin/lib/utils';
 import { richText } from './rich-text-expert';
 import { responsiveSection } from './section-layout';
@@ -48,7 +49,7 @@ export async function Features({
   return (
     <section id="features" className={cn(responsiveSection, sectionClassName)}>
       <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">
-        {data.title} <span className="text-purple-500">{data.eyesOn}</span>
+        {data.title} <span className={themeIconColor}>{data.eyesOn}</span>
       </h2>
       <p className="text-center text-gray-600 dark:text-gray-400 mb-12 text-base sm:text-lg mx-auto max-w-3xl">
         {data.description}
