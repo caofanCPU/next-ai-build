@@ -1,5 +1,16 @@
 # @windrun-huaiin/ddaas-website
 
+## 13.1.2
+
+### Patch Changes
+
+- fix(money): money plan card style fixed
+- Updated dependencies
+  - @windrun-huaiin/base-ui@13.1.0
+  - @windrun-huaiin/third-ui@13.1.2
+  - @windrun-huaiin/lib@13.0.0
+  - @windrun-huaiin/shared-assets@13.0.0
+
 ## 13.1.1
 
 ### Patch Changes

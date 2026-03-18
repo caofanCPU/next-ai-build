@@ -3,7 +3,7 @@
 import { useClerk } from '@clerk/nextjs';
 import { cn } from '@windrun-huaiin/lib/utils';
 import { useRouter } from 'next/navigation';
-import React, {
+import {
   useCallback,
   useEffect,
   useMemo,
@@ -18,7 +18,7 @@ import {
   type UserContext
 } from './money-price-types';
 import { redirectToCustomerPortal } from './customer-portal';
-import { themeButtonGradientClass, themeButtonGradientHoverClass } from '@windrun-huaiin/base-ui/lib';
+import { themeButtonGradientClass, themeButtonGradientHoverClass, themeIconColor } from '@windrun-huaiin/base-ui/lib';
 
 type BillingType = string;
 
@@ -450,8 +450,9 @@ export function MoneyPriceInteractive({
               className={cn(
                 'flex flex-col bg-white dark:bg-gray-800/60 rounded-2xl border border-gray-300 dark:border-[#7c3aed40] transition p-5 md:p-8 h-full shadow-sm dark:shadow-none w-[85vw] max-w-[360px]',
                 'md:w-[clamp(280px,32vw,360px)] md:max-w-[360px] md:shrink-0',
-                'hover:border-2 hover:border-purple-500',
-                'focus-within:border-2 focus-within:border-purple-500'
+                'hover:border-2 hover:border-current', 
+                'focus-within:border-2 focus-within:border-current',
+                themeIconColor
               )}
               style={{ minHeight: maxFeaturesCount * (isTouchDevice ? 86 : 100) }}
             >
