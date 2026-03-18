@@ -50,8 +50,9 @@
 
 /* NProgress progress bar style */
 #nprogress .bar {
-  background: #AC62FD !important; /* purple */
-  height: 1px !important;
+  background: var(--nprogress-bar-color, #AC62FD) !important;
+  height: 2px !important;
+  box-shadow: 0 0 10px var(--nprogress-bar-color, #AC62FD) !important;
 }
 
 /* @theme {
@@ -79,7 +80,8 @@ body {
 .gallery-mobile-swiper { overflow: hidden !important; }
 
 .gallery-mobile-swiper {
-  --swiper-theme-color: #AC62FD;
+  --gallery-swiper-bullet-active-color: #AC62FD;
+  --swiper-theme-color: var(--gallery-swiper-bullet-active-color);
 }
 
 .gallery-mobile-swiper .swiper-pagination {
@@ -95,6 +97,6 @@ body {
 }
 
 .gallery-mobile-swiper .swiper-pagination-bullet-active {
-  background: #AC62FD !important;
+  background: var(--gallery-swiper-bullet-active-color, #AC62FD) !important;
   transform: scale(1.5);
 }

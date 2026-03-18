@@ -1,5 +1,6 @@
 import { getTranslations } from 'next-intl/server';
 import { cn } from '@windrun-huaiin/lib/utils';
+import { themeIconColor } from '@windrun-huaiin/base-ui/lib';
 import { richText } from './rich-text-expert';
 import { FAQInteractive } from './faq-interactive';
 import { responsiveSection } from './section-layout';
@@ -52,12 +53,18 @@ export async function FAQ({
           <div
             key={item.id}
             data-faq-id={item.id}
-            className="bg-white dark:bg-gray-800/60 p-6 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-purple-300 dark:hover:border-purple-500/50 transition shadow-sm dark:shadow-none"
+            data-faq-open="false"
+            className={cn(
+              "bg-white dark:bg-gray-800/60 rounded-xl border border-gray-200 dark:border-gray-700 transition shadow-sm dark:shadow-none hover:border-current focus-within:border-current",
+              themeIconColor
+            )}
           >
             <button
-              className="w-full flex items-center justify-between text-left focus:outline-none"
+              className="w-full p-6 flex items-center justify-between text-left focus:outline-none"
               data-faq-toggle={item.id}
+              type="button"
               aria-expanded="false"
+              aria-controls={`${item.id}-content`}
             >
               <span className="text-lg font-semibold text-gray-900 dark:text-gray-100">{item.question}</span>
               <svg 
@@ -71,10 +78,13 @@ export async function FAQ({
               </svg>
             </button>
             <div 
-              className="mt-4 text-gray-700 dark:text-gray-300 text-base hidden" 
+              id={`${item.id}-content`}
+              className="px-6 pb-6 text-gray-700 dark:text-gray-300 text-base hidden" 
               data-faq-content={item.id}
             >
+              <div className="pt-1">
               {item.answer}
+              </div>
             </div>
           </div>
         ))}

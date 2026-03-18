@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 
 interface FAQData {
   title: string;
@@ -13,56 +13,40 @@ interface FAQData {
 }
 
 export function FAQInteractive({ data }: { data: FAQData }) {
-  const [openStates, setOpenStates] = useState<Record<string, boolean>>({});
-
   useEffect(() => {
-    // Progressive enhancement: Add interactivity to existing DOM elements
+    const cleanups: Array<() => void> = [];
+
     data.items.forEach((item) => {
       const toggleButton = document.querySelector(`[data-faq-toggle="${item.id}"]`) as HTMLButtonElement;
       const contentDiv = document.querySelector(`[data-faq-content="${item.id}"]`) as HTMLDivElement;
       const iconSvg = document.querySelector(`[data-faq-icon="${item.id}"]`) as SVGElement;
+      const cardDiv = document.querySelector(`[data-faq-id="${item.id}"]`) as HTMLDivElement;
 
-      if (toggleButton && contentDiv && iconSvg) {
-        const handleClick = () => {
-          const isOpen = openStates[item.id] || false;
-          const newOpenState = !isOpen;
-
-          // Update state
-          setOpenStates(prev => ({
-            ...prev,
-            [item.id]: newOpenState
-          }));
-
-          // Update DOM
-          if (newOpenState) {
-            contentDiv.classList.remove('hidden');
-            toggleButton.setAttribute('aria-expanded', 'true');
-            iconSvg.style.transform = 'rotate(90deg)';
-          } else {
-            contentDiv.classList.add('hidden');
-            toggleButton.setAttribute('aria-expanded', 'false');
-            iconSvg.style.transform = 'rotate(0deg)';
-          }
+      if (toggleButton && contentDiv && iconSvg && cardDiv) {
+        const syncOpenState = (isOpen: boolean) => {
+          contentDiv.classList.toggle('hidden', !isOpen);
+          toggleButton.setAttribute('aria-expanded', String(isOpen));
+          iconSvg.style.transform = isOpen ? 'rotate(90deg)' : 'rotate(0deg)';
+          cardDiv.setAttribute('data-faq-open', String(isOpen));
         };
 
-        toggleButton.addEventListener('click', handleClick);
+        const handleClick = () => {
+          const isOpen = toggleButton.getAttribute('aria-expanded') === 'true';
+          syncOpenState(!isOpen);
+        };
 
-        // Cleanup function will be handled by the effect cleanup
+        syncOpenState(toggleButton.getAttribute('aria-expanded') === 'true');
+        toggleButton.addEventListener('click', handleClick);
+        cleanups.push(() => {
+          toggleButton.removeEventListener('click', handleClick);
+        });
       }
     });
 
-    // Cleanup event listeners
     return () => {
-      data.items.forEach((item) => {
-        const toggleButton = document.querySelector(`[data-faq-toggle="${item.id}"]`) as HTMLButtonElement;
-        if (toggleButton) {
-          // Remove all event listeners by cloning the element
-          const newButton = toggleButton.cloneNode(true);
-          toggleButton.parentNode?.replaceChild(newButton, toggleButton);
-        }
-      });
+      cleanups.forEach((cleanup) => cleanup());
     };
-  }, [data, openStates]);
+  }, [data.items]);
 
   return null; // Progressive enhancement - no additional DOM rendering
 }

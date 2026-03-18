@@ -1,19 +1,27 @@
 "use client";
 
+import type { CSSProperties } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination } from "swiper/modules";
 import Image from "next/image";
+import { themeSvgIconColor } from "@windrun-huaiin/base-ui/lib";
 import { GalleryItem } from "./gallery-types";
 
 interface Props {
   items: GalleryItem[];
 }
 
+const swiperThemeStyle = {
+  "--gallery-swiper-bullet-active-color": themeSvgIconColor,
+  "--swiper-theme-color": themeSvgIconColor,
+} as CSSProperties;
+
 export function GalleryMobileSwiper({ items }: Props) {
   return (
     <div className="block sm:hidden px-4">
       {/* 外层容器：强制 maxWidth，防止任何溢出 */}
-      <div className="w-full overflow-hidden" 
+      <div
+        className="w-full overflow-hidden"
         style={{ maxWidth: "min(calc(100vw - 48px), 350px)", margin: "0 auto" }}
       >
         <Swiper
@@ -24,6 +32,7 @@ export function GalleryMobileSwiper({ items }: Props) {
           loop={true}
           grabCursor={true}
           className="gallery-mobile-swiper rounded-2xl"
+          style={swiperThemeStyle}
         >
           {items.map((item) => (
             <SwiperSlide key={item.id}>
