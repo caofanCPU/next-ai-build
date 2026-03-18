@@ -1,5 +1,19 @@
 # @windrun-huaiin/third-ui
 
+## 13.1.0
+
+### Minor Changes
+
+- feat(theme): support 5 colors by env config
+  - purple, orange, indigo, emerald, rose by `NEXT_PUBLIC_STYLE_ICON_COLOR`
+  - remove `NEXT_PUBLIC_STYLE_SVG_ICON_COLOR` cause unuseful
+
+### Patch Changes
+
+- Updated dependencies
+  - @windrun-huaiin/base-ui@13.1.0
+  - @windrun-huaiin/lib@13.0.0
+
 ## 13.0.1
 
 ### Patch Changes
