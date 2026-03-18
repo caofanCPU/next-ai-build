@@ -3,8 +3,10 @@
 import { globalLucideIcons as icons } from '@windrun-huaiin/base-ui/components/server';
 // Attention: do not use external dialog library, avoid react context conflict when building third-party applications
 import type { MermaidConfig } from 'mermaid';
+import { cn } from '@windrun-huaiin/lib/utils';
 import { useTheme } from 'next-themes';
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
+import { themeIconColor, themeSvgIconColor } from '@windrun-huaiin/base-ui/lib';
 
 function sanitizeFilename(name: string) {
   return name
@@ -35,6 +37,9 @@ export function Mermaid({ chart, title, watermarkEnabled, watermarkText, enableP
   const isPanningRef = useRef(false);
   const startPointRef = useRef({ x: 0, y: 0 });
   const startTranslateRef = useRef({ x: 0, y: 0 });
+  const activePointersRef = useRef(new Map<number, { x: number; y: number }>());
+  const pinchStartDistanceRef = useRef(0);
+  const pinchStartScaleRef = useRef(1);
   
   useEffect(() => {
     let isMounted = true;
@@ -59,7 +64,7 @@ export function Mermaid({ chart, title, watermarkEnabled, watermarkText, enableP
         );
         let svgWithWatermark = svg;
         if (watermarkEnabled && watermarkText) {
-          svgWithWatermark = addWatermarkToSvg(svg, watermarkText);
+          svgWithWatermark = addWatermarkToSvg(svg, watermarkText, themeSvgIconColor);
         }
         if (isMounted) setSvg(svgWithWatermark);
       } catch (error) {
@@ -100,13 +105,33 @@ export function Mermaid({ chart, title, watermarkEnabled, watermarkText, enableP
   }, []);
 
   const onPointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    activePointersRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (activePointersRef.current.size === 2) {
+      const [first, second] = Array.from(activePointersRef.current.values());
+      pinchStartDistanceRef.current = Math.hypot(second.x - first.x, second.y - first.y);
+      pinchStartScaleRef.current = scale;
+      isPanningRef.current = false;
+    } else {
     isPanningRef.current = true;
     startPointRef.current = { x: e.clientX, y: e.clientY };
     startTranslateRef.current = { ...translate };
+    }
     (e.currentTarget as HTMLDivElement).setPointerCapture(e.pointerId);
-  }, [translate]);
+  }, [scale, translate]);
 
   const onPointerMove = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    if (!activePointersRef.current.has(e.pointerId)) return;
+    activePointersRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+    if (activePointersRef.current.size === 2) {
+      const [first, second] = Array.from(activePointersRef.current.values());
+      const distance = Math.hypot(second.x - first.x, second.y - first.y);
+      if (pinchStartDistanceRef.current > 0) {
+        setScale(clamp((distance / pinchStartDistanceRef.current) * pinchStartScaleRef.current, 0.25, 10));
+      }
+      return;
+    }
+
     if (!isPanningRef.current) return;
     const dx = e.clientX - startPointRef.current.x;
     const dy = e.clientY - startPointRef.current.y;
@@ -114,8 +139,25 @@ export function Mermaid({ chart, title, watermarkEnabled, watermarkText, enableP
   }, []);
 
   const onPointerUp = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    activePointersRef.current.delete(e.pointerId);
     isPanningRef.current = false;
-    (e.currentTarget as HTMLDivElement).releasePointerCapture(e.pointerId);
+    if (activePointersRef.current.size === 1) {
+      const remaining = Array.from(activePointersRef.current.values())[0];
+      startPointRef.current = remaining;
+      startTranslateRef.current = { ...translate };
+      isPanningRef.current = true;
+    }
+    if ((e.currentTarget as HTMLDivElement).hasPointerCapture(e.pointerId)) {
+      (e.currentTarget as HTMLDivElement).releasePointerCapture(e.pointerId);
+    }
+  }, [translate]);
+
+  const onPointerCancel = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    activePointersRef.current.delete(e.pointerId);
+    isPanningRef.current = false;
+    if ((e.currentTarget as HTMLDivElement).hasPointerCapture(e.pointerId)) {
+      (e.currentTarget as HTMLDivElement).releasePointerCapture(e.pointerId);
+    }
   }, []);
 
   const handleDownload = useCallback(() => {
@@ -203,7 +245,7 @@ export function Mermaid({ chart, title, watermarkEnabled, watermarkText, enableP
       </div>
       {title && (
         <div
-          className="mt-2 flex items-center justify-center text-center text-[13px] font-italic text-[#AC62FD]"
+          className={cn("mt-2 flex items-center justify-center text-center text-[13px] font-italic", themeIconColor)}
         >
           <icons.Mmd className='mr-1 h-4 w-4' />
           <span>{title}</span>
@@ -226,74 +268,74 @@ export function Mermaid({ chart, title, watermarkEnabled, watermarkText, enableP
           />
           <div className="relative z-1 max-w-[95vw] w-[95vw] h-[88vh] p-0 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-md shadow-2xl overflow-hidden">
             {/* Top bar */}
-            <div className="flex items-center justify-between px-3 py-2 border-b border-neutral-200 dark:border-neutral-700">
-              <div className="flex items-center gap-2 text-sm text-neutral-600 dark:text-neutral-300">
+            <div className="flex items-center justify-between gap-3 px-3 py-2 border-b border-neutral-200 dark:border-neutral-700">
+              <div className={cn("min-w-0 flex items-center gap-2 text-sm", themeIconColor)}>
                 <icons.Mmd className="h-4 w-4" />
                 <span className="truncate max-w-[50vw]">{title ?? 'Mermaid Preview'}</span>
               </div>
-              <div className="flex items-center gap-0.5">
+              <div className="flex shrink-0 items-center gap-0.5">
                 <button
                   aria-label="Zoom out"
-                  className="flex h-6 w-6 items-center justify-center rounded border border-neutral-300 dark:border-neutral-600 text-[13px] transition-colors hover:bg-neutral-100 active:bg-neutral-200 hover:border-neutral-400 active:border-neutral-500 dark:hover:bg-neutral-700 dark:active:bg-neutral-600 dark:hover:border-neutral-500 dark:active:border-neutral-400"
+                  className="hidden h-6 w-6 items-center justify-center rounded border border-neutral-300 text-[13px] transition-colors hover:bg-neutral-100 active:bg-neutral-200 hover:border-neutral-400 active:border-neutral-500 dark:border-neutral-600 dark:hover:bg-neutral-700 dark:active:bg-neutral-600 dark:hover:border-neutral-500 dark:active:border-neutral-400 sm:flex"
                   onClick={() => zoomBy(-0.5)}
                 >
                   －
                 </button>
-                <span className="mx-0.5 text-[12px] w-12 text-center select-none">{Math.round(scale * 100)}%</span>
+                <span className="mx-0.5 w-12 text-center text-[12px] select-none">{Math.round(scale * 100)}%</span>
                 <button
                   aria-label="Zoom in"
-                  className="flex h-6 w-6 items-center justify-center rounded border border-neutral-300 dark:border-neutral-600 text-[13px] transition-colors hover:bg-neutral-100 active:bg-neutral-200 hover:border-neutral-400 active:border-neutral-500 dark:hover:bg-neutral-700 dark:active:bg-neutral-600 dark:hover:border-neutral-500 dark:active:border-neutral-400"
+                  className="hidden h-6 w-6 items-center justify-center rounded border border-neutral-300 text-[13px] transition-colors hover:bg-neutral-100 active:bg-neutral-200 hover:border-neutral-400 active:border-neutral-500 dark:border-neutral-600 dark:hover:bg-neutral-700 dark:active:bg-neutral-600 dark:hover:border-neutral-500 dark:active:border-neutral-400 sm:flex"
                   onClick={() => zoomBy(0.5)}
                 >
                   ＋
                 </button>
                 {/* quick zoom shortcuts */}
-                <div className="mx-1 h-4 w-px bg-neutral-300 dark:bg-neutral-700" />
+                <div className="mx-1 hidden h-4 w-px bg-neutral-300 dark:bg-neutral-700 sm:block" />
                 <button
                   aria-label="Zoom 100%"
-                  className="inline-flex h-6 min-w-8 items-center justify-center rounded border border-neutral-300 dark:border-neutral-600 px-1.5 text-[12px] transition-colors hover:bg-neutral-100 active:bg-neutral-200 hover:border-neutral-400 active:border-neutral-500 dark:hover:bg-neutral-700 dark:active:bg-neutral-600 dark:hover:border-neutral-500 dark:active:border-neutral-400"
+                  className="hidden h-6 min-w-8 items-center justify-center rounded border border-neutral-300 px-1.5 text-[12px] transition-colors hover:bg-neutral-100 active:bg-neutral-200 hover:border-neutral-400 active:border-neutral-500 dark:border-neutral-600 dark:hover:bg-neutral-700 dark:active:bg-neutral-600 dark:hover:border-neutral-500 dark:active:border-neutral-400 sm:inline-flex"
                   onClick={() => setScale(1)}
                 >
                   X1
                 </button>
                 <button
                   aria-label="Zoom 200%"
-                  className="ml-1 inline-flex h-6 min-w-8 items-center justify-center rounded border border-neutral-300 dark:border-neutral-600 px-1.5 text-[12px] transition-colors hover:bg-neutral-100 active:bg-neutral-200 hover:border-neutral-400 active:border-neutral-500 dark:hover:bg-neutral-700 dark:active:bg-neutral-600 dark:hover:border-neutral-500 dark:active:border-neutral-400"
+                  className="ml-1 hidden h-6 min-w-8 items-center justify-center rounded border border-neutral-300 px-1.5 text-[12px] transition-colors hover:bg-neutral-100 active:bg-neutral-200 hover:border-neutral-400 active:border-neutral-500 dark:border-neutral-600 dark:hover:bg-neutral-700 dark:active:bg-neutral-600 dark:hover:border-neutral-500 dark:active:border-neutral-400 sm:inline-flex"
                   onClick={() => setScale(2)}
                 >
                   X2
                 </button>
                 <button
                   aria-label="Zoom 300%"
-                  className="ml-1 inline-flex h-6 min-w-8 items-center justify-center rounded border border-neutral-300 dark:border-neutral-600 px-1.5 text-[12px] transition-colors hover:bg-neutral-100 active:bg-neutral-200 hover:border-neutral-400 active:border-neutral-500 dark:hover:bg-neutral-700 dark:active:bg-neutral-600 dark:hover:border-neutral-500 dark:active:border-neutral-400"
+                  className="ml-1 hidden h-6 min-w-8 items-center justify-center rounded border border-neutral-300 px-1.5 text-[12px] transition-colors hover:bg-neutral-100 active:bg-neutral-200 hover:border-neutral-400 active:border-neutral-500 dark:border-neutral-600 dark:hover:bg-neutral-700 dark:active:bg-neutral-600 dark:hover:border-neutral-500 dark:active:border-neutral-400 sm:inline-flex"
                   onClick={() => setScale(3)}
                 >
                   X3
                 </button>
                 <button
                   aria-label="Zoom 1000%"
-                  className="ml-1 inline-flex h-6 min-w-10 items-center justify-center rounded border border-neutral-300 dark:border-neutral-600 px-1.5 text-[12px] transition-colors hover:bg-neutral-100 active:bg-neutral-200 hover:border-neutral-400 active:border-neutral-500 dark:hover:bg-neutral-700 dark:active:bg-neutral-600 dark:hover:border-neutral-500 dark:active:border-neutral-400"
+                  className="ml-1 hidden h-6 min-w-10 items-center justify-center rounded border border-neutral-300 px-1.5 text-[12px] transition-colors hover:bg-neutral-100 active:bg-neutral-200 hover:border-neutral-400 active:border-neutral-500 dark:border-neutral-600 dark:hover:bg-neutral-700 dark:active:bg-neutral-600 dark:hover:border-neutral-500 dark:active:border-neutral-400 sm:inline-flex"
                   onClick={() => setScale(10)}
                 >
                   X10
                 </button>
                 <button
                   aria-label="Reset"
-                  className="ml-1 flex h-6 w-6 items-center justify-center rounded text-purple-500 hover:text-purple-600 transition-colors hover:bg-purple-50 active:bg-purple-100 dark:hover:bg-purple-500/20 dark:active:bg-purple-500/30"
+                  className={cn("ml-1 flex h-6 w-6 items-center justify-center rounded transition-colors hover:bg-neutral-100 active:bg-neutral-200 dark:hover:bg-neutral-700 dark:active:bg-neutral-600", themeIconColor)}
                   onClick={resetTransform}
                 >
                   <icons.RefreshCcw className="h-3.5 w-3.5" />
                 </button>
                 <button
                   aria-label="Download SVG"
-                  className="ml-1 flex h-6 w-6 items-center justify-center rounded text-purple-500 hover:text-purple-600 transition-colors hover:bg-purple-50 active:bg-purple-100 dark:hover:bg-purple-500/20 dark:active:bg-purple-500/30"
+                  className={cn("ml-1 flex h-6 w-6 items-center justify-center rounded transition-colors hover:bg-neutral-100 active:bg-neutral-200 dark:hover:bg-neutral-700 dark:active:bg-neutral-600", themeIconColor)}
                   onClick={handleDownload}
                 >
                   <icons.Download className="h-3.5 w-3.5" />
                 </button>
                 <button
                   aria-label="Close"
-                  className="ml-1 flex h-6 w-6 items-center justify-center rounded text-purple-500 hover:text-purple-600 transition-colors hover:bg-purple-50 active:bg-purple-100 dark:hover:bg-purple-500/20 dark:active:bg-purple-500/30"
+                  className={cn("ml-1 flex h-6 w-6 items-center justify-center rounded transition-colors hover:bg-neutral-100 active:bg-neutral-200 dark:hover:bg-neutral-700 dark:active:bg-neutral-600", themeIconColor)}
                   onClick={() => { setOpen(false); resetTransform(); }}
                 >
                   <icons.X className="h-3.5 w-3.5" />
@@ -303,11 +345,12 @@ export function Mermaid({ chart, title, watermarkEnabled, watermarkText, enableP
 
             {/* Canvas */}
             <div
-              className="relative h-[calc(88vh-40px)] w-full overflow-hidden bg-white dark:bg-neutral-900 touch-none overscroll-contain"
+              className="relative h-[calc(88vh-40px)] w-full overflow-hidden bg-white dark:bg-neutral-900 overscroll-contain touch-none"
               onWheel={onWheel}
               onPointerDown={onPointerDown}
               onPointerMove={onPointerMove}
               onPointerUp={onPointerUp}
+              onPointerCancel={onPointerCancel}
             >
               <div
                 className="absolute left-1/2 top-1/2"
@@ -318,9 +361,29 @@ export function Mermaid({ chart, title, watermarkEnabled, watermarkText, enableP
                   dangerouslySetInnerHTML={{ __html: svg }}
                 />
               </div>
+              <div className="absolute inset-x-3 bottom-3 rounded-md bg-white/92 px-3 py-2 shadow-sm backdrop-blur sm:hidden dark:bg-neutral-900/92">
+                <label className="mb-1 flex items-center justify-between text-[11px] text-neutral-600 dark:text-neutral-300">
+                  <span>Zoom</span>
+                  <span>{Math.round(scale * 100)}%</span>
+                </label>
+                <input
+                  aria-label="Zoom slider"
+                  className="block w-full"
+                  type="range"
+                  min="25"
+                  max="1000"
+                  step="5"
+                  value={Math.round(scale * 100)}
+                  style={{ accentColor: themeSvgIconColor }}
+                  onChange={(e) => setScale(clamp(Number(e.target.value) / 100, 0.25, 10))}
+                />
+              </div>
               {/* helper text */}
-              <div className="pointer-events-none absolute bottom-2 right-3 rounded bg-black/40 px-2 py-1 text-xs text-white">
-                Drag to pan, hold Cmd/Ctrl + scroll to zoom
+              <div className="pointer-events-none absolute bottom-2 right-3 hidden rounded bg-black/40 px-2 py-1 text-xs text-white sm:block">
+                Drag to pan, click button to zoom-out or zoom-in
+              </div>
+              <div className="pointer-events-none absolute left-3 top-3 rounded bg-black/40 px-2 py-1 text-[11px] text-white sm:hidden">
+                Drag to pan, pinch to zoom-out or zoom-in
               </div>
             </div>
           </div>
@@ -330,7 +393,7 @@ export function Mermaid({ chart, title, watermarkEnabled, watermarkText, enableP
   );
 }
 
-function addWatermarkToSvg(svg: string, watermark: string) {
+function addWatermarkToSvg(svg: string, watermark: string, watermarkColor: string) {
   const watermarkText = `
     <text
       x="100%"
@@ -338,7 +401,7 @@ function addWatermarkToSvg(svg: string, watermark: string) {
       text-anchor="end"
       font-size="12"
       font-style="italic"
-      fill="#AC62FD"
+      fill="${watermarkColor}"
       opacity="0.40"
       class="pointer-events-none"
       dx="-8"
