@@ -4,6 +4,8 @@ import Link from "next/link";
 import { FooterEmail } from './footer-email';
 import { safeT } from '../lib/t-intl';
 import { getAsNeededLocalizedUrl } from '@windrun-huaiin/lib';
+import { themeIconColor } from '@windrun-huaiin/base-ui/lib';
+import { cn } from '@windrun-huaiin/lib';
 
 interface FooterData {
   terms: string;
@@ -39,7 +41,8 @@ export async function Footer({ locale, localePrefixAsNeeded = true, defaultLocal
   };
 
   return (
-    <div className="mb-10 w-full mx-auto border-t-purple-700/80 border-t">
+    <div className="mb-10 w-full mx-auto">
+      <div className={cn("w-full border-current border-t", themeIconColor)}></div>
       <footer>
         <div className="w-full flex flex-col items-center justify-center px-4 py-8 space-y-3">
           <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-2 text-xs sm:text-sm sm:gap-x-6">
