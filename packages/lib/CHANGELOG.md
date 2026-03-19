@@ -1,5 +1,11 @@
 # @windrun-huaiin/lib
 
+## 14.0.0
+
+### Major Changes
+
+- feat(clerk): upgrade clerk dependency
+
 ## 13.0.0
 
 ### Major Changes
