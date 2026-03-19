@@ -1,5 +1,13 @@
 # @windrun-huaiin/base-ui
 
+## 14.0.1
+
+### Patch Changes
+
+- fix(theme): 404page and base icon style fixed for theme color adapt
+- Updated dependencies
+  - @windrun-huaiin/lib@14.0.0
+
 ## 14.0.0
 
 ### Major Changes

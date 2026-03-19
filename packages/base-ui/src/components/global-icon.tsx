@@ -6,8 +6,8 @@
 */
 
 import { BUILTIN_ICON_COMPONENTS } from '@base-ui/assets';
-import { themeIconColor, themeSvgIconSize } from '@base-ui/lib/theme-util';
-
+import { themeIconColor, themeSvgIconSize, themeBorderColor, themeRingColor } from '@base-ui/lib/theme-util';
+import { cn } from '@windrun-huaiin/lib/utils';
 import * as limitedIconsModule from '@base-ui/components/limited-lucide-icons';
 import { type LucideProps } from 'lucide-react';
 import React from 'react';
@@ -184,12 +184,12 @@ export function getIconElement(
 
 // Define the default site icon as a functional component (for export)
 export const DefaultSiteIcon = () => (
-  <globalLucideIcons.Zap className={`h-8 w-8 rounded-full p-1 shadow-lg ring-0.5 border border-purple-500 ring-purple-500/20 ${themeIconColor}`} />
+  <globalLucideIcons.Zap className={cn("h-8 w-8 rounded-full p-1 shadow-lg ring-0.5 border", themeBorderColor, themeRingColor, themeIconColor)} />
 );
 
 // Note: SiteIcon is available from @base-ui/lib/site-icon as a separate client component
 
 // Define 404 not found icon as a functional component (fixed, no configuration)
 export const NotFoundIcon = () => (
-  <globalLucideIcons.SquareTerminal className={`h-8 w-8 rounded-full p-1 shadow-lg ring-0.5 border border-purple-500 ring-purple-500/20 ${themeIconColor}`} />
+  <globalLucideIcons.SquareTerminal className={cn("h-8 w-8 rounded-full p-1 shadow-lg ring-0.5 border", themeBorderColor, themeRingColor, themeIconColor)} />
 ); 

@@ -2,6 +2,8 @@
 
 import { NotFoundIcon } from "@base-ui/components/global-icon";
 import { useEffect, useState, type ReactNode } from "react";
+import { themeBgColor, themeViaColor, themeButtonGradientClass } from "@base-ui/lib";
+import { cn } from "@windrun-huaiin/lib/utils"; 
 
 interface NotFoundPageProps {
   siteIcon: ReactNode;
@@ -37,7 +39,7 @@ export function NotFoundPage({ siteIcon }: NotFoundPageProps) {
         {/* 404 number - glitch effect */}
         <div className="relative flex justify-center">
           <h1
-            className="text-8xl md:text-9xl font-bold bg-linear-to-r from-purple-600 via-pink-500 to-purple-700 bg-clip-text text-transparent select-none"
+            className={cn("text-8xl md:text-9xl font-bold bg-linear-to-r bg-clip-text text-transparent select-none", themeButtonGradientClass)}
             style={{
               fontFamily: "Montserrat, monospace",
               textShadow: "0 0 30px rgba(172, 98, 253, 0.3)",
@@ -48,7 +50,7 @@ export function NotFoundPage({ siteIcon }: NotFoundPageProps) {
           </h1>
           {/* scan line effect */}
           <div className="absolute inset-0 pointer-events-none">
-            <div className="h-full w-full bg-linear-to-b from-transparent via-purple-500/10 to-transparent animate-pulse" />
+            <div className={cn("h-full w-full bg-linear-to-b from-transparent to-transparent animate-pulse", themeViaColor)} />
           </div>
         </div>
 
@@ -68,7 +70,7 @@ export function NotFoundPage({ siteIcon }: NotFoundPageProps) {
             {siteIcon}
             <span>Woops!</span>
           </div>
-          <div className="w-1 h-1 bg-purple-500 rounded-full animate-ping" />
+          <div className={cn("w-1 h-1 rounded-full animate-ping", themeBgColor)} />
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <NotFoundIcon />
             <span>Error Code: 404</span>
@@ -94,7 +96,7 @@ export function NotFoundPage({ siteIcon }: NotFoundPageProps) {
         {Array.from({ length: 6 }).map((_, i) => (
           <div
             key={i}
-            className="absolute w-2 h-2 bg-purple-500/20 rounded-full animate-bounce"
+            className={cn("absolute w-2 h-2 rounded-full animate-bounce", themeBgColor)}
             style={{
               left: `${20 + i * 15}%`,
               top: `${30 + (i % 3) * 20}%`,

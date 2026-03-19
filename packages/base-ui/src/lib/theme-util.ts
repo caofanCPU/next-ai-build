@@ -3,39 +3,122 @@
  * Maintainer: xxx
  * Note:
  * 1. Static color classes for Tailwind CSS 4.x scanning
- * 2. Single config: NEXT_PUBLIC_STYLE_ICON_COLOR (Tailwind class only)
+ * 2. Single config: NEXT_PUBLIC_STYLE_ICON_COLOR (simple theme name only)
  * 3. Premium/elegant color system (uppercase hex values)
  */
 
-// Define type for supported theme color classes (literal type)
-export type SupportedThemeColor = keyof typeof THEME_COLOR_HEX_MAP;
-export type SupportedThemeName = keyof typeof THEME_COLOR_NAME_TO_CLASS_MAP;
+const THEME_COLOR_META_MAP = Object.freeze({
+  purple: {
+    label: "典雅紫·清",
+    textColor: "text-purple-500",
+    bgColor: "bg-purple-500/20",
+    viaColor: "via-purple-500/20",
+    ringColor: "ring-purple-500/20",
+    borderColor: "border-purple-500",
+    hex: "#AC62FD",
+  },
+  orange: {
+    label: "轻奢橙·暖",
+    textColor: "text-orange-500",
+    bgColor: "bg-orange-500/20",
+    viaColor: "via-orange-500/20",
+    ringColor: "ring-orange-500/20",
+    borderColor: "border-orange-500",
+    hex: "#F97316",
+  },
+  indigo: {
+    label: "沉稳蓝·冷",
+    textColor: "text-indigo-500",
+    bgColor: "bg-indigo-500/20",
+    viaColor: "via-indigo-500/20",
+    ringColor: "ring-indigo-500/20",
+    borderColor: "border-indigo-500",
+    hex: "#6366F1",
+  },
+  emerald: {
+    label: "温润绿·愈",
+    textColor: "text-emerald-500",
+    bgColor: "bg-emerald-500/20",
+    viaColor: "via-emerald-500/20",
+    ringColor: "ring-emerald-500/20",
+    borderColor: "border-emerald-500",
+    hex: "#10B981",
+  },
+  rose: {
+    label: "玫瑰红·柔",
+    textColor: "text-rose-500",
+    bgColor: "bg-rose-500/20",
+    viaColor: "via-rose-500/20",
+    ringColor: "ring-rose-500/20",
+    borderColor: "border-rose-500",
+    hex: "#F43F5E",
+  },
+} as const);
+
+export type SupportedThemeName = keyof typeof THEME_COLOR_META_MAP;
+export type SupportedThemeColor = (typeof THEME_COLOR_META_MAP)[SupportedThemeName]["textColor"];
+export type SupportedThemeBgColor = (typeof THEME_COLOR_META_MAP)[SupportedThemeName]["bgColor"];
+export type SupportedThemeViaColor = (typeof THEME_COLOR_META_MAP)[SupportedThemeName]["viaColor"];
+export type SupportedThemeRingColor = (typeof THEME_COLOR_META_MAP)[SupportedThemeName]["ringColor"];
+export type SupportedThemeBorderColor = (typeof THEME_COLOR_META_MAP)[SupportedThemeName]["borderColor"];
 
 // Supported theme color classes (static for Tailwind scan)
 export const __SUPPORTED_THEME_COLORS = Object.freeze({
-  "text-purple-500": "典雅紫·清",
-  "text-orange-500": "轻奢橙·暖",
-  "text-indigo-500": "沉稳蓝·冷",
-  "text-emerald-500": "温润绿·愈",
-  "text-rose-500": "玫瑰红·柔"
+  "text-purple-500": THEME_COLOR_META_MAP.purple.label,
+  "text-orange-500": THEME_COLOR_META_MAP.orange.label,
+  "text-indigo-500": THEME_COLOR_META_MAP.indigo.label,
+  "text-emerald-500": THEME_COLOR_META_MAP.emerald.label,
+  "text-rose-500": THEME_COLOR_META_MAP.rose.label,
 } as const);
 
 // Hex color map (uppercase, match Tailwind classes)
 export const THEME_COLOR_HEX_MAP = Object.freeze({
-  "text-purple-500": "#AC62FD",
-  "text-orange-500": "#F97316",
-  "text-indigo-500": "#6366F1",
-  "text-emerald-500": "#10B981",
-  "text-rose-500": "#F43F5E",
+  "text-purple-500": THEME_COLOR_META_MAP.purple.hex,
+  "text-orange-500": THEME_COLOR_META_MAP.orange.hex,
+  "text-indigo-500": THEME_COLOR_META_MAP.indigo.hex,
+  "text-emerald-500": THEME_COLOR_META_MAP.emerald.hex,
+  "text-rose-500": THEME_COLOR_META_MAP.rose.hex,
 } as const);
 
 // Short theme names for env configuration
 export const THEME_COLOR_NAME_TO_CLASS_MAP = Object.freeze({
-  purple: "text-purple-500",
-  orange: "text-orange-500",
-  indigo: "text-indigo-500",
-  emerald: "text-emerald-500",
-  rose: "text-rose-500",
+  purple: THEME_COLOR_META_MAP.purple.textColor,
+  orange: THEME_COLOR_META_MAP.orange.textColor,
+  indigo: THEME_COLOR_META_MAP.indigo.textColor,
+  emerald: THEME_COLOR_META_MAP.emerald.textColor,
+  rose: THEME_COLOR_META_MAP.rose.textColor,
+} as const);
+
+export const THEME_COLOR_NAME_TO_BG_CLASS_MAP = Object.freeze({
+  purple: THEME_COLOR_META_MAP.purple.bgColor,
+  orange: THEME_COLOR_META_MAP.orange.bgColor,
+  indigo: THEME_COLOR_META_MAP.indigo.bgColor,
+  emerald: THEME_COLOR_META_MAP.emerald.bgColor,
+  rose: THEME_COLOR_META_MAP.rose.bgColor,
+} as const);
+
+export const THEME_COLOR_NAME_TO_VIA_CLASS_MAP = Object.freeze({
+  purple: THEME_COLOR_META_MAP.purple.viaColor,
+  orange: THEME_COLOR_META_MAP.orange.viaColor,
+  indigo: THEME_COLOR_META_MAP.indigo.viaColor,
+  emerald: THEME_COLOR_META_MAP.emerald.viaColor,
+  rose: THEME_COLOR_META_MAP.rose.viaColor,
+} as const);
+
+export const THEME_COLOR_NAME_TO_RING_CLASS_MAP = Object.freeze({
+  purple: THEME_COLOR_META_MAP.purple.ringColor,
+  orange: THEME_COLOR_META_MAP.orange.ringColor,
+  indigo: THEME_COLOR_META_MAP.indigo.ringColor,
+  emerald: THEME_COLOR_META_MAP.emerald.ringColor,
+  rose: THEME_COLOR_META_MAP.rose.ringColor,
+} as const);
+
+export const THEME_COLOR_NAME_TO_BORDER_CLASS_MAP = Object.freeze({
+  purple: THEME_COLOR_META_MAP.purple.borderColor,
+  orange: THEME_COLOR_META_MAP.orange.borderColor,
+  indigo: THEME_COLOR_META_MAP.indigo.borderColor,
+  emerald: THEME_COLOR_META_MAP.emerald.borderColor,
+  rose: THEME_COLOR_META_MAP.rose.borderColor,
 } as const);
 
 // Validate theme color class (type guard)
@@ -47,27 +130,30 @@ export const validateThemeName = (colorName: string): colorName is SupportedThem
   return Object.prototype.hasOwnProperty.call(THEME_COLOR_NAME_TO_CLASS_MAP, colorName);
 };
 
-// Theme icon text color (type-safe, global)
-export const themeIconColor: SupportedThemeColor = (() => {
+// Theme name configured from env, only supports simple names like purple/orange
+export const themeName: SupportedThemeName = (() => {
   const envColorRaw = process.env.NEXT_PUBLIC_STYLE_ICON_COLOR;
   const envColor = envColorRaw?.trim().toLowerCase();
+
   if (envColor) {
     if (validateThemeName(envColor)) {
-      return THEME_COLOR_NAME_TO_CLASS_MAP[envColor];
-    }
-    // backward compatible: allow old full tailwind class value
-    if (validateThemeColor(envColor)) {
       return envColor;
     }
   }
-  
+
   console.warn(
-    `[ThemeUtil] Invalid NEXT_PUBLIC_STYLE_ICON_COLOR: ${envColorRaw}. Fallback to text-purple-500.
-    Supported names: ${Object.keys(THEME_COLOR_NAME_TO_CLASS_MAP).join(", ")}
-    Supported classes(legacy): ${Object.keys(THEME_COLOR_HEX_MAP).join(", ")}`
+    `[ThemeUtil] Invalid NEXT_PUBLIC_STYLE_ICON_COLOR: ${envColorRaw}. Fallback to purple.
+    Supported names: ${Object.keys(THEME_COLOR_NAME_TO_CLASS_MAP).join(", ")}`
   );
-  return "text-purple-500";
+  return "purple";
 })();
+
+// Theme icon text color (type-safe, global)
+export const themeIconColor: SupportedThemeColor = THEME_COLOR_NAME_TO_CLASS_MAP[themeName];
+export const themeBgColor: SupportedThemeBgColor = THEME_COLOR_NAME_TO_BG_CLASS_MAP[themeName];
+export const themeViaColor: SupportedThemeViaColor = THEME_COLOR_NAME_TO_VIA_CLASS_MAP[themeName];
+export const themeRingColor: SupportedThemeRingColor = THEME_COLOR_NAME_TO_RING_CLASS_MAP[themeName];
+export const themeBorderColor: SupportedThemeBorderColor = THEME_COLOR_NAME_TO_BORDER_CLASS_MAP[themeName];
 
 // SVG icon color (auto-derived, type-safe - NO any type)
 export const themeSvgIconColor = THEME_COLOR_HEX_MAP[themeIconColor];
