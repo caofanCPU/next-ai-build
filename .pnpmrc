@@ -25,5 +25,3 @@ public-hoist-pattern[]=*react-dom*
 
 # Enable pnpm patches
 enable-pre-post-scripts=true 
-
-shamefully-hoist=true
