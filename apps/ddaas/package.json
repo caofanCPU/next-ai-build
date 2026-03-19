@@ -39,7 +39,6 @@
     "@types/mdx": "catalog:",
     "@windrun-huaiin/base-ui": "^13.1.0",
     "@windrun-huaiin/lib": "^13.0.0",
-    "@windrun-huaiin/shared-assets": "^13.0.0",
     "@windrun-huaiin/third-ui": "^13.1.5",
     "autoprefixer": "catalog:",
     "class-variance-authority": "catalog:",
