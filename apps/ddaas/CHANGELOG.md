@@ -1,5 +1,13 @@
 # @windrun-huaiin/ddaas-website
 
+## 13.1.5
+
+### Patch Changes
+
+- feat(clerk): upgrade clerk dependency
+- Updated dependencies
+  - @windrun-huaiin/third-ui@13.1.5
+
 ## 13.1.4
 
 ### Patch Changes
