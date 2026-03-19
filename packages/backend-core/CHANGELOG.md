@@ -1,5 +1,17 @@
 # @windrun-huaiin/backend-core
 
+## 14.1.0
+
+### Minor Changes
+
+- fix(stripe): upgrade clerk dependency
+
+### Patch Changes
+
+- Updated dependencies
+  - @windrun-huaiin/third-ui@14.0.0
+  - @windrun-huaiin/lib@14.0.0
+
 ## 14.0.0
 
 ### Major Changes

@@ -13,7 +13,7 @@ import {
 import { Transaction } from '@/db/prisma-model-type';
 import { oneTimeExpiredDays } from '@/lib/credit-init';
 import { getCreditsFromPriceId } from '@/lib/money-price-config';
-import { fetchPaymentId, stripe } from '@/lib/stripe-config';
+import { fetchPaymentId, getStripe } from '@/lib/stripe-config';
 import Stripe from 'stripe';
 import { viewLocalTime } from '@windrun-huaiin/lib/utils';
 
@@ -150,6 +150,7 @@ async function handleSubscriptionCheckoutInit(
   }
 
   const subscriptionId = session.subscription as string;
+  const stripe = getStripe();
 
   // ===== STEP 1: FETCH EXTERNAL API DATA (BEFORE TRANSACTION) =====
   // 2. Get COMPLETE Stripe subscription details including billing period
@@ -416,6 +417,7 @@ async function handleSubscriptionDeleted(stripeSubscription: Stripe.Subscription
 
 async function handleAsyncPaymentSucceeded(session: Stripe.Checkout.Session) {
   console.log(`Async payment succeeded: ${session.id}`);
+  const stripe = getStripe();
 
   // Retrieve the latest session state to ensure payment_status is up to date
   const latestSession = await stripe.checkout.sessions.retrieve(session.id);

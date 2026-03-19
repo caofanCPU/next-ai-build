@@ -1,10 +1,22 @@
 import Stripe from 'stripe';
 import { Apilogger, userService, subscriptionService } from '../services/database/index';
 
-// Stripe Configuration
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-11-17.clover',
-});
+let stripeInstance: Stripe | null = null;
+
+export const getStripe = (): Stripe => {
+  const apiKey = process.env.STRIPE_SECRET_KEY;
+  if (!apiKey) {
+    throw new Error('STRIPE_SECRET_KEY is not configured');
+  }
+
+  if (!stripeInstance) {
+    stripeInstance = new Stripe(apiKey, {
+      apiVersion: '2025-11-17.clover',
+    });
+  }
+
+  return stripeInstance;
+};
 
 // Helper function to validate webhook signature
 export const validateStripeWebhook = (
@@ -12,7 +24,7 @@ export const validateStripeWebhook = (
   signature: string,
   secret: string
 ): Stripe.Event => {
-  return stripe.webhooks.constructEvent(payload, signature, secret);
+  return getStripe().webhooks.constructEvent(payload, signature, secret);
 };
 
 export interface BasicCheckoutSessionParams {
@@ -95,7 +107,7 @@ export const createCheckoutSession = async (
   const logId = await Apilogger.logStripeOutgoing('createCheckoutSession', params);
 
   try {
-    const session = await stripe.checkout.sessions.create(sessionParams);
+    const session = await getStripe().checkout.sessions.create(sessionParams);
 
     // Update log record with response
     Apilogger.updateResponse(logId, {
@@ -116,7 +128,7 @@ export const createCheckoutSession = async (
 
 // 根据发票ID去查支付ID
 export const fetchPaymentId = async (invoiceId: string ): Promise<string> => {
-  const fullInvoice = await stripe.invoices.retrieve(invoiceId, {
+  const fullInvoice = await getStripe().invoices.retrieve(invoiceId, {
     expand: ['payments']
   });
   const payment = fullInvoice.payments?.data[0];
@@ -147,7 +159,7 @@ export const createOrGetCustomer = async (params: {
 
   if (user.stripeCusId) {
     try {
-      const customer = await stripe.customers.retrieve(user.stripeCusId);
+      const customer = await getStripe().customers.retrieve(user.stripeCusId);
       if ('deleted' in customer) {
         await setStripeCustomerId(null);
       } else {
@@ -164,7 +176,7 @@ export const createOrGetCustomer = async (params: {
   }
 
   if (user.email) {
-    const existingCustomers = await stripe.customers.list({
+    const existingCustomers = await getStripe().customers.list({
       email: user.email,
       limit: 1,
     });
@@ -201,7 +213,7 @@ export const createOrGetCustomer = async (params: {
   });
   
   try {
-    const customer = await stripe.customers.create(customerParams);
+    const customer = await getStripe().customers.create(customerParams);
     await setStripeCustomerId(customer.id);
     
     // Update log record with response
@@ -228,13 +240,13 @@ export const updateSubscription = async (params: {
 }): Promise<Stripe.Subscription> => {
   const { subscriptionId, priceId, prorationBehavior = 'create_prorations' } = params;
 
-  const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+  const subscription = await getStripe().subscriptions.retrieve(subscriptionId);
   
   // Create log record with request
   const logId = await Apilogger.logStripeOutgoing('updateSubscription', params);
   
   try {
-    const updatedSubscription = await stripe.subscriptions.update(subscriptionId, {
+    const updatedSubscription = await getStripe().subscriptions.update(subscriptionId, {
       items: [
         {
           id: subscription.items.data[0].id,
@@ -267,7 +279,7 @@ export const createCustomerPortalSession = async (params: {
   const logId = await Apilogger.logStripeOutgoing('createCustomerPortalSession', params);
 
   try {
-    const session = await stripe.billingPortal.sessions.create({
+    const session = await getStripe().billingPortal.sessions.create({
       customer: params.customerId,
       return_url: params.returnUrl,
     });
@@ -301,11 +313,11 @@ export const cancelSubscription = async (
     let result: Stripe.Subscription;
     
     if (cancelAtPeriodEnd) {
-      result = await stripe.subscriptions.update(subscriptionId, {
+      result = await getStripe().subscriptions.update(subscriptionId, {
         cancel_at_period_end: true,
       });
     } else {
-      result = await stripe.subscriptions.cancel(subscriptionId);
+      result = await getStripe().subscriptions.cancel(subscriptionId);
     }
     
     // Update log record with response
