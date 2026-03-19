@@ -21,7 +21,17 @@
         "NEXT_PUBLIC_*",
         "CLERK_SECRET_KEY",
         "CLERK_DEBUG",
-        "NEXT_PUBLIC_CLERK_*"
+        "NEXT_PUBLIC_CLERK_*",
+        "DATABASE_URL",
+        "CLERK_WEBHOOK_SECRET",
+        "ENABLE_STRIPE_SUBSCRIPTION_UPGRADE",
+        "SHOW_FINGERPRINT_STATUS",
+        "ACTIVE_PAYMENT_PROVIDER",
+        "MONEY_PRICE_*",
+        "CREDITS_*",
+        "STRIPE_*",
+        "UPSTASH_REDIS_*",
+        "QSTASH_*"
       ]
     },
     "build:prod": {
@@ -32,7 +42,17 @@
         "NEXT_PUBLIC_*",
         "CLERK_SECRET_KEY",
         "CLERK_DEBUG",
-        "NEXT_PUBLIC_CLERK_*"
+        "NEXT_PUBLIC_CLERK_*",
+        "DATABASE_URL",
+        "CLERK_WEBHOOK_SECRET",
+        "ENABLE_STRIPE_SUBSCRIPTION_UPGRADE",
+        "SHOW_FINGERPRINT_STATUS",
+        "ACTIVE_PAYMENT_PROVIDER",
+        "MONEY_PRICE_*",
+        "CREDITS_*",
+        "STRIPE_*",
+        "UPSTASH_REDIS_*",
+        "QSTASH_*"
       ]
     },
     "@windrun-huaiin/shared-assets#build": {
@@ -65,7 +85,17 @@
         "NODE_ENV",
         "CLERK_SECRET_KEY",
         "CLERK_DEBUG",
-        "NEXT_PUBLIC_CLERK_*"
+        "NEXT_PUBLIC_CLERK_*",
+        "DATABASE_URL",
+        "CLERK_WEBHOOK_SECRET",
+        "ENABLE_STRIPE_SUBSCRIPTION_UPGRADE",
+        "SHOW_FINGERPRINT_STATUS",
+        "ACTIVE_PAYMENT_PROVIDER",
+        "MONEY_PRICE_*",
+        "CREDITS_*",
+        "STRIPE_*",
+        "UPSTASH_REDIS_*",
+        "QSTASH_*"
       ]
     },
     "@windrun-huaiin/base-ui#build": {
@@ -80,7 +110,17 @@
         "NODE_ENV",
         "CLERK_SECRET_KEY",
         "CLERK_DEBUG",
-        "NEXT_PUBLIC_CLERK_*"
+        "NEXT_PUBLIC_CLERK_*",
+        "DATABASE_URL",
+        "CLERK_WEBHOOK_SECRET",
+        "ENABLE_STRIPE_SUBSCRIPTION_UPGRADE",
+        "SHOW_FINGERPRINT_STATUS",
+        "ACTIVE_PAYMENT_PROVIDER",
+        "MONEY_PRICE_*",
+        "CREDITS_*",
+        "STRIPE_*",
+        "UPSTASH_REDIS_*",
+        "QSTASH_*"
       ]
     },
     "@windrun-huaiin/dev-scripts#build:prod": {
@@ -102,7 +142,17 @@
         "NODE_ENV",
         "CLERK_SECRET_KEY",
         "CLERK_DEBUG",
-        "NEXT_PUBLIC_CLERK_*"
+        "NEXT_PUBLIC_CLERK_*",
+        "DATABASE_URL",
+        "CLERK_WEBHOOK_SECRET",
+        "ENABLE_STRIPE_SUBSCRIPTION_UPGRADE",
+        "SHOW_FINGERPRINT_STATUS",
+        "ACTIVE_PAYMENT_PROVIDER",
+        "MONEY_PRICE_*",
+        "CREDITS_*",
+        "STRIPE_*",
+        "UPSTASH_REDIS_*",
+        "QSTASH_*"
       ]
     },
     "@windrun-huaiin/base-ui#build:prod": {
@@ -116,7 +166,17 @@
         "NODE_ENV",
         "CLERK_SECRET_KEY",
         "CLERK_DEBUG",
-        "NEXT_PUBLIC_CLERK_*"
+        "NEXT_PUBLIC_CLERK_*",
+        "DATABASE_URL",
+        "CLERK_WEBHOOK_SECRET",
+        "ENABLE_STRIPE_SUBSCRIPTION_UPGRADE",
+        "SHOW_FINGERPRINT_STATUS",
+        "ACTIVE_PAYMENT_PROVIDER",
+        "MONEY_PRICE_*",
+        "CREDITS_*",
+        "STRIPE_*",
+        "UPSTASH_REDIS_*",
+        "QSTASH_*"
       ]
     },
     "@windrun-huaiin/shared-assets#build:prod": {
@@ -132,7 +192,17 @@
         "NODE_ENV",
         "NEXT_PUBLIC_*",
         "CLERK_SECRET_KEY",
-        "CLERK_DEBUG"
+        "CLERK_DEBUG",
+        "DATABASE_URL",
+        "CLERK_WEBHOOK_SECRET",
+        "ENABLE_STRIPE_SUBSCRIPTION_UPGRADE",
+        "SHOW_FINGERPRINT_STATUS",
+        "ACTIVE_PAYMENT_PROVIDER",
+        "MONEY_PRICE_*",
+        "CREDITS_*",
+        "STRIPE_*",
+        "UPSTASH_REDIS_*",
+        "QSTASH_*"
       ]
     },
     "lint": {
