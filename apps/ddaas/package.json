@@ -28,7 +28,7 @@
     "@clerk/localizations": "catalog:",
     "@clerk/nextjs": "catalog:",
     "@clerk/themes": "catalog:",
-    "@clerk/types": "catalog:",
+    "@clerk/shared": "catalog:",
     "@fingerprintjs/fingerprintjs": "catalog:",
     "@hookform/resolvers": "catalog:",
     "@radix-ui/react-alert-dialog": "catalog:",

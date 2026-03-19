@@ -1,5 +1,5 @@
 import { enUS, zhCN } from '@clerk/localizations';
-import type { LocalizationResource } from '@clerk/types';
+import type { LocalizationResource } from '@clerk/shared/types';
 
 // https://github.com/clerk/javascript/blob/main/packages/localizations/src/en-US.ts#L492
 // https://clerk.com/docs/customization/localization

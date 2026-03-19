@@ -81,7 +81,7 @@
   "dependencies": {
     "@clerk/localizations": "catalog:",
     "@clerk/nextjs": "catalog:",
-    "@clerk/types": "catalog:",
+    "@clerk/shared": "catalog:",
     "@fingerprintjs/fingerprintjs": "catalog:",
     "@windrun-huaiin/base-ui": "workspace:^",
     "@windrun-huaiin/lib": "workspace:^",
