@@ -1,5 +1,11 @@
 # @windrun-huaiin/dev-scripts
 
+## 14.1.1
+
+### Patch Changes
+
+- fix(cli): upgrade dependencies by cli command
+
 ## 14.1.0
 
 ### Minor Changes

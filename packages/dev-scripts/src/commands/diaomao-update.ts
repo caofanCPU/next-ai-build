@@ -17,7 +17,13 @@ interface UpdateRow {
   targetVersion: string
 }
 
-type SkipReason = 'skipped-same' | 'skipped-missing' | 'skipped-newer' | 'skipped-unresolved-catalog' | 'skipped-workspace'
+type SkipReason =
+  | 'skipped-same'
+  | 'skipped-missing'
+  | 'skipped-newer'
+  | 'skipped-unresolved-catalog'
+  | 'skipped-uncomparable'
+  | 'skipped-workspace'
 
 interface SkipRow {
   packageName: string
@@ -91,20 +97,36 @@ function stripProtocolPrefix(version: string): string {
   return version
 }
 
-function compareVersionSpecs(currentVersion: string, targetVersion: string): 'update' | 'same' | 'newer' {
+function isTagVersion(version: string): boolean {
+  return version === 'latest'
+}
+
+function getComparableMinVersion(version: string): { version: string } | null {
+  try {
+    return semver.minVersion(version)
+  } catch {
+    return null
+  }
+}
+
+function compareVersionSpecs(currentVersion: string, targetVersion: string): 'update' | 'same' | 'newer' | 'uncomparable' {
+  const normalizedCurrent = stripProtocolPrefix(currentVersion)
+  const normalizedTarget = stripProtocolPrefix(targetVersion)
+
+  if (isTagVersion(normalizedCurrent) || isTagVersion(normalizedTarget)) {
+    return 'uncomparable'
+  }
+
   if (currentVersion === targetVersion) {
     return 'same'
   }
-
-  const normalizedCurrent = stripProtocolPrefix(currentVersion)
-  const normalizedTarget = stripProtocolPrefix(targetVersion)
 
   if (normalizedCurrent === normalizedTarget) {
     return 'same'
   }
 
-  const currentMin = semver.minVersion(normalizedCurrent)
-  const targetMin = semver.minVersion(normalizedTarget)
+  const currentMin = getComparableMinVersion(normalizedCurrent)
+  const targetMin = getComparableMinVersion(normalizedTarget)
 
   if (currentMin && targetMin) {
     const comparison = semver.compare(currentMin, targetMin)
@@ -117,7 +139,7 @@ function compareVersionSpecs(currentVersion: string, targetVersion: string): 'up
     return 'update'
   }
 
-  return 'update'
+  return 'uncomparable'
 }
 
 function extractCatalog(workspaceContent: string): Record<string, string> {
@@ -314,6 +336,16 @@ export async function diaomaoUpdate(
           continue
         }
 
+        if (decision === 'uncomparable') {
+          skipRows.push({
+            packageName,
+            currentVersion: localCatalogVersion,
+            targetVersion,
+            reason: 'skipped-uncomparable'
+          })
+          continue
+        }
+
         localCatalog[packageName] = targetVersion
         workspaceChanged = true
         updatedRows.push({
@@ -342,6 +374,16 @@ export async function diaomaoUpdate(
           currentVersion: currentSpecifier,
           targetVersion,
           reason: 'skipped-same'
+        })
+        continue
+      }
+
+      if (decision === 'uncomparable') {
+        skipRows.push({
+          packageName,
+          currentVersion: currentSpecifier,
+          targetVersion,
+          reason: 'skipped-uncomparable'
         })
         continue
       }
