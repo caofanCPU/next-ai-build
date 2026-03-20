@@ -61,7 +61,7 @@ export async function Features({
             <div
               key={feature.id}
               data-feature-id={feature.id}
-              className="bg-white dark:bg-gray-800/60 p-8 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-purple-300 dark:hover:border-purple-500/50 transition shadow-sm dark:shadow-none"
+              className={cn("bg-white dark:bg-gray-800/60 p-8 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-current transition shadow-sm dark:shadow-none", themeIconColor)}
             >
               <div className="text-4xl mb-4 flex items-center justify-start">
                 <Icon className="w-8 h-8" />

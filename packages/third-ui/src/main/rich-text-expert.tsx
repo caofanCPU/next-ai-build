@@ -4,6 +4,13 @@ import { themeRichTextMarkClass } from '@windrun-huaiin/base-ui/lib';
 
 // default tag renderers
 const defaultTagRenderers = {
+  // text next line
+  br: (chunks: React.ReactNode) => (
+    <React.Fragment>
+      <br /> 
+      {chunks}
+    </React.Fragment>
+  ),
   // text Stong
   strong: (chunks: React.ReactNode) => <strong>{chunks}</strong>,
   // text Emphasis
