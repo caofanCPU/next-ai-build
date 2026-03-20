@@ -1,6 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import https from 'https'
+import { execSync } from 'child_process'
 import { parse, stringify } from 'yaml'
 import semver from 'semver'
 import { DevScriptsConfig } from '@dev-scripts/config/schema'
@@ -15,6 +16,11 @@ interface UpdateRow {
   packageName: string
   currentVersion: string
   targetVersion: string
+}
+
+interface ResolvedTargetVersion {
+  version: string
+  source: 'catalog' | 'npm'
 }
 
 type SkipReason =
@@ -38,6 +44,16 @@ const DEPENDENCY_SECTIONS: DependencySection[] = [
   'peerDependencies',
   'optionalDependencies'
 ]
+
+const UNKNOWN_VERSION = 'UNKNOWN'
+
+const NPM_TARGET_PACKAGES = [
+  '@windrun-huaiin/base-ui',
+  '@windrun-huaiin/lib',
+  '@windrun-huaiin/third-ui',
+  '@windrun-huaiin/backend-core',
+  '@windrun-huaiin/dev-scripts'
+] as const
 
 function fetchText(url: string): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -237,6 +253,61 @@ function printSkipDetails(skipRows: SkipRow[], compactLog: boolean): void {
   console.log(renderTable(skipRows, ['Package', 'Before', 'After', 'Reason']))
 }
 
+function resolveTargetVersions(
+  remoteCatalog: Record<string, string>,
+  allowedPackages: string[],
+  compactLog: boolean
+): Record<string, ResolvedTargetVersion> {
+  const resolvedTargets: Record<string, ResolvedTargetVersion> = {}
+  const npmPackagesToResolve = NPM_TARGET_PACKAGES.filter((packageName) => allowedPackages.includes(packageName))
+
+  for (const [packageName, version] of Object.entries(remoteCatalog)) {
+    resolvedTargets[packageName] = {
+      version,
+      source: 'catalog'
+    }
+  }
+
+  for (const packageName of npmPackagesToResolve) {
+    const command = `npm view ${packageName} version`
+
+    if (!compactLog) {
+      console.log(`[diaomao-update] resolving via npm: ${command}`)
+    }
+
+    try {
+      const version = execSync(command, {
+        encoding: 'utf8',
+        stdio: ['ignore', 'pipe', 'pipe']
+      }).trim() || UNKNOWN_VERSION
+
+      resolvedTargets[packageName] = {
+        version,
+        source: 'npm'
+      }
+
+      if (!compactLog) {
+        console.log(`[diaomao-update] resolved ${packageName}: ${version}`)
+      }
+    } catch (error) {
+      resolvedTargets[packageName] = {
+        version: UNKNOWN_VERSION,
+        source: 'npm'
+      }
+
+      if (!compactLog) {
+        const stderr = error instanceof Error && 'stderr' in error && typeof error.stderr === 'string'
+          ? error.stderr.trim()
+          : String(error)
+        console.log(`[diaomao-update] resolved ${packageName}: ${UNKNOWN_VERSION}`)
+        console.log(`[diaomao-update] npm query failed for ${packageName}: ${stderr || 'unknown error'}`)
+      }
+    }
+  }
+
+  return resolvedTargets
+}
+
 export async function diaomaoUpdate(
   config: DevScriptsConfig,
   cwd: string = typeof process !== 'undefined' ? process.cwd() : '.'
@@ -267,6 +338,7 @@ export async function diaomaoUpdate(
   console.log(`Reading update source: ${sourceUrl}`)
   const remoteWorkspaceContent = await fetchText(sourceUrl)
   const remoteCatalog = extractCatalog(remoteWorkspaceContent)
+  const resolvedTargets = resolveTargetVersions(remoteCatalog, allowedPackages, compactLog)
 
   const updatedRows: UpdateRow[] = []
   const skipRows: SkipRow[] = []
@@ -275,7 +347,8 @@ export async function diaomaoUpdate(
   let workspaceChanged = false
 
   for (const packageName of allowedPackages) {
-    const targetVersion = remoteCatalog[packageName]
+    const resolvedTarget = resolvedTargets[packageName]
+    const targetVersion = resolvedTarget?.version
 
     if (!targetVersion) {
       continue
@@ -353,6 +426,10 @@ export async function diaomaoUpdate(
           currentVersion: localCatalogVersion,
           targetVersion
         })
+
+        if (!compactLog) {
+          console.log(`[diaomao-update] updated ${packageName} from ${localCatalogVersion} to ${targetVersion} (source: ${resolvedTarget.source})`)
+        }
         continue
       }
 
@@ -395,6 +472,10 @@ export async function diaomaoUpdate(
         currentVersion: currentSpecifier,
         targetVersion
       })
+
+      if (!compactLog) {
+        console.log(`[diaomao-update] updated ${packageName} from ${currentSpecifier} to ${targetVersion} (source: ${resolvedTarget.source})`)
+      }
     }
 
     if (!matched) {
@@ -427,6 +508,14 @@ export async function diaomaoUpdate(
   console.log('')
   console.log(`Updated ${updatedRows.length} package version(s).`)
   printSkipDetails(skipRows, compactLog)
+
+  if (updatedRows.length > 0) {
+    console.log('\n执行 pnpm install中...')
+    execSync('pnpm install', {
+      cwd,
+      stdio: 'inherit'
+    })
+  }
 
   return 0
 }

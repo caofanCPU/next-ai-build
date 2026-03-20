@@ -1,5 +1,15 @@
 # @windrun-huaiin/ddaas-website
 
+## 14.0.4
+
+### Patch Changes
+
+- fix(cli): upgrade dependencies by cli command
+- Updated dependencies
+  - @windrun-huaiin/base-ui@14.0.2
+  - @windrun-huaiin/third-ui@14.0.1
+  - @windrun-huaiin/lib@14.0.0
+
 ## 14.0.3
 
 ### Patch Changes
