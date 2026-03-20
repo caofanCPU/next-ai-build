@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+import fs from 'fs'
+import path from 'path'
 import { program } from 'commander'
 import { loadConfig, validateConfig } from '@dev-scripts/config'
 import { checkTranslations } from '@dev-scripts/commands/check-translations'
@@ -14,11 +16,13 @@ import { diaomaoUpdate } from '@dev-scripts/commands/diaomao-update'
 
 // get current working directory, ensure it works in Node.js environment
 const cwd = typeof process !== 'undefined' ? process.cwd() : '.'
+const cliPackageJsonPath = path.resolve(__dirname, '../package.json')
+const cliPackageJson = JSON.parse(fs.readFileSync(cliPackageJsonPath, 'utf8')) as { version?: string }
 
 program
   .name('dev-scripts')
   .description('development scripts for multi-language projects')
-  .version('5.0.0')
+  .version(cliPackageJson.version || '0.0.0')
 
 program
   .command('check-translations')

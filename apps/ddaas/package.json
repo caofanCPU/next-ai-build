@@ -11,6 +11,8 @@
     "start": "next start",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
+    "diaomao-help": "dev-scripts -h",
+    "diaomao-update": "dev-scripts diaomao-update -v",
     "generate-blog-index": "dev-scripts generate-blog-index -v",
     "check-translations": "dev-scripts check-translations -v",
     "clean-translations": "dev-scripts clean-translations -v",

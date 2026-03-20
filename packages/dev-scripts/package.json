@@ -4,8 +4,7 @@
   "description": "Development scripts for multilingual projects",
   "main": "dist/index.js",
   "bin": {
-    "dev-scripts": "./bin/dev-scripts",
-    "diaomao-update": "./bin/diaomao-update"
+    "dev-scripts": "./bin/dev-scripts"
   },
   "scripts": {
     "build": "rollup -c rollup.config.mjs",
