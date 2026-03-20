@@ -1,5 +1,16 @@
 # @windrun-huaiin/dev-scripts
 
+## 14.1.0
+
+### Minor Changes
+
+- feat(cli): support command cli for upgrade common dependencies above:
+  - `pnpm exec dev-scripts -h`
+  - `pnpm exec dev-scripts diaomao-update -v`
+  - We recommand you config you pnpm scripts command alias like below
+  - `"diaomao-help": "dev-scripts -h"`,
+  - `"diaomao-update": "dev-scripts diaomao-update -v"`,
+
 ## 14.0.0
 
 ### Major Changes

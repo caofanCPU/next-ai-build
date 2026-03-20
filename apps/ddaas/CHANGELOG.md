@@ -1,5 +1,20 @@
 # @windrun-huaiin/ddaas-website
 
+## 14.0.2
+
+### Patch Changes
+
+- feat(cli): support command cli for upgrade common dependencies above:
+  - `pnpm exec dev-scripts -h`
+  - `pnpm exec dev-scripts diaomao-update -v`
+  - We recommand you config you pnpm scripts command alias like below
+  - `"diaomao-help": "dev-scripts -h"`,
+  - `"diaomao-update": "dev-scripts diaomao-update -v"`,
+- Updated dependencies
+  - @windrun-huaiin/base-ui@14.0.1
+  - @windrun-huaiin/third-ui@14.0.0
+  - @windrun-huaiin/lib@14.0.0
+
 ## 14.0.1
 
 ### Patch Changes
