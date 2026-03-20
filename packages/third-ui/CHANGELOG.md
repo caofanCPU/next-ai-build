@@ -1,5 +1,14 @@
 # @windrun-huaiin/third-ui
 
+## 14.0.1
+
+### Patch Changes
+
+- feat(cli): support newline in translation message by richtext
+- Updated dependencies
+  - @windrun-huaiin/base-ui@14.0.2
+  - @windrun-huaiin/lib@14.0.0
+
 ## 14.0.0
 
 ### Major Changes
