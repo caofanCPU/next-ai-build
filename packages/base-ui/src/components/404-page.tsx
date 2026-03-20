@@ -70,7 +70,7 @@ export function NotFoundPage({ siteIcon }: NotFoundPageProps) {
             {siteIcon}
             <span>Woops!</span>
           </div>
-          <div className={cn("w-1 h-1 rounded-full animate-ping", themeBgColor)} />
+          <div className={cn("w-2 h-2 rounded-full animate-ping", themeBgColor)} />
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <NotFoundIcon />
             <span>Error Code: 404</span>
