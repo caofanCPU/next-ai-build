@@ -10,6 +10,7 @@ import { easyChangeset } from '@dev-scripts/commands/easy-changeset'
 import { generateNextjsArchitecture } from '@dev-scripts/commands/generate-nextjs-architecture'
 import { createDiaomaoApp } from '@dev-scripts/commands/create-diaomao-app'
 import { registerBackendCoreCommands } from '@dev-scripts/commands/backend-core'
+import { diaomaoUpdate } from '@dev-scripts/commands/diaomao-update'
 
 // get current working directory, ensure it works in Node.js environment
 const cwd = typeof process !== 'undefined' ? process.cwd() : '.'
@@ -157,6 +158,37 @@ program
       }
       validateConfig(config)
       const exitCode = await generateNextjsArchitecture(config, cwd)
+      if (typeof process !== 'undefined') {
+        process.exit(exitCode)
+      }
+    } catch (error) {
+      console.error('Error:', error)
+      if (typeof process !== 'undefined') {
+        process.exit(1)
+      }
+    }
+  })
+
+program
+  .command('diaomao-update')
+  .description('sync allowed dependency versions from the remote diaomao workspace source')
+  .option('-v, --verbose', 'show detailed logs', false)
+  .action(async (options) => {
+    try {
+      const config = loadConfig(cwd, {
+        diaomaoUpdate: {
+          compactLog: options.verbose ? false : undefined
+        }
+      }, options.verbose)
+
+      if (options.verbose) {
+        config.output.verbose = true
+      }
+
+      validateConfig(config)
+
+      const exitCode = await diaomaoUpdate(config, cwd)
+
       if (typeof process !== 'undefined') {
         process.exit(exitCode)
       }

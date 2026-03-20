@@ -30,6 +30,13 @@ export interface DevScriptsConfig {
 
   // architecture anotion config
   architectureConfig?: Record<string, string>
+
+  // diaomao update config
+  diaomaoUpdate?: {
+    sourceUrl?: string
+    allowedPackages?: string[]
+    compactLog?: boolean
+  }
 }
 
 export interface PackageJsonDevScripts {
@@ -61,6 +68,11 @@ export const DEFAULT_CONFIG: DevScriptsConfig = {
   output: {
     logDir: 'logs',
     verbose: false
+  },
+  diaomaoUpdate: {
+    sourceUrl: 'https://raw.githubusercontent.com/caofanCPU/next-ai-build/main/pnpm-workspace.yaml',
+    allowedPackages: [],
+    compactLog: true
   },
   architectureConfig: {
     ".": "项目根目录",

@@ -19,6 +19,33 @@
     "logDir": "logs",
     "verbose": false
   },
+  "diaomaoUpdate": {
+    "sourceUrl": "https://raw.githubusercontent.com/caofanCPU/next-ai-build/main/pnpm-workspace.yaml",
+    "allowedPackages": [
+      "@clerk/localizations",
+      "@clerk/nextjs",
+      "@clerk/shared",
+      "@clerk/themes",
+      "@prisma/client",
+      "@tailwindcss/cli",
+      "@tailwindcss/postcss",
+      "fumadocs-core",
+      "fumadocs-docgen",
+      "fumadocs-mdx",
+      "fumadocs-typescript",
+      "fumadocs-ui",
+      "mermaid",
+      "next",
+      "next-intl",
+      "next-themes",
+      "prisma",
+      "react",
+      "react-dom",
+      "stripe",
+      "tailwindcss"
+    ],
+    "compactLog": true
+  },
   "architectureConfig": {
     ".": "DDAAS项目"
   }

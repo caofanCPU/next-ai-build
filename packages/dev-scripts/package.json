@@ -4,7 +4,8 @@
   "description": "Development scripts for multilingual projects",
   "main": "dist/index.js",
   "bin": {
-    "dev-scripts": "./bin/dev-scripts"
+    "dev-scripts": "./bin/dev-scripts",
+    "diaomao-update": "./bin/diaomao-update"
   },
   "scripts": {
     "build": "rollup -c rollup.config.mjs",
@@ -14,14 +15,16 @@
     "prepublishOnly": "pnpm build"
   },
   "dependencies": {
-    "fast-glob": "catalog:",
     "commander": "catalog:",
+    "fast-glob": "catalog:",
+    "fs-extra": "catalog:",
     "picocolors": "catalog:",
-    "fs-extra": "catalog:"
+    "semver": "catalog:",
+    "yaml": "catalog:"
   },
   "devDependencies": {
-    "@types/node": "catalog:",
     "@types/fs-extra": "catalog:",
+    "@types/node": "catalog:",
     "typescript": "catalog:"
   },
   "peerDependencies": {

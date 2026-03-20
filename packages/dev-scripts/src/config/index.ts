@@ -170,6 +170,13 @@ function printConfigInfo(config: DevScriptsConfig, sources: string[], cwd: strin
   console.log('\n📤 output:')
   console.log(`   logDir: ${config.output.logDir}`)
   console.log(`   verbose: ${config.output.verbose}`)
+
+  if (config.diaomaoUpdate) {
+    console.log('\n📦 diaomaoUpdate:')
+    console.log(`   sourceUrl: ${config.diaomaoUpdate.sourceUrl || 'not set'}`)
+    console.log(`   allowedPackages: [${(config.diaomaoUpdate.allowedPackages || []).join(', ')}]`)
+    console.log(`   compactLog: ${config.diaomaoUpdate.compactLog !== false}`)
+  }
   console.log('')
 }
 
@@ -188,4 +195,8 @@ export function validateConfig(config: DevScriptsConfig): void {
   if (config.scan.include.length === 0) {
     throw new Error('at least one scan path is required')
   }
-} 
+
+  if (config.diaomaoUpdate?.allowedPackages && !Array.isArray(config.diaomaoUpdate.allowedPackages)) {
+    throw new Error('diaomaoUpdate.allowedPackages must be an array')
+  }
+}

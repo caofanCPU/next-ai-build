@@ -19,7 +19,20 @@
     "logDir": "scripts",
     "verbose": false
   },
+  "diaomaoUpdate": {
+    "sourceUrl": "https://raw.githubusercontent.com/caofanCPU/next-ai-build/main/pnpm-workspace.yaml",
+    "allowedPackages": [
+      "@clerk/nextjs",
+      "@clerk/themes",
+      "@prisma/client",
+      "next",
+      "react",
+      "react-dom",
+      "stripe"
+    ],
+    "compactLog": true
+  },
   "architectureConfig": {
     ".": "RootProject"
   }
-} 
+}

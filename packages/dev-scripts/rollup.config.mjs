@@ -15,6 +15,8 @@ const baseConfig = {
     'fast-glob',
     'picocolors',
     'fs-extra',
+    'semver',
+    'yaml',
     'fs',
     'path',
     'child_process',
