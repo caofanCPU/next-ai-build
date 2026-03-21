@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import {
   createFingerprintHeaders,
+  getOrCreateFirstTouchData,
   getOrGenerateFingerprintId
 } from './fingerprint-client';
 import type {
@@ -47,6 +48,8 @@ export function useFingerprint(config: FingerprintConfig): UseFingerprintResult 
    */
   const initializeFingerprintId = useCallback(async () => {
     try {
+      // Capture first-touch as early as possible before any in-site navigation can overwrite context.
+      getOrCreateFirstTouchData();
       const currentFingerprintId = await getOrGenerateFingerprintId();
       console.log('Initialized fingerprintId:', currentFingerprintId);
       setFingerprintIdState(currentFingerprintId);

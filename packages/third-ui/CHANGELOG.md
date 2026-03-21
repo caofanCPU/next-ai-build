@@ -1,5 +1,15 @@
 # @windrun-huaiin/third-ui
 
+## 14.0.2
+
+### Patch Changes
+
+- fix(user): user first source ref issue fixed
+  - Support img loading delay test by env switch `DelayedImg`
+- Updated dependencies
+  - @windrun-huaiin/base-ui@14.0.2
+  - @windrun-huaiin/lib@14.0.0
+
 ## 14.0.1
 
 ### Patch Changes
