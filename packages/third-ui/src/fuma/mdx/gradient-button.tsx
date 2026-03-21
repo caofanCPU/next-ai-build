@@ -16,6 +16,7 @@ export interface GradientButtonProps {
   // for Link
   href?: string;
   openInNewTab?: boolean;
+  preserveReferrer?: boolean;
   
   // for click
   onClick?: () => void | Promise<void>;
@@ -31,6 +32,7 @@ export function GradientButton({
   className = "",
   href,
   openInNewTab = true,
+  preserveReferrer = false,
   onClick,
   loadingText,
   preventDoubleClick = true,
@@ -157,7 +159,7 @@ export function GradientButton({
         <Link
           href={href || "#"}
           className={cn(buttonClassName, "no-underline hover:no-underline")}
-          {...(openInNewTab ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+          {...(openInNewTab ? { target: "_blank", rel: preserveReferrer ? 'noopener' : 'noopener noreferrer' } : {})}
           onClick={isDisabled ? (e) => e.preventDefault() : undefined}
           aria-disabled={isDisabled}
         >
