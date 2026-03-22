@@ -5,7 +5,7 @@
   return this.toString();
 };
 
-import { userAggregateService } from '@/aggregate/user.aggregate.service';
+import { anonymousAggregateService } from '@/aggregate/anonymous.aggregate.service';
 import type { XCredit, XSubscription, XUser } from '@windrun-huaiin/third-ui/fingerprint';
 import { extractFingerprintFromNextRequest } from '@windrun-huaiin/third-ui/fingerprint/server';
 import { auth } from '@clerk/nextjs/server';
@@ -306,6 +306,35 @@ function detectChannelFromPlatform(platform: string | null | undefined): string 
   }
 }
 
+function detectChannelFromUtmMedium(value: string | null | undefined): string | null {
+  const normalized = value?.trim().toLowerCase();
+  if (!normalized) {
+    return null;
+  }
+
+  if (/^(cpc|ppc|paid|paid_search|display|banner|affiliate|email|newsletter|push|sms)$/.test(normalized)) {
+    return 'campaign';
+  }
+
+  if (/^(social|social_paid|social-organic|social_organic)$/.test(normalized)) {
+    return 'social';
+  }
+
+  if (/^(organic|seo|search)$/.test(normalized)) {
+    return 'search';
+  }
+
+  if (/^(referral|partner)$/.test(normalized)) {
+    return 'referral';
+  }
+
+  if (/^(ai|llm)$/.test(normalized)) {
+    return 'ai';
+  }
+
+  return 'campaign';
+}
+
 function parseUserAgent(request: NextRequest): Pick<SourceRefData, 'userAgent' | 'deviceType' | 'os' | 'browser' | 'secChUaMobile' | 'secChUaPlatform'> {
   const userAgentHeader = request.headers.get('user-agent');
   const secChUaMobile = normalizeQueryParam(request.headers.get('sec-ch-ua-mobile')) ?? undefined;
@@ -430,6 +459,21 @@ function finalizeAttribution(sourceRef: SourceRefData) {
   const landingHost = normalizeHost(sourceRef.landingHost);
   const refererHost = normalizeHost(sourceRef.refererHost);
   const internal = isInternalReferer(landingHost, refererHost);
+  const hasCampaignMarker = Boolean(
+    sourceRef.utmSource
+    || sourceRef.utmMedium
+    || sourceRef.utmCampaign
+    || sourceRef.utmTerm
+    || sourceRef.utmContent
+    || sourceRef.utmId
+    || sourceRef.ref
+    || sourceRef.gclid
+    || sourceRef.fbclid
+    || sourceRef.msclkid
+    || sourceRef.ttclid
+    || sourceRef.twclid
+    || sourceRef.liFatId
+  );
   if (internal) {
     sourceRef.isInternalReferer = true;
   }
@@ -437,7 +481,10 @@ function finalizeAttribution(sourceRef: SourceRefData) {
   const utmPlatform = detectPlatform(sourceRef.utmSource) || detectPlatform(sourceRef.ref);
   if (utmPlatform) {
     sourceRef.sourcePlatform = utmPlatform;
-    sourceRef.sourceChannel = detectChannelFromPlatform(utmPlatform) ?? sourceRef.sourceChannel ?? 'campaign';
+    sourceRef.sourceChannel = detectChannelFromPlatform(utmPlatform)
+      ?? detectChannelFromUtmMedium(sourceRef.utmMedium)
+      ?? sourceRef.sourceChannel
+      ?? 'campaign';
     sourceRef.sourceType = 'campaign';
     return;
   }
@@ -484,9 +531,16 @@ function finalizeAttribution(sourceRef: SourceRefData) {
     return;
   }
 
+  if (hasCampaignMarker) {
+    sourceRef.sourcePlatform = 'other';
+    sourceRef.sourceChannel = detectChannelFromUtmMedium(sourceRef.utmMedium) ?? 'campaign';
+    sourceRef.sourceType = 'campaign';
+    return;
+  }
+
   if (!internal && refererHost) {
     const refererPlatform = detectPlatform(refererHost) || detectPlatform(sourceRef.httpRefer);
-    sourceRef.sourcePlatform = refererPlatform ?? getRootDomain(refererHost) ?? refererHost;
+    sourceRef.sourcePlatform = refererPlatform ?? 'other';
     sourceRef.sourceChannel = detectChannelFromPlatform(refererPlatform) ?? 'referral';
     sourceRef.sourceType = 'referer';
     return;
@@ -624,22 +678,27 @@ async function handleFingerprintRequest(request: NextRequest, options: { createI
 
     const sourceRef = extractSourceRef(request);
 
-    // 创建新的匿名用户
-    const { newUser, credit } = await userAggregateService.initAnonymousUser(
+    const anonymousInitResult = await anonymousAggregateService.getOrCreateByFingerprintId(
       fingerprintId,
       { sourceRef: sourceRef??  undefined}
     );
 
-    console.log(`Created new anonymous user ${newUser.userId} with fingerprint ${fingerprintId}`);
+    if (anonymousInitResult.isNewUser) {
+      console.log(`Created new anonymous user ${anonymousInitResult.user.userId} with fingerprint ${fingerprintId}`);
+    }
 
     // 返回创建结果
     const response = createSuccessResponse({
       entities: {
-        user: newUser,
-        credit,
-        subscription: null,
+        user: anonymousInitResult.user,
+        credit: anonymousInitResult.credit,
+        subscription: anonymousInitResult.subscription,
       },
-      isNewUser: true,
+      isNewUser: anonymousInitResult.isNewUser,
+      options: {
+        totalUsersOnDevice: anonymousInitResult.totalUsersOnDevice,
+        hasAnonymousUser: anonymousInitResult.hasAnonymousUser,
+      },
     });
     return NextResponse.json(response);
 

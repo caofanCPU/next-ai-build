@@ -7,6 +7,8 @@ import React, { createContext, useContext, useEffect, useMemo, useRef, useState 
 import type { FingerprintContextType, FingerprintProviderProps } from './types';
 import { useFingerprint } from './use-fingerprint';
 import { CopyableText } from '@windrun-huaiin/base-ui/ui';
+import { createFingerprintHeaders, setFingerprintId } from './fingerprint-client';
+import { FINGERPRINT_SOURCE_REFER } from './fingerprint-shared';
 
 const FingerprintContext = createContext<FingerprintContextType | undefined>(undefined);
 
@@ -73,10 +75,16 @@ export function FingerprintStatus() {
     xUser, 
     xCredit, 
     xSubscription,
-    error 
+    error,
+    clearError,
+    initializeAnonymousUser,
   } = useFingerprintContext();
 
   const [isOpen, setIsOpen] = useState(false);
+  const [panelMode, setPanelMode] = useState<'info' | 'test'>('info');
+  const [testFingerprintId, setTestFingerprintId] = useState('');
+  const [testResult, setTestResult] = useState<string>('');
+  const [isRunningTest, setIsRunningTest] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
 
   const handleToggle = () => setIsOpen(prev => !prev);
@@ -99,12 +107,21 @@ export function FingerprintStatus() {
     }
   }, [xUser]);
 
+  useEffect(() => {
+    if (testFingerprintId) {
+      return;
+    }
+
+    const defaultFingerprintId = buildDebugFingerprintId();
+    setTestFingerprintId(defaultFingerprintId);
+  }, [testFingerprintId]);
+
   const creditBuckets = useMemo(() => {
     if (!xCredit) return [];
     return [
       {
         key: 'paid',
-        label: '订阅积分',
+        label: 'Paid',
         icon: <icons.Settings2 className="size-4 text-green-500 dark:text-green-300" />,
         balance: xCredit.balancePaid,
         total: xCredit.totalPaidLimit,
@@ -113,7 +130,7 @@ export function FingerprintStatus() {
       },
       {
         key: 'oneTimePaid',
-        label: '一次性积分',
+        label: 'OneTimePaid',
         icon: <icons.Coins className="size-4 text-amber-500 dark:text-amber-300" />,
         balance: xCredit.balanceOneTimePaid,
         total: xCredit.totalOneTimePaidLimit,
@@ -122,7 +139,7 @@ export function FingerprintStatus() {
       },
       {
         key: 'free',
-        label: '免费积分',
+        label: 'Free',
         icon: <icons.Gift className="size-4 text-purple-500 dark:text-purple-300" />,
         balance: xCredit.balanceFree,
         total: xCredit.totalFreeLimit,
@@ -135,10 +152,10 @@ export function FingerprintStatus() {
   const subscriptionStatus = useMemo(() => {
     if (!xSubscription) {
       return {
-        status: '未订阅',
+        status: 'Never',
         priceName: '--',
         creditsAllocated: '--',
-        period: '无记录',
+        period: 'Unavailable',
       };
     }
     return {
@@ -154,6 +171,114 @@ export function FingerprintStatus() {
   const userStatus = xUser?.status || '--';
   const totalCredits = formatNumber(xCredit?.totalBalance);
   const subStatus = subscriptionStatus.status;
+  const themedGhostButtonClass = cn(
+    'border-slate-200 bg-white/90 hover:bg-slate-50 dark:border-white/10 dark:bg-slate-950/80 dark:hover:bg-slate-900',
+    'hover:border-current',
+    themeIconColor
+  );
+
+  const runContextParallelInitTest = async () => {
+    setIsRunningTest(true);
+    setTestResult('Running context parallel init x3...');
+
+    try {
+      await Promise.all([
+        initializeAnonymousUser(),
+        initializeAnonymousUser(),
+        initializeAnonymousUser(),
+      ]);
+      setTestResult(`Context parallel init finished. Active fingerprint: ${fingerprintId || '--'}`);
+    } catch (testError) {
+      setTestResult(`Context parallel init failed: ${formatErrorMessage(testError)}`);
+    } finally {
+      setIsRunningTest(false);
+    }
+  };
+
+  const runRawParallelPostTest = async () => {
+    const normalizedFingerprintId = testFingerprintId.trim();
+    if (!normalizedFingerprintId) {
+      setTestResult('Please input a valid test fingerprint id.');
+      return;
+    }
+
+    setIsRunningTest(true);
+    setTestResult(`Running raw POST x3 with fingerprint: ${normalizedFingerprintId}`);
+
+    try {
+      const fingerprintHeaders = await createFingerprintHeaders();
+      const requests = Array.from({ length: 3 }, () => fetch('/api/user/anonymous/init', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          [FINGERPRINT_SOURCE_REFER]: document.referrer || '',
+          ...fingerprintHeaders,
+          'x-fingerprint-id-v8': normalizedFingerprintId,
+        },
+        body: JSON.stringify({ fingerprintId: normalizedFingerprintId }),
+      }));
+
+      const responses = await Promise.all(requests);
+      const payloads = await Promise.all(responses.map(async (response) => {
+        const data = await response.json().catch(() => ({}));
+        return {
+          ok: response.ok,
+          status: response.status,
+          isNewUser: typeof data?.isNewUser === 'boolean' ? data.isNewUser : null,
+          userId: typeof data?.xUser?.userId === 'string' ? data.xUser.userId : '--',
+          fingerprintId: typeof data?.xUser?.fingerprintId === 'string' ? data.xUser.fingerprintId : normalizedFingerprintId,
+          error: typeof data?.error === 'string' ? data.error : null,
+        };
+      }));
+
+      const createdUserIds = payloads
+        .filter((payload) => payload.ok && payload.isNewUser === true && payload.userId !== '--')
+        .map((payload) => payload.userId);
+      const reusedUserIds = payloads
+        .filter((payload) => payload.ok && payload.isNewUser === false && payload.userId !== '--')
+        .map((payload) => payload.userId);
+      const failedStatuses = payloads
+        .filter((payload) => !payload.ok)
+        .map((payload) => `${payload.status}${payload.error ? `:${payload.error}` : ''}`);
+
+      setTestResult(
+        [
+          `Raw POST x3 done.`,
+          `created=${createdUserIds.length}`,
+          `reused=${reusedUserIds.length}`,
+          `failed=${failedStatuses.length}`,
+          `createdUserIds=[${createdUserIds.join(', ')}]`,
+          failedStatuses.length > 0 ? `failedStatuses=[${failedStatuses.join(', ')}]` : null,
+        ].filter(Boolean).join('\n')
+      );
+    } catch (testError) {
+      setTestResult(`Raw POST test failed: ${formatErrorMessage(testError)}`);
+    } finally {
+      setIsRunningTest(false);
+    }
+  };
+
+  const applyTestFingerprintAndReload = () => {
+    const normalizedFingerprintId = testFingerprintId.trim();
+    if (!normalizedFingerprintId) {
+      setTestResult('Please input a valid test fingerprint id before applying.');
+      return;
+    }
+
+    try {
+      setFingerprintId(normalizedFingerprintId);
+      setTestResult(`Applied test fingerprint and reloading: ${normalizedFingerprintId}`);
+      window.location.reload();
+    } catch (testError) {
+      setTestResult(`Apply test fingerprint failed: ${formatErrorMessage(testError)}`);
+    }
+  };
+
+  const regenerateTestFingerprint = () => {
+    const nextFingerprintId = buildDebugFingerprintId();
+    setTestFingerprintId(nextFingerprintId);
+    setTestResult(`Generated test fingerprint: ${nextFingerprintId}`);
+  };
 
   return (
     <>
@@ -193,94 +318,213 @@ export function FingerprintStatus() {
                   <icons.ShieldUser className="size-4" />
                   Fingerprint Debug Panel
                 </div>
-                <button
-                  type="button"
-                  aria-label="Close fingerprint panel"
-                  className="rounded-full p-2 text-slate-500 transition hover:bg-slate-100 hover:text-slate-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white"
-                  onClick={() => setIsOpen(false)}
-                >
-                  <icons.X className="size-4" />
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setPanelMode((prev) => prev === 'info' ? 'test' : 'info')}
+                    className={cn(
+                      'inline-flex items-center gap-2 rounded-full border px-2 py-1 text-[11px] font-semibold shadow-sm transition-all duration-200',
+                      panelMode === 'test'
+                        ? cn('border-transparent text-white', themeButtonGradientClass, themeButtonGradientHoverClass)
+                        : themedGhostButtonClass
+                    )}
+                    aria-pressed={panelMode === 'test'}
+                  >
+                    <span>Concurrent Test</span>
+                    <span
+                      className={cn(
+                        'relative inline-flex h-5 w-9 items-center rounded-full transition-colors',
+                        panelMode === 'test'
+                          ? 'bg-white/25'
+                          : 'bg-slate-300 dark:bg-slate-700'
+                      )}
+                    >
+                      <span
+                        className={cn(
+                          'inline-block size-4 rounded-full shadow-sm transition-transform',
+                          panelMode === 'test' ? 'bg-white' : 'bg-white dark:bg-slate-100',
+                          panelMode === 'test' ? 'translate-x-4' : 'translate-x-0.5'
+                        )}
+                      />
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    aria-label="Close fingerprint panel"
+                    className="rounded-full p-2 text-slate-500 transition hover:bg-slate-100 hover:text-slate-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <icons.X className="size-4" />
+                  </button>
+                </div>
               </div>
             </header>
 
             <section className="space-y-1">
-              {/* 用户信息 */}
-              <PanelSection
-                icon={<icons.Fingerprint className="size-4" />}
-                title="用户信息"
-                rightInfo={<StatusTag value={userStatus} />}
-                items={[
-                  { label: '用户ID', value: <CopyableText text={xUser?.userId || ''} /> },
-                  { label: '用户昵称', value: <CopyableText text={xUser?.userName || ''} /> },
-                  { label: 'FingerprintID', value: <CopyableText text={xUser?.fingerprintId || fingerprintId || ''} /> },
-                  { label: 'Clerk用户', value: <CopyableText text={xUser?.clerkUserId || ''} /> },
-                  { label: '邮箱', value: <CopyableText text={xUser?.email || ''} /> },
-                  { label: 'Stripe客户', value: <CopyableText text={xUser?.stripeCusId || ''} /> },
-                  { label: '创建时间', value: xUser?.createdAt || '--' },
-                ]}
-              />
+              {panelMode === 'info' ? (
+                <>
+                  <PanelSection
+                    icon={<icons.Fingerprint className="size-4" />}
+                    title="User"
+                    rightInfo={<StatusTag value={userStatus} />}
+                    items={[
+                      { label: 'UserID', value: <CopyableText text={xUser?.userId || ''} /> },
+                      { label: 'NickName', value: <CopyableText text={xUser?.userName || ''} /> },
+                      { label: 'FingerprintID', value: <CopyableText text={xUser?.fingerprintId || fingerprintId || ''} /> },
+                      { label: 'ClerkUserID', value: <CopyableText text={xUser?.clerkUserId || ''} /> },
+                      { label: 'Email', value: <CopyableText text={xUser?.email || ''} /> },
+                      { label: 'StripeCusID', value: <CopyableText text={xUser?.stripeCusId || ''} /> },
+                      { label: 'CreatedAt', value: xUser?.createdAt || '--' },
+                    ]}
+                  />
 
-              {/* 积分信息 */}
-              <div className="space-y-2 rounded-xl border border-slate-200/70 bg-white/80 p-4 shadow-sm dark:border-white/12 dark:bg-slate-900/50">
-                <PanelHeader
-                  icon={<icons.Gem className="size-4" />}
-                  title="积分信息"
-                  rightInfo={<span className={cn("font-semibold", themeIconColor)}>{totalCredits}</span>}
-                />
-                <div className="space-y-3">
-                  {creditBuckets.length > 0 ? (
-                    creditBuckets.map((bucket) => {
-                      const percent = Math.round(computeProgress(bucket.balance, bucket.total) * 100);
-                      return (
-                        <div key={bucket.key} className="rounded-lg border border-slate-200/70 bg-white/70 p-3 dark:border-white/10 dark:bg-slate-900/40">
-                          <div className="flex items-center justify-between text-xs font-medium text-slate-600 dark:text-slate-300">
-                            <div className="flex items-center gap-1.5">
-                              {bucket.icon}
-                              <span>{bucket.label}</span>
+                  <div className="space-y-2 rounded-xl border border-slate-200/70 bg-white/80 p-4 shadow-sm dark:border-white/12 dark:bg-slate-900/50">
+                    <PanelHeader
+                      icon={<icons.Gem className="size-4" />}
+                      title="Credits Info"
+                      rightInfo={<span className={cn("font-semibold", themeIconColor)}>{totalCredits}</span>}
+                    />
+                    <div className="space-y-3">
+                      {creditBuckets.length > 0 ? (
+                        creditBuckets.map((bucket) => {
+                          const percent = Math.round(computeProgress(bucket.balance, bucket.total) * 100);
+                          return (
+                            <div key={bucket.key} className="rounded-lg border border-slate-200/70 bg-white/70 p-3 dark:border-white/10 dark:bg-slate-900/40">
+                              <div className="flex items-center justify-between text-xs font-medium text-slate-600 dark:text-slate-300">
+                                <div className="flex items-center gap-1.5">
+                                  {bucket.icon}
+                                  <span>{bucket.label}</span>
+                                </div>
+                                <span className="font-semibold text-slate-700 dark:text-slate-100">
+                                  {formatNumber(bucket.balance)} / {formatNumber(bucket.total)}
+                                </span>
+                              </div>
+                              <div className="mt-2 h-1.5 w-full rounded-full bg-slate-200 dark:bg-slate-800">
+                                <div
+                                  className="h-full rounded-full bg-linear-to-r from-purple-500 via-pink-500 to-rose-400 transition-[width]"
+                                  style={{ width: `${percent}%` }}
+                                />
+                              </div>
+                              <div className="mt-2 flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400">
+                                <span>{formatRangeText(bucket.start, bucket.end)}</span>
+                                <span>{percent}%</span>
+                              </div>
                             </div>
-                            <span className="font-semibold text-slate-700 dark:text-slate-100">
-                              {formatNumber(bucket.balance)} / {formatNumber(bucket.total)}
-                            </span>
-                          </div>
-                          <div className="mt-2 h-1.5 w-full rounded-full bg-slate-200 dark:bg-slate-800">
-                            <div
-                              className="h-full rounded-full bg-linear-to-r from-purple-500 via-pink-500 to-rose-400 transition-[width]"
-                              style={{ width: `${percent}%` }}
-                            />
-                          </div>
-                          <div className="mt-2 flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400">
-                            <span>{formatRangeText(bucket.start, bucket.end)}</span>
-                            <span>{percent}%</span>
-                          </div>
-                        </div>
-                      );
-                    })
-                  ) : (
-                    <EmptyPlaceholder label="暂无积分数据" icon={<icons.DatabaseZap className="size-4" />} />
-                  )}
-                </div>
-              </div>
+                          );
+                        })
+                      ) : (
+                        <EmptyPlaceholder label="No Credits Yet" icon={<icons.DatabaseZap className="size-4" />} />
+                      )}
+                    </div>
+                  </div>
 
-              {/* 订阅信息 */}
-              <PanelSection
-                icon={<icons.Bell className="size-4" />}
-                title="订阅信息"
-                rightInfo={<StatusTag value={subStatus} />}
-                items={[
-                  { label: '订阅方案', value: subscriptionStatus.priceName },
-                  { label: '有效期', value: subscriptionStatus.period },
-                  { label: '分配额度', value: subscriptionStatus.creditsAllocated },
-                  { label: '订阅ID', value: <CopyableText text={xSubscription?.paySubscriptionId || ''} /> },
-                  { label: 'OrderID', value: <CopyableText text={xSubscription?.orderId || ''} /> },
-                  { label: 'Price ID', value: <CopyableText text={xSubscription?.priceId || ''} /> },
-                ]}
-              />
+                  <PanelSection
+                    icon={<icons.Bell className="size-4" />}
+                    title="Subscription"
+                    rightInfo={<StatusTag value={subStatus} />}
+                    items={[
+                      { label: 'Plan', value: subscriptionStatus.priceName },
+                      { label: 'Period', value: subscriptionStatus.period },
+                      { label: 'Allocated', value: subscriptionStatus.creditsAllocated },
+                      { label: 'SubID', value: <CopyableText text={xSubscription?.paySubscriptionId || ''} /> },
+                      { label: 'OrderID', value: <CopyableText text={xSubscription?.orderId || ''} /> },
+                      { label: 'PriceID', value: <CopyableText text={xSubscription?.priceId || ''} /> },
+                    ]}
+                  />
+                </>
+              ) : (
+                <div className="space-y-3 rounded-xl border border-slate-200/70 bg-white/85 p-4 shadow-sm dark:border-white/12 dark:bg-slate-900/45">
+                  <PanelHeader
+                    icon={<icons.DatabaseZap className="size-4" />}
+                    title="Concurrent Base Info"
+                    rightInfo={<StatusTag value={isRunningTest ? 'pending' : 'idle'} />}
+                  />
+
+                  <div className="space-y-2 text-xs text-slate-500 dark:text-slate-300">
+                    <div className="flex items-center justify-between gap-3">
+                      <span className="text-slate-400 dark:text-slate-500">Current Browser</span>
+                      <CopyableText text={fingerprintId || ''} />
+                    </div>
+                    <div className="space-y-1">
+                      <span className="text-slate-400 dark:text-slate-500">Generate New</span>
+                      <div className="flex items-center gap-2 py-1">
+                        <input
+                          value={testFingerprintId}
+                          onChange={(e) => setTestFingerprintId(e.target.value)}
+                          className="min-w-0 flex-1 rounded-lg border border-slate-200 bg-white px-3 py-2 font-mono text-[0.5rem] sm:text-[0.625rem] md:text-xs leading-tight text-slate-700 outline-none transition focus:border-slate-400 dark:border-white/10 dark:bg-slate-950 dark:text-slate-100"
+                          placeholder="fp_test_dbg_20260322_xxx"
+                        />
+                        <button
+                          type="button"
+                          disabled={isRunningTest}
+                          onClick={regenerateTestFingerprint}
+                          aria-label="Generate new test fingerprint"
+                          className="inline-flex size-9 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 text-slate-700 transition hover:border-slate-300 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/10 dark:bg-slate-950 dark:text-slate-100 dark:hover:bg-slate-900"
+                        >
+                          <icons.RefreshCcw className="size-4" />
+                        </button>
+                        <button
+                          type="button"
+                          disabled={isRunningTest}
+                          onClick={applyTestFingerprintAndReload}
+                          aria-label="Apply test fingerprint"
+                          className="inline-flex size-9 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 text-slate-700 transition hover:border-slate-300 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/10 dark:bg-slate-950 dark:text-slate-100 dark:hover:bg-slate-900"
+                        >
+                          <icons.CheckCheck className="size-4" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                    <button
+                      type="button"
+                      disabled={isRunningTest}
+                      onClick={runContextParallelInitTest}
+                      className={cn(
+                        'shrink-0 rounded-full border px-3 py-2 text-xs font-semibold transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50',
+                        themedGhostButtonClass
+                      )}
+                    >
+                      Frontend Prevention Test
+                    </button>
+                    <button
+                      type="button"
+                      disabled={isRunningTest}
+                      onClick={runRawParallelPostTest}
+                      className={cn(
+                        'shrink-0 rounded-full border px-3 py-2 text-xs font-semibold text-white shadow-sm transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50',
+                        'border-transparent',
+                        themeButtonGradientClass,
+                        themeButtonGradientHoverClass
+                      )}
+                    >
+                      Backend Idempotency Test
+                    </button>
+                  </div>
+
+                  <div className="rounded-lg border border-dashed border-slate-200 bg-slate-50/80 p-3 dark:border-white/10 dark:bg-slate-950/50">
+                    <pre className="overflow-x-auto whitespace-pre-wrap break-all font-mono text-[11px] leading-5 text-slate-600 dark:text-slate-300">
+                      {testResult || 'No test executed yet.'}
+                    </pre>
+                  </div>
+                </div>
+              )}
 
               {error && (
-                <div className="flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-600 shadow-sm dark:border-amber-500/40 dark:bg-amber-500/10 dark:text-amber-200">
-                  <icons.X className="mt-0.5 size-4" />
-                  <span>{error}</span>
+                <div className="flex items-start justify-between gap-3 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-600 shadow-sm dark:border-amber-500/40 dark:bg-amber-500/10 dark:text-amber-200">
+                  <div className="flex items-start gap-2">
+                    <icons.X className="mt-0.5 size-4 shrink-0" />
+                    <span>{error}</span>
+                  </div>
+                  <button
+                    type="button"
+                    aria-label="Dismiss error"
+                    onClick={clearError}
+                    className="shrink-0 rounded-full p-1 text-amber-500 transition hover:bg-amber-100 hover:text-amber-700 dark:text-amber-200 dark:hover:bg-amber-500/10 dark:hover:text-amber-100"
+                  >
+                    <icons.X className="size-4" />
+                  </button>
                 </div>
               )}
             </section>
@@ -367,7 +611,7 @@ function formatRangeText(start: string | null | undefined, end: string | null | 
   const safeEnd = end && end.trim() ? end : '';
 
   if (!safeStart && !safeEnd) {
-    return '无记录';
+    return 'No records';
   }
 
   if (!safeStart) {
@@ -417,4 +661,22 @@ function StatusTag({ value }: { value: string | undefined | null }) {
       {value}
     </span>
   );
+}
+
+function buildDebugFingerprintId() {
+  const timestamp = new Date().toISOString().replace(/[-:TZ.]/g, '').slice(0, 14);
+  const randomSuffix = Math.random().toString(36).slice(2, 8);
+  return `fp_test_dbg_${timestamp}_${randomSuffix}`;
+}
+
+function formatErrorMessage(error: unknown) {
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  if (typeof error === 'string') {
+    return error;
+  }
+
+  return 'Unknown error';
 }

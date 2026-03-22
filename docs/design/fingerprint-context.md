@@ -280,6 +280,182 @@ export function isValidFingerprintId(fingerprintId: string): boolean {
 2. **React应用渲染** → FingerprintProvider挂载 → 生成fingerprintId → 存储到localStorage/cookie
 3. **后续API请求** → middleware → extractFingerprintId → **返回fingerprintId**（从header/cookie获取）
 
+### 匿名用户重复初始化问题排查记录
+
+#### 问题现象
+
+在新用户首次访问首页时，数据库中可能出现：
+
+- `fingerprintId` 相同
+- `createdAt` 时间几乎相同
+- `userId` 不同
+
+这说明系统在极短时间内为同一个 `fingerprintId` 创建了多条匿名用户记录。
+
+#### 业务边界
+
+这里需要明确区分两个概念：
+
+- **允许同一 `fingerprintId` 对应多个 `userId`**
+  这是业务允许的，原因是现实中可能存在多人共用同一台设备。
+- **不允许同一 `fingerprintId` 在同一初始化时刻并发创建多条匿名用户**
+  这是本次需要修复的问题，因为它属于初始化链路缺乏幂等保护，而不是正常业务语义。
+
+#### 根因分析
+
+问题根因不是 `FingerprintJS` 生成了多个不同指纹，而是匿名用户初始化链路同时存在前后端两个并发窗口。
+
+1. **客户端可能重复触发初始化请求**
+
+`FingerprintProvider -> useFingerprint()` 在拿到 `fingerprintId` 后会自动调用匿名初始化接口。  
+在 React 开发环境、组件重挂载、effect 重放或同一生命周期内的重复触发场景下，可能出现同一个 `fingerprintId` 被重复提交。
+
+关键点：
+
+- `packages/third-ui/src/clerk/fingerprint/use-fingerprint.ts`
+- 第二阶段 `useEffect` 会在 `fingerprintId` 就绪后调用 `initializeAnonymousUser()`
+
+2. **服务端原实现是“事务外查，事务内建”**
+
+原来的 `POST /api/user/anonymous/init` 处理流程是：
+
+1. route 先查当前 `fingerprintId` 是否已有用户
+2. 如果没查到，再调用 `userAggregateService.initAnonymousUser()`
+3. `initAnonymousUser()` 只保证“创建 user / credit / subscription”在一个事务里
+
+这意味着“查询是否存在”并没有被包进同一个事务临界区。  
+当两个相同 `fingerprintId` 的请求并发进入时，就可能都先查到“不存在”，然后各自成功创建一条匿名用户记录。
+
+#### 为什么 React Context 没有阻止这个问题
+
+React Context 只能保证：
+
+- 同一个 Provider 下的消费者读取到同一份上下文值
+
+它不能保证：
+
+- Provider 只挂载一次
+- `useEffect` 只执行一次
+- 副作用请求天然幂等
+
+因此像 `FingerprintStatus` 这样的调试组件虽然会消费同一个上下文，但它本身不会导致额外初始化。  
+真正的问题在于 Provider 内部的匿名初始化副作用需要显式防重入。
+
+#### 改造方案
+
+本次采用“前端减重复 + 后端强幂等”的双保险方案。
+
+1. **前端：`useRef` 防重入**
+
+目标：
+
+- 避免同一个 Provider 生命周期内对同一个 `fingerprintId` 重复发起匿名初始化请求
+
+实现点：
+
+- 在 `useFingerprint()` 内新增 `isInitializingAnonymousUserRef`
+  用于标记当前是否已有匿名初始化请求在飞
+- 新增 `requestedAnonymousFingerprintRef`
+  用于记录当前生命周期里已经请求过的 `fingerprintId`
+
+关键文件：
+
+- `packages/third-ui/src/clerk/fingerprint/use-fingerprint.ts`
+
+说明：
+
+- `useRef` 不会触发重新渲染
+- 它只是内存中的可变标记，不会带来可感知的首页性能损失
+
+2. **后端：事务级 advisory lock 保证同指纹初始化串行化**
+
+目标：
+
+- 防止同一个 `fingerprintId` 在同一时刻并发创建多条匿名用户
+
+实现方式：
+
+- 新增 `anonymousAggregateService.getOrCreateByFingerprintId(...)`
+- 在同一个数据库事务里执行：
+  1. `pg_advisory_xact_lock(...)`
+  2. 锁内再次查询是否已有该 `fingerprintId` 对应用户
+  3. 若存在则直接返回已有用户上下文
+  4. 若不存在才创建 user / credit / subscription
+
+关键文件：
+
+- `packages/backend-core/src/services/aggregate/anonymous.aggregate.service.ts`
+- `packages/backend-core/src/app/api/user/anonymous/init/route.ts`
+
+说明：
+
+- 使用的是 PostgreSQL 标准事务级锁 `pg_advisory_xact_lock`
+- 事务提交或回滚后锁会自动释放
+- 该方案不需要新增数据库字段，也不需要引入 Redis
+- 这里锁住的是“同一个 `fingerprintId` 的匿名初始化临界区”，不是禁止未来同设备再出现新的 `userId`
+
+#### 关键实现说明
+
+1. **匿名初始化入口下沉**
+
+route 中原来“先查再创建”的匿名分支，被收口到了：
+
+- `anonymousAggregateService.getOrCreateByFingerprintId(fingerprintId, { sourceRef })`
+
+这样 route 仍然保留：
+
+- 是否登录的判断
+- `clerkUserId` 优先查询逻辑
+- `sourceRef` 提取逻辑
+- 返回响应结构
+
+只把“未登录匿名用户的初始化临界区”抽到 aggregate service 中处理。
+
+2. **锁的设计**
+
+锁实现使用：
+
+```sql
+SELECT pg_advisory_xact_lock(namespace, hashtext(fingerprintId))
+```
+
+其中：
+
+- `namespace` 是业务常量，用于标识“匿名初始化”这类锁
+- `hashtext(fingerprintId)` 用于把字符串 `fingerprintId` 映射成 PostgreSQL 可用的锁键
+
+3. **服务端仍然不兜底生成 fingerprintId**
+
+这部分逻辑保持原样：
+
+- 服务端只负责提取和验证 `fingerprintId`
+- 如果客户端没有传递，服务端不会现场生成新的 `fingerprintId`
+
+原因是：
+
+- 服务端兜底生成会放大匿名账号滥用风险
+- 当前业务更合理的方式是由客户端生成并持久化 `fingerprintId`
+
+#### 改造结果
+
+改造完成后：
+
+- 前端尽量避免重复请求
+- 后端即使收到重复请求，也会对相同 `fingerprintId` 的匿名初始化串行化
+- 同一 `fingerprintId` 同一时刻不会再因为并发初始化而生成多条匿名用户记录
+
+#### 设计结论
+
+本次问题说明了一个重要原则：
+
+- `fingerprintId` 可以是“一对多”的业务标识
+- 但“匿名初始化动作”必须是“同一时刻对同一 `fingerprintId` 幂等”的系统行为
+
+也就是说：
+
+- **允许设备共享**
+- **不允许初始化并发穿透**
+
 #### 首次访问冲突问题及解决方案
 
 **🔥 核心问题**：这是一个经典的"鸡生蛋"问题
@@ -681,4 +857,3 @@ flowchart TD
 - 中间件只在必要时处理fingerprint逻辑
 - React Context提供缓存的用户数据，避免重复API调用
 - 懒加载用户数据，只在需要时初始化
-

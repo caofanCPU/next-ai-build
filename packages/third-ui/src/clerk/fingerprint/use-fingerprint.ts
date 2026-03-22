@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   createFingerprintHeaders,
   getOrCreateFirstTouchData,
@@ -30,6 +30,7 @@ export function useFingerprint(config: FingerprintConfig): UseFingerprintResult 
       isLoading: false,
       isInitialized: false,
       error: 'Server-side rendering is not supported',
+      clearError: () => {},
       initializeAnonymousUser: async () => {},
       refreshUserData: async () => {},
     };
@@ -42,6 +43,11 @@ export function useFingerprint(config: FingerprintConfig): UseFingerprintResult 
   const [isLoading, setIsLoading] = useState(true);
   const [isInitialized, setIsInitialized] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const isInitializingAnonymousUserRef = useRef(false);
+  const requestedAnonymousFingerprintRef = useRef<string | null>(null);
+  const clearError = useCallback(() => {
+    setError(null);
+  }, []);
 
   /**
    * 第一阶段：初始化fingerprint ID
@@ -71,7 +77,19 @@ export function useFingerprint(config: FingerprintConfig): UseFingerprintResult 
       return;
     }
 
+    if (isInitializingAnonymousUserRef.current) {
+      console.log('Skipping anonymous user initialization because a request is already in flight:', fingerprintId);
+      return;
+    }
+
+    if (requestedAnonymousFingerprintRef.current === fingerprintId && isInitialized) {
+      console.log('Skipping anonymous user initialization because fingerprint is already initialized:', fingerprintId);
+      return;
+    }
+
     try {
+      isInitializingAnonymousUserRef.current = true;
+      requestedAnonymousFingerprintRef.current = fingerprintId;
       setIsLoading(true);
       setError(null);
 
@@ -110,12 +128,14 @@ export function useFingerprint(config: FingerprintConfig): UseFingerprintResult 
         throw new Error(data.error || 'Unknown error occurred');
       }
     } catch (err) {
+      requestedAnonymousFingerprintRef.current = null;
       console.error('Failed to initialize anonymous user:', err);
       setError(err instanceof Error ? err.message : 'Unknown error');
     } finally {
+      isInitializingAnonymousUserRef.current = false;
       setIsLoading(false);
     }
-  }, [fingerprintId, config.apiEndpoint]);
+  }, [fingerprintId, config.apiEndpoint, isInitialized]);
 
   /**
    * 刷新用户数据 - 使用POST请求（后端支持upsert逻辑）
@@ -185,6 +205,7 @@ export function useFingerprint(config: FingerprintConfig): UseFingerprintResult 
     isLoading,
     isInitialized,
     error,
+    clearError,
     initializeAnonymousUser,
     refreshUserData,
   };

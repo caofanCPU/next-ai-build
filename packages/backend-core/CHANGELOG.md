@@ -1,5 +1,20 @@
 # @windrun-huaiin/backend-core
 
+## 14.2.0
+
+### Minor Changes
+
+- fix(user): fixed repeated anonymous init user both in frontend and backend
+  - frontend useRef for Prevention
+  - backend use pg transaction tx for Idempotency
+  - `FingerprintStatus` component now support user concurrent test
+
+### Patch Changes
+
+- Updated dependencies
+  - @windrun-huaiin/third-ui@14.1.0
+  - @windrun-huaiin/lib@14.0.0
+
 ## 14.1.1
 
 ### Patch Changes

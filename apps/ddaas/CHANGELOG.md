@@ -1,5 +1,21 @@
 # @windrun-huaiin/ddaas-website
 
+## 14.1.0
+
+### Minor Changes
+
+- fix(user): fixed repeated anonymous init user both in frontend and backend
+  - frontend useRef for Prevention
+  - backend use pg transaction tx for Idempotency
+  - `FingerprintStatus` component now support user concurrent test
+
+### Patch Changes
+
+- Updated dependencies
+  - @windrun-huaiin/base-ui@14.0.2
+  - @windrun-huaiin/third-ui@14.1.0
+  - @windrun-huaiin/lib@14.0.0
+
 ## 14.0.6
 
 ### Patch Changes

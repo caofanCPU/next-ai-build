@@ -61,6 +61,7 @@ export interface UseFingerprintResult {
   isLoading: boolean;
   isInitialized: boolean;
   error: string | null;
+  clearError: () => void;
   initializeAnonymousUser: () => Promise<void>;
   refreshUserData: () => Promise<void>;
 }
