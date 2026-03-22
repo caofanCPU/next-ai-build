@@ -8,7 +8,7 @@ export async function Hero({ locale }: { locale: string }) {
   const t = await getTranslations({ locale, namespace: 'hero' });
 
   return (
-    <section className="mx-auto mt-12 max-w-6xl flex flex-col gap-10 px-4 py-8 md:flex-row md:items-center md:gap-12">
+    <section className="mx-auto mt-12 flex max-w-6xl flex-col gap-10 px-6 py-8 md:min-w-[calc(100vw-22rem)] md:px-4 md:flex-row md:items-center md:gap-12">
       <div className="flex-1 space-y-6">
         <h1 className="text-4xl md:text-6xl font-bold leading-tight">
           {t('mainTitle')}<br />{" "}

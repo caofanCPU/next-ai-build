@@ -10,14 +10,9 @@ interface DelayedImgProps extends ImageProps {
   placeholderClassName?: string
 }
 
-const ENV_DELAY_ENABLED =
-  process.env.NEXT_PUBLIC_DELAYED_IMG_ENABLED === "true" ||
-  process.env.NEXT_PUBLIC_DELAY_REVEAL_ENABLED === "true"
+const ENV_DELAY_ENABLED = process.env.NEXT_PUBLIC_DELAYED_IMG_ENABLED === "true"
 
-const rawDelaySeconds =
-  process.env.NEXT_PUBLIC_DELAYED_IMG_SECONDS ??
-  process.env.NEXT_PUBLIC_DELAY_REVEAL_SECONDS ??
-  "0"
+const rawDelaySeconds = process.env.NEXT_PUBLIC_DELAYED_IMG_SECONDS ?? "0"
 
 const parsedDelaySeconds = Number(rawDelaySeconds)
 const ENV_DELAY_MS = Number.isFinite(parsedDelaySeconds) && parsedDelaySeconds > 0

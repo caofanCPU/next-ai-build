@@ -1,5 +1,15 @@
 # @windrun-huaiin/ddaas-website
 
+## 14.1.1
+
+### Patch Changes
+
+- fix(style): delay img
+- Updated dependencies
+  - @windrun-huaiin/base-ui@14.0.2
+  - @windrun-huaiin/third-ui@14.1.1
+  - @windrun-huaiin/lib@14.0.0
+
 ## 14.1.0
 
 ### Minor Changes
