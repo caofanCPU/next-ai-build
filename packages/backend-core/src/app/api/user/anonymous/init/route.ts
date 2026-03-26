@@ -11,7 +11,6 @@ import { extractFingerprintFromNextRequest } from '@windrun-huaiin/third-ui/fing
 import { auth } from '@clerk/nextjs/server';
 import { NextRequest, NextResponse } from 'next/server';
 import {
-  applyUserMockContext,
   fetchLatestUserContextByFingerprintId,
   fetchUserContextByClerkUserId,
   mapCreditToXCredit,
@@ -19,6 +18,8 @@ import {
   mapUserToXUser,
   type UserContextEntities,
 } from '@/context/user-context-service';
+import { finalizeUserContext } from '@/context/user-context-finalizer';
+
 import type { Prisma } from '@/db/prisma-model-type';
 
 
@@ -60,7 +61,7 @@ function createSuccessResponse(params: {
     ...params.options,
   };
 
-  return applyUserMockContext(response);
+  return finalizeUserContext(response);
 }
 
 /** 创建错误响应 */

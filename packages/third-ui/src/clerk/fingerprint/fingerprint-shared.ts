@@ -5,6 +5,7 @@
 
 // Fingerprint ID的存储键和header名
 export const FINGERPRINT_STORAGE_KEY = '__x_fingerprint_id';
+export const FINGERPRINT_DEBUG_OVERRIDE_STORAGE_KEY = '__x_fingerprint_debug_override';
 export const FINGERPRINT_HEADER_NAME = 'x-fingerprint-id-v8';
 export const FINGERPRINT_COOKIE_NAME = '__x_fingerprint_id';
 export const FINGERPRINT_SOURCE_REFER = 'x-source-ref';
@@ -28,6 +29,7 @@ export function isValidFingerprintId(fingerprintId: string): boolean {
 // 常量导出
 export const FINGERPRINT_CONSTANTS = {
   STORAGE_KEY: FINGERPRINT_STORAGE_KEY,
+  DEBUG_OVERRIDE_STORAGE_KEY: FINGERPRINT_DEBUG_OVERRIDE_STORAGE_KEY,
   HEADER_NAME: FINGERPRINT_HEADER_NAME,
   COOKIE_NAME: FINGERPRINT_COOKIE_NAME,
   FIRST_TOUCH_STORAGE_KEY: FINGERPRINT_FIRST_TOUCH_STORAGE_KEY,

@@ -1,5 +1,18 @@
 # @windrun-huaiin/ddaas-website
 
+## 14.1.2
+
+### Patch Changes
+
+- feat(dependency): update dependencies
+  - optimize: `diaomao-update` cli command
+  - security: user mock or test now fully split with real code
+  - fix: fingerprint panel test now won't override origin fpId, with new local storage
+- Updated dependencies
+  - @windrun-huaiin/base-ui@14.0.3
+  - @windrun-huaiin/third-ui@14.2.0
+  - @windrun-huaiin/lib@14.0.1
+
 ## 14.1.1
 
 ### Patch Changes

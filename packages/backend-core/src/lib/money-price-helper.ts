@@ -5,9 +5,9 @@ import {
 } from '@windrun-huaiin/third-ui/fingerprint/server';
 import type { InitUserContext } from '@windrun-huaiin/third-ui/main/server';
 import {
-  applyUserMockContext,
   buildInitUserContextFromEntities,
   fetchUserContextByClerkUserId,
+  finalizeUserContext,
 } from '../services/context';
 
 async function readFingerprintIdFromRequest(): Promise<string | null> {
@@ -42,7 +42,7 @@ export async function getMoneyPriceInitUserContext(): Promise<InitUserContext> {
       isClerkAuthenticated: true,
     });
 
-    return applyUserMockContext(initUserContext);
+    return finalizeUserContext(initUserContext);
   }
 
   const fingerprintId = await readFingerprintIdFromRequest();

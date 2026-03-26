@@ -4,6 +4,7 @@ import https from 'https'
 import { execSync } from 'child_process'
 import { parse, stringify } from 'yaml'
 import semver from 'semver'
+import pc from 'picocolors'
 import { DevScriptsConfig } from '@dev-scripts/config/schema'
 
 type DependencySection = 'dependencies' | 'devDependencies' | 'peerDependencies' | 'optionalDependencies'
@@ -236,12 +237,24 @@ function renderTable(rows: Array<UpdateRow | SkipRow>, headers: [string, string,
 }
 
 function printSkipDetails(skipRows: SkipRow[], compactLog: boolean): void {
-  const newerCount = skipRows.filter((row) => row.reason === 'skipped-newer').length
+  const newerRows = skipRows.filter((row) => row.reason === 'skipped-newer')
+
+  console.log('')
+  if (newerRows.length === 0) {
+    console.log(`${pc.yellow('[diaomao-update]')} ${pc.bold('skipped-newer')}: 0`)
+  } else {
+    console.log(
+      `${pc.yellow('[diaomao-update]')} ${pc.bold('skipped-newer')}: ${pc.red(String(newerRows.length))}`
+    )
+
+    for (const row of newerRows) {
+      console.log(
+        `  ${pc.cyan(row.packageName)} (${pc.dim(row.targetVersion)} ${pc.yellow('→')} ${pc.green(row.currentVersion)})`
+      )
+    }
+  }
 
   if (compactLog) {
-    if (newerCount > 0) {
-      console.log(`Skipped ${newerCount} package(s) because local versions are newer than the source.`)
-    }
     return
   }
 
@@ -250,7 +263,7 @@ function printSkipDetails(skipRows: SkipRow[], compactLog: boolean): void {
   }
 
   console.log('\nSkipped:')
-  console.log(renderTable(skipRows, ['Package', 'Before', 'After', 'Reason']))
+  console.log(renderTable(skipRows, ['Package', 'Current', 'Reference', 'Reason']))
 }
 
 function resolveTargetVersions(

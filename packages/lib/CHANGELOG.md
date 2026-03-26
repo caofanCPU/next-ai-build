@@ -1,5 +1,14 @@
 # @windrun-huaiin/lib
 
+## 14.0.1
+
+### Patch Changes
+
+- feat(dependency): update dependencies
+  - optimize: `diaomao-update` cli command
+  - security: user mock or test now fully split with real code
+  - fix: fingerprint panel test now won't override origin fpId, with new local storage
+
 ## 14.0.0
 
 ### Major Changes

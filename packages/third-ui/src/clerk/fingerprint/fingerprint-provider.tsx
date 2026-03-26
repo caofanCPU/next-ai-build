@@ -7,7 +7,11 @@ import React, { createContext, useContext, useEffect, useMemo, useRef, useState 
 import type { FingerprintContextType, FingerprintProviderProps } from './types';
 import { useFingerprint } from './use-fingerprint';
 import { CopyableText } from '@windrun-huaiin/base-ui/ui';
-import { createFingerprintHeaders, setFingerprintId } from './fingerprint-client';
+import { createFingerprintHeaders } from './fingerprint-client';
+import {
+  getDebugFingerprintOverride,
+  setDebugFingerprintOverride,
+} from './fingerprint-debug';
 import { FINGERPRINT_SOURCE_REFER } from './fingerprint-shared';
 
 const FingerprintContext = createContext<FingerprintContextType | undefined>(undefined);
@@ -77,15 +81,15 @@ export function FingerprintStatus() {
     xSubscription,
     error,
     clearError,
-    initializeAnonymousUser,
   } = useFingerprintContext();
 
   const [isOpen, setIsOpen] = useState(false);
   const [panelMode, setPanelMode] = useState<'info' | 'test'>('info');
-  const [testFingerprintId, setTestFingerprintId] = useState('');
   const [testResult, setTestResult] = useState<string>('');
   const [isRunningTest, setIsRunningTest] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
+  const isInitializingDebugAnonymousUserRef = useRef(false);
+  const [activeDebugFingerprintId, setActiveDebugFingerprintId] = useState<string | null>(null);
 
   const handleToggle = () => setIsOpen(prev => !prev);
 
@@ -108,13 +112,16 @@ export function FingerprintStatus() {
   }, [xUser]);
 
   useEffect(() => {
-    if (testFingerprintId) {
+    const debugFingerprintOverride = getDebugFingerprintOverride();
+    if (debugFingerprintOverride) {
+      setActiveDebugFingerprintId(debugFingerprintOverride);
       return;
     }
 
-    const defaultFingerprintId = buildDebugFingerprintId();
-    setTestFingerprintId(defaultFingerprintId);
-  }, [testFingerprintId]);
+    const nextFingerprintId = buildDebugFingerprintId();
+    setDebugFingerprintOverride(nextFingerprintId);
+    setActiveDebugFingerprintId(nextFingerprintId);
+  }, []);
 
   const creditBuckets = useMemo(() => {
     if (!xCredit) return [];
@@ -178,32 +185,69 @@ export function FingerprintStatus() {
   );
 
   const runContextParallelInitTest = async () => {
+    const debugFingerprintId = activeDebugFingerprintId;
+    if (!debugFingerprintId) {
+      setTestResult('Test fingerprint override is not ready yet.');
+      return;
+    }
+
     setIsRunningTest(true);
-    setTestResult('Running context parallel init x3...');
+    setTestResult(`Running Frontend Prevention Test with fingerprint: ${debugFingerprintId}`);
 
     try {
       await Promise.all([
-        initializeAnonymousUser(),
-        initializeAnonymousUser(),
-        initializeAnonymousUser(),
+        initializeDebugAnonymousUser(debugFingerprintId),
+        initializeDebugAnonymousUser(debugFingerprintId),
+        initializeDebugAnonymousUser(debugFingerprintId),
       ]);
-      setTestResult(`Context parallel init finished. Active fingerprint: ${fingerprintId || '--'}`);
+      setTestResult(`Frontend Prevention Test finished. Active test fingerprint: ${debugFingerprintId}`);
     } catch (testError) {
-      setTestResult(`Context parallel init failed: ${formatErrorMessage(testError)}`);
+      setTestResult(`Frontend Prevention Test failed: ${formatErrorMessage(testError)}`);
     } finally {
       setIsRunningTest(false);
     }
   };
 
+  const initializeDebugAnonymousUser = async (debugFingerprintId: string) => {
+    if (isInitializingDebugAnonymousUserRef.current) {
+      return;
+    }
+
+    try {
+      isInitializingDebugAnonymousUserRef.current = true;
+
+      const fingerprintHeaders = await createFingerprintHeaders();
+      const response = await fetch('/api/user/anonymous/init', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          [FINGERPRINT_SOURCE_REFER]: document.referrer || '',
+          ...fingerprintHeaders,
+          'x-fingerprint-id-v8': debugFingerprintId,
+        },
+        body: JSON.stringify({ fingerprintId: debugFingerprintId }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Failed to initialize anonymous user');
+      }
+
+      await response.json().catch(() => ({}));
+    } finally {
+      isInitializingDebugAnonymousUserRef.current = false;
+    }
+  };
+
   const runRawParallelPostTest = async () => {
-    const normalizedFingerprintId = testFingerprintId.trim();
+    const normalizedFingerprintId = activeDebugFingerprintId;
     if (!normalizedFingerprintId) {
-      setTestResult('Please input a valid test fingerprint id.');
+      setTestResult('Test fingerprint override is not ready yet.');
       return;
     }
 
     setIsRunningTest(true);
-    setTestResult(`Running raw POST x3 with fingerprint: ${normalizedFingerprintId}`);
+    setTestResult(`Running Backend Idempotency Test with fingerprint: ${normalizedFingerprintId}`);
 
     try {
       const fingerprintHeaders = await createFingerprintHeaders();
@@ -243,7 +287,7 @@ export function FingerprintStatus() {
 
       setTestResult(
         [
-          `Raw POST x3 done.`,
+          `Backend Idempotency Test done.`,
           `created=${createdUserIds.length}`,
           `reused=${reusedUserIds.length}`,
           `failed=${failedStatuses.length}`,
@@ -252,32 +296,17 @@ export function FingerprintStatus() {
         ].filter(Boolean).join('\n')
       );
     } catch (testError) {
-      setTestResult(`Raw POST test failed: ${formatErrorMessage(testError)}`);
+      setTestResult(`Backend Idempotency Test failed: ${formatErrorMessage(testError)}`);
     } finally {
       setIsRunningTest(false);
     }
   };
 
-  const applyTestFingerprintAndReload = () => {
-    const normalizedFingerprintId = testFingerprintId.trim();
-    if (!normalizedFingerprintId) {
-      setTestResult('Please input a valid test fingerprint id before applying.');
-      return;
-    }
-
-    try {
-      setFingerprintId(normalizedFingerprintId);
-      setTestResult(`Applied test fingerprint and reloading: ${normalizedFingerprintId}`);
-      window.location.reload();
-    } catch (testError) {
-      setTestResult(`Apply test fingerprint failed: ${formatErrorMessage(testError)}`);
-    }
-  };
-
   const regenerateTestFingerprint = () => {
     const nextFingerprintId = buildDebugFingerprintId();
-    setTestFingerprintId(nextFingerprintId);
-    setTestResult(`Generated test fingerprint: ${nextFingerprintId}`);
+    setDebugFingerprintOverride(nextFingerprintId);
+    setActiveDebugFingerprintId(nextFingerprintId);
+    setTestResult(`Generated test fingerprint override: ${nextFingerprintId}`);
   };
 
   return (
@@ -442,18 +471,15 @@ export function FingerprintStatus() {
 
                   <div className="space-y-2 text-xs text-slate-500 dark:text-slate-300">
                     <div className="flex items-center justify-between gap-3">
-                      <span className="text-slate-400 dark:text-slate-500">Current Browser</span>
+                      <span className="text-slate-400 dark:text-slate-500">Real Browser</span>
                       <CopyableText text={fingerprintId || ''} />
                     </div>
                     <div className="space-y-1">
-                      <span className="text-slate-400 dark:text-slate-500">Generate New</span>
+                      <span className="text-slate-400 dark:text-slate-500">Test Override</span>
                       <div className="flex items-center gap-2 py-1">
-                        <input
-                          value={testFingerprintId}
-                          onChange={(e) => setTestFingerprintId(e.target.value)}
-                          className="min-w-0 flex-1 rounded-lg border border-slate-200 bg-white px-3 py-2 font-mono text-[0.5rem] sm:text-[0.625rem] md:text-xs leading-tight text-slate-700 outline-none transition focus:border-slate-400 dark:border-white/10 dark:bg-slate-950 dark:text-slate-100"
-                          placeholder="fp_test_dbg_20260322_xxx"
-                        />
+                        <div className="min-w-0 flex-1 rounded-lg border border-slate-200 bg-white px-3 py-2 font-mono text-[0.5rem] sm:text-[0.625rem] md:text-xs leading-tight text-slate-700 dark:border-white/10 dark:bg-slate-950 dark:text-slate-100">
+                          <CopyableText text={activeDebugFingerprintId || ''} />
+                        </div>
                         <button
                           type="button"
                           disabled={isRunningTest}
@@ -462,15 +488,6 @@ export function FingerprintStatus() {
                           className="inline-flex size-9 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 text-slate-700 transition hover:border-slate-300 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/10 dark:bg-slate-950 dark:text-slate-100 dark:hover:bg-slate-900"
                         >
                           <icons.RefreshCcw className="size-4" />
-                        </button>
-                        <button
-                          type="button"
-                          disabled={isRunningTest}
-                          onClick={applyTestFingerprintAndReload}
-                          aria-label="Apply test fingerprint"
-                          className="inline-flex size-9 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 text-slate-700 transition hover:border-slate-300 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/10 dark:bg-slate-950 dark:text-slate-100 dark:hover:bg-slate-900"
-                        >
-                          <icons.CheckCheck className="size-4" />
                         </button>
                       </div>
                     </div>
