@@ -26,6 +26,10 @@ export async function homeNavLinks(locale: string): Promise<ExtendedLinkItem[]> 
       url: getAsNeededLocalizedUrl(locale, '/pricing', localePrefixAsNeeded, defaultLocale),
     },
     {
+      text: t1('preview'),
+      url: getAsNeededLocalizedUrl(locale, '/test/color', localePrefixAsNeeded, defaultLocale),
+    },
+    {
       type: 'custom',
       secondary: true,
       mobilePinned: true,

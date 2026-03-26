@@ -14,7 +14,7 @@ import {
 } from '@base-ui/lib/theme-util';
 import { cn } from '@lib/utils';
 import { globalLucideIcons as icons } from '@windrun-huaiin/base-ui/components/server';
-import { Loading } from '@third-ui/main/loading';
+import { getLoadingCycleDurationMs, Loading } from '@third-ui/main/loading';
 import { SnakeLoadingFrame, SnakeLoadingPreview } from '@third-ui/main';
 
 const themeNames = Object.keys(THEME_COLOR_NAME_TO_CLASS_MAP) as Array<keyof typeof THEME_COLOR_NAME_TO_CLASS_MAP>;
@@ -42,6 +42,9 @@ const THEME_SELECTOR_ACTIVE_CLASS_MAP: Record<SupportedThemeColor, string> = {
   'text-emerald-500': 'border-emerald-600 bg-emerald-500 text-white shadow-[0_10px_30px_rgba(16,185,129,0.28)]',
   'text-rose-500': 'border-rose-600 bg-rose-500 text-white shadow-[0_10px_30px_rgba(244,63,94,0.28)]',
 };
+
+const LOADING_PREVIEW_CYCLE_LIMIT = 5;
+const LOADING_PREVIEW_AUTO_HIDE_MS = getLoadingCycleDurationMs() * LOADING_PREVIEW_CYCLE_LIMIT;
 
 function TonePreview({
   title,
@@ -81,6 +84,38 @@ function TonePreview({
   const circleFrameClass = dark
     ? 'border-slate-700 bg-slate-900'
     : 'border-slate-200 bg-white';
+  const [loadingPreviewVersion, setLoadingPreviewVersion] = useState(0);
+  const [loadingLimitReached, setLoadingLimitReached] = useState(false);
+
+  useEffect(() => {
+    if (!showLoadingAnimation) {
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      setShowLoadingAnimation(false);
+      setLoadingLimitReached(true);
+    }, LOADING_PREVIEW_AUTO_HIDE_MS);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [showLoadingAnimation, loadingPreviewVersion]);
+
+  const restartLoadingPreview = () => {
+    setLoadingLimitReached(false);
+    setLoadingPreviewVersion((current) => current + 1);
+    setShowLoadingAnimation(true);
+  };
+
+  const handleLoadingToggle = () => {
+    if (showLoadingAnimation) {
+      setShowLoadingAnimation(false);
+      return;
+    }
+
+    restartLoadingPreview();
+  };
 
   return (
     <div className={cn('rounded-2xl border p-5 shadow-sm', previewSurfaceClass)}>
@@ -163,14 +198,15 @@ function TonePreview({
             <p className="text-xs opacity-70">Loading 动画</p>
             <button
               type="button"
-              onClick={() => setShowLoadingAnimation((current) => !current)}
+              onClick={handleLoadingToggle}
               className={previewActionButtonClass}
             >
-              {showLoadingAnimation ? 'Hide Loading' : 'Show Loading'}
+              {showLoadingAnimation ? 'Hide Loading' : 'Restart Loading'}
             </button>
           </div>
           {showLoadingAnimation ? (
             <Loading
+              key={loadingPreviewVersion}
               themeColor={themeHex}
               compact
               label="Loading"
@@ -192,7 +228,9 @@ function TonePreview({
                   : 'border-slate-200 bg-slate-50 text-slate-500',
               )}
             >
-              Loading preview paused
+              {loadingLimitReached
+                ? `Loading preview paused by cycles end`
+                : 'Loading preview paused by clicked'}
             </div>
           )}
         </section>

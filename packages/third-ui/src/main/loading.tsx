@@ -10,6 +10,14 @@ const SPACING = 12; // px, space between dot centers
 const ANIMATION_DURATION = 1.8; // seconds
 const STAGGER_DELAY_FACTOR = 0.08; // seconds, delay per unit of distance from center
 
+export function getLoadingCycleDurationMs() {
+  const centerX = (NUM_COLS - 1) / 2;
+  const centerY = (NUM_ROWS - 1) / 2;
+  const furthestDistance = Math.sqrt(Math.pow(centerY, 2) + Math.pow(centerX, 2));
+
+  return (ANIMATION_DURATION + furthestDistance * STAGGER_DELAY_FACTOR) * 1000;
+}
+
 function clampChannel(value: number) {
   return Math.max(0, Math.min(255, Math.round(value)));
 }
