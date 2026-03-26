@@ -1,5 +1,15 @@
 # @windrun-huaiin/ddaas-website
 
+## 14.2.1
+
+### Patch Changes
+
+- feat(mdx): add loading animate component
+- Updated dependencies
+  - @windrun-huaiin/base-ui@14.0.3
+  - @windrun-huaiin/third-ui@14.3.1
+  - @windrun-huaiin/lib@14.0.1
+
 ## 14.2.0
 
 ### Minor Changes
