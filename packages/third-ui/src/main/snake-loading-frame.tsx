@@ -14,8 +14,6 @@ interface SnakeLoadingFrameProps {
   className?: string;
   themeColor?: string;
   strokeWidth?: number;
-  trackInset?: number;
-  cornerRadius?: number;
   contentClassName?: string;
 }
 
@@ -26,8 +24,6 @@ interface SnakeLoadingPreviewProps {
   themeColor?: string;
   defaultProgress?: number;
   strokeWidth?: number;
-  trackInset?: number;
-  cornerRadius?: number;
   contentClassName?: string;
 }
 
@@ -37,11 +33,9 @@ const BODY_LENGTH_RATIO = 0.26;
 const EXIT_DURATION_MS = 260;
 const LOOP_DURATION_SECONDS = 1.85;
 const CIRCLE_VIEWBOX = 120;
-const ROUNDED_RECT_WIDTH = 240;
-const ROUNDED_RECT_HEIGHT = 140;
-const ROUNDED_RECT_RADIUS = 24;
-const DEFAULT_CIRCLE_INSET = 16;
-const DEFAULT_RECT_INSET = 10;
+const ROUNDED_RECT_WIDTH = 160;
+const ROUNDED_RECT_HEIGHT = 90;
+const ROUNDED_RECT_RADIUS = 8;
 const DEFAULT_CIRCLE_STROKE = 6;
 const DEFAULT_RECT_STROKE = 5;
 
@@ -83,16 +77,12 @@ function SnakeRingSvg({
   progressRatio,
   animate,
   strokeWidth,
-  trackInset,
-  cornerRadius,
 }: {
   shape: SnakeShape;
   themeColor: string;
   progressRatio: number;
   animate: boolean;
   strokeWidth?: number;
-  trackInset?: number;
-  cornerRadius?: number;
 }) {
   const tailColor = createBodyTailColor(themeColor);
 
@@ -100,8 +90,7 @@ function SnakeRingSvg({
     if (shape === 'circle') {
       const center = CIRCLE_VIEWBOX / 2;
       const resolvedStrokeWidth = strokeWidth ?? DEFAULT_CIRCLE_STROKE;
-      const resolvedInset = trackInset ?? DEFAULT_CIRCLE_INSET;
-      const radius = center - resolvedInset - resolvedStrokeWidth / 2;
+      const radius = center - resolvedStrokeWidth;
       const circumference = 2 * Math.PI * radius;
 
       return {
@@ -115,11 +104,11 @@ function SnakeRingSvg({
     }
 
     const resolvedStrokeWidth = strokeWidth ?? DEFAULT_RECT_STROKE;
-    const inset = trackInset ?? DEFAULT_RECT_INSET;
+    const inset = resolvedStrokeWidth / 2;
     const width = ROUNDED_RECT_WIDTH;
     const height = ROUNDED_RECT_HEIGHT;
     const maxRadius = Math.min((width - inset * 2) / 2, (height - inset * 2) / 2);
-    const radius = Math.min(cornerRadius ?? ROUNDED_RECT_RADIUS, maxRadius);
+    const radius = Math.min(ROUNDED_RECT_RADIUS, maxRadius);
     const innerWidth = width - inset * 2;
     const innerHeight = height - inset * 2;
     const perimeter =
@@ -143,7 +132,7 @@ function SnakeRingSvg({
       length: perimeter,
       strokeWidth: resolvedStrokeWidth,
     };
-  }, [cornerRadius, shape, strokeWidth, trackInset]);
+  }, [shape, strokeWidth]);
 
   const bodyLength = geometry.length * BODY_LENGTH_RATIO;
   const bodyDashArray = `${bodyLength} ${geometry.length}`;
@@ -221,18 +210,14 @@ function SnakeFrameBase({
   themeColor = DEFAULT_THEME_COLOR,
   previewProgress,
   strokeWidth,
-  trackInset,
-  cornerRadius,
   contentClassName,
 }: SnakeLoadingFrameProps & { previewProgress?: number }) {
   const [showOverlay, setShowOverlay] = useState(loading || previewProgress !== undefined);
   const exitTimerRef = useRef<number | null>(null);
   const resolvedStrokeWidth =
     strokeWidth ?? (shape === 'circle' ? DEFAULT_CIRCLE_STROKE : DEFAULT_RECT_STROKE);
-  const resolvedTrackInset =
-    trackInset ?? (shape === 'circle' ? DEFAULT_CIRCLE_INSET : DEFAULT_RECT_INSET);
   const circleContentInset =
-    shape === 'circle' ? Math.max(6, resolvedTrackInset - 2) : 0;
+    shape === 'circle' ? Math.max(6, resolvedStrokeWidth + 4) : 0;
   const progressRatio = clampProgress(previewProgress ?? 0) / 100;
 
   useEffect(() => {
@@ -303,8 +288,6 @@ function SnakeFrameBase({
             progressRatio={progressRatio}
             animate={previewProgress === undefined && loading}
             strokeWidth={resolvedStrokeWidth}
-            trackInset={resolvedTrackInset}
-            cornerRadius={cornerRadius}
           />
         </motion.div>
       ) : null}
@@ -323,8 +306,6 @@ export function SnakeLoadingPreview({
   themeColor = DEFAULT_THEME_COLOR,
   defaultProgress = 32,
   strokeWidth,
-  trackInset,
-  cornerRadius,
   contentClassName,
 }: SnakeLoadingPreviewProps) {
   const [progress, setProgress] = useState(clampProgress(defaultProgress));
@@ -341,8 +322,6 @@ export function SnakeLoadingPreview({
         className={className}
         themeColor={themeColor}
         strokeWidth={strokeWidth}
-        trackInset={trackInset}
-        cornerRadius={cornerRadius}
         contentClassName={contentClassName}
       >
         {children}
