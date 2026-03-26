@@ -86,6 +86,7 @@
     "@windrun-huaiin/base-ui": "workspace:^",
     "@windrun-huaiin/lib": "workspace:^",
     "class-variance-authority": "catalog:",
+    "framer-motion": "catalog:",
     "fumadocs-core": "catalog:",
     "fumadocs-mdx": "catalog:",
     "fumadocs-typescript": "catalog:",

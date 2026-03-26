@@ -70,6 +70,7 @@ catalog:
   eslint-config-next: ^16.1.6
   eslint-plugin-unused-imports: ^4.4.1
   fast-glob: ^3.3.3
+  framer-motion: ^12.23.24
   fs-extra: ^11.2.0
   fumadocs-core: 16.0.9
   fumadocs-docgen: 3.0.4
