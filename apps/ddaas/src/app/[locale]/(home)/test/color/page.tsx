@@ -64,7 +64,7 @@ function TonePreview({
   const markClass = THEME_RICH_TEXT_MARK_CLASS_MAP[themeClass];
   const titleClass = THEME_TEXT_TITLE_CLASS_MAP[themeClass];
   const [isSnakeLoading, setIsSnakeLoading] = useState(true);
-  const [showLoadingAnimation, setShowLoadingAnimation] = useState(false);
+  const [showLoadingAnimation, setShowLoadingAnimation] = useState(true);
   const previewActionButtonClass = cn(
     'shrink-0 rounded-full border bg-white px-3 py-1.5 text-xs font-semibold transition-colors duration-200',
     themeClass,
