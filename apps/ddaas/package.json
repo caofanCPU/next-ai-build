@@ -12,7 +12,7 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
     "diaomao-help": "dev-scripts -h",
-    "diaomao-update": "dev-scripts diaomao-update -v",
+    "diaomao-update": "pnpm add -D @windrun-huaiin/dev-scripts@latest && pnpm exec dev-scripts diaomao-update -v",
     "generate-blog-index": "dev-scripts generate-blog-index -v",
     "check-translations": "dev-scripts check-translations -v",
     "clean-translations": "dev-scripts clean-translations -v",
@@ -22,9 +22,9 @@
     "core-sync-schema": "dev-scripts backend-core prisma:sync",
     "core-sync-sql": "dev-scripts backend-core migrations:sync --schema nextai",
     "whoareyou": "dev-scripts generate-nextjs-architecture -v",
-    "windrun": "pnpm remove @windrun-huaiin/base-ui @windrun-huaiin/lib @windrun-huaiin/third-ui @windrun-huaiin/backend-core @windrun-huaiin/dev-scripts  && pnpm add @windrun-huaiin/base-ui@latest @windrun-huaiin/lib@latest @windrun-huaiin/third-ui@latest @windrun-huaiin/backend-core@latest && pnpm add -D @windrun-huaiin/dev-scripts@latest",
-    "windrun3": "pnpm remove @windrun-huaiin/third-ui && pnpm add @windrun-huaiin/third-ui@latest",
-    "windrunC": "pnpm remove @windrun-huaiin/backend-core && pnpm add @windrun-huaiin/backend-core@latest"
+    "windrun": "pnpm add @windrun-huaiin/base-ui@latest @windrun-huaiin/lib@latest @windrun-huaiin/third-ui@latest @windrun-huaiin/backend-core@latest && pnpm add -D @windrun-huaiin/dev-scripts@latest",
+    "windrun3": "pnpm add @windrun-huaiin/third-ui@latest",
+    "windrunC": "pnpm add @windrun-huaiin/backend-core@latest"
   },
   "dependencies": {
     "@clerk/localizations": "catalog:",

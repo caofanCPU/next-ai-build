@@ -9,6 +9,7 @@ import {
   GradientButton,
   ZiaFile,
   ZiaFolder,
+  SunoEmbed
 } from "@third-ui/fuma/mdx";
 import { SiteX } from "@third-ui/fuma/server";
 import { CodeBlock, Pre } from "fumadocs-ui/components/codeblock";
@@ -101,6 +102,7 @@ const customUiComponents = {
   SiteX,
   ZiaFile,
   ZiaFolder,
+  SunoEmbed
 };
 
 const typeTableGenerator = createTypeTableGenerator();

@@ -11,3 +11,4 @@ export * from './fuma-github-info';
 export * from './zia-file';
 export * from './toc-footer-wrapper';
 export * from './banner';
+export * from './suno-embed';
