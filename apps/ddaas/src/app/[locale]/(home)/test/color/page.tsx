@@ -106,7 +106,6 @@ function TonePreview({
                   shape="circle"
                   loading={isSnakeLoading}
                   themeColor={themeHex}
-                  strokeWidth={4}
                   className={cn(
                     'inline-flex h-16 w-16 items-center justify-center border',
                     circleFrameClass,
@@ -144,10 +143,10 @@ function TonePreview({
             <SnakeLoadingPreview
               shape="rounded-rect"
               themeColor={themeHex}
-              strokeWidth={1}
-              className="aspect-video w-full rounded-[8px] p-0"
+              strokeWidth={3}
+              className="aspect-video w-full rounded-t-xl rounded-b-none p-0"
             >
-              <div className="flex h-full w-full items-center justify-center rounded-[8px]">
+              <div className="flex h-full w-full items-center justify-center rounded-t-xl rounded-b-none">
                 <div className={cn('space-y-2 text-center', dark ? 'text-white' : 'text-slate-900')}>
                   <div className={cn('text-xs uppercase tracking-[0.16em]', dark ? 'text-slate-400' : 'text-slate-500')}>
                     Media Surface

@@ -2,8 +2,9 @@
 
 import Image, { type ImageProps } from "next/image"
 import { useEffect, useState } from "react"
-import { themeBgColor, themeViaColor } from "@windrun-huaiin/base-ui/lib"
+import { themeBgColor, themeSvgIconColor} from "@windrun-huaiin/base-ui/lib"
 import { cn } from "@windrun-huaiin/lib/utils"
+import { SnakeLoadingFrame } from "./snake-loading-frame"
 
 interface DelayedImgProps extends ImageProps {
   wrapperClassName?: string
@@ -46,22 +47,23 @@ export function DelayedImg({
   return (
     <div className={cn("relative", wrapperClassName)}>
       {(!isMounted || !isLoaded) && (
-        <div
-          aria-hidden="true"
+        <SnakeLoadingFrame
+          shape="rounded-rect"
+          loading
+          themeColor={themeSvgIconColor}
+          strokeWidth={3}
           className={cn(
-            "absolute inset-0 rounded-[inherit] border animate-pulse shadow-sm bg-white/70 dark:bg-white/5",
+            "absolute inset-0 rounded-[inherit] border shadow-sm bg-white/70 dark:bg-white/5",
             themeBgColor,
             placeholderClassName,
           )}
+          contentClassName="h-full w-full"
         >
           <div
-            className={cn(
-              "absolute inset-x-0 top-0 h-28 rounded-[inherit] bg-linear-to-b from-white/80 to-transparent dark:from-white/14 dark:to-transparent",
-              themeViaColor,
-            )}
+            aria-hidden="true"
+            className="absolute inset-0 rounded-[inherit] bg-white/20 dark:bg-white/0"
           />
-          <div className="absolute inset-0 rounded-[inherit] bg-white/20 dark:bg-white/0" />
-        </div>
+        </SnakeLoadingFrame>
       )}
       {isMounted && (
         <Image

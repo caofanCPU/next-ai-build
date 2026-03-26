@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { cn } from '@windrun-huaiin/lib/utils';
-import { themeBgColor } from '@windrun-huaiin/base-ui/lib';
+import { themeBgColor, themeSvgIconColor } from '@windrun-huaiin/base-ui/lib';
+import { SnakeLoadingFrame } from '../../main/snake-loading-frame';
 import { GradientButton } from './gradient-button';
 
 interface SunoEmbedProps {
@@ -142,7 +143,7 @@ export function SunoEmbed({
           {statusText ? (
             <p
               className={cn(
-                'shrink-0 text-[11px] font-medium tracking-[0.08em] sm:text-xs',
+                'shrink-0 min-w-50 text-right text-[11px] font-medium tabular-nums tracking-[0.08em] sm:text-xs',
                 showTimeoutHint ? 'text-red-500 dark:text-red-400' : 'text-white',
               )}
             >
@@ -161,41 +162,51 @@ export function SunoEmbed({
           backgroundColor: SUNO_SURFACE_COLOR,
         }}
       >
-        {!isLoaded && (
-          <div className="absolute inset-0 flex items-center justify-center px-4 text-center">
-            <div className="relative z-10">
-              <GradientButton
-                title="Open in Suno"
-                href={src}
-                align="center"
-                className="no-underline"
+        <SnakeLoadingFrame
+          shape="rounded-rect"
+          loading={!isLoaded && !hasTimedOut}
+          themeColor={themeSvgIconColor}
+          className="absolute inset-0"
+          contentClassName="h-full w-full"
+        >
+          <>
+            {!isLoaded && (
+              <div className="absolute inset-0 flex items-center justify-center px-4 text-center">
+                <div className="relative z-10">
+                  <GradientButton
+                    title="Open in Suno"
+                    href={src}
+                    align="center"
+                    className="no-underline"
+                  />
+                </div>
+              </div>
+            )}
+            {!hasTimedOut && (
+              <iframe
+                src={embedSrc}
+                title="Suno audio player"
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: '100%',
+                  border: 'none',
+                  opacity: isLoaded ? 1 : 0,
+                  transition: 'opacity 300ms ease',
+                  pointerEvents: isLoaded ? 'auto' : 'none',
+                }}
+                allow="autoplay; encrypted-media; fullscreen"
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                onLoad={handleLoad}
+                suppressHydrationWarning
               />
-            </div>
-          </div>
-        )}
-        {!hasTimedOut && (
-          <iframe
-            src={embedSrc}
-            title="Suno audio player"
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: '100%',
-              height: '100%',
-              border: 'none',
-              opacity: isLoaded ? 1 : 0,
-              transition: 'opacity 300ms ease',
-              pointerEvents: isLoaded ? 'auto' : 'none',
-            }}
-            allow="autoplay; encrypted-media; fullscreen"
-            allowFullScreen
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-            onLoad={handleLoad}
-            suppressHydrationWarning
-          />
-        )}
+            )}
+          </>
+        </SnakeLoadingFrame>
       </div>
     </div>
   );

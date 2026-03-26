@@ -1,5 +1,17 @@
 # @windrun-huaiin/third-ui
 
+## 14.3.0
+
+### Minor Changes
+
+- feat(mdx): add loading animate component
+
+### Patch Changes
+
+- Updated dependencies
+  - @windrun-huaiin/base-ui@14.0.3
+  - @windrun-huaiin/lib@14.0.1
+
 ## 14.2.0
 
 ### Minor Changes
