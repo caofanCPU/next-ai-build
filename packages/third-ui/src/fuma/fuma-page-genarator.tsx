@@ -3,6 +3,7 @@ import { ReactNode, ReactElement, cloneElement } from 'react';
 import { TocFooterWrapper } from '@third-ui/fuma/mdx/toc-footer-wrapper';
 import type { LLMCopyButtonProps, LLMCopyButton } from '@third-ui/fuma/mdx/toc-base';
 import { getAsNeededLocalizedUrl } from '@windrun-huaiin/lib';
+import { PortableClerkTOC } from '@third-ui/fuma/mdx/toc-clerk-portable';
 
 interface FumaPageParams {
   /* 
@@ -48,7 +49,9 @@ interface FumaPageParams {
   // default true
   showTableOfContent?: boolean;
 
-  // default false, for mobile style can cause issue
+  /*
+   * @deprecated Mobile TOC popover is no longer used.
+   */
   showTableOfContentPopover?: boolean;
 
   /*
@@ -106,13 +109,16 @@ export function createFumaPage({
         breadcrumb={{enabled: showBreadcrumb}}
         tableOfContent={{
           enabled: showTableOfContent,
-          style: 'clerk',
           single: false,
-          footer: tocFooterElement,
+          component: (
+            <PortableClerkTOC
+              toc={page.data.toc}
+              footer={tocFooterElement}
+            />
+          ),
         }}
         tableOfContentPopover={{
-          enabled: showTableOfContentPopover,
-          footer: tocFooterElement,
+          enabled: false,
         }}
         toc={page.data.toc}
         article={{ className: 'max-sm:pb-16' }}
