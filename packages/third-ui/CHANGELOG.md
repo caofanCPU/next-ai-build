@@ -1,5 +1,20 @@
 # @windrun-huaiin/third-ui
 
+## 14.4.0
+
+### Minor Changes
+
+- feat(mdx): fuma TOC component customizability
+  - support theme color with mdx TOC
+  - use fluent svg path for good view
+  - remove fumadocs patch 'cause no need them at all after this version
+
+### Patch Changes
+
+- Updated dependencies
+  - @windrun-huaiin/base-ui@14.0.3
+  - @windrun-huaiin/lib@14.0.1
+
 ## 14.3.1
 
 ### Patch Changes

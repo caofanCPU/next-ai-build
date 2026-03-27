@@ -178,7 +178,6 @@ function TonePreview({
             <SnakeLoadingPreview
               shape="rounded-rect"
               themeColor={themeHex}
-              strokeWidth={3}
               className="aspect-video w-full rounded-t-xl rounded-b-none p-0"
             >
               <div className="flex h-full w-full items-center justify-center rounded-t-xl rounded-b-none">

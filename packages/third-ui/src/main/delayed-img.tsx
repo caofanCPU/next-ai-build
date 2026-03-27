@@ -51,7 +51,6 @@ export function DelayedImg({
           shape="rounded-rect"
           loading
           themeColor={themeSvgIconColor}
-          strokeWidth={3}
           className={cn(
             "absolute inset-0 rounded-[inherit] border shadow-sm bg-white/70 dark:bg-white/5",
             themeBgColor,

@@ -32,12 +32,12 @@ const TRACK_COLOR = 'rgba(148, 163, 184, 0.22)';
 const BODY_LENGTH_RATIO = 0.26;
 const EXIT_DURATION_MS = 260;
 const LOOP_DURATION_SECONDS = 1.85;
-const DEFAULT_CIRCLE_STROKE = 2;
-const DEFAULT_RECT_STROKE = 3;
+const DEFAULT_CIRCLE_STROKE = 0.5;
+const DEFAULT_RECT_STROKE = 1;
 const MIN_FRAME_SIZE = 2;
 const MIN_BODY_LENGTH = 24;
 const MAX_BODY_LENGTH_RATIO = 0.36;
-const RECT_MIN_STROKE_WIDTH = 3;
+const RECT_MIN_STROKE_WIDTH = 1;
 
 function clampProgress(progress: number): number {
   if (!Number.isFinite(progress)) {
