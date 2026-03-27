@@ -1,5 +1,14 @@
 # @windrun-huaiin/third-ui
 
+## 14.4.1
+
+### Patch Changes
+
+- fix(mdx): enhance TOC SVG animations with fading effects and improved styling
+- Updated dependencies
+  - @windrun-huaiin/base-ui@14.0.3
+  - @windrun-huaiin/lib@14.0.1
+
 ## 14.4.0
 
 ### Minor Changes

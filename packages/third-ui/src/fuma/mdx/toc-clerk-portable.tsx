@@ -1,5 +1,9 @@
 'use client';
 
+/**
+ * References most of its code and SVG animation design from
+ * https://github.com/fuma-nama/fumadocs/blob/dev/packages/radix-ui/src/components/toc/clerk.tsx
+ */
 import * as Primitive from 'fumadocs-core/toc';
 import {
   PageTOC,
@@ -11,6 +15,7 @@ import {
 import {
   type ComponentProps,
   type ReactNode,
+  useEffect,
   useLayoutEffect,
   useMemo,
   useRef,
@@ -57,6 +62,14 @@ const CLERK_TURN_CURVE_HEIGHT = 12;
 const CLERK_TURN_CONTROL_FACTOR = 0.68;
 // Safety margin that keeps turns away from the heading rows themselves.
 const CLERK_TURN_GAP_MARGIN = 7;
+// Shared duration for active rail fade transitions and endpoint dot movement.
+const CLERK_ACTIVE_ANIMATION_DURATION_MS = 300;
+// Easing curve for the active rail and dot; tuned for a slightly delayed, softer motion.
+const CLERK_ACTIVE_ANIMATION_EASING = 'cubic-bezier(0.22, 1, 0.36, 1)';
+// Horizontal gap between the path centerline and the heading text start.
+const CLERK_TEXT_GAP_FROM_PATH = 12;
+// Radius of numbered step badges rendered on top of the path centerline.
+const CLERK_STEP_BADGE_RADIUS = 7;
 
 export function PortableClerkTOC({
   toc,
@@ -298,9 +311,39 @@ function ClerkOutline({
   activeAnchors: string[];
   activeEndpoint: { x: number; y: number } | null;
 }) {
-  if (!path) return null;
-
   const activeSet = new Set(activeAnchors);
+  const [displayPath, setDisplayPath] = useState(activePath);
+  const [fadingPath, setFadingPath] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (activePath === displayPath) return;
+    if (!displayPath) {
+      setDisplayPath(activePath);
+      setFadingPath(null);
+      return;
+    }
+
+    setFadingPath(displayPath);
+    setDisplayPath(activePath);
+
+    const timeout = window.setTimeout(() => {
+      setFadingPath(null);
+    }, CLERK_ACTIVE_ANIMATION_DURATION_MS);
+
+    return () => window.clearTimeout(timeout);
+  }, [activePath, displayPath]);
+
+  const dotTranslate = activeEndpoint
+    ? `translate(${activeEndpoint.x - CLERK_ACTIVE_DOT_RADIUS}px, ${
+        activeEndpoint.y - CLERK_ACTIVE_DOT_RADIUS
+      }px)`
+    : undefined;
+  const transitionStyle = {
+    transitionDuration: `${CLERK_ACTIVE_ANIMATION_DURATION_MS}ms`,
+    transitionTimingFunction: CLERK_ACTIVE_ANIMATION_EASING,
+  };
+
+  if (!path) return null;
 
   return (
     <>
@@ -325,32 +368,50 @@ function ClerkOutline({
         width="100%"
         height="100%"
       >
-        {activePath ? (
+        {fadingPath ? (
           <path
-            d={activePath}
+            d={fadingPath}
             fill="none"
             strokeWidth={CLERK_PATH_STROKE_WIDTH}
             strokeLinecap="round"
             strokeLinejoin="round"
             stroke={themeSvgIconColor}
+            className="transition-opacity"
+            style={{
+              opacity: 0,
+              ...transitionStyle,
+            }}
+          />
+        ) : null}
+        {displayPath ? (
+          <path
+            d={displayPath}
+            fill="none"
+            strokeWidth={CLERK_PATH_STROKE_WIDTH}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            stroke={themeSvgIconColor}
+            className="transition-opacity"
+            style={{
+              opacity: 1,
+              ...transitionStyle,
+            }}
           />
         ) : null}
       </svg>
-      <svg
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 z-0 overflow-visible"
-        width="100%"
-        height="100%"
-      >
-        {activeEndpoint ? (
-          <circle
-            cx={activeEndpoint.x}
-            cy={activeEndpoint.y}
-            r={CLERK_ACTIVE_DOT_RADIUS}
-            fill={themeSvgIconColor}
-          />
-        ) : null}
-      </svg>
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0">
+        <div
+          className="absolute rounded-full transition-transform"
+          style={{
+            width: CLERK_ACTIVE_DOT_RADIUS * 2,
+            height: CLERK_ACTIVE_DOT_RADIUS * 2,
+            backgroundColor: themeSvgIconColor,
+            transform: dotTranslate,
+            opacity: activeEndpoint ? 1 : 0,
+            ...transitionStyle,
+          }}
+        />
+      </div>
       <svg
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 z-1 overflow-visible"
@@ -365,7 +426,7 @@ function ClerkOutline({
           return (
             <g key={item.url} transform={`translate(${item.x}, ${item.y})`}>
               <circle
-                r="7"
+                r={CLERK_STEP_BADGE_RADIUS}
                 fill={isActive ? themeSvgIconColor : undefined}
                 className={cn(!isActive && 'fill-black dark:fill-white')}
               />
@@ -386,9 +447,9 @@ function ClerkOutline({
 }
 
 function getItemOffset(depth: number): number {
-  if (depth <= 2) return 14;
-  if (depth === 3) return 26;
-  return 36;
+  const lineOffset = getLineOffset(depth);
+  const badgeRadius = depth === 3 ? CLERK_STEP_BADGE_RADIUS : 0;
+  return lineOffset + badgeRadius + CLERK_TEXT_GAP_FROM_PATH;
 }
 
 function getLineOffset(depth: number): number {
@@ -614,7 +675,7 @@ function mergeRefs<T>(
       }
 
       try {
-        (ref as React.MutableRefObject<T | null>).current = node;
+        (ref as React.RefObject<T | null>).current = node;
       } catch {
         // ignore readonly refs
       }
