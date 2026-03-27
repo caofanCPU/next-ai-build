@@ -47,10 +47,15 @@ type ClerkItemMeasure = {
   stepNumber: string | null;
 };
 
-const CLERK_PATH_STROKE_WIDTH = 1.5;
-const CLERK_ACTIVE_DOT_RADIUS = 2.15;
+// Base stroke width for both the inactive rail and the active highlight path.
+const CLERK_PATH_STROKE_WIDTH = 1;
+// Radius of the moving endpoint dot that marks the latest active heading.
+const CLERK_ACTIVE_DOT_RADIUS = 2;
+// Max vertical space reserved for a turn inside the gap between two headings.
 const CLERK_TURN_CURVE_HEIGHT = 12;
+// Multiplier for bezier control points; higher values make the turn rounder.
 const CLERK_TURN_CONTROL_FACTOR = 0.68;
+// Safety margin that keeps turns away from the heading rows themselves.
 const CLERK_TURN_GAP_MARGIN = 7;
 
 export function PortableClerkTOC({
@@ -616,27 +621,3 @@ function mergeRefs<T>(
     }
   };
 }
-
-/**
- * Portable Clerk TOC notes
- *
- * 1. This file is meant to be copied into an application project instead of
- * relying on fumadocs-ui internal aliases like `@/components/layout/toc`.
- *
- * 2. Public package imports only:
- * - `fumadocs-core/toc`
- * - `fumadocs-ui/layouts/docs/page`
- *
- * 3. Non-public helper dependencies are intentionally inlined here:
- * - `cn`
- * - `mergeRefs`
- *
- * 4. Usage model:
- * - pass `toc={page.data.toc}` directly
- * - inject into `DocsPage` with `tableOfContent.component`
- * - inject the mobile version with `tableOfContentPopover.component`
- *
- * 5. This component still depends on `DocsPage` providing the surrounding
- * `AnchorProvider`. If you render it outside `DocsPage`, wrap it with
- * `Primitive.AnchorProvider` yourself.
- */
