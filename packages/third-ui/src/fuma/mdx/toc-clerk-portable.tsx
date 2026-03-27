@@ -47,8 +47,11 @@ type ClerkItemMeasure = {
   stepNumber: string | null;
 };
 
-const CLERK_PATH_STROKE_WIDTH = 2;
-const CLERK_ACTIVE_DOT_RADIUS = 3.25;
+const CLERK_PATH_STROKE_WIDTH = 1.5;
+const CLERK_ACTIVE_DOT_RADIUS = 2.15;
+const CLERK_TURN_CURVE_HEIGHT = 12;
+const CLERK_TURN_CONTROL_FACTOR = 0.68;
+const CLERK_TURN_GAP_MARGIN = 7;
 
 export function PortableClerkTOC({
   toc,
@@ -384,7 +387,7 @@ function getItemOffset(depth: number): number {
 }
 
 function getLineOffset(depth: number): number {
-  return depth >= 3 ? 10 : 4;
+  return depth >= 3 ? 18 : 6;
 }
 
 function getVisualLinePosition(depth: number): number {
@@ -435,20 +438,48 @@ function buildOutlinePath(items: ClerkItemMeasure[]): string {
   let path = `M ${round(first.x)} ${round(first.y)}`;
 
   for (let i = 1; i < items.length; i++) {
-    path += ` ${buildCurveSegment(items[i - 1], items[i])}`;
+    path += ` ${buildTurnSegment(items[i - 1], items[i])}`;
   }
 
   return path;
 }
 
-function buildCurveSegment(
+function buildTurnSegment(
   previous: ClerkItemMeasure,
   current: ClerkItemMeasure,
 ): string {
-  const midY = (previous.y + current.y) / 2;
-  return `C ${round(previous.x)} ${round(midY)} ${round(current.x)} ${round(
-    midY,
-  )} ${round(current.x)} ${round(current.y)}`;
+  if (Math.abs(previous.x - current.x) <= 0.5) {
+    return `L ${round(current.x)} ${round(current.y)}`;
+  }
+
+  const distanceY = current.y - previous.y;
+  if (distanceY <= 0) {
+    return `L ${round(current.x)} ${round(current.y)}`;
+  }
+
+  const gapMidY = previous.y + distanceY / 2;
+  const maxCurveHeight = Math.max(distanceY - CLERK_TURN_GAP_MARGIN * 2, 0);
+  const curveHeight = Math.min(
+    CLERK_TURN_CURVE_HEIGHT,
+    Math.max(maxCurveHeight, 0),
+  );
+  if (curveHeight <= 0.5) {
+    return `L ${round(current.x)} ${round(current.y)}`;
+  }
+
+  const turnStartY = gapMidY - curveHeight / 2;
+  const turnEndY = gapMidY + curveHeight / 2;
+  const controlDelta = curveHeight * CLERK_TURN_CONTROL_FACTOR;
+
+  return [
+    `L ${round(previous.x)} ${round(turnStartY)}`,
+    `C ${round(previous.x)} ${round(turnStartY + controlDelta)} ${round(
+      current.x,
+    )} ${round(turnEndY - controlDelta)} ${round(current.x)} ${round(
+      turnEndY,
+    )}`,
+    `L ${round(current.x)} ${round(current.y)}`,
+  ].join(' ');
 }
 
 function getActiveItems(
