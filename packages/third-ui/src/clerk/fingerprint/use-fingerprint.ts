@@ -4,7 +4,8 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   createFingerprintHeaders,
   getOrCreateFirstTouchData,
-  getOrGenerateFingerprintId
+  getOrGenerateFingerprintId,
+  setFingerprintId,
 } from './fingerprint-client';
 import type {
   FingerprintConfig,
@@ -13,7 +14,7 @@ import type {
   XSubscription,
   XUser
 } from './types';
-import { FINGERPRINT_SOURCE_REFER } from './fingerprint-shared'
+import { FINGERPRINT_SOURCE_REFER, isDebugFingerprintId, isValidFingerprintId } from './fingerprint-shared'
 
 /**
  * Hook for managing fingerprint ID and anonymous user data
@@ -121,8 +122,15 @@ export function useFingerprint(config: FingerprintConfig): UseFingerprintResult 
         setXSubscription(data.xSubscription || null);
         setIsInitialized(true);
 
-        if (data.xUser?.fingerprintId && data.xUser.fingerprintId !== fingerprintId) {
-          setFingerprintIdState(data.xUser.fingerprintId);
+        const canonicalFingerprintId = data.xUser?.fingerprintId;
+        if (
+          canonicalFingerprintId &&
+          isValidFingerprintId(canonicalFingerprintId) &&
+          !isDebugFingerprintId(canonicalFingerprintId) &&
+          canonicalFingerprintId !== fingerprintId
+        ) {
+          setFingerprintIdState(canonicalFingerprintId);
+          setFingerprintId(canonicalFingerprintId);
         }
       } else {
         throw new Error(data.error || 'Unknown error occurred');

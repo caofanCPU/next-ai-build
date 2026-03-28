@@ -9,8 +9,8 @@ import { useFingerprint } from './use-fingerprint';
 import { CopyableText } from '@windrun-huaiin/base-ui/ui';
 import { createFingerprintHeaders } from './fingerprint-client';
 import {
-  getDebugFingerprintOverride,
-  setDebugFingerprintOverride,
+  getOrCreateDebugFingerprintOverride,
+  regenerateDebugFingerprintOverride,
 } from './fingerprint-debug';
 import { FINGERPRINT_SOURCE_REFER } from './fingerprint-shared';
 
@@ -112,16 +112,12 @@ export function FingerprintStatus() {
   }, [xUser]);
 
   useEffect(() => {
-    const debugFingerprintOverride = getDebugFingerprintOverride();
-    if (debugFingerprintOverride) {
-      setActiveDebugFingerprintId(debugFingerprintOverride);
+    if (panelMode !== 'test') {
       return;
     }
 
-    const nextFingerprintId = buildDebugFingerprintId();
-    setDebugFingerprintOverride(nextFingerprintId);
-    setActiveDebugFingerprintId(nextFingerprintId);
-  }, []);
+    setActiveDebugFingerprintId((current) => current ?? getOrCreateDebugFingerprintOverride());
+  }, [panelMode]);
 
   const creditBuckets = useMemo(() => {
     if (!xCredit) return [];
@@ -185,12 +181,13 @@ export function FingerprintStatus() {
   );
 
   const runContextParallelInitTest = async () => {
-    const debugFingerprintId = activeDebugFingerprintId;
+    const debugFingerprintId = activeDebugFingerprintId ?? getOrCreateDebugFingerprintOverride();
     if (!debugFingerprintId) {
       setTestResult('Test fingerprint override is not ready yet.');
       return;
     }
 
+    setActiveDebugFingerprintId(debugFingerprintId);
     setIsRunningTest(true);
     setTestResult(`Running Frontend Prevention Test with fingerprint: ${debugFingerprintId}`);
 
@@ -240,12 +237,13 @@ export function FingerprintStatus() {
   };
 
   const runRawParallelPostTest = async () => {
-    const normalizedFingerprintId = activeDebugFingerprintId;
+    const normalizedFingerprintId = activeDebugFingerprintId ?? getOrCreateDebugFingerprintOverride();
     if (!normalizedFingerprintId) {
       setTestResult('Test fingerprint override is not ready yet.');
       return;
     }
 
+    setActiveDebugFingerprintId(normalizedFingerprintId);
     setIsRunningTest(true);
     setTestResult(`Running Backend Idempotency Test with fingerprint: ${normalizedFingerprintId}`);
 
@@ -303,8 +301,7 @@ export function FingerprintStatus() {
   };
 
   const regenerateTestFingerprint = () => {
-    const nextFingerprintId = buildDebugFingerprintId();
-    setDebugFingerprintOverride(nextFingerprintId);
+    const nextFingerprintId = regenerateDebugFingerprintOverride();
     setActiveDebugFingerprintId(nextFingerprintId);
     setTestResult(`Generated test fingerprint override: ${nextFingerprintId}`);
   };
@@ -678,12 +675,6 @@ function StatusTag({ value }: { value: string | undefined | null }) {
       {value}
     </span>
   );
-}
-
-function buildDebugFingerprintId() {
-  const timestamp = new Date().toISOString().replace(/[-:TZ.]/g, '').slice(0, 14);
-  const randomSuffix = Math.random().toString(36).slice(2, 8);
-  return `fp_test_dbg_${timestamp}_${randomSuffix}`;
 }
 
 function formatErrorMessage(error: unknown) {

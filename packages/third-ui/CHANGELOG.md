@@ -1,5 +1,14 @@
 # @windrun-huaiin/third-ui
 
+## 14.4.3
+
+### Patch Changes
+
+- fix(fingerprint): debug action should be limit for clear data
+- Updated dependencies
+  - @windrun-huaiin/base-ui@14.0.3
+  - @windrun-huaiin/lib@14.0.1
+
 ## 14.4.2
 
 ### Patch Changes

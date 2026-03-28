@@ -1,7 +1,9 @@
 'use client';
 
 import {
+  FINGERPRINT_DEBUG_PREFIX,
   FINGERPRINT_DEBUG_OVERRIDE_STORAGE_KEY,
+  isDebugFingerprintId,
   isValidFingerprintId,
 } from './fingerprint-shared';
 
@@ -31,7 +33,7 @@ function setLocalStorageValue(key: string, value: string): void {
 
 export function getDebugFingerprintOverride(): string | null {
   const value = getLocalStorageValue(FINGERPRINT_DEBUG_OVERRIDE_STORAGE_KEY);
-  if (!value || !isValidFingerprintId(value)) {
+  if (!value || !isValidFingerprintId(value) || !isDebugFingerprintId(value)) {
     return null;
   }
 
@@ -39,9 +41,32 @@ export function getDebugFingerprintOverride(): string | null {
 }
 
 export function setDebugFingerprintOverride(fingerprintId: string): void {
-  if (!isValidFingerprintId(fingerprintId)) {
+  if (!isValidFingerprintId(fingerprintId) || !isDebugFingerprintId(fingerprintId)) {
     throw new Error('Invalid fingerprint ID');
   }
 
   setLocalStorageValue(FINGERPRINT_DEBUG_OVERRIDE_STORAGE_KEY, fingerprintId);
+}
+
+export function buildDebugFingerprintId(): string {
+  const timestamp = new Date().toISOString().replace(/[-:TZ.]/g, '').slice(0, 14);
+  const randomSuffix = Math.random().toString(36).slice(2, 8);
+  return `${FINGERPRINT_DEBUG_PREFIX}${timestamp}_${randomSuffix}`;
+}
+
+export function getOrCreateDebugFingerprintOverride(): string {
+  const existing = getDebugFingerprintOverride();
+  if (existing) {
+    return existing;
+  }
+
+  const nextFingerprintId = buildDebugFingerprintId();
+  setDebugFingerprintOverride(nextFingerprintId);
+  return nextFingerprintId;
+}
+
+export function regenerateDebugFingerprintOverride(): string {
+  const nextFingerprintId = buildDebugFingerprintId();
+  setDebugFingerprintOverride(nextFingerprintId);
+  return nextFingerprintId;
 }
