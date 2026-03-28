@@ -12,7 +12,7 @@ import {
   PaySupplier,
   PaymentStatus
 } from '@/db/index';
-import { ApiAuthUtils } from '@/lib/auth-utils';
+import { ApiAuthUtils } from '@/auth/auth-utils';
 import { getPriceConfig } from '@/lib/money-price-config';
 
 // Request validation schema

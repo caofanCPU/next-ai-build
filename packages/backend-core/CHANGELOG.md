@@ -1,5 +1,19 @@
 # @windrun-huaiin/backend-core
 
+## 14.4.0
+
+### Minor Changes
+
+- fix(auth): refactor authentication middleware and utilities for protected routes
+  - This version contains `break updates`, such as `ApiAuthUtils`'s import path
+  - And serious auth issue in old middleware handler, force command to upgrade
+
+### Patch Changes
+
+- Updated dependencies
+  - @windrun-huaiin/third-ui@14.4.3
+  - @windrun-huaiin/lib@14.0.1
+
 ## 14.3.0
 
 ### Minor Changes

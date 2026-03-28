@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import { userService } from '../services/database/index';
 import { User } from '../services/database/prisma-model-type';
+import { AUTH_ERRORS, AUTH_HEADERS, type AuthProvider } from './auth-shared';
 
 /**
  * 认证结果类型
@@ -8,7 +9,8 @@ import { User } from '../services/database/prisma-model-type';
 export interface AuthResult {
   userId: string;
   user: User;
-  clerkUserId: string;
+  provider: AuthProvider;
+  providerUserId: string;
 }
 
 /**
@@ -16,20 +18,22 @@ export interface AuthResult {
  */
 export async function getAuthenticatedUser(req: NextRequest): Promise<AuthResult> {
   try {
-    const clerkUserId = req.headers.get('x-clerk-user-id');
-    if (!clerkUserId) {
-      throw new Error('Authentication required');
+    const provider = req.headers.get(AUTH_HEADERS.provider);
+    const providerUserId = req.headers.get(AUTH_HEADERS.providerUserId);
+    if (provider !== 'clerk' || !providerUserId) {
+      throw new Error(AUTH_ERRORS.unauthorized);
     }
-    
-    const user = await userService.findByClerkUserId(clerkUserId);
+
+    const user = await userService.findByClerkUserId(providerUserId);
     if (!user) {
-      throw new Error('User not found in database');
+      throw new Error(AUTH_ERRORS.userNotFound);
     }
-    
+
     return {
       userId: user.userId,
       user,
-      clerkUserId
+      provider: 'clerk',
+      providerUserId,
     };
   } catch (error) {
     console.error('Error getting authenticated user:', error);

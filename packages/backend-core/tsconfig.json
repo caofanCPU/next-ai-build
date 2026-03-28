@@ -16,6 +16,7 @@
       "@/context/*": ["./services/context/*"],
       "@/stripe/*": ["./services/stripe/*"],
       "@/lib/*": ["./lib/*"],
+      "@/auth/*": ["./auth/*"],
       "@/prisma/*": ["./prisma/*"],
       "@backend-core/*": ["./*"]
     }
