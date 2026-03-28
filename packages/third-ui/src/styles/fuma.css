@@ -3,6 +3,19 @@
   @apply top-20!;
 }
 
+@media (min-width: 1280px) {
+  /* 给桌面端固定 TOC 留一点底部呼吸感，避免视觉上直接压到 footer */
+  #nd-toc {
+    bottom: 1.25rem !important;
+  }
+
+  /* 文档主区域补一小段底部缓冲，减少 footer 刚进入视口就与 TOC 相撞 */
+  #nd-page {
+    padding-bottom: 5rem !important;
+    min-height: calc(100dvh - 5rem) !important;
+  }
+}
+
 /* 移动端文章目录下拉框的边距，建议移动端不要目录导航 96px */
 #nd-tocnav {
   @apply top-24!;
@@ -35,7 +48,7 @@ button[aria-label="Open Search"][data-search=""] {
 
 /* Custome Fuma Steps */
 .fd-step::before {
-  @apply size-5 -start-2.5 rounded-full;
+  @apply size-5 -inset-s-2.5 rounded-full;
   background-color: #000; 
   color: #fff;
   font-size: 0.75rem; 

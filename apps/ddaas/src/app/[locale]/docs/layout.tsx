@@ -40,11 +40,6 @@ export default async function Layout({
 }) {
   const { locale } = await params;
   const customeOptions = await docsOptions(locale);
-  
-  // // 在这里添加人工延迟
-  // console.log('Starting 5-second delay for testing loading animation...');
-  // await new Promise(resolve => setTimeout(resolve, 5000)); // 5秒延迟
-  // console.log('Delay finished. Rendering page.');
  
   return (
     <DocsLayout {...customeOptions} 

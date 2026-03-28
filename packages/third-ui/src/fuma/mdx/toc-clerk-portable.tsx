@@ -40,6 +40,7 @@ type PortableClerkTOCProps = {
 type ClerkItemMeta = {
   item: TOCItemType;
   resolvedContent: ReactNode;
+  fullTitle: string | null;
   stepNumber: string | null;
   itemPadding: number;
   lineOffset: number;
@@ -70,6 +71,8 @@ const CLERK_ACTIVE_ANIMATION_EASING = 'cubic-bezier(0.22, 1, 0.36, 1)';
 const CLERK_TEXT_GAP_FROM_PATH = 12;
 // Radius of numbered step badges rendered on top of the path centerline.
 const CLERK_STEP_BADGE_RADIUS = 7;
+// Max number of characters rendered for a TOC label before trimming with ellipsis.
+const CLERK_MAX_LABEL_LENGTH = 44;
 
 export function PortableClerkTOC({
   toc,
@@ -250,6 +253,7 @@ export function PortableClerkTOCItems({
           item={meta.item}
           isActive={activeAnchors.includes(meta.item.url.slice(1))}
           resolvedContent={meta.resolvedContent}
+          fullTitle={meta.fullTitle}
           itemPadding={meta.itemPadding}
           contentRef={(node: HTMLSpanElement | null) => {
             contentRefs.current[i] = node;
@@ -267,6 +271,7 @@ function PortableClerkTOCItem({
   item,
   isActive,
   resolvedContent,
+  fullTitle,
   itemPadding,
   contentRef,
   ref,
@@ -274,6 +279,7 @@ function PortableClerkTOCItem({
   item: TOCItemType;
   isActive: boolean;
   resolvedContent: ReactNode;
+  fullTitle: string | null;
   itemPadding: number;
   contentRef?: ((node: HTMLSpanElement | null) => void) | null;
   ref?: ((node: HTMLAnchorElement | null) => void) | null;
@@ -283,15 +289,19 @@ function PortableClerkTOCItem({
       ref={ref}
       href={item.url}
       data-clerk-item=""
+      title={fullTitle ?? undefined}
       style={{
         paddingInlineStart: itemPadding,
       }}
       className={cn(
-        'prose group relative py-1.5 text-sm transition-colors wrap-anywhere first:pt-0 last:pb-0 hover:text-fd-accent-foreground',
+        'prose group relative py-1.5 text-sm transition-colors first:pt-0 last:pb-0 hover:text-fd-accent-foreground',
         isActive ? themeIconColor : 'text-fd-muted-foreground',
       )}
     >
-      <span ref={contentRef} className="relative z-10">
+      <span
+        ref={contentRef}
+        className="relative z-10 block overflow-hidden text-ellipsis whitespace-nowrap"
+      >
         {resolvedContent}
       </span>
     </Primitive.TOCItem>
@@ -466,9 +476,13 @@ function resolveClerkItem(item: TOCItemType): ClerkItemMeta {
   const { isStep, displayStep, content } = getStepInfoFromTitle(rawTitle);
   let stepNumber: string | null = isH3 && isStep ? String(displayStep) : null;
   let resolvedContent: ReactNode = item.title;
+  let fullTitle: string | null = rawTitle || null;
 
   if (isH3 && isStep) {
     resolvedContent = content ?? item.title;
+    if (typeof content === 'string') {
+      fullTitle = content;
+    }
   }
 
   if (isH3 && !stepNumber) {
@@ -480,18 +494,32 @@ function resolveClerkItem(item: TOCItemType): ClerkItemMeta {
         const match = rawTitle.match(/^(\d+(?:\.\d+)*\.?)\s+(.+)$/);
         if (match?.[2]) {
           resolvedContent = match[2];
+          fullTitle = match[2];
         }
       }
     }
   }
 
+  if (typeof resolvedContent === 'string') {
+    fullTitle = resolvedContent;
+    resolvedContent = truncateClerkLabel(resolvedContent);
+  }
+
   return {
     item,
     resolvedContent,
+    fullTitle,
     stepNumber,
     itemPadding: getItemOffset(item.depth),
     lineOffset: getVisualLinePosition(item.depth),
   };
+}
+
+function truncateClerkLabel(value: string): string {
+  const normalized = value.trim();
+  if (normalized.length <= CLERK_MAX_LABEL_LENGTH) return normalized;
+
+  return `${normalized.slice(0, CLERK_MAX_LABEL_LENGTH).trimEnd()}...`;
 }
 
 function buildOutlinePath(items: ClerkItemMeasure[]): string {
