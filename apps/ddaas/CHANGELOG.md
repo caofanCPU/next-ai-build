@@ -1,5 +1,15 @@
 # @windrun-huaiin/ddaas-website
 
+## 14.3.2
+
+### Patch Changes
+
+- fix(mdx): enhance TOC view style
+- Updated dependencies
+  - @windrun-huaiin/base-ui@14.0.3
+  - @windrun-huaiin/third-ui@14.4.2
+  - @windrun-huaiin/lib@14.0.1
+
 ## 14.3.1
 
 ### Patch Changes
