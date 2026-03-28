@@ -1,6 +1,6 @@
 {
   "name": "@windrun-huaiin/third-ui",
-  "version": "14.4.3",
+  "version": "14.5.0",
   "description": "Third-party integrated UI components for windrun-huaiin projects",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -15,11 +15,6 @@
       "types": "./dist/clerk/server.d.ts",
       "import": "./dist/clerk/server.mjs",
       "require": "./dist/clerk/server.js"
-    },
-    "./clerk/patch/optional-auth": {
-      "types": "./dist/clerk/patch/optional-auth.d.ts",
-      "import": "./dist/clerk/patch/optional-auth.mjs",
-      "require": "./dist/clerk/patch/optional-auth.js"
     },
     "./fingerprint": {
       "types": "./dist/clerk/fingerprint/index.d.ts",

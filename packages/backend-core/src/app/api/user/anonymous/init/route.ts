@@ -6,9 +6,9 @@
 };
 
 import { anonymousAggregateService } from '@/aggregate/anonymous.aggregate.service';
+import { getOptionalServerAuthIdentity } from '@/auth/auth-utils';
 import type { XCredit, XSubscription, XUser } from '@windrun-huaiin/third-ui/fingerprint';
 import { extractFingerprintFromNextRequest } from '@windrun-huaiin/third-ui/fingerprint/server';
-import { auth } from '@clerk/nextjs/server';
 import { NextRequest, NextResponse } from 'next/server';
 import {
   fetchLatestUserContextByFingerprintId,
@@ -650,7 +650,8 @@ async function handleFingerprintRequest(request: NextRequest, options: { createI
   }
   console.log('Received fingerprintId:', fingerprintId);
 
-  const { userId: clerkUserId } = await auth();
+  const authIdentity = await getOptionalServerAuthIdentity();
+  const clerkUserId = authIdentity?.providerUserId ?? null;
   try {
     // 优先根据 Clerk ID 查询（如果已登录）
     let existingUserResult: XUserResponse | null = null;

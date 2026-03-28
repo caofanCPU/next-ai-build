@@ -1,7 +1,8 @@
 import { NextRequest } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
 import { userService } from '../services/database/index';
 import { User } from '../services/database/prisma-model-type';
-import { AUTH_ERRORS, AUTH_HEADERS, type AuthProvider } from './auth-shared';
+import { AUTH_ERRORS, AUTH_HEADERS, type AuthProvider, type ProviderIdentity } from './auth-shared';
 
 /**
  * 认证结果类型
@@ -54,6 +55,55 @@ export async function requireAuth(req: NextRequest): Promise<string> {
  */
 export async function requireAuthWithUser(req: NextRequest): Promise<AuthResult> {
   return await getAuthenticatedUser(req);
+}
+
+/**
+ * 服务端场景下获取当前已认证身份（如果存在）
+ * 适用于只依赖登录态、不需要查询业务用户的逻辑
+ */
+export async function getOptionalServerAuthIdentity(): Promise<ProviderIdentity | null> {
+  try {
+    const { userId: providerUserId } = await auth();
+    if (!providerUserId) {
+      return null;
+    }
+
+    return {
+      provider: 'clerk',
+      providerUserId,
+    };
+  } catch (error) {
+    console.error('Error getting optional server auth identity:', error);
+    return null;
+  }
+}
+
+/**
+ * 服务端场景下获取当前已认证用户（如果存在）
+ * 适用于 Server Component / Server Action 中基于登录态控制展示的逻辑
+ */
+export async function getOptionalServerAuthUser(): Promise<AuthResult | null> {
+  try {
+    const identity = await getOptionalServerAuthIdentity();
+    if (!identity) {
+      return null;
+    }
+
+    const user = await userService.findByClerkUserId(identity.providerUserId);
+    if (!user) {
+      return null;
+    }
+
+    return {
+      userId: user.userId,
+      user,
+      provider: identity.provider,
+      providerUserId: identity.providerUserId,
+    };
+  } catch (error) {
+    console.error('Error getting optional server auth user:', error);
+    return null;
+  }
 }
 
 /**

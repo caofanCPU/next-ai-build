@@ -1,9 +1,9 @@
-import { auth } from '@clerk/nextjs/server';
 import { cookies, headers } from 'next/headers';
 import {
   extractFingerprintFromNextStores,
 } from '@windrun-huaiin/third-ui/fingerprint/server';
 import type { InitUserContext } from '@windrun-huaiin/third-ui/main/server';
+import { getOptionalServerAuthIdentity } from '../auth/auth-utils';
 import {
   buildInitUserContextFromEntities,
   fetchUserContextByClerkUserId,
@@ -21,7 +21,8 @@ async function readFingerprintIdFromRequest(): Promise<string | null> {
 }
 
 export async function getMoneyPriceInitUserContext(): Promise<InitUserContext> {
-  const { userId: clerkUserId } = await auth();
+  const authIdentity = await getOptionalServerAuthIdentity();
+  const clerkUserId = authIdentity?.providerUserId ?? null;
 
   if (clerkUserId) {
     const userContext = await fetchUserContextByClerkUserId(clerkUserId);

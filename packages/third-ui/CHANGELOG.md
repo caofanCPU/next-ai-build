@@ -1,5 +1,20 @@
 # @windrun-huaiin/third-ui
 
+## 14.5.0
+
+### Minor Changes
+
+- fix(auth): refactor authentication middleware and utilities for protected routes
+  - This version contains `break updates`, such as `ApiAuthUtils`'s import path
+  - And serious auth issue in old middleware handler, force command to upgrade
+  - Remove `optional-auth` of clerk patch, just use `ApiAuthUtils`, `layout.config` is the one shoud be updated
+
+### Patch Changes
+
+- Updated dependencies
+  - @windrun-huaiin/base-ui@14.0.3
+  - @windrun-huaiin/lib@14.0.1
+
 ## 14.4.3
 
 ### Patch Changes
