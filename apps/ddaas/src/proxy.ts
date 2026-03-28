@@ -15,7 +15,7 @@ const intlMiddleware = createMiddleware({
 // 需要身份认证的路由（页面路由）
 const protectedPageRoutes = createRouteMatcher(
   buildProtectedPageRoutePatterns(
-    ['/dashboard', '/settings', '/profile', '/billing', '/test'],
+    ['/dashboard', '/settings', '/profile', '/billing'],
     appConfig.i18n.locales
   )
 );
