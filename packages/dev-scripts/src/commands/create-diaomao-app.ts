@@ -156,6 +156,8 @@ export async function createDiaomaoApp(targetDir: string, options: CreateDiaomao
         execSync('git init', { cwd: destDir, stdio: 'inherit' });
         execSync('git add .', { cwd: destDir, stdio: 'inherit' });
         execSync('git commit -m "feat: initial commit from diaomao template"', { cwd: destDir, stdio: 'inherit' });
+        // just ignore this changeset template file in local, but not affect remote file
+        execSync('git update-index --skip-worktree .changeset/d8-template.mdx', { cwd: destDir, stdio: 'ignore' });
       } catch (error) {
         console.warn('Failed to initialize Git repository. Please initialize manually.');
       }

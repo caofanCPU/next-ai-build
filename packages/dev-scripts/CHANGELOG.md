@@ -1,5 +1,11 @@
 # @windrun-huaiin/dev-scripts
 
+## 14.1.4
+
+### Patch Changes
+
+- fix(changeset): ignore local template commit file `d8-template.mdx`
+
 ## 14.1.3
 
 ### Patch Changes
