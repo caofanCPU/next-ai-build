@@ -71,6 +71,8 @@ const CLERK_ACTIVE_ANIMATION_EASING = 'cubic-bezier(0.22, 1, 0.36, 1)';
 const CLERK_TEXT_GAP_FROM_PATH = 12;
 // Radius of numbered step badges rendered on top of the path centerline.
 const CLERK_STEP_BADGE_RADIUS = 7;
+// Visual line offsets by grouped heading depth: 1/2, 3, 4, >4.
+const CLERK_DEPTH_GROUP_LINE_OFFSETS = [6, 18, 30, 42] as const;
 // Max number of characters rendered for a TOC label before trimming with ellipsis.
 const CLERK_MAX_LABEL_LENGTH = 44;
 
@@ -463,11 +465,19 @@ function getItemOffset(depth: number): number {
 }
 
 function getLineOffset(depth: number): number {
-  return depth >= 3 ? 18 : 6;
+  const group = getDepthGroup(depth);
+  return CLERK_DEPTH_GROUP_LINE_OFFSETS[group];
 }
 
 function getVisualLinePosition(depth: number): number {
   return getLineOffset(depth);
+}
+
+function getDepthGroup(depth: number): number {
+  if (depth <= 2) return 0;
+  if (depth === 3) return 1;
+  if (depth === 4) return 2;
+  return 3;
 }
 
 function resolveClerkItem(item: TOCItemType): ClerkItemMeta {
