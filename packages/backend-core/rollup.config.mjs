@@ -15,7 +15,6 @@ const resolveFromRoot = (...segments) => path.resolve(rootDir, ...segments);
 const entries = [
   'src/index.ts',
   'src/prisma/index.ts',
-  'src/prisma/client.ts',
   'src/services/database/index.ts',
   'src/services/aggregate/index.ts',
   'src/services/context/index.ts',

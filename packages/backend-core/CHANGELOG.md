@@ -1,5 +1,17 @@
 # @windrun-huaiin/backend-core
 
+## 14.6.0
+
+### Minor Changes
+
+- fix(prisma): `windrun-huaiin/backend-core` should't export `prisma/clien` 'cause it make things bad
+
+### Patch Changes
+
+- Updated dependencies
+  - @windrun-huaiin/third-ui@14.5.0
+  - @windrun-huaiin/lib@14.0.1
+
 ## 14.5.0
 
 ### Minor Changes
