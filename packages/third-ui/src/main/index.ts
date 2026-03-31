@@ -13,6 +13,7 @@ export * from './price-plan-interactive'
 export * from './gallery/gallery-interactive'
 export * from './delayed-img'
 export * from './snake-loading-frame'
+export * from './pill-select'
 // Money Price Client Components
 export { MoneyPriceInteractive } from './money-price/money-price-interactive';
 export { MoneyPriceButton } from './money-price/money-price-button';

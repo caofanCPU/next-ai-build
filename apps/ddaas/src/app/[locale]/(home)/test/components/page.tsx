@@ -5,7 +5,7 @@ import { globalLucideIcons } from '@base-ui/components/global-icon';
 import { themeIconColor } from '@windrun-huaiin/base-ui/lib';
 import { cn } from '@lib/utils';
 import { GradientButton } from '@third-ui/fuma/mdx';
-import { XButton } from '@third-ui/main';
+import { XButton, XPillSelect, XTokenInput, XFilterPills, XFormPills, type XPillOption } from '@third-ui/main';
 
 const iconEntries = Object.entries(globalLucideIcons).sort(([nameA], [nameB]) => nameA.localeCompare(nameB));
 
@@ -17,12 +17,23 @@ const sectionTitleClass = 'text-xl font-semibold tracking-tight text-foreground 
 const sectionDescClass = 'text-sm leading-6 text-muted-foreground';
 const iconCardClass =
   'flex min-h-[112px] flex-col items-center justify-center gap-3 rounded-2xl border border-border/60 bg-background/80 px-3 py-4 text-center shadow-sm transition-colors hover:border-primary/30 hover:bg-background';
-const gradientButtonDemoClass = 'text-xs sm:text-base px-5 sm:px-8';
+const gradientButtonDemoClass = 'text-xs sm:text-sm px-5 sm:px-8';
 const xButtonSingleDemoClass = 'text-xs sm:text-sm';
 const xButtonSplitMainDemoClass = 'text-xs sm:text-sm';
 const xButtonSplitDropdownDemoClass = 'py-1 sm:py-1.5';
+const fieldCardClass = 'rounded-2xl border border-border/60 bg-background/70 p-4';
+const compareCardClass = 'rounded-2xl border border-border/60 bg-background/60 p-3 sm:p-4';
+const codeHintClass = 'mt-3 rounded-2xl border border-dashed border-border/70 bg-background/70 px-3 py-2 font-mono text-[11px] leading-5 text-muted-foreground sm:text-xs';
 
 const sleep = (ms: number) => new Promise((resolve) => window.setTimeout(resolve, ms));
+
+const pillOptions: XPillOption[] = [
+  { label: '产品设计', value: 'design' },
+  { label: '前端开发', value: 'frontend' },
+  { label: '后端接口', value: 'backend' },
+  { label: 'AI 自动化', value: 'ai' },
+  { label: '增长运营', value: 'growth' },
+];
 
 const copyText = async (text: string) => {
   if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
@@ -69,6 +80,15 @@ export default function TestComponentsPage() {
   const [actionText, setActionText] = useState('点击任意按钮查看交互记录');
   const [copiedIconName, setCopiedIconName] = useState<string | null>(null);
   const [copyToastText, setCopyToastText] = useState<string | null>(null);
+  const [singleValue, setSingleValue] = useState('frontend');
+  const [singleCompactValue, setSingleCompactValue] = useState('design');
+  const [multiValue, setMultiValue] = useState<string[]>(['frontend', 'ai']);
+  const [multiPlainValue, setMultiPlainValue] = useState<string[]>(['design', 'frontend', 'backend']);
+  const [multiCompactValue, setMultiCompactValue] = useState<string[]>(['growth']);
+  const [formValue, setFormValue] = useState('backend');
+  const [filterValue, setFilterValue] = useState('');
+  const [tokenValue, setTokenValue] = useState<string[]>(['nextjs', 'tailwind', 'openai']);
+  const [tokenCompactValue, setTokenCompactValue] = useState<string[]>(['seo', 'landing']);
 
   const handleAction = async (label: string) => {
     setActionText(`执行中：${label}`);
@@ -368,6 +388,170 @@ export default function TestComponentsPage() {
                   },
                 ]}
               />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className={cn(panelClass, 'relative z-0')}>
+        <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
+          <div>
+            <h2 className={sectionTitleClass}>Pill Select 展示</h2>
+            <p className={sectionDescClass}>这里按组件分组，把 `default` 和 `compact` 放在同一组内直接对照，方便一眼看出尺寸和布局差异。</p>
+          </div>
+        </div>
+
+        <div className="mt-5 grid gap-4">
+          <div className={fieldCardClass}>
+            <div className="mb-3 text-sm font-medium text-foreground">下拉单选</div>
+            <div className="grid gap-3 lg:grid-cols-2">
+              <div className={compareCardClass}>
+                <div className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Default</div>
+                <XPillSelect
+                  mode="single"
+                  value={singleValue}
+                  onChange={setSingleValue}
+                  options={pillOptions}
+                  emptyLabel="请选择一个方向"
+                  allowClear
+                />
+                <div className={codeHintClass}>
+                  {`<XPillSelect mode="single" size="default" allowClear />`}
+                </div>
+              </div>
+              <div className={compareCardClass}>
+                <div className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Compact</div>
+                <XPillSelect
+                  mode="single"
+                  size="compact"
+                  value={singleCompactValue}
+                  onChange={setSingleCompactValue}
+                  options={pillOptions}
+                  emptyLabel="紧凑单选"
+                  allowClear
+                />
+                <div className={codeHintClass}>
+                  {`<XPillSelect mode="single" size="compact" allowClear />`}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className={fieldCardClass}>
+            <div className="mb-3 text-sm font-medium text-foreground">下拉多选</div>
+            <div className="grid gap-3 xl:grid-cols-3">
+              <div className={compareCardClass}>
+                <div className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Default / Full Pills</div>
+                <XPillSelect
+                  mode="multiple"
+                  value={multiPlainValue}
+                  onChange={setMultiPlainValue}
+                  options={pillOptions}
+                  emptyLabel="不限制显示数量"
+                  allSelectedLabel="全部方向"
+                  allowClear
+                />
+                <div className={codeHintClass}>
+                  {`<XPillSelect mode="multiple" allSelectedLabel="全部方向" />`}
+                </div>
+              </div>
+              <div className={compareCardClass}>
+                <div className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Default</div>
+                <XPillSelect
+                  mode="multiple"
+                  value={multiValue}
+                  onChange={setMultiValue}
+                  options={pillOptions}
+                  emptyLabel="请选择多个标签"
+                  allSelectedLabel="全部方向"
+                  maxVisiblePills={2}
+                  allowClear
+                />
+                <div className={codeHintClass}>
+                  {`<XPillSelect mode="multiple" allSelectedLabel="全部方向" maxVisiblePills={2} />`}
+                </div>
+              </div>
+              <div className={compareCardClass}>
+                <div className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Compact</div>
+                <XPillSelect
+                  mode="multiple"
+                  size="compact"
+                  value={multiCompactValue}
+                  onChange={setMultiCompactValue}
+                  options={pillOptions}
+                  emptyLabel="紧凑多选"
+                  allSelectedLabel="全部方向"
+                  maxVisiblePills={1}
+                  allowClear
+                />
+                <div className={codeHintClass}>
+                  {`<XPillSelect mode="multiple" size="compact" allSelectedLabel="全部方向" maxVisiblePills={1} />`}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className={fieldCardClass}>
+            <div className="mb-3 text-sm font-medium text-foreground">表单/筛选封装</div>
+            <div className="grid gap-3 lg:grid-cols-2">
+              <div className={compareCardClass}>
+                <div className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">XFormPills</div>
+                <XFormPills
+                  label="所属模块"
+                  value={formValue}
+                  options={pillOptions}
+                  onChange={setFormValue}
+                  emptyLabel="请选择模块"
+                  allowClear
+                />
+                <div className={codeHintClass}>
+                  {`<XFormPills label="所属模块" allowClear />`}
+                </div>
+              </div>
+              <div className={compareCardClass}>
+                <div className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">XFilterPills</div>
+                <XFilterPills
+                  label="筛选方向"
+                  value={filterValue}
+                  options={pillOptions}
+                  onChange={setFilterValue}
+                  allLabel="全部"
+                />
+                <div className={codeHintClass}>
+                  {`<XFilterPills label="筛选方向" allLabel="全部" />`}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className={fieldCardClass}>
+            <div className="mb-3 text-sm font-medium text-foreground">XTokenInput</div>
+            <div className="grid gap-3 lg:grid-cols-2">
+              <div className={compareCardClass}>
+                <div className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Default</div>
+                <XTokenInput
+                  value={tokenValue}
+                  onChange={setTokenValue}
+                  placeholder="输入标签后回车"
+                  emptyLabel="还没有输入任何 token"
+                />
+                <div className={codeHintClass}>
+                  {`<XTokenInput size="default" placeholder="输入标签后回车" />`}
+                </div>
+              </div>
+              <div className={compareCardClass}>
+                <div className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Compact</div>
+                <XTokenInput
+                  size="compact"
+                  value={tokenCompactValue}
+                  onChange={setTokenCompactValue}
+                  placeholder="紧凑模式 token 输入"
+                  emptyLabel="紧凑模式下可快速录入"
+                />
+                <div className={codeHintClass}>
+                  {`<XTokenInput size="compact" placeholder="紧凑模式 token 输入" />`}
+                </div>
+              </div>
             </div>
           </div>
         </div>
