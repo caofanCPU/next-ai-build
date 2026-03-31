@@ -253,17 +253,17 @@
       {
         "title": "高质量输出",
         "description": "Reve Image 生成令人惊叹的、细节丰富的图像, 可与专业艺术作品媲美。",
-        "icon": "✨"
+        "iconKey": "Sparkles"
       },
       {
         "title": "每日20张免费图片",
         "description": "使用您的 Reve Image 账户, 享受每天慷慨的20张免费图片配额。",
-        "icon": "🎁"
+        "iconKey": "Gift"
       },
       {
         "title": "直观的提示系统",
         "description": "先进的 AI 能理解自然语言, 让您轻松描述您的愿景。",
-        "icon": "💬"
+        "iconKey": "MessageCircleMore"
       }
     ]
   },
@@ -342,6 +342,10 @@
     "description": "在线、免费、可编辑、专业",
     "intro": "Reve Image 代表着 AI 图像生成技术的前沿, 为用户提供将文本描述转换为令人惊叹的视觉内容的能力。无论您是寻求灵感的设计师、创作内容的营销人员, 还是探索新媒介的艺术家, Reve Image 都能为您提供将想象力变为现实的工具。",
     "sections": [
+      {
+        "title": "测试所有HTML标签",
+        "content": "This paragraph demonstrates all possible tag combinations. <strong><em>Important emphasized text</em></strong> shows the most common pattern. <strong><u>Important underlined text</u></strong> highlights key steps. <strong><mark>Important highlighted text</mark></strong> marks critical information. <em><u>Emphasized underlined text</u></em> draws attention to notes. <em><mark>Emphasized highlighted text</mark></em> emphasizes key points. <u><mark>Underlined highlighted text</mark></u> creates special markers. <strong><del>Important deleted text</del></strong> shows deprecated features. <em><del>Emphasized deleted text</del></em> indicates obsolete content. Chemical formulas like H<strong><sub>2</sub></strong>O use subscript. Mathematical expressions like X<strong><sup>2</sup></strong> use superscript. <em><sub>Emphasized subscript</sub></em> for variables. <em><sup>Emphasized superscript</sup></em> for annotations. Three-tag combinations: <strong><em><u>Important emphasized underlined</u></em></strong> for critical concepts. <strong><em><mark>Important emphasized highlighted</mark></em></strong> for core content. <strong><u><mark>Important underlined highlighted</mark></u></strong> for key identifiers. <em><u><mark>Emphasized underlined highlighted</mark></u></em> for special emphasis. Scientific notation: H<strong><em><sub>2</sub></em></strong>O and X<strong><em><sup>2</sup></em></strong>. Version identifiers: v<strong><u><sup>2.0</sup></u></strong> and v<strong><u><sub>0</sub></u></strong>. This comprehensive test covers all supported tag combinations."
+      },
       {
         "title": "了解 Reve Image 的工作原理",
         "content": "当您输入提示时, Reve Image 会分析语义含义并生成与您描述相匹配的图像。这个过程在几秒钟内完成, 允许快速迭代和实验。"

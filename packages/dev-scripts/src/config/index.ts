@@ -29,10 +29,18 @@ function loadPackageJsonConfig(cwd: string): Partial<DevScriptsConfig> | null {
       }
     }
     
-    if (devScripts.scanDirs) {
+    const scanConfig = devScripts.scan
+    const hasLegacyScanConfig =
+      devScripts.scanDirs !== undefined ||
+      devScripts.includeWindrunPackages !== undefined ||
+      devScripts.whitelist !== undefined
+
+    if (scanConfig || hasLegacyScanConfig) {
       config.scan = {
-        include: devScripts.scanDirs,
-        exclude: DEFAULT_CONFIG.scan.exclude
+        include: scanConfig?.include || devScripts.scanDirs || DEFAULT_CONFIG.scan.include,
+        exclude: scanConfig?.exclude || DEFAULT_CONFIG.scan.exclude,
+        includeWindrunPackages: scanConfig?.includeWindrunPackages ?? devScripts.includeWindrunPackages ?? DEFAULT_CONFIG.scan.includeWindrunPackages,
+        whitelist: scanConfig?.whitelist ?? devScripts.whitelist ?? DEFAULT_CONFIG.scan.whitelist
       }
     }
     
@@ -49,7 +57,6 @@ function loadPackageJsonConfig(cwd: string): Partial<DevScriptsConfig> | null {
         verbose: DEFAULT_CONFIG.output.verbose
       }
     }
-    
     return Object.keys(config).length > 0 ? config : null
   } catch (error) {
     console.warn(`Warning: Failed to load package.json config: ${error}`)
@@ -153,6 +160,8 @@ function printConfigInfo(config: DevScriptsConfig, sources: string[], cwd: strin
   if (config.scan.baseDir) {
     console.log(`   baseDir: ${config.scan.baseDir}`)
   }
+  console.log(`   includeWindrunPackages: ${config.scan.includeWindrunPackages === true}`)
+  console.log(`   whitelist: ${(config.scan.whitelist || []).length} items`)
   
   if (config.blog) {
     console.log('\n📝 blog:')
@@ -194,6 +203,14 @@ export function validateConfig(config: DevScriptsConfig): void {
   
   if (config.scan.include.length === 0) {
     throw new Error('at least one scan path is required')
+  }
+
+  if (config.scan.includeWindrunPackages !== undefined && typeof config.scan.includeWindrunPackages !== 'boolean') {
+    throw new Error('scan.includeWindrunPackages must be a boolean')
+  }
+
+  if (config.scan.whitelist !== undefined && !Array.isArray(config.scan.whitelist)) {
+    throw new Error('scan.whitelist must be an array')
   }
 
   if (config.diaomaoUpdate?.allowedPackages && !Array.isArray(config.diaomaoUpdate.allowedPackages)) {

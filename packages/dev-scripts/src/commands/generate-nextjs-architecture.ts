@@ -1,7 +1,7 @@
 import { DevScriptsConfig, DEFAULT_CONFIG } from '@dev-scripts/config/schema'
 import { readJsonFile } from '@dev-scripts/utils/file-scanner'
 import { Logger } from '@dev-scripts/utils/logger'
-import { execSync } from 'child_process'
+import { execFileSync } from 'child_process'
 import { existsSync, mkdirSync, writeFileSync } from 'fs'
 import { join } from 'path'
 
@@ -28,7 +28,15 @@ export async function generateNextjsArchitecture(
     // generate tree result to logs directory
     const treeJsonPath = join(logsDir, 'project_tree.json')
     logger.log(`Running tree command to generate ${treeJsonPath}`)
-    execSync(`tree -a -J -I '.next|node_modules|logs|dist|pnpm-lock.yaml|turbo|.turbo|public|.cursor|.DS_Store|.git' > ${treeJsonPath}`)
+    const treeOutput = execFileSync(
+      'tree',
+      ['-a', '-J', '-I', '.next|node_modules|logs|dist|pnpm-lock.yaml|turbo|.turbo|public|.cursor|.DS_Store|.git'],
+      {
+        cwd,
+        encoding: 'utf8'
+      }
+    )
+    writeFileSync(treeJsonPath, treeOutput, 'utf8')
 
     // read tree result
     const tree = readJsonFile<any[]>(treeJsonPath)

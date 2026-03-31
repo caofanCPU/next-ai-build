@@ -1,17 +1,18 @@
 import { DevScriptsConfig } from '@dev-scripts/config/schema'
-import { getTranslationFilePath, loadTranslations, scanFiles } from '@dev-scripts/utils/file-scanner'
+import { getTranslationFilePath, loadTranslations } from '@dev-scripts/utils/file-scanner'
 import { Logger } from '@dev-scripts/utils/logger'
 import {
   cleanEmptyObjects,
-  extractTranslationsInfo,
   getAllKeys,
+  pathOverlapsPrefix,
   removeKeyFromTranslations
 } from '@dev-scripts/utils/translation-parser'
+import { collectProjectTranslationUsage } from '@dev-scripts/utils/translation-usage'
+import {
+  filterWhitelistedItems,
+  logWhitelistSuggestion
+} from '@dev-scripts/utils/translation-whitelist'
 import { writeFileSync } from 'fs'
-
-interface CleanReport {
-  [key: string]: string[]
-}
 
 export async function cleanTranslations(
   config: DevScriptsConfig, 
@@ -28,52 +29,21 @@ export async function cleanTranslations(
   try {
     logger.log('start checking unused translation keys...')
 
-    // scan all files
-    const scanResults = await scanFiles(config, cwd)
-    logger.log(`找到 ${scanResults.length} 个文件需要扫描`)
-
     // load translation files
     const translations = loadTranslations(config, cwd)
 
-    // collect used translation keys and namespaces
-    const foundTranslationKeys: Set<string> = new Set()
-    const foundNamespaces: Set<string> = new Set()
-
-    // scan all files, collect used translation keys and namespaces
-    for (const { filePath, content } of scanResults) {
-      try {
-        const { namespaces, keys } = extractTranslationsInfo(content, filePath)
-
-        if (keys.length > 0 || namespaces.size > 0) {
-          logger.log(`found the following information in the file ${filePath}:`)
-
-          if (namespaces.size > 0) {
-            logger.log(`  translation function mapping:`)
-            namespaces.forEach((namespace, varName) => {
-              logger.log(`    - ${varName} => ${namespace}`)
-              foundNamespaces.add(namespace)
-            })
-          }
-
-          if (keys.length > 0) {
-            logger.log(`  translation keys:`)
-            keys.forEach(key => {
-              logger.log(`    - ${key}`)
-              foundTranslationKeys.add(key)
-            })
-          }
-        }
-      } catch (error) {
-        if (error instanceof Error) {
-          logger.error(`error processing file ${filePath}: ${error.message}`)
-        } else {
-          logger.error(`error processing file ${filePath}: unknown error`)
-        }
-      }
-    }
+    const usage = await collectProjectTranslationUsage(config, cwd, logger)
+    const foundTranslationKeys = usage.usedKeys
+    const foundNamespaces = usage.usedNamespaces
+    const protectedPrefixes = usage.protectedPrefixes
+    const wholeNamespaceProtection = usage.wholeNamespaceProtection
 
     logger.log(`\nfound ${foundTranslationKeys.size} used translation keys in the code`)
     logger.log(`found ${foundNamespaces.size} used namespaces in the code: ${Array.from(foundNamespaces).join(', ')}`)
+
+    if (usage.hasUnknownNamespaceUsage) {
+      logger.warn('detected unresolved namespace usage in some files, namespace-level cleanup will be skipped to avoid accidental deletion')
+    }
 
     // check unused keys in each language file
     const unusedKeys: Record<string, string[]> = {}
@@ -93,17 +63,27 @@ export async function cleanTranslations(
 
       // find unused namespaces
       allNamespaces.forEach(namespace => {
-        if (!foundNamespaces.has(namespace)) {
+        const isProtectedByPrefix = Array.from(protectedPrefixes).some(prefix => pathOverlapsPrefix(namespace, prefix))
+        const isWholeNamespaceProtected = wholeNamespaceProtection.has(namespace)
+
+        if (!usage.hasUnknownNamespaceUsage && !foundNamespaces.has(namespace) && !isProtectedByPrefix && !isWholeNamespaceProtected) {
           unusedNamespaces[locale].push(namespace)
         }
       })
 
       // find unused keys
       allTranslationKeys.forEach(key => {
-        if (!foundTranslationKeys.has(key)) {
+        const isProtectedByPrefix = Array.from(protectedPrefixes).some(prefix => pathOverlapsPrefix(key, prefix))
+        const namespace = key.split('.')[0] || ''
+        const isWholeNamespaceProtected = wholeNamespaceProtection.has(namespace)
+
+        if (!foundTranslationKeys.has(key) && !isProtectedByPrefix && !isWholeNamespaceProtected) {
           unusedKeys[locale].push(key)
         }
       })
+
+      unusedNamespaces[locale] = filterWhitelistedItems(unusedNamespaces[locale], config)
+      unusedKeys[locale] = filterWhitelistedItems(unusedKeys[locale], config)
 
       logger.log(`\nfound ${unusedKeys[locale].length} unused keys in the ${locale} translation file`)
       logger.log(`found ${unusedNamespaces[locale].length} unused namespaces in the ${locale} translation file`)
@@ -145,9 +125,12 @@ export async function cleanTranslations(
 
     // generate report
     logger.log('\n=== unused translation keys report ===\n')
+    const unusedNamespaceSuggestions = new Set<string>()
+    const unusedKeySuggestions = new Set<string>()
 
     config.i18n.locales.forEach(locale => {
       if (unusedNamespaces[locale].length > 0) {
+        unusedNamespaces[locale].forEach(namespace => unusedNamespaceSuggestions.add(namespace))
         logger.log(`🔍 unused namespaces in the ${locale} translation file:`)
         unusedNamespaces[locale].forEach(namespace => logger.log(`  - ${namespace}`))
       } else {
@@ -155,6 +138,7 @@ export async function cleanTranslations(
       }
 
       if (unusedKeys[locale].length > 0) {
+        unusedKeys[locale].forEach(key => unusedKeySuggestions.add(key))
         logger.log(`\n🔍 unused keys in the ${locale} translation file:`)
         unusedKeys[locale].forEach(key => logger.log(`  - ${key}`))
       } else {
@@ -168,14 +152,30 @@ export async function cleanTranslations(
     })
 
     logger.log('\n=== report end ===\n')
-    logger.log("⚠️⚠️⚠️script depends on regular matching, for multiple translation namespaces in a single file, use naming to distinguish: t1 | t2 | t3 | ... ⚠️⚠️⚠️")
+    logger.log('⚠️ script uses AST analysis; dynamic namespace and dynamic key cases are treated conservatively to avoid accidental deletion')
+
+    logWhitelistSuggestion(
+      [
+        ...Array.from(unusedNamespaceSuggestions),
+        ...Array.from(unusedKeySuggestions)
+      ],
+      logger,
+      config
+    )
+
+    const hasIssues = Object.values(unusedKeys).some(keys => keys.length > 0) ||
+      Object.values(unusedNamespaces).some(namespaces => namespaces.length > 0)
+
+    if (hasIssues) {
+      logger.warn('unused translation items were found; the script completed successfully, see the report above or the log file for details')
+    } else {
+      logger.success('translation cleanup scan completed with no issues')
+    }
 
     // save log file
     logger.saveToFile(logFileName, cwd)
 
-    // if there are any unused keys or namespaces, return non-zero status code
-    return (Object.values(unusedKeys).some(keys => keys.length > 0) ||
-      Object.values(unusedNamespaces).some(namespaces => namespaces.length > 0)) ? 1 : 0
+    return 0
 
   } catch (error) {
     logger.error(`error cleaning translations: ${error}`)

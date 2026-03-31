@@ -2,7 +2,10 @@
 
 import React, { useState, useRef, useEffect, ReactNode } from 'react'
 import { globalLucideIcons as icons } from '@windrun-huaiin/base-ui/components/server'
+import { themeBgColor, themeBorderColor, themeIconColor, themeMainBgColor } from '@windrun-huaiin/base-ui/lib'
 import { cn } from '@windrun-huaiin/lib/utils'
+
+type XButtonVariant = 'default' | 'soft' | 'subtle'
 
 // base button config
 interface BaseButtonConfig {
@@ -29,6 +32,7 @@ interface SingleButtonProps {
   minWidth?: string
   className?: string
   iconClassName?: string
+  variant?: XButtonVariant
 }
 
 // split button config
@@ -42,6 +46,7 @@ interface SplitButtonProps {
   mainButtonClassName?: string
   dropdownButtonClassName?: string
   iconClassName?: string
+  variant?: XButtonVariant
 }
 
 type xButtonProps = SingleButtonProps | SplitButtonProps
@@ -53,7 +58,11 @@ export function XButton(props: xButtonProps) {
 
   const { iconClassName } = props
   const defaultIconClass = "w-5 h-5"
-  const finalIconClass = iconClassName || defaultIconClass
+  const variant = props.variant ?? 'default'
+  const finalIconClass = cn(
+    variant === 'default' ? '' : themeIconColor,
+    iconClassName || defaultIconClass
+  )
 
   const loadingIconClass = cn(finalIconClass, "mr-1 animate-spin")
 
@@ -102,7 +111,45 @@ export function XButton(props: xButtonProps) {
   }
 
   // base style class
-  const baseButtonClass = "flex items-center justify-center gap-2 px-4 py-2 bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-white text-sm font-semibold transition-colors hover:bg-neutral-300 dark:hover:bg-neutral-700"
+  const baseButtonClass = "flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold transition-colors"
+  const singleButtonVariantClass = variant === 'soft'
+    ? cn(
+        themeBgColor,
+        themeIconColor,
+        themeBorderColor,
+        "border hover:brightness-95"
+      )
+    : variant === 'subtle'
+      ? cn(
+          themeMainBgColor,
+          themeIconColor,
+          "border border-neutral-200 hover:bg-neutral-50 dark:border-neutral-800 dark:hover:bg-neutral-800"
+        )
+    : "bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-white hover:bg-neutral-300 dark:hover:bg-neutral-700"
+  const splitMainButtonVariantClass = variant === 'soft'
+    ? cn(
+        "bg-transparent hover:bg-black/5 dark:hover:bg-white/5",
+        themeIconColor
+      )
+    : variant === 'subtle'
+      ? cn(
+          "bg-transparent hover:bg-neutral-50 dark:hover:bg-neutral-800",
+          themeIconColor
+        )
+    : "bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-white hover:bg-neutral-300 dark:hover:bg-neutral-700"
+  const splitDropdownVariantClass = variant === 'soft'
+    ? cn(
+        "bg-transparent hover:bg-black/5 dark:hover:bg-white/5 sm:border-l",
+        themeIconColor,
+        themeBorderColor
+      )
+    : variant === 'subtle'
+      ? cn(
+          "bg-transparent hover:bg-neutral-50 dark:hover:bg-neutral-800 sm:border-l",
+          themeIconColor,
+          "border-neutral-200 dark:border-neutral-800"
+        )
+    : "bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-white hover:bg-neutral-300 dark:hover:bg-neutral-700 sm:border-l sm:border-neutral-300 sm:dark:border-neutral-700"
   const disabledClass = "opacity-60 cursor-not-allowed"
 
   if (props.type === 'single') {
@@ -119,6 +166,7 @@ export function XButton(props: xButtonProps) {
           "w-full sm:w-auto",
           minWidth,
           baseButtonClass,
+          singleButtonVariantClass,
           "rounded-full",
           isDisabled && disabledClass,
           className
@@ -148,7 +196,13 @@ export function XButton(props: xButtonProps) {
 
   return (
     <div className={cn(
-      "relative flex flex-col sm:flex-row items-stretch w-full sm:w-auto bg-neutral-200 dark:bg-neutral-800 rounded-full gap-2 sm:gap-0",
+      "relative flex flex-row items-stretch w-full sm:w-auto rounded-full gap-0",
+      menuOpen && "z-[90]",
+      variant === 'soft'
+        ? cn(themeBgColor, themeBorderColor, "border")
+        : variant === 'subtle'
+          ? cn(themeMainBgColor, "border border-neutral-200 dark:border-neutral-800")
+          : "bg-neutral-200 dark:bg-neutral-800",
       className
     )}>
       {/* left main button */}
@@ -156,9 +210,10 @@ export function XButton(props: xButtonProps) {
         onClick={() => handleButtonClick(mainButton.onClick)}
         disabled={isMainDisabled}
         className={cn(
-          "flex-1 w-full",
+          "min-w-0 flex-1",
           baseButtonClass,
-          "rounded-full sm:rounded-l-full sm:rounded-r-none",
+          splitMainButtonVariantClass,
+          "rounded-l-full rounded-r-none",
           isMainDisabled && disabledClass,
           mainButtonClassName
         )}
@@ -172,7 +227,7 @@ export function XButton(props: xButtonProps) {
         ) : (
           <>
             {renderIcon(mainButton.icon)}
-            <span>{mainButton.text}</span>
+            <span className="min-w-0 truncate">{mainButton.text}</span>
           </>
         )}
       </button>
@@ -181,7 +236,8 @@ export function XButton(props: xButtonProps) {
       <button
         type="button"
         className={cn(
-          "flex items-center justify-center w-full sm:w-10 py-1.5 bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-white cursor-pointer transition hover:bg-neutral-300 dark:hover:bg-neutral-700 rounded-full sm:rounded-none sm:rounded-r-full sm:border-l sm:border-neutral-300 sm:dark:border-neutral-700",
+          "flex h-full w-9 shrink-0 items-center justify-center px-0 py-1.5 cursor-pointer transition rounded-r-full rounded-l-none border-l sm:w-10",
+          splitDropdownVariantClass,
           dropdownButtonClassName
         )}
         onClick={e => { e.stopPropagation(); setMenuOpen(v => !v) }}
@@ -195,7 +251,7 @@ export function XButton(props: xButtonProps) {
       {menuOpen && (
         <div
           ref={menuRef}
-          className={`absolute right-0 top-full ${menuWidth} bg-white dark:bg-neutral-800 text-neutral-800 dark:text-white text-sm rounded-xl shadow-lg z-50 border border-neutral-200 dark:border-neutral-700 overflow-hidden animate-fade-in`}
+          className={`absolute right-0 top-full ${menuWidth} bg-white dark:bg-neutral-800 text-neutral-800 dark:text-white text-sm rounded-xl shadow-lg z-[100] border border-neutral-200 dark:border-neutral-700 overflow-hidden animate-fade-in`}
         >
           {menuItems.map((item, index) => (
             <button

@@ -19,6 +19,7 @@
     "fs-extra": "catalog:",
     "picocolors": "catalog:",
     "semver": "catalog:",
+    "ts-morph": "catalog:",
     "yaml": "catalog:"
   },
   "devDependencies": {

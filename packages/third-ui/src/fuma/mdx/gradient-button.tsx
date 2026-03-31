@@ -2,9 +2,18 @@
 
 import { cn } from '@windrun-huaiin/lib/utils';
 import { globalLucideIcons as icons } from "@windrun-huaiin/base-ui/components/server";
-import { themeButtonGradientClass, themeButtonGradientHoverClass } from "@windrun-huaiin/base-ui/lib";
+import {
+  themeBgColor,
+  themeBorderColor,
+  themeButtonGradientClass,
+  themeButtonGradientHoverClass,
+  themeIconColor,
+  themeMainBgColor,
+} from "@windrun-huaiin/base-ui/lib";
 import Link from "next/link";
 import React, { useState } from 'react';
+
+type GradientButtonVariant = 'default' | 'soft' | 'subtle';
 
 export interface GradientButtonProps {
   title: React.ReactNode;
@@ -22,6 +31,7 @@ export interface GradientButtonProps {
   onClick?: () => void | Promise<void>;
   loadingText?: React.ReactNode;
   preventDoubleClick?: boolean;
+  variant?: GradientButtonVariant;
 }
 
 export function GradientButton({
@@ -37,12 +47,16 @@ export function GradientButton({
   loadingText,
   preventDoubleClick = true,
   iconClassName,
+  variant = 'default',
 }: GradientButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
   const actualLoadingText = loadingText || title?.toString().trim() || 'Loading...'
 
   const defaultIconClass = "h-4 w-4";
-  const finalIconClass = cn("text-white", iconClassName || defaultIconClass);
+  const finalIconClass = cn(
+    variant === 'default' ? 'text-white' : themeIconColor,
+    iconClassName || defaultIconClass
+  );
 
   // set justify class according to alignment
   const getAlignmentClass = () => {
@@ -133,10 +147,29 @@ export function GradientButton({
   // Base styles extracted from Button component + size="lg" (h-11 px-8)
   // Removed [&_svg] constraints
   const baseButtonStyles = "inline-flex items-center gap-2 whitespace-nowrap h-11 px-8 ring-offset-background focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50";
+  const variantClassName = variant === 'soft'
+    ? cn(
+        themeBgColor,
+        themeIconColor,
+        themeBorderColor,
+        'border shadow-sm hover:shadow-md hover:brightness-95'
+      )
+    : variant === 'subtle'
+      ? cn(
+          themeMainBgColor,
+          themeIconColor,
+          'border border-neutral-200 shadow-sm hover:shadow-md hover:bg-neutral-50 dark:border-neutral-800 dark:hover:bg-neutral-800'
+        )
+    : cn(
+        themeButtonGradientClass,
+        themeButtonGradientHoverClass,
+        'text-white shadow-lg hover:shadow-xl'
+      );
 
   const buttonClassName = cn(
     baseButtonStyles,
-    themeButtonGradientClass, themeButtonGradientHoverClass, 'text-white text-base font-bold shadow-lg hover:shadow-xl transition-all duration-300 rounded-full',
+    variantClassName,
+    'text-base font-bold transition-all duration-300 rounded-full',
     alignmentClass,
     isDisabled && 'opacity-50 cursor-not-allowed',
     className,

@@ -38,7 +38,11 @@ npm install -D @packages/dev-scripts
     "locales": ["en", "zh"],
     "defaultLocale": "en",
     "messageRoot": "messages",
-    "scanDirs": ["src/**/*.{tsx,ts,jsx,js}"],
+    "scan": {
+      "include": ["src/**/*.{tsx,ts,jsx,js}"],
+      "includeWindrunPackages": false,
+      "whitelist": []
+    },
     "blogDir": "src/mdx/blog",
     "logDir": "logs"
   }
@@ -73,9 +77,11 @@ pnpm generate-blog-index
     "locales": ["en", "zh", "ja"],           // 支持的语言列表
     "defaultLocale": "en",                   // 默认语言
     "messageRoot": "messages",               // 翻译文件目录
-    "scanDirs": [                           // 扫描的代码目录
-      "src/**/*.{tsx,ts,jsx,js}"
-    ],
+    "scan": {
+      "include": ["src/**/*.{tsx,ts,jsx,js}"], // 扫描的代码目录
+      "includeWindrunPackages": false,         // 是否补扫 @windrun-huaiin/* 和 tsconfig 指向 packages/*/src/* 的本地别名
+      "whitelist": []                          // 精确白名单，必须逐项写完整 key
+    },
     "blogDir": "src/mdx/blog",              // 博客MDX文件目录
     "logDir": "logs"                     // 日志输出目录
   },
@@ -98,7 +104,9 @@ pnpm generate-blog-index
   },
   "scan": {
     "include": ["src/**/*.{tsx,ts,jsx,js}"],
-    "exclude": ["src/**/*.test.ts", "src/**/*.d.ts"]
+    "exclude": ["src/**/*.d.ts", "src/**/*.test.ts", "src/**/*.test.tsx", "node_modules/**"],
+    "includeWindrunPackages": false,
+    "whitelist": []
   },
   "blog": {
     "mdxDir": "src/mdx/blog",
@@ -134,6 +142,7 @@ Options:
 - 检查翻译文件中是否存在对应的键
 - 检查不同语言文件之间的一致性
 - 生成详细的检查报告
+- 支持可选补扫 `@windrun-huaiin/*` 包源码和 `tsconfig` 中映射到 `packages/*/src/*` 的本地别名
 
 **输出示例：**
 ```
@@ -168,6 +177,64 @@ Options:
 - 支持安全预览模式（默认）
 - 支持实际删除模式（--remove）
 - 自动清理空的命名空间对象
+- 遇到动态 namespace / 动态 key 时会保守处理，优先避免误删
+
+### 白名单
+
+由于翻译扫描依赖 AST 分析，仍然可能存在少量误判。对于确认无需处理的结果，可以通过 `scan.whitelist` 忽略：
+
+```json
+{
+  "scan": {
+    "whitelist": [
+      "credit.subscription.active"
+    ]
+  }
+}
+```
+
+白名单是精确项，不是模糊规则：
+
+- 必须逐项写完整 key
+- `faq.a` 和 `faq.b` 需要分别写
+- 不支持写一个 `faq` 就忽略整个 namespace
+
+如果代码实际用了 `faq.a`、`faq.b`，但翻译里根本没有 `faq` 这个 namespace，那么白名单也必须把 `faq.a`、`faq.b` 都逐项写出来。这样用户仍然能知道到底有哪些真实使用的翻译键，只会忽略已经人工确认的误判项。
+
+`check-translations` 输出的白名单建议只会包含精确 key，不会输出 namespace 级别建议，避免把一整组真实缺失问题直接压掉。
+
+命令在发现问题时，会在终端和 log 里输出可直接复制的白名单片段。加入白名单后，后续检查报告和清理报告将不再把这些精确项作为问题输出。
+
+### Monorepo 补扫
+
+如果应用的翻译实际被 workspace 中的共享包消费，例如：
+
+- `@windrun-huaiin/third-ui`
+- `@windrun-huaiin/base-ui`
+- `@windrun-huaiin/lib`
+- `tsconfig.json` 中把 `@third-ui/*`、`@base-ui/*`、`@lib/*` 映射到 `../../packages/*/src/*`
+
+那么建议开启：
+
+```json
+{
+  "scan": {
+    "include": ["src/**/*.{tsx,ts,jsx,js}"],
+    "exclude": ["src/**/*.test.ts", "src/**/*.test.tsx", "src/**/*.d.ts", "node_modules/**"],
+    "includeWindrunPackages": true,
+    "whitelist": []
+  }
+}
+```
+
+开启后脚本会：
+
+- 先扫描应用自身 `scan.include` 命中的文件
+- 再根据实际 import 递归补扫相关 `@windrun-huaiin/*` 包
+- 识别 `tsconfig.json` 中映射到 `packages/*/src/*` 的本地 alias
+- 优先使用 workspace 里的真实包目录，避免和 `node_modules` 下的同包源码重复扫描
+
+如果目标包只发布了构建产物、没有 `src/`，脚本会跳过该包源码扫描。测试性质代码默认不参与翻译扫描，包括 `src/**/*.test.ts` 和 `src/**/*.test.tsx`。
 
 ### generate-blog-index
 
@@ -359,6 +426,40 @@ jobs:
   }
 }
 ```
+
+## 后续安全计划
+
+当前 `dev-scripts` 的主要定位仍然是开发阶段工具。翻译检查、翻译清理这类命令主要是本地读写，风险较低；但部分脚手架和更新类命令天然带有更高的信任要求，后续会继续加强交互式风险提示与确认。
+
+### 风险分级
+
+- 高风险: `diaomao-update`
+  - 会读取远程更新源
+  - 会修改本地 `package.json` 或 `pnpm-workspace.yaml`
+  - 更新后会继续执行依赖安装
+  - 这类能力本质上依赖用户对维护者和远程源的信任
+
+- 中风险: `create-diaomao-app`
+  - 会从 npm 拉取模板包
+  - 会解包并写入目标目录
+  - 会自动安装依赖并初始化 git 仓库
+  - 适合脚手架场景，但需要把联网、安装、初始化等行为明确告知用户
+
+- 低风险: `deep-clean`
+  - 不涉及远程读取
+  - 但属于破坏性命令，会删除依赖目录、构建产物和锁文件
+  - 风险主要来自误操作，而不是供应链
+
+### 计划中的控制措施
+
+后续会逐步将高风险和中风险命令改造成基于终端交互的执行流程，例如使用 `clack/prompts` 在执行前逐步提示并要求用户确认：
+
+- 当前将访问的远程地址
+- 当前将修改的本地文件
+- 当前将执行的安装命令
+- 当前将执行的初始化或同步操作
+
+只有在用户明确确认后，相关步骤才会继续执行；否则流程中止。这样可以降低误操作和隐式执行带来的风险，并让开发工具的行为边界更清晰。
 
 ## 故障排除
 

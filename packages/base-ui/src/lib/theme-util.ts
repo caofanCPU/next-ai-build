@@ -154,6 +154,7 @@ export const themeBgColor: SupportedThemeBgColor = THEME_COLOR_NAME_TO_BG_CLASS_
 export const themeViaColor: SupportedThemeViaColor = THEME_COLOR_NAME_TO_VIA_CLASS_MAP[themeName];
 export const themeRingColor: SupportedThemeRingColor = THEME_COLOR_NAME_TO_RING_CLASS_MAP[themeName];
 export const themeBorderColor: SupportedThemeBorderColor = THEME_COLOR_NAME_TO_BORDER_CLASS_MAP[themeName];
+export const themeMainBgColor = "bg-neutral-100 dark:bg-neutral-900";
 
 // SVG icon color (auto-derived, type-safe - NO any type)
 export const themeSvgIconColor = THEME_COLOR_HEX_MAP[themeIconColor];
