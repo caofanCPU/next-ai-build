@@ -18,6 +18,7 @@ type GradientButtonVariant = 'default' | 'soft' | 'subtle';
 export interface GradientButtonProps {
   title: React.ReactNode;
   icon?: React.ReactNode;
+  iconForcePosition?: 'left' | 'right';
   align?: 'left' | 'center' | 'right';
   disabled?: boolean;
   className?: string;
@@ -37,6 +38,7 @@ export interface GradientButtonProps {
 export function GradientButton({
   title,
   icon,
+  iconForcePosition,
   align = 'left',
   disabled = false,
   className = "",
@@ -125,8 +127,9 @@ export function GradientButton({
   })();
 
   const shouldRenderIcon = iconNode !== null && iconNode !== undefined;
+  const iconPosition = iconForcePosition ?? (onClick ? 'left' : 'right');
 
-  const buttonContent = onClick ? (
+  const buttonContent = iconPosition === 'left' ? (
     <>
       {shouldRenderIcon ? <span>{iconNode}</span> : null}
       <span className={cn(shouldRenderIcon && 'ml-1')}>{displayTitle}</span>
