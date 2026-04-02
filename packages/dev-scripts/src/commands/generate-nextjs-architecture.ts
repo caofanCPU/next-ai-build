@@ -13,12 +13,58 @@ function getCurrentDateString(): string {
   return `${year}-${month}-${day}`
 }
 
+function escapeRegExp(value: string): string {
+  return value.replace(/[|\\{}()[\]^$+?.]/g, '\\$&')
+}
+
+function globToRegExp(pattern: string): RegExp {
+  const normalized = pattern
+    .split('*')
+    .map(part => escapeRegExp(part))
+    .join('.*')
+  return new RegExp(`^${normalized}$`)
+}
+
+function matchesArchitectureExclude(name: string, patterns: string[]): boolean {
+  return patterns.some(pattern => globToRegExp(pattern).test(name))
+}
+
+function filterTreeNodes(nodes: any[], patterns: string[]): any[] {
+  const filtered: any[] = []
+
+  for (const node of nodes) {
+    if (node.name !== '.' && matchesArchitectureExclude(node.name, patterns)) {
+      continue
+    }
+
+    if (node.type === 'directory' && Array.isArray(node.contents)) {
+      const nextNode = {
+        ...node,
+        contents: filterTreeNodes(node.contents, patterns)
+      }
+      filtered.push(nextNode)
+      continue
+    }
+
+    filtered.push(node)
+  }
+
+  return filtered
+}
+
 export async function generateNextjsArchitecture(
   config: DevScriptsConfig,
   cwd: string = typeof process !== 'undefined' ? process.cwd() : '.'
 ): Promise<number> {
   const logger = new Logger(config)
   try {
+    const architectureExclude = Array.from(
+      new Set([
+        ...(DEFAULT_CONFIG.architectureExclude || []),
+        ...(config.architectureExclude || [])
+      ])
+    )
+
     // get logs directory and blog directory
     const logsDir = join(cwd, config.output?.logDir || 'logs')
     const blogDir = join(cwd, config.blog?.mdxDir || 'src/mdx/blog')
@@ -30,7 +76,7 @@ export async function generateNextjsArchitecture(
     logger.log(`Running tree command to generate ${treeJsonPath}`)
     const treeOutput = execFileSync(
       'tree',
-      ['-a', '-J', '-I', '.next|node_modules|logs|dist|pnpm-lock.yaml|turbo|.turbo|public|.cursor|.DS_Store|.git'],
+      ['-a', '-J', '--prune'],
       {
         cwd,
         encoding: 'utf8'
@@ -44,6 +90,8 @@ export async function generateNextjsArchitecture(
       logger.error('Failed to read tree JSON result!')
       return 1
     }
+    const filteredTree = filterTreeNodes(tree, architectureExclude)
+    writeFileSync(treeJsonPath, JSON.stringify(filteredTree, null, 2), 'utf8')
     // Merge config and user first
     const userConfig = config.architectureConfig || {}
     const architectureConfig = { ...(DEFAULT_CONFIG.architectureConfig || {}), ...userConfig }
@@ -75,7 +123,7 @@ export async function generateNextjsArchitecture(
     // generate frontmatter
     const frontmatter = `---\ntitle: About Project Structure\ndescription: Show all source code directories and files\nicon: Gift\ndate: ${getCurrentDateString()}\n---\n\n## Quick Started\n\n`
     // generate mdx content
-    const filesContent = renderTree(tree)
+    const filesContent = renderTree(filteredTree)
     const indentedFilesContent = filesContent.split('\n').map(line => line ? '  ' + line : '').join('\n')
     const mdx = frontmatter + '<Files>\n' + indentedFilesContent + '</Files>\n'
     // output to blog directory

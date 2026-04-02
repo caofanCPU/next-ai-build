@@ -32,6 +32,7 @@ export interface DevScriptsConfig {
 
   // architecture anotion config
   architectureConfig?: Record<string, string>
+  architectureExclude?: string[]
 
   // diaomao update config
   diaomaoUpdate?: {
@@ -56,6 +57,7 @@ export interface PackageJsonDevScripts {
   whitelist?: string[]
   blogDir?: string
   logDir?: string
+  architectureExclude?: string[]
 }
 
 export const DEFAULT_CONFIG: DevScriptsConfig = {
@@ -159,6 +161,38 @@ export const DEFAULT_CONFIG: DevScriptsConfig = {
     ],
     compactLog: true
   },
+  architectureExclude: [
+    '.next',
+    'node_modules',
+    'logs',
+    'dist',
+    'pnpm-lock.yaml',
+    'turbo',
+    '.turbo',
+    'public',
+    '.cursor',
+    '.DS_Store',
+    '.git',
+    '.vscode',
+    '.idea',
+    '.codex*',
+    '.claude*',
+    '.gemini*',
+    '.pnpm*',
+    '.aider',
+    '.windsurf',
+    '.roo',
+    '.env*',
+    '*.pem',
+    '*.key',
+    '*.p12',
+    '*.pfx',
+    '*.crt',
+    '*.cer',
+    '*.der',
+    'id_rsa',
+    'id_ed25519'
+  ],
   architectureConfig: {
     ".": "项目根目录",
     ".env.local": "本地环境变量配置",

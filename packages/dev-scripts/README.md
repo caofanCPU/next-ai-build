@@ -83,7 +83,8 @@ pnpm generate-blog-index
       "whitelist": []                          // 精确白名单，必须逐项写完整 key
     },
     "blogDir": "src/mdx/blog",              // 博客MDX文件目录
-    "logDir": "logs"                     // 日志输出目录
+    "logDir": "logs",                       // 日志输出目录
+    "architectureExclude": ["coverage", ".env.local", "*.local"] // 项目结构图额外排除规则
   },
   "architectureConfig": {
     ".": "RootProject"
@@ -118,7 +119,8 @@ pnpm generate-blog-index
   "output": {
     "logDir": "logs",
     "verbose": false
-  }
+  },
+  "architectureExclude": ["coverage", ".env.local", "*.local"]
 }
 ```
 

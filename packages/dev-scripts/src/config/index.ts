@@ -57,6 +57,10 @@ function loadPackageJsonConfig(cwd: string): Partial<DevScriptsConfig> | null {
         verbose: DEFAULT_CONFIG.output.verbose
       }
     }
+
+    if (devScripts.architectureExclude) {
+      config.architectureExclude = devScripts.architectureExclude
+    }
     return Object.keys(config).length > 0 ? config : null
   } catch (error) {
     console.warn(`Warning: Failed to load package.json config: ${error}`)
@@ -180,6 +184,14 @@ function printConfigInfo(config: DevScriptsConfig, sources: string[], cwd: strin
   console.log(`   logDir: ${config.output.logDir}`)
   console.log(`   verbose: ${config.output.verbose}`)
 
+  const userArchitectureExclude = (config.architectureExclude || []).filter(
+    item => !(DEFAULT_CONFIG.architectureExclude || []).includes(item)
+  )
+  if (userArchitectureExclude.length > 0) {
+    console.log('\n🏗 architecture:')
+    console.log(`   exclude: [${userArchitectureExclude.join(', ')}]`)
+  }
+
   if (config.diaomaoUpdate) {
     console.log('\n📦 diaomaoUpdate:')
     console.log(`   sourceUrl: ${config.diaomaoUpdate.sourceUrl || 'not set'}`)
@@ -211,6 +223,10 @@ export function validateConfig(config: DevScriptsConfig): void {
 
   if (config.scan.whitelist !== undefined && !Array.isArray(config.scan.whitelist)) {
     throw new Error('scan.whitelist must be an array')
+  }
+
+  if (config.architectureExclude !== undefined && !Array.isArray(config.architectureExclude)) {
+    throw new Error('architectureExclude must be an array')
   }
 
   if (config.diaomaoUpdate?.allowedPackages && !Array.isArray(config.diaomaoUpdate.allowedPackages)) {

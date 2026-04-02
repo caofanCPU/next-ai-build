@@ -1,5 +1,15 @@
 # @windrun-huaiin/dev-scripts
 
+## 15.0.0
+
+### Major Changes
+
+- feat(upgrade): many useful tricks now lanch
+  - `windrun-huaiin/dev-scripts` check messages issue, powerful
+  - `windrun-huaiin/backend-core` fix satefy issues
+  - `windrun-huaiin/base-ui` fix styles
+  - `windrun-huaiin/third-ui` support a serias `Button` components
+
 ## 14.1.4
 
 ### Patch Changes

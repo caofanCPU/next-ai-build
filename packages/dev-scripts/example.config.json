@@ -21,6 +21,9 @@
     "logDir": "scripts",
     "verbose": false
   },
+  "architectureExclude": [
+    "coverage"
+  ],
   "diaomaoUpdate": {
     "sourceUrl": "https://raw.githubusercontent.com/caofanCPU/next-ai-build/main/pnpm-workspace.yaml",
     "allowedPackages": [

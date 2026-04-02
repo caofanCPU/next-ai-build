@@ -1,5 +1,21 @@
 # @windrun-huaiin/third-ui
 
+## 15.0.0
+
+### Major Changes
+
+- feat(upgrade): many useful tricks now lanch
+  - `windrun-huaiin/dev-scripts` check messages issue, powerful
+  - `windrun-huaiin/backend-core` fix satefy issues
+  - `windrun-huaiin/base-ui` fix styles
+  - `windrun-huaiin/third-ui` support a serias `Button` components
+
+### Patch Changes
+
+- Updated dependencies
+  - @windrun-huaiin/base-ui@15.0.0
+  - @windrun-huaiin/lib@15.0.0
+
 ## 14.5.0
 
 ### Minor Changes

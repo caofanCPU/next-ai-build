@@ -94,6 +94,9 @@
     ],
     "compactLog": true
   },
+  "architectureExclude": [
+    ".github"
+  ],
   "architectureConfig": {
     ".": "DDAAS项目"
   }

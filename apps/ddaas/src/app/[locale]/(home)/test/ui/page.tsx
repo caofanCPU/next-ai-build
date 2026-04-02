@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { type ReactNode, useState } from 'react';
 import { globalLucideIcons as icons } from '@base-ui/components/global-icon';
 import { themeIconColor } from '@windrun-huaiin/base-ui/lib';
 import { cn } from '@lib/utils';
@@ -28,7 +28,21 @@ const fieldCardClass = 'rounded-2xl border border-border/60 bg-background/70 p-4
 const compareCardClass = 'rounded-2xl border border-border/60 bg-background/60 p-3 sm:p-4';
 const codeHintClass = 'mt-3 rounded-2xl border border-dashed border-border/70 bg-background/70 px-3 py-2 font-mono text-[11px] leading-5 text-muted-foreground sm:text-xs';
 
+const collapsibleSectionIds = ['global-icon', 'gradient-button', 'x-button', 'x-toggle-button', 'pill-select'] as const;
+
+type SectionId = (typeof collapsibleSectionIds)[number];
+type ExpandedSections = Record<SectionId, boolean>;
+
 const sleep = (ms: number) => new Promise((resolve) => window.setTimeout(resolve, ms));
+
+const createExpandedSections = (expanded: boolean): ExpandedSections =>
+  collapsibleSectionIds.reduce(
+    (accumulator, sectionId) => {
+      accumulator[sectionId] = expanded;
+      return accumulator;
+    },
+    {} as ExpandedSections
+  );
 
 const pillOptions: XPillOption[] = [
   { label: '产品设计', value: 'design' },
@@ -79,10 +93,58 @@ const copyText = async (text: string) => {
   return copied;
 };
 
+type CollapsibleSectionProps = {
+  title: string;
+  description?: string;
+  isExpanded: boolean;
+  onToggle: () => void;
+  children: ReactNode;
+  className?: string;
+  headerExtra?: ReactNode;
+};
+
+function CollapsibleSection({
+  title,
+  description,
+  isExpanded,
+  onToggle,
+  children,
+  className,
+  headerExtra,
+}: CollapsibleSectionProps) {
+  const ChevronIcon = isExpanded ? icons.ChevronUp : icons.ChevronDown;
+
+  return (
+    <section className={cn(panelClass, className)}>
+      <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+        <div>
+          <h2 className={sectionTitleClass}>{title}</h2>
+          {description ? <p className={cn(sectionDescClass, 'mt-1')}>{description}</p> : null}
+        </div>
+        <div className="flex flex-wrap items-center gap-2 self-start md:justify-end">
+          {headerExtra}
+          <button
+            type="button"
+            onClick={onToggle}
+            className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-background/80 px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-accent"
+            aria-expanded={isExpanded}
+          >
+            <ChevronIcon className="h-4 w-4" />
+            {isExpanded ? '折叠内容' : '展开内容'}
+          </button>
+        </div>
+      </div>
+
+      {isExpanded ? children : null}
+    </section>
+  );
+}
+
 export default function TestComponentsPage() {
   const [actionText, setActionText] = useState('点击任意按钮查看交互记录');
   const [copiedIconName, setCopiedIconName] = useState<string | null>(null);
   const [copyToastText, setCopyToastText] = useState<string | null>(null);
+  const [expandedSections, setExpandedSections] = useState<ExpandedSections>(() => createExpandedSections(false));
   const [singleValue, setSingleValue] = useState('frontend');
   const [singleCompactValue, setSingleCompactValue] = useState('design');
   const [multiValue, setMultiValue] = useState<string[]>(['frontend', 'ai']);
@@ -126,40 +188,60 @@ export default function TestComponentsPage() {
     }
   };
 
+  const handleToggleSection = (sectionId: SectionId) => {
+    setExpandedSections((current) => ({
+      ...current,
+      [sectionId]: !current[sectionId],
+    }));
+  };
+
+  const allSectionsExpanded = collapsibleSectionIds.every((sectionId) => expandedSections[sectionId]);
+
+  const handleToggleAllSections = () => {
+    setExpandedSections(createExpandedSections(!allSectionsExpanded));
+  };
+
   return (
     <div className={pageShellClass}>
       <section className={cn(panelClass, 'relative overflow-hidden')}>
         <div className="pointer-events-none absolute inset-0 -z-10 bg-linear-to-br from-sky-100/70 via-white to-amber-100/60 dark:from-sky-950/30 dark:via-neutral-950 dark:to-amber-950/20" />
-        <div className="max-w-3xl">
-          <div className="mb-3 inline-flex rounded-full border border-primary/15 bg-primary/8 px-3 py-1 text-xs font-semibold text-primary">
-            组件测试页
+        <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+          <div className="max-w-3xl">
+            <div className="mb-3 inline-flex rounded-full border border-primary/15 bg-primary/8 px-3 py-1 text-xs font-semibold text-primary">
+              组件测试页
+            </div>
+            <h1 className="text-3xl font-semibold tracking-tight text-foreground md:text-4xl">按钮与图标效果展示</h1>
+            <p className="mt-3 max-w-2xl text-sm leading-7 text-muted-foreground md:text-base">
+              这个页面专门用来集中查看通用图标与按钮效果。当前先放
+              `Global Icon`、`GradientButton`、`XButton`，后续可以继续按 section 往下追加。
+            </p>
           </div>
-          <h1 className="text-3xl font-semibold tracking-tight text-foreground md:text-4xl">按钮与图标效果展示</h1>
-          <p className="mt-3 max-w-2xl text-sm leading-7 text-muted-foreground md:text-base">
-            这个页面专门用来集中查看通用图标与按钮效果。当前先放
-            `Global Icon`、`GradientButton`、`XButton`，后续可以继续按 section 往下追加。
-          </p>
-          <div className="mt-5 flex flex-wrap gap-2 text-sm">
-            <span className="rounded-full border border-emerald-300/70 bg-emerald-100 px-3 py-1 font-medium text-emerald-800 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300">
-              图标总数：{iconEntries.length}
-            </span>
-            <span className="rounded-full border border-sky-300/70 bg-sky-100 px-3 py-1 font-medium text-sky-800 dark:border-sky-800 dark:bg-sky-950/40 dark:text-sky-300">
-              已接入按钮变体：default / soft / subtle
-            </span>
+          <div className="flex flex-wrap items-center gap-2 self-start md:justify-end">
+            <button
+              type="button"
+              onClick={handleToggleAllSections}
+              className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-background/80 px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-accent"
+            >
+              {allSectionsExpanded ? <icons.ChevronUp className="h-4 w-4" /> : <icons.ChevronDown className="h-4 w-4" />}
+              {allSectionsExpanded ? '全部折叠' : '全部展开'}
+            </button>
           </div>
+        </div>
+        <div className="mt-5 flex flex-wrap gap-2 text-sm">
+          <span className="rounded-full border border-emerald-300/70 bg-emerald-100 px-3 py-1 font-medium text-emerald-800 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300">
+            图标总数：{iconEntries.length}
+          </span>
+          <span className="rounded-full border border-sky-300/70 bg-sky-100 px-3 py-1 font-medium text-sky-800 dark:border-sky-800 dark:bg-sky-950/40 dark:text-sky-300">
+            已接入按钮变体：default / soft / subtle
+          </span>
         </div>
       </section>
 
-      <section className={panelClass}>
-        <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
-          <div>
-            <h2 className={sectionTitleClass}>Global Icon 全量展示</h2>
-          </div>
-          <div className="rounded-full border border-border/70 bg-background/80 px-3 py-1 text-xs text-muted-foreground">
-            <code>{`import { globalLucideIcons as icons } from '@windrun-huaiin/base-ui/components/server'`}</code>
-          </div>
-        </div>
-
+      <CollapsibleSection
+        title="Global Icon 全量展示"
+        isExpanded={expandedSections['global-icon']}
+        onToggle={() => handleToggleSection('global-icon')}
+      >
         <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-7">
           {iconEntries.map(([iconName, Icon]) => (
             <button
@@ -175,10 +257,10 @@ export default function TestComponentsPage() {
             >
               <div
                 className={cn(
-                  "absolute right-2 top-2 rounded-full border px-2 py-0.5 text-[10px] transition-opacity",
+                  'absolute right-2 top-2 rounded-full border px-2 py-0.5 text-[10px] transition-opacity',
                   copiedIconName === iconName
-                    ? "border-emerald-300/70 bg-emerald-100 text-emerald-700 opacity-100 dark:border-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-300"
-                    : "border-border/70 bg-background/90 text-muted-foreground opacity-100 sm:opacity-0 sm:group-hover:opacity-100"
+                    ? 'border-emerald-300/70 bg-emerald-100 text-emerald-700 opacity-100 dark:border-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-300'
+                    : 'border-border/70 bg-background/90 text-muted-foreground opacity-100 sm:opacity-0 sm:group-hover:opacity-100'
                 )}
               >
                 {copiedIconName === iconName ? '已复制' : '点击复制'}
@@ -192,16 +274,14 @@ export default function TestComponentsPage() {
             </button>
           ))}
         </div>
-      </section>
+      </CollapsibleSection>
 
-      <section className={panelClass}>
-        <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
-          <div>
-            <h2 className={sectionTitleClass}>GradientButton 展示</h2>
-            <p className={sectionDescClass}>保留默认渐变风格，同时展示 `soft`、`subtle`、链接态、点击态、禁用态和对齐差异。</p>
-          </div>
-        </div>
-
+      <CollapsibleSection
+        title="GradientButton 展示"
+        description="保留默认渐变风格，同时展示 `soft`、`subtle`、链接态、点击态、禁用态和对齐差异。"
+        isExpanded={expandedSections['gradient-button']}
+        onToggle={() => handleToggleSection('gradient-button')}
+      >
         <div className="mt-5 grid gap-4 lg:grid-cols-2">
           <div className="rounded-2xl border border-border/60 bg-background/70 p-4">
             <div className="mb-3 text-sm font-medium text-foreground">三种视觉层级</div>
@@ -253,16 +333,15 @@ export default function TestComponentsPage() {
             </div>
           </div>
         </div>
-      </section>
+      </CollapsibleSection>
 
-      <section className={cn(panelClass, 'relative z-10')}>
-        <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
-          <div>
-            <h2 className={sectionTitleClass}>XButton 展示</h2>
-            <p className={sectionDescClass}>这里集中展示 `single` 和 `split` 两种模式，方便确认默认、soft、subtle 三种层级。</p>
-          </div>
-        </div>
-
+      <CollapsibleSection
+        title="XButton 展示"
+        description="这里集中展示 `single` 和 `split` 两种模式，方便确认默认、soft、subtle 三种层级。"
+        isExpanded={expandedSections['x-button']}
+        onToggle={() => handleToggleSection('x-button')}
+        className="relative z-10"
+      >
         <div className="mt-5 grid gap-4 lg:grid-cols-2">
           <div className="rounded-2xl border border-border/60 bg-background/70 p-4">
             <div className="mb-3 text-sm font-medium text-foreground">Single 模式</div>
@@ -396,16 +475,15 @@ export default function TestComponentsPage() {
             </div>
           </div>
         </div>
-      </section>
+      </CollapsibleSection>
 
-      <section className={cn(panelClass, 'relative z-10')}>
-        <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
-          <div>
-            <h2 className={sectionTitleClass}>XToggleButton 展示</h2>
-            <p className={sectionDescClass}>这一组用来测试单选切换、floating badge，以及切换后联动展示纯 icon 按钮、纯文本按钮、强调按钮、链接按钮四种按钮形态。</p>
-          </div>
-        </div>
-
+      <CollapsibleSection
+        title="XToggleButton 展示"
+        description="这一组用来测试单选切换、floating badge，以及切换后联动展示纯 icon 按钮、纯文本按钮、强调按钮、链接按钮四种按钮形态。"
+        isExpanded={expandedSections['x-toggle-button']}
+        onToggle={() => handleToggleSection('x-toggle-button')}
+        className="relative z-10"
+      >
         <div className="mt-5 flex flex-col gap-4">
           <div className={compareCardClass}>
             <div className="mb-3 text-sm font-medium text-foreground">Billing 风格 Toggle</div>
@@ -583,16 +661,15 @@ export default function TestComponentsPage() {
             </div>
           </div>
         </div>
-      </section>
+      </CollapsibleSection>
 
-      <section className={cn(panelClass, 'relative z-0')}>
-        <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
-          <div>
-            <h2 className={sectionTitleClass}>Pill Select 展示</h2>
-            <p className={sectionDescClass}>这里按组件分组，把 `default` 和 `compact` 放在同一组内直接对照，方便一眼看出尺寸和布局差异。</p>
-          </div>
-        </div>
-
+      <CollapsibleSection
+        title="Pill Select 展示"
+        description="这里按组件分组，把 `default` 和 `compact` 放在同一组内直接对照，方便一眼看出尺寸和布局差异。"
+        isExpanded={expandedSections['pill-select']}
+        onToggle={() => handleToggleSection('pill-select')}
+        className="relative z-0"
+      >
         <div className="mt-5 grid gap-4">
           <div className={fieldCardClass}>
             <div className="mb-3 text-sm font-medium text-foreground">下拉单选</div>
@@ -747,7 +824,7 @@ export default function TestComponentsPage() {
             </div>
           </div>
         </div>
-      </section>
+      </CollapsibleSection>
 
       <section className={cn(panelClass, 'relative z-0')}>
         <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
