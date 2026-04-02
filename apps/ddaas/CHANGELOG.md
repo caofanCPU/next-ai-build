@@ -1,5 +1,18 @@
 # @windrun-huaiin/ddaas-website
 
+## 15.1.0
+
+### Minor Changes
+
+- fix(build): fix rollup pack issus
+
+### Patch Changes
+
+- Updated dependencies
+  - @windrun-huaiin/base-ui@15.1.0
+  - @windrun-huaiin/third-ui@15.1.0
+  - @windrun-huaiin/lib@15.1.0
+
 ## 15.0.0
 
 ### Major Changes

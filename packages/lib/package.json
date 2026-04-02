@@ -1,6 +1,6 @@
 {
   "name": "@windrun-huaiin/lib",
-  "version": "15.0.0",
+  "version": "15.1.0",
   "description": "Common utilities and configuration",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -30,6 +30,8 @@
   },
   "files": [
     "dist",
+    "!dist/node_modules",
+    "!dist/node_modules/**",
     "src",
     "package.json",
     "README.md",
@@ -49,6 +51,7 @@
     "remark-frontmatter": "catalog:",
     "remark-gfm": "catalog:",
     "remark-mdx": "catalog:",
+    "tslib": "catalog:",
     "unist-util-visit": "catalog:"
   },
   "devDependencies": {

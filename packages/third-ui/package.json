@@ -1,6 +1,6 @@
 {
   "name": "@windrun-huaiin/third-ui",
-  "version": "15.0.0",
+  "version": "15.1.0",
   "description": "Third-party integrated UI components for windrun-huaiin projects",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -67,6 +67,8 @@
   "files": [
     "src",
     "dist",
+    "!dist/node_modules",
+    "!dist/node_modules/**",
     "package.json",
     "README.md",
     "LICENSE"
@@ -95,6 +97,7 @@
     "mermaid": "catalog:",
     "react-medium-image-zoom": "catalog:",
     "swiper": "catalog:",
+    "tslib": "catalog:",
     "zod": "catalog:"
   },
   "peerDependencies": {

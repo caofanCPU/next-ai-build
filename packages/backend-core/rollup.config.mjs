@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'rollup';
 import peerDepsExternal from 'rollup-plugin-peer-deps-external';
 import { preserveDirectives } from 'rollup-plugin-preserve-directives';
+import packageJson from './package.json' with { type: 'json' };
 
 const rootDir = fileURLToPath(new URL('.', import.meta.url));
 const resolveFromRoot = (...segments) => path.resolve(rootDir, ...segments);
@@ -30,18 +31,26 @@ const entries = [
   'src/app/api/stripe/customer-portal/route.ts',
 ];
 
+const externalPackages = [
+  ...Object.keys(packageJson.dependencies ?? {}),
+  ...Object.keys(packageJson.peerDependencies ?? {}),
+];
+
+const isExternal = (id) => {
+  if (
+    id === 'next' ||
+    /^next\//.test(id) ||
+    /^@windrun-huaiin\//.test(id)
+  ) {
+    return true;
+  }
+
+  return externalPackages.some((pkg) => id === pkg || id.startsWith(`${pkg}/`));
+};
+
 const createConfig = (format) => ({
   input: entries,
-  external: [
-    'next',
-    /^next\//,
-    /^@clerk\//,
-    'stripe',
-    'svix',
-    'zod',
-    /^@windrun-huaiin\//,
-    /^@prisma\/client/
-  ],
+  external: isExternal,
   plugins: [
     alias({
       entries: [

@@ -4,6 +4,7 @@ import commonjs from '@rollup/plugin-commonjs';
 import typescript from '@rollup/plugin-typescript';
 import { preserveDirectives } from 'rollup-plugin-preserve-directives';
 import peerDepsExternal from 'rollup-plugin-peer-deps-external';
+import packageJson from './package.json' with { type: 'json' };
 
 // Define export point
 const entries = [
@@ -14,6 +15,27 @@ const entries = [
   'src/components/server.ts'
 ];
 
+const externalPackages = [
+  ...Object.keys(packageJson.dependencies ?? {}),
+  ...Object.keys(packageJson.peerDependencies ?? {})
+];
+
+const isExternal = (id) => {
+  if (
+    id === 'react' ||
+    id === 'react-dom' ||
+    id === 'next' ||
+    /^react\//.test(id) ||
+    /^react-dom\//.test(id) ||
+    /^next\//.test(id) ||
+    /^@windrun-huaiin\//.test(id)
+  ) {
+    return true;
+  }
+
+  return externalPackages.some((pkg) => id === pkg || id.startsWith(`${pkg}/`));
+};
+
 const createConfig = (format) => ({
   onwarn(warning, warn) {
     // ignore 'use client' and 'use server' directive's warnings in build
@@ -23,23 +45,7 @@ const createConfig = (format) => ({
     warn(warning);
   },
   input: entries,
-  external: [
-    'react',
-    'react-dom',
-    'next',
-    /^react\//,
-    /^react-dom\//,
-    /^next\//,
-    /^@windrun-huaiin\//,
-    /^@radix-ui\//,
-    'clsx',
-    'tailwind-merge',
-    'next-intl',
-    'next-themes',
-    'tailwindcss',
-    'class-variance-authority',
-    'lucide-react'
-  ],
+  external: isExternal,
   plugins: [
     peerDepsExternal(),
     resolve({

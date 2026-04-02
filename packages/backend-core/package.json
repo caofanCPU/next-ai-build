@@ -1,6 +1,6 @@
 {
   "name": "@windrun-huaiin/backend-core",
-  "version": "15.0.0",
+  "version": "15.1.0",
   "description": "Shared backend primitives: Prisma schema/client, database services, routing helpers",
   "type": "module",
   "main": "./dist/index.js",
@@ -86,6 +86,8 @@
   },
   "files": [
     "dist",
+    "!dist/node_modules",
+    "!dist/node_modules/**",
     "src",
     "prisma",
     "migrations",
@@ -112,6 +114,7 @@
     "prisma": "catalog:",
     "stripe": "catalog:",
     "svix": "catalog:",
+    "tslib": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {

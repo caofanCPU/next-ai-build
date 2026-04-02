@@ -1,5 +1,11 @@
 # @windrun-huaiin/dev-scripts
 
+## 15.1.0
+
+### Minor Changes
+
+- fix(build): fix rollup pack issus
+
 ## 15.0.0
 
 ### Major Changes

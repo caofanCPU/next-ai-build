@@ -4,6 +4,7 @@ import commonjs from '@rollup/plugin-commonjs';
 import typescript from '@rollup/plugin-typescript';
 import { preserveDirectives } from 'rollup-plugin-preserve-directives';
 import peerDepsExternal from 'rollup-plugin-peer-deps-external';
+import packageJson from './package.json' with { type: 'json' };
 
 // Define export point
 const entries = [
@@ -19,6 +20,27 @@ const entries = [
   'src/fuma/base/index.ts',
   'src/lib/server.ts'
 ];
+
+const externalPackages = [
+  ...Object.keys(packageJson.dependencies ?? {}),
+  ...Object.keys(packageJson.peerDependencies ?? {})
+];
+
+const isExternal = (id) => {
+  if (
+    id === 'react' ||
+    id === 'react-dom' ||
+    id === 'next' ||
+    /^react\//.test(id) ||
+    /^react-dom\//.test(id) ||
+    /^next\//.test(id) ||
+    /^@windrun-huaiin\//.test(id)
+  ) {
+    return true;
+  }
+
+  return externalPackages.some((pkg) => id === pkg || id.startsWith(`${pkg}/`));
+};
 
 const createConfig = (format) => ({
   onwarn(warning, warn) {
@@ -41,23 +63,7 @@ const createConfig = (format) => ({
     warn(warning);
   },
   input: entries,
-  external: [
-    'react',
-    'react-dom',
-    'next',
-    /^react\//,
-    /^react-dom\//,
-    /^next\//,
-    /^@windrun-huaiin\//,
-    /^fumadocs/,
-    /^@clerk/,
-    'clsx',
-    'tailwind-merge',
-    'next-intl',
-    'next-themes',
-    'nprogress',
-    'tailwindcss'
-  ],
+  external: isExternal,
   plugins: [
     peerDepsExternal(),
     resolve({

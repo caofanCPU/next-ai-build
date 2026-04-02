@@ -1,6 +1,6 @@
 {
   "name": "@windrun-huaiin/base-ui",
-  "version": "15.0.0",
+  "version": "15.1.0",
   "description": "Base UI components for windrun-huaiin projects",
   "type": "module",
   "exports": {
@@ -35,6 +35,8 @@
   "files": [
     "src",
     "dist",
+    "!dist/node_modules",
+    "!dist/node_modules/**",
     "package.json",
     "README.md",
     "LICENSE"
@@ -53,7 +55,8 @@
     "@radix-ui/react-slot": "catalog:",
     "@windrun-huaiin/lib": "workspace:^",
     "class-variance-authority": "catalog:",
-    "lucide-react": "catalog:"
+    "lucide-react": "catalog:",
+    "tslib": "catalog:"
   },
   "peerDependencies": {
     "clsx": "catalog:",

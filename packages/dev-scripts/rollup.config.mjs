@@ -2,6 +2,7 @@ import { defineConfig } from 'rollup';
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import typescript from '@rollup/plugin-typescript';
+import packageJson from './package.json' with { type: 'json' };
 
 // Define export point
 const entries = [
@@ -9,22 +10,29 @@ const entries = [
   'src/index.ts'
 ];
 
+const externalPackages = [
+  ...Object.keys(packageJson.dependencies ?? {}),
+  ...Object.keys(packageJson.peerDependencies ?? {})
+];
+
+const isExternal = (id) => {
+  if (
+    id === 'fs' ||
+    id === 'path' ||
+    id === 'child_process' ||
+    id === 'module' ||
+    id === 'url' ||
+    id === 'os' ||
+    /^node:/.test(id)
+  ) {
+    return true;
+  }
+
+  return externalPackages.some((pkg) => id === pkg || id.startsWith(`${pkg}/`));
+};
+
 const baseConfig = {
-  external: [
-    'commander',
-    'fast-glob',
-    'picocolors',
-    'fs-extra',
-    'semver',
-    'yaml',
-    'fs',
-    'path',
-    'child_process',
-    'module',
-    'url',
-    'typescript',
-    /^node:/
-  ],
+  external: isExternal,
   plugins: [
     resolve({
       preferBuiltins: true,

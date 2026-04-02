@@ -3,6 +3,7 @@ import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import typescript from '@rollup/plugin-typescript';
 import peerDepsExternal from 'rollup-plugin-peer-deps-external';
+import packageJson from './package.json' with { type: 'json' };
 
 // Define export point
 const entries = [
@@ -12,21 +13,26 @@ const entries = [
   'src/common-app-config.ts'
 ];
 
+const externalPackages = [
+  ...Object.keys(packageJson.dependencies ?? {}),
+  ...Object.keys(packageJson.peerDependencies ?? {})
+];
+
+const isExternal = (id) => {
+  if (
+    id === 'react' ||
+    id === 'react-dom' ||
+    /^react\//.test(id) ||
+    /^react-dom\//.test(id)
+  ) {
+    return true;
+  }
+
+  return externalPackages.some((pkg) => id === pkg || id.startsWith(`${pkg}/`));
+};
+
 const baseConfig = {
-  external: [
-    'react',
-    'react-dom',
-    /^react\//,
-    /^react-dom\//,
-    'date-fns',
-    'remark',
-    'remark-gfm',
-    'remark-mdx',
-    'remark-frontmatter',
-    'unist-util-visit',
-    'clsx',
-    'tailwind-merge'
-  ],
+  external: isExternal,
   plugins: [
     peerDepsExternal(),
     resolve({
