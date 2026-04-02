@@ -1,13 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { globalLucideIcons } from '@base-ui/components/global-icon';
+import { globalLucideIcons as icons } from '@base-ui/components/global-icon';
 import { themeIconColor } from '@windrun-huaiin/base-ui/lib';
 import { cn } from '@lib/utils';
 import { GradientButton } from '@third-ui/fuma/mdx';
-import { XButton, XPillSelect, XTokenInput, XFilterPills, XFormPills, type XPillOption } from '@third-ui/main';
+import { XButton, XToggleButton, XPillSelect, XTokenInput, XFilterPills, XFormPills, type XPillOption } from '@third-ui/main';
 
-const iconEntries = Object.entries(globalLucideIcons).sort(([nameA], [nameB]) => nameA.localeCompare(nameB));
+const iconEntries = Object.entries(icons).sort(([nameA], [nameB]) => nameA.localeCompare(nameB));
 
 const pageShellClass =
   'mx-auto mt-12 flex w-full max-w-7xl flex-col gap-6 px-3 py-6 sm:px-4 md:gap-8 md:px-6 md:py-8';
@@ -18,9 +18,12 @@ const sectionDescClass = 'text-sm leading-6 text-muted-foreground';
 const iconCardClass =
   'flex min-h-[112px] flex-col items-center justify-center gap-3 rounded-2xl border border-border/60 bg-background/80 px-3 py-4 text-center shadow-sm transition-colors hover:border-primary/30 hover:bg-background';
 const gradientButtonDemoClass = 'text-xs sm:text-sm px-5 sm:px-8';
+const gradientButtonCustomClass = 'inline-flex min-h-8 min-w-20 items-center justify-center rounded-full border border-red-200 px-3 py-1.5 text-xs font-semibold text-red-700 transition hover:border-red-300 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-40 dark:border-red-400/20 dark:text-red-300 dark:hover:bg-red-500/10';
 const xButtonSingleDemoClass = 'text-xs sm:text-sm';
 const xButtonSplitMainDemoClass = 'text-xs sm:text-sm';
 const xButtonSplitDropdownDemoClass = 'py-1 sm:py-1.5';
+// const textButtonDemoClass = 'w-auto min-w-0 border border-slate-300 text-sm font-medium text-slate-700 dark:border-slate-600 dark:text-slate-300';
+const iconButtonDemoClass = 'w-auto min-w-0 rounded-full border border-border/70 bg-background/80 px-3 py-3 text-foreground hover:bg-accent';
 const fieldCardClass = 'rounded-2xl border border-border/60 bg-background/70 p-4';
 const compareCardClass = 'rounded-2xl border border-border/60 bg-background/60 p-3 sm:p-4';
 const codeHintClass = 'mt-3 rounded-2xl border border-dashed border-border/70 bg-background/70 px-3 py-2 font-mono text-[11px] leading-5 text-muted-foreground sm:text-xs';
@@ -89,6 +92,7 @@ export default function TestComponentsPage() {
   const [filterValue, setFilterValue] = useState('');
   const [tokenValue, setTokenValue] = useState<string[]>(['nextjs', 'tailwind', 'openai']);
   const [tokenCompactValue, setTokenCompactValue] = useState<string[]>(['seo', 'landing']);
+  const [toggleDemoValue, setToggleDemoValue] = useState('icon-only');
 
   const handleAction = async (label: string) => {
     setActionText(`执行中：${label}`);
@@ -208,6 +212,7 @@ export default function TestComponentsPage() {
               <GradientButton className={gradientButtonDemoClass} title="链接跳转按钮" href="#" openInNewTab={false} />
               <GradientButton className={gradientButtonDemoClass} title="soft 链接按钮" href="#" openInNewTab={false} variant="soft" />
               <GradientButton className={gradientButtonDemoClass} title="subtle 链接按钮" href="#" openInNewTab={false} variant="subtle" />
+              <GradientButton className={gradientButtonCustomClass} title="subtle普通点击按钮" onClick={() => handleAction('GradientButton Subtle个性化按钮')}  variant="subtle" icon={false} />
             </div>
           </div>
 
@@ -218,7 +223,7 @@ export default function TestComponentsPage() {
                 title="左对齐带图标"
                 align="left"
                 className={gradientButtonDemoClass}
-                icon={<globalLucideIcons.Rocket />}
+                icon={<icons.Rocket />}
                 onClick={() => handleAction('GradientButton 左对齐带图标')}
               />
               <GradientButton
@@ -226,7 +231,7 @@ export default function TestComponentsPage() {
                 align="center"
                 variant="soft"
                 className={gradientButtonDemoClass}
-                icon={<globalLucideIcons.Sparkles />}
+                icon={<icons.Sparkles />}
                 onClick={() => handleAction('GradientButton 居中 soft')}
               />
               <GradientButton
@@ -234,7 +239,7 @@ export default function TestComponentsPage() {
                 align="center"
                 variant="subtle"
                 className={gradientButtonDemoClass}
-                icon={<globalLucideIcons.AlbumIcon />}
+                icon={<icons.AlbumIcon />}
                 onClick={() => handleAction('GradientButton 居中 subtle')}
               />
               <GradientButton
@@ -242,7 +247,7 @@ export default function TestComponentsPage() {
                 align="right"
                 disabled
                 className={gradientButtonDemoClass}
-                icon={<globalLucideIcons.Shield />}
+                icon={<icons.Shield />}
                 onClick={() => handleAction('GradientButton 禁用态')}
               />
             </div>
@@ -265,7 +270,7 @@ export default function TestComponentsPage() {
               <XButton
                 type="single"
                 button={{
-                  icon: <globalLucideIcons.Download />,
+                  icon: <icons.Download />,
                   text: '默认单按钮',
                   onClick: () => handleAction('XButton 默认 single'),
                 }}
@@ -275,7 +280,7 @@ export default function TestComponentsPage() {
                 type="single"
                 variant="soft"
                 button={{
-                  icon: <globalLucideIcons.BadgeQuestionMark />,
+                  icon: <icons.BadgeQuestionMark />,
                   text: 'soft 单按钮',
                   onClick: () => handleAction('XButton soft single'),
                 }}
@@ -285,7 +290,7 @@ export default function TestComponentsPage() {
                 type="single"
                 variant="subtle"
                 button={{
-                  icon: <globalLucideIcons.AlbumIcon />,
+                  icon: <icons.AlbumIcon />,
                   text: 'subtle 单按钮',
                   onClick: () => handleAction('XButton subtle single'),
                 }}
@@ -294,7 +299,7 @@ export default function TestComponentsPage() {
               <XButton
                 type="single"
                 button={{
-                  icon: <globalLucideIcons.Shield />,
+                  icon: <icons.Shield />,
                   text: '禁用单按钮',
                   onClick: () => handleAction('XButton 禁用 single'),
                   disabled: true,
@@ -310,7 +315,7 @@ export default function TestComponentsPage() {
               <XButton
                 type="split"
                 mainButton={{
-                  icon: <globalLucideIcons.Rocket />,
+                  icon: <icons.Rocket />,
                   text: '默认分体按钮',
                   onClick: () => handleAction('XButton 默认 split 主按钮'),
                 }}
@@ -318,17 +323,17 @@ export default function TestComponentsPage() {
                 dropdownButtonClassName={xButtonSplitDropdownDemoClass}
                 menuItems={[
                   {
-                    icon: <globalLucideIcons.Copy className="mr-2 h-4 w-4" />,
+                    icon: <icons.Copy className="mr-2 h-4 w-4" />,
                     text: '复制链接',
                     onClick: () => handleAction('XButton 默认 split 复制链接'),
                   },
                   {
-                    icon: <globalLucideIcons.ExternalLink className="mr-2 h-4 w-4" />,
+                    icon: <icons.ExternalLink className="mr-2 h-4 w-4" />,
                     text: '打开详情页',
                     onClick: () => handleAction('XButton 默认 split 打开详情页'),
                   },
                   {
-                    icon: <globalLucideIcons.Shield className="mr-2 h-4 w-4" />,
+                    icon: <icons.Shield className="mr-2 h-4 w-4" />,
                     text: '受保护操作',
                     onClick: () => handleAction('XButton 默认 split 受保护操作'),
                     splitTopBorder: true,
@@ -340,7 +345,7 @@ export default function TestComponentsPage() {
                 type="split"
                 variant="soft"
                 mainButton={{
-                  icon: <globalLucideIcons.Sparkles />,
+                  icon: <icons.Sparkles />,
                   text: 'soft 分体按钮',
                   onClick: () => handleAction('XButton soft split 主按钮'),
                 }}
@@ -348,17 +353,17 @@ export default function TestComponentsPage() {
                 dropdownButtonClassName={xButtonSplitDropdownDemoClass}
                 menuItems={[
                   {
-                    icon: <globalLucideIcons.Mail className="mr-2 h-4 w-4" />,
+                    icon: <icons.Mail className="mr-2 h-4 w-4" />,
                     text: '发送通知',
                     onClick: () => handleAction('XButton soft split 发送通知'),
                   },
                   {
-                    icon: <globalLucideIcons.Settings className="mr-2 h-4 w-4" />,
+                    icon: <icons.Settings className="mr-2 h-4 w-4" />,
                     text: '进入设置',
                     onClick: () => handleAction('XButton soft split 进入设置'),
                   },
                   {
-                    icon: <globalLucideIcons.Bug className="mr-2 h-4 w-4" />,
+                    icon: <icons.Bug className="mr-2 h-4 w-4" />,
                     text: '调试入口',
                     onClick: () => handleAction('XButton soft split 调试入口'),
                     tag: { text: '测试', color: '#0EA5E9' },
@@ -369,7 +374,7 @@ export default function TestComponentsPage() {
                 type="split"
                 variant="subtle"
                 mainButton={{
-                  icon: <globalLucideIcons.AlbumIcon />,
+                  icon: <icons.AlbumIcon />,
                   text: 'subtle 分体按钮',
                   onClick: () => handleAction('XButton subtle split 主按钮'),
                 }}
@@ -377,17 +382,204 @@ export default function TestComponentsPage() {
                 dropdownButtonClassName={xButtonSplitDropdownDemoClass}
                 menuItems={[
                   {
-                    icon: <globalLucideIcons.Mail className="mr-2 h-4 w-4" />,
+                    icon: <icons.Mail className="mr-2 h-4 w-4" />,
                     text: '发送邮件',
                     onClick: () => handleAction('XButton subtle split 发送邮件'),
                   },
                   {
-                    icon: <globalLucideIcons.Settings className="mr-2 h-4 w-4" />,
+                    icon: <icons.Settings className="mr-2 h-4 w-4" />,
                     text: '调整配置',
                     onClick: () => handleAction('XButton subtle split 调整配置'),
                   },
                 ]}
               />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className={cn(panelClass, 'relative z-10')}>
+        <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
+          <div>
+            <h2 className={sectionTitleClass}>XToggleButton 展示</h2>
+            <p className={sectionDescClass}>这一组用来测试单选切换、floating badge，以及切换后联动展示纯 icon 按钮、纯文本按钮、强调按钮、链接按钮四种按钮形态。</p>
+          </div>
+        </div>
+
+        <div className="mt-5 flex flex-col gap-4">
+          <div className={compareCardClass}>
+            <div className="mb-3 text-sm font-medium text-foreground">Billing 风格 Toggle</div>
+            <div className="flex justify-center">
+              <XToggleButton
+                value={toggleDemoValue}
+                onChange={setToggleDemoValue}
+                ariaLabel="Button style switcher"
+                itemTextClassName="text-xs"
+                itemPaddingClassName="px-1.5 py-1 sm:px-2 sm:py-1.5 md:px-3 md:py-2"
+                minItemWidthClassName="min-w-[60px] sm:min-w-[80px] md:min-w-[100px]"
+                maxItemWidthClassName="max-w-[70px] sm:max-w-[100px] md:max-w-[140px]"
+                options={[
+                  { value: 'icon-only', label: 'Icon Only' },
+                  { value: 'text-only', label: 'Text Only', badge: 'Popular' },
+                  { value: 'accent', label: 'Accent' },
+                  { value: 'link-like', label: 'Link Like', badge: 'Light' },
+                ]}
+              />
+            </div>
+            <div className={codeHintClass}>
+              {`<XToggleButton itemTextClassName="text-xs" maxItemWidthClassName="max-w-[70px] sm:max-w-[100px]" />`}
+            </div>
+          </div>
+
+          <div className={compareCardClass}>
+            <div className="mb-3 text-sm font-medium text-foreground">切换结果预览</div>
+            <div className="rounded-2xl border border-border/60 bg-background/80 p-4">
+              <div className="mb-3 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                Active: {toggleDemoValue}
+              </div>
+
+              {toggleDemoValue === 'icon-only' ? (
+                <div className="flex flex-wrap items-center gap-3">
+                  <XButton
+                    type="single"
+                    button={{
+                      icon: <icons.Search />,
+                      text: '',
+                      onClick: () => handleAction('Toggle / 纯 icon 搜索按钮'),
+                    }}
+                    className={iconButtonDemoClass}
+                    minWidth="min-w-0"
+                  />
+                  <XButton
+                    type="single"
+                    button={{
+                      icon: <icons.HandHeart />,
+                      text: '',
+                      onClick: () => handleAction('Toggle / 纯 icon 喜欢按钮'),
+                    }}
+                    className={iconButtonDemoClass}
+                    minWidth="min-w-0"
+                  />
+                  <XButton
+                    type="single"
+                    button={{
+                      icon: <icons.ShieldUser/>,
+                      text: '',
+                      onClick: () => handleAction('Toggle / 纯 icon 分享按钮'),
+                    }}
+                    className={iconButtonDemoClass}
+                    minWidth="min-w-0"
+                  />
+                </div>
+              ) : null}
+
+              {toggleDemoValue === 'text-only' ? (
+                <div className="flex flex-wrap items-center gap-5">
+                  <XButton
+                    type="single"
+                    variant="subtle"
+                    button={{
+                      icon: null,
+                      text: 'Cancel',
+                      onClick: () => handleAction('Toggle / 文本 Cancel 按钮'),
+                    }}
+                    className="border border-slate-300 text-slate-700 dark:border-slate-600 dark:text-slate-300"
+                    minWidth="min-w-0"
+                  />
+                  <XButton
+                    type="single"
+                    variant="subtle"
+                    button={{
+                      icon: false,
+                      text: 'Forgot password?',
+                      onClick: () => handleAction('Toggle / 文本 Forgot password 按钮'),
+                    }}
+                    className="border border-blue-300 text-blue-700 dark:border-blue-600 dark:text-blue-300"
+                    minWidth="min-w-0"
+                  />
+                  <XButton
+                    type="single"
+                    variant="subtle"
+                    button={{
+                      icon: null,
+                      text: 'View details',
+                      onClick: () => handleAction('Toggle / 文本 View details 按钮'),
+                    }}
+                    className="border border-emerald-300 text-emerald-700 dark:border-emerald-600 dark:text-emerald-300"
+                    minWidth="min-w-0"
+                  />
+                </div>
+              ) : null}
+
+              {toggleDemoValue === 'accent' ? (
+                <div className="flex flex-wrap items-center gap-3">
+                  <GradientButton
+                    title="Upgrade Now"
+                    icon={<icons.Rocket />}
+                    className="min-w-[150px]"
+                    onClick={() => handleAction('Toggle / 强调 Upgrade Now 按钮')}
+                  />
+                  <XButton
+                    type="single"
+                    variant="soft"
+                    button={{
+                      icon: <icons.Sparkles />,
+                      text: 'Try Pro',
+                      onClick: () => handleAction('Toggle / 强调 Try Pro 按钮'),
+                    }}
+                    className="w-auto bg-emerald-500 text-white hover:bg-emerald-600 border border-emerald-600"
+                    minWidth="min-w-[140px]"
+                  />
+                </div>
+              ) : null}
+
+              {toggleDemoValue === 'link-like' ? (
+                <div className="flex flex-wrap items-center gap-3">
+                  <GradientButton
+                    title="Open Docs"
+                    href="#"
+                    openInNewTab={false}
+                    variant="subtle"
+                    icon={<icons.ExternalLink />}
+                    className="min-w-[148px] border-sky-300 text-sky-700 hover:bg-sky-50 dark:text-sky-300"
+                  />
+                  <GradientButton
+                    title="View Pricing"
+                    href="#"
+                    openInNewTab={false}
+                    variant="soft"
+                    icon={false}
+                    className="min-w-[148px]"
+                  />
+                </div>
+              ) : null}
+            </div>
+            <div className={codeHintClass}>
+              {`toggle items: icon-only / text-only / accent / link-like`}
+            </div>
+          </div>
+
+          <div className={compareCardClass}>
+            <div className="mb-3 text-sm font-medium text-foreground">Web 风格 Toggle - 带 mobileIcon</div>
+            <p className="mb-4 text-xs text-muted-foreground">移动端显示图标，web端显示文本</p>
+            <div className="flex justify-center">
+              <XToggleButton
+                value={toggleDemoValue}
+                onChange={setToggleDemoValue}
+                ariaLabel="Button style switcher"
+                itemPaddingClassName="px-1 py-1 sm:px-3 sm:py-2"
+                minItemWidthClassName="min-w-[40px] sm:min-w-[100px]"
+                maxItemWidthClassName="max-w-[50px] sm:max-w-[160px]"
+                options={[
+                  { value: 'icon-only', label: 'Icon Only', mobileIcon: <icons.FileUp className="h-4 w-4" /> },
+                  { value: 'text-only', label: 'Text Only', badge: 'Popular', mobileIcon: <icons.FileDown className="h-4 w-4" /> },
+                  { value: 'accent', label: 'Accent', mobileIcon: <icons.Zap className="h-4 w-4" /> },
+                  { value: 'link-like', label: 'Link Like', badge: 'Light', mobileIcon: <icons.Link className="h-4 w-4" /> },
+                ]}
+              />
+            </div>
+            <div className={codeHintClass}>
+              {`<XToggleButton options={[..., { mobileIcon: <Icon className="h-4 w-4" /> }]} />`}
             </div>
           </div>
         </div>

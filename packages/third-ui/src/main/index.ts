@@ -6,6 +6,7 @@ export * from './loading';
 export * from './nprogress-bar';
 export * from './ads-alert-dialog';
 export * from './x-button'
+export * from './x-toggle-button'
 export * from './ai-prompt-textarea'
 export * from './rich-text-expert'
 export * from './faq-interactive'
