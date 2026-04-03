@@ -2,21 +2,22 @@
 title: About Project Structure
 description: Show all source code directories and files
 icon: Gift
-date: 2026-04-02
+date: 2026-04-03
 ---
 
 ## Quick Started
 
 <Files>
   <ZiaFolder name="ROOT" anotion="DDAAS项目" defaultOpen>
-    <ZiaFile name=".gitignore" anotion="Git忽略文件配置" href="" />
+    <ZiaFolder name=".github" anotion="GitHub 配置目录" defaultOpen>
+      <ZiaFolder name="workflows" anotion="CI/CD 工作流配置" defaultOpen>
+        <ZiaFile name="deploy.yml.txt" anotion="" href="" />
+      </ZiaFolder>
+    </ZiaFolder>
     <ZiaFolder name=".source" anotion="Fuma数据源Build产物" defaultOpen>
       <ZiaFile name="index.ts" anotion="" href="" />
       <ZiaFile name="source.config.mjs" anotion="" href="" />
     </ZiaFolder>
-    <ZiaFile name="CHANGELOG.md" anotion="变更记录" href="" />
-    <ZiaFile name="LICENSE" anotion="开源许可证" href="" />
-    <ZiaFile name="components.json" anotion="组件依赖清单" href="" />
     <ZiaFolder name="database" anotion="" defaultOpen>
       <ZiaFile name="create.sql" anotion="" href="" />
       <ZiaFile name="db.init.sql" anotion="" href="" />
@@ -24,25 +25,17 @@ date: 2026-04-02
       <ZiaFile name="purge.sql" anotion="" href="" />
       <ZiaFile name="test-check.sql" anotion="" href="" />
     </ZiaFolder>
-    <ZiaFile name="dev-scripts.config.json" anotion="dev-scripts脚本工具配置" href="" />
-    <ZiaFile name="eslint.config.js" anotion="" href="" />
     <ZiaFolder name="messages" anotion="翻译目录" defaultOpen>
       <ZiaFile name="en.json" anotion="" href="" />
       <ZiaFile name="zh.json" anotion="" href="" />
     </ZiaFolder>
-    <ZiaFile name="next-env.d.ts" anotion="Next.js环境类型声明" href="" />
-    <ZiaFile name="next.config.ts" anotion="Next.js项目配置" href="" />
-    <ZiaFile name="package.json" anotion="项目依赖与脚本" href="" />
-    <ZiaFile name="postcss.config.mjs" anotion="PostCSS 配置" href="" />
     <ZiaFolder name="prisma" anotion="" defaultOpen>
       <ZiaFile name="schema.prisma" anotion="" href="" />
     </ZiaFolder>
-    <ZiaFile name="source.config.ts" anotion="Fuma数据源扫描配置" href="" />
     <ZiaFolder name="src" anotion="源码目录" defaultOpen>
       <ZiaFolder name="app" anotion="Next.js 应用主入口目录" defaultOpen>
         <ZiaFolder name="[locale]" anotion="Nextjs i18n路由目录" defaultOpen>
           <ZiaFolder name="(clerk)" anotion="Clerk认证" defaultOpen>
-            <ZiaFile name="layout.tsx" anotion="布局" href="" />
             <ZiaFolder name="sign-in" anotion="" defaultOpen>
               <ZiaFolder name="[[...sign-in]]" anotion="" defaultOpen>
                 <ZiaFile name="page.tsx" anotion="" href="" />
@@ -58,6 +51,7 @@ date: 2026-04-02
                 <ZiaFile name="page.tsx" anotion="" href="" />
               </ZiaFolder>
             </ZiaFolder>
+            <ZiaFile name="layout.tsx" anotion="布局" href="" />
           </ZiaFolder>
           <ZiaFolder name="(content)" anotion="" defaultOpen>
             <ZiaFolder name="blog" anotion="博客" defaultOpen>
@@ -75,28 +69,28 @@ date: 2026-04-02
             <ZiaFolder name="docs" anotion="文档" defaultOpen>
               <ZiaFile name="page.tsx" anotion="" href="" />
             </ZiaFolder>
-            <ZiaFile name="layout.tsx" anotion="布局" href="" />
             <ZiaFolder name="legal" anotion="法律" defaultOpen>
               <ZiaFolder name="[[...slug]]" anotion="" defaultOpen>
                 <ZiaFile name="page.tsx" anotion="" href="" />
               </ZiaFolder>
               <ZiaFile name="layout.tsx" anotion="布局" href="" />
             </ZiaFolder>
-            <ZiaFile name="page.tsx" anotion="" href="" />
             <ZiaFolder name="pricing" anotion="" defaultOpen>
               <ZiaFile name="page.tsx" anotion="" href="" />
             </ZiaFolder>
             <ZiaFolder name="test" anotion="" defaultOpen>
-              <ZiaFile name="actions.ts" anotion="" href="" />
               <ZiaFolder name="color" anotion="" defaultOpen>
                 <ZiaFile name="page.tsx" anotion="" href="" />
               </ZiaFolder>
-              <ZiaFile name="page.tsx" anotion="" href="" />
-              <ZiaFile name="test-playground.tsx" anotion="" href="" />
               <ZiaFolder name="ui" anotion="" defaultOpen>
                 <ZiaFile name="page.tsx" anotion="" href="" />
               </ZiaFolder>
+              <ZiaFile name="actions.ts" anotion="" href="" />
+              <ZiaFile name="page.tsx" anotion="" href="" />
+              <ZiaFile name="test-playground.tsx" anotion="" href="" />
             </ZiaFolder>
+            <ZiaFile name="layout.tsx" anotion="布局" href="" />
+            <ZiaFile name="page.tsx" anotion="" href="" />
           </ZiaFolder>
           <ZiaFolder name="docs" anotion="文档" defaultOpen>
             <ZiaFolder name="[...slug]" anotion="" defaultOpen>
@@ -159,7 +153,6 @@ date: 2026-04-02
         <ZiaFile name="hero.tsx" anotion="首页大字组件" href="" />
         <ZiaFile name="mdx-components.tsx" anotion="FumaMDX组件库(自定义)" href="" />
       </ZiaFolder>
-      <ZiaFile name="i18n.ts" anotion="多语言配置" href="" />
       <ZiaFolder name="lib" anotion="工具包" defaultOpen>
         <ZiaFile name="appConfig.ts" anotion="应用全局配置" href="" />
         <ZiaFile name="fonts.ts" anotion="" href="" />
@@ -258,8 +251,20 @@ date: 2026-04-02
           <ZiaFile name="terms.zh.mdx" anotion="" href="" />
         </ZiaFolder>
       </ZiaFolder>
+      <ZiaFile name="i18n.ts" anotion="多语言配置" href="" />
       <ZiaFile name="proxy.ts" anotion="中间件入口" href="" />
     </ZiaFolder>
+    <ZiaFile name=".gitignore" anotion="Git忽略文件配置" href="" />
+    <ZiaFile name="CHANGELOG.md" anotion="变更记录" href="" />
+    <ZiaFile name="components.json" anotion="组件依赖清单" href="" />
+    <ZiaFile name="dev-scripts.config.json" anotion="dev-scripts脚本工具配置" href="" />
+    <ZiaFile name="eslint.config.js" anotion="" href="" />
+    <ZiaFile name="LICENSE" anotion="开源许可证" href="" />
+    <ZiaFile name="next-env.d.ts" anotion="Next.js环境类型声明" href="" />
+    <ZiaFile name="next.config.ts" anotion="Next.js项目配置" href="" />
+    <ZiaFile name="package.json" anotion="项目依赖与脚本" href="" />
+    <ZiaFile name="postcss.config.mjs" anotion="PostCSS 配置" href="" />
+    <ZiaFile name="source.config.ts" anotion="Fuma数据源扫描配置" href="" />
     <ZiaFile name="tsconfig.json" anotion="TypeScript配置" href="" />
     <ZiaFile name="tsconfig.node.json" anotion="Node.js相关TypeScript 配置" href="" />
     <ZiaFile name="tsconfig.tsbuildinfo" anotion="" href="" />

@@ -1,5 +1,11 @@
 # @windrun-huaiin/dev-scripts
 
+## 15.1.1
+
+### Patch Changes
+
+- fix(cli): generate readme `tree spawnSync tree ENOBUFS` issue fixed
+
 ## 15.1.0
 
 ### Minor Changes

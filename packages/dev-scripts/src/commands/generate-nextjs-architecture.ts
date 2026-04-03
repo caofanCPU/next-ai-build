@@ -1,8 +1,6 @@
 import { DevScriptsConfig, DEFAULT_CONFIG } from '@dev-scripts/config/schema'
-import { readJsonFile } from '@dev-scripts/utils/file-scanner'
 import { Logger } from '@dev-scripts/utils/logger'
-import { execFileSync } from 'child_process'
-import { existsSync, mkdirSync, writeFileSync } from 'fs'
+import { existsSync, mkdirSync, readdirSync, writeFileSync } from 'fs'
 import { join } from 'path'
 
 function getCurrentDateString(): string {
@@ -52,6 +50,67 @@ function filterTreeNodes(nodes: any[], patterns: string[]): any[] {
   return filtered
 }
 
+function compareNodes(a: any, b: any): number {
+  if (a.type === b.type) {
+    return a.name.localeCompare(b.name)
+  }
+  return a.type === 'directory' ? -1 : 1
+}
+
+function buildTreeNodes(dirPath: string, patterns: string[], logger: Logger): any[] {
+  let entries
+  try {
+    entries = readdirSync(dirPath, { withFileTypes: true })
+  } catch (error) {
+    logger.warn(`Skip unreadable directory: ${dirPath} (${error})`)
+    return []
+  }
+  const nodes: any[] = []
+
+  for (const entry of entries) {
+    if (matchesArchitectureExclude(entry.name, patterns)) {
+      continue
+    }
+
+    const fullPath = join(dirPath, entry.name)
+
+    if (entry.isDirectory()) {
+      nodes.push({
+        type: 'directory',
+        name: entry.name,
+        contents: buildTreeNodes(fullPath, patterns, logger)
+      })
+      continue
+    }
+
+    if (entry.isFile()) {
+      nodes.push({
+        type: 'file',
+        name: entry.name
+      })
+      continue
+    }
+
+    // Keep non-directory entries visible with file semantics.
+    nodes.push({
+      type: 'file',
+      name: entry.name
+    })
+  }
+
+  return nodes.sort(compareNodes)
+}
+
+function buildProjectTree(cwd: string, patterns: string[], logger: Logger): any[] {
+  return [
+    {
+      type: 'directory',
+      name: '.',
+      contents: buildTreeNodes(cwd, patterns, logger)
+    }
+  ]
+}
+
 export async function generateNextjsArchitecture(
   config: DevScriptsConfig,
   cwd: string = typeof process !== 'undefined' ? process.cwd() : '.'
@@ -73,23 +132,8 @@ export async function generateNextjsArchitecture(
 
     // generate tree result to logs directory
     const treeJsonPath = join(logsDir, 'project_tree.json')
-    logger.log(`Running tree command to generate ${treeJsonPath}`)
-    const treeOutput = execFileSync(
-      'tree',
-      ['-a', '-J', '--prune'],
-      {
-        cwd,
-        encoding: 'utf8'
-      }
-    )
-    writeFileSync(treeJsonPath, treeOutput, 'utf8')
-
-    // read tree result
-    const tree = readJsonFile<any[]>(treeJsonPath)
-    if (!tree) {
-      logger.error('Failed to read tree JSON result!')
-      return 1
-    }
+    logger.log(`Scanning project structure to generate ${treeJsonPath}`)
+    const tree = buildProjectTree(cwd, architectureExclude, logger)
     const filteredTree = filterTreeNodes(tree, architectureExclude)
     writeFileSync(treeJsonPath, JSON.stringify(filteredTree, null, 2), 'utf8')
     // Merge config and user first
@@ -134,6 +178,7 @@ export async function generateNextjsArchitecture(
     return 0
   } catch (error) {
     logger.error(`Error generating nextjs architecture mdx: ${error}`)
+    logger.saveToFile('generate-nextjs-architecture.log', cwd)
     return 1
   }
-} 
+}
