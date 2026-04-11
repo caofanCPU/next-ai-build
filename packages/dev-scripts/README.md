@@ -29,7 +29,7 @@ npm install -D @packages/dev-scripts
 ```json
 {
   "scripts": {
-    "check-translations": "dev-scripts check-translations",
+    "i18n": "dev-scripts check-translations",
     "generate-blog-index": "dev-scripts generate-blog-index"
   },
   "devScripts": {
@@ -52,7 +52,7 @@ npm install -D @packages/dev-scripts
 
 ```bash
 # 检查翻译缺失、冗余和多语言一致性
-pnpm check-translations
+pnpm i18n
 
 # 生成博客索引
 pnpm generate-blog-index
@@ -69,7 +69,8 @@ pnpm generate-blog-index
   "devScripts": {
     "locales": ["en", "zh", "ja"],           // 支持的语言列表
     "defaultLocale": "en",                   // 默认语言
-    "messageRoot": "messages",               // 翻译文件目录
+    "messageRoot": "messages",               // 翻译文件根目录
+    "messageGlobs": [ "messages/{locale}.json", "messages/biz/*.{locale}.json" ],               // 翻译文件业务自定义目录
     "scan": {
       "include": ["src/**/*.{tsx,ts,jsx,js}"], // 扫描的代码目录
       "includeWindrunPackages": false,         // 是否补扫 @windrun-huaiin/* 和 tsconfig 指向 packages/*/src/* 的本地别名
@@ -95,7 +96,8 @@ pnpm generate-blog-index
   "i18n": {
     "locales": ["en", "zh"],
     "defaultLocale": "en",
-    "messageRoot": "messages"
+    "messageRoot": "messages",
+    "messageGlobs": [ "messages/{locale}.json", "messages/biz/*.{locale}.json" ],
   },
   "scan": {
     "include": ["src/**/*.{tsx,ts,jsx,js}"],

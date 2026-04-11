@@ -61,6 +61,18 @@ export async function checkTranslations(config: DevScriptsConfig, cwd: string = 
     const protectedPrefixes = usage.protectedPrefixes
     const wholeNamespaceProtection = usage.wholeNamespaceProtection
 
+    if (usage.hasAmbiguousNamespaceBindings) {
+      logger.error('detected translator variables that map to multiple namespaces within the same file; the resulting key analysis would be unreliable, so the check is aborted')
+      usage.ambiguousNamespaceBindings.forEach((varNames, filePath) => {
+        logger.error(`  file: ${filePath}`)
+        Array.from(varNames).sort().forEach(varName => {
+          logger.error(`    - ${varName}`)
+        })
+      })
+      logger.saveToFile('check.log', cwd)
+      return 1
+    }
+
     logger.log(`\nfound ${foundNamespaces.size} used namespaces in the code: ${Array.from(foundNamespaces).join(', ')}`)
     logger.log(`found ${foundTranslationKeys.size} used translation keys in the code`)
 

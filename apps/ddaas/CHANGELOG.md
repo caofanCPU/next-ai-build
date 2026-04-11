@@ -1,5 +1,20 @@
 # @windrun-huaiin/ddaas-website
 
+## 15.3.0
+
+### Minor Changes
+
+- fix(i18n): refactor `check-translations` cli command
+  - setting rules for same file with multi translations var, must use diffirent name
+  - add `i18n.skills.md`
+
+### Patch Changes
+
+- Updated dependencies
+  - @windrun-huaiin/base-ui@15.1.1
+  - @windrun-huaiin/third-ui@15.1.0
+  - @windrun-huaiin/lib@15.1.1
+
 ## 15.2.1
 
 ### Patch Changes

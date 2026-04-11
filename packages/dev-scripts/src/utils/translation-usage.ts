@@ -39,6 +39,7 @@ export interface FileTranslationUsage {
   protectedPrefixes: string[]
   unknownNamespaceVars: string[]
   wholeNamespaceProtection: string[]
+  ambiguousNamespaceVars: string[]
 }
 
 export interface ProjectTranslationUsage {
@@ -50,6 +51,8 @@ export interface ProjectTranslationUsage {
   wholeNamespaceProtection: Set<string>
   files: FileTranslationUsage[]
   hasUnknownNamespaceUsage: boolean
+  hasAmbiguousNamespaceBindings: boolean
+  ambiguousNamespaceBindings: Map<string, Set<string>>
 }
 
 interface SourceAnalysisContext {
@@ -487,6 +490,7 @@ export function analyzeTranslationUsage(content: string, filePath: string): File
   const protectedPrefixes = new Set<string>()
   const wholeNamespaceProtection = new Set<string>()
   const unknownNamespaceVars = new Set<string>()
+  const ambiguousNamespaceVars = new Set<string>()
 
   sourceFile.forEachDescendant((node: Node) => {
     if (!Node.isCallExpression(node)) {
@@ -545,6 +549,9 @@ export function analyzeTranslationUsage(content: string, filePath: string): File
   const namespaceMappings = new Map<string, string[]>()
   bindings.forEach((binding, name) => {
     const values = Array.from(binding.namespaces)
+    if (values.length > 1) {
+      ambiguousNamespaceVars.add(name)
+    }
     if (binding.dynamic && values.length === 0) {
       namespaceMappings.set(name, ['<dynamic>'])
       return
@@ -567,6 +574,7 @@ export function analyzeTranslationUsage(content: string, filePath: string): File
     protectedPrefixes: Array.from(protectedPrefixes).sort(),
     unknownNamespaceVars: Array.from(unknownNamespaceVars).sort(),
     wholeNamespaceProtection: Array.from(wholeNamespaceProtection).sort(),
+    ambiguousNamespaceVars: Array.from(ambiguousNamespaceVars).sort(),
   }
 }
 
@@ -594,6 +602,7 @@ export async function collectProjectTranslationUsage(
   const unknownNamespaceVars = new Map<string, Set<string>>()
   const wholeNamespaceProtection = new Set<string>()
   const files: FileTranslationUsage[] = []
+  const ambiguousNamespaceBindings = new Map<string, Set<string>>()
 
   for (const { filePath, content } of scanResults) {
     try {
@@ -613,6 +622,11 @@ export async function collectProjectTranslationUsage(
           logger.log('  translation function mapping:')
           usage.namespaceMappings.forEach((namespaces, varName) => {
             logger.log(`    - ${varName} => ${namespaces.join(' | ')}`)
+
+            const staticNamespaces = namespaces.filter(namespace => namespace !== '<dynamic>')
+            if (new Set(staticNamespaces).size > 1) {
+              logger.warn(`  suspicious translator binding: variable "${varName}" maps to multiple namespaces in the same file; consider using distinct translator variable names`)
+            }
 
             const bucket = namespaceMappings.get(varName) || new Set<string>()
             namespaces.forEach(namespace => {
@@ -671,6 +685,14 @@ export async function collectProjectTranslationUsage(
             unknownNamespaceVars.set(filePath, bucket)
           })
         }
+
+        if (usage.ambiguousNamespaceVars.length > 0) {
+          usage.ambiguousNamespaceVars.forEach(varName => {
+            const bucket = ambiguousNamespaceBindings.get(filePath) || new Set<string>()
+            bucket.add(varName)
+            ambiguousNamespaceBindings.set(filePath, bucket)
+          })
+        }
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -690,5 +712,7 @@ export async function collectProjectTranslationUsage(
     wholeNamespaceProtection,
     files,
     hasUnknownNamespaceUsage: unknownNamespaceVars.size > 0,
+    hasAmbiguousNamespaceBindings: ambiguousNamespaceBindings.size > 0,
+    ambiguousNamespaceBindings,
   }
 }

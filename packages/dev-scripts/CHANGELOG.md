@@ -1,5 +1,13 @@
 # @windrun-huaiin/dev-scripts
 
+## 15.3.0
+
+### Minor Changes
+
+- fix(i18n): refactor `check-translations` cli command
+  - setting rules for same file with multi translations var, must use diffirent name
+  - add `i18n.skills.md`
+
 ## 15.2.1
 
 ### Patch Changes
