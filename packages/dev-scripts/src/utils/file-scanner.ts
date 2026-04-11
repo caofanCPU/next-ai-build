@@ -356,6 +356,56 @@ export function getTranslationFilePath(locale: string, config: DevScriptsConfig,
   return path.join(path.resolve(cwd), config.i18n.messageRoot, `${locale}.json`)
 }
 
+function isPlainObject(value: unknown): value is Record<string, any> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
+}
+
+function deepMergeTranslations(
+  base: Record<string, any>,
+  extra: Record<string, any>
+): Record<string, any> {
+  const result: Record<string, any> = { ...base }
+
+  Object.entries(extra).forEach(([key, value]) => {
+    const current = result[key]
+
+    if (isPlainObject(current) && isPlainObject(value)) {
+      result[key] = deepMergeTranslations(current, value)
+      return
+    }
+
+    result[key] = value
+  })
+
+  return result
+}
+
+export function getTranslationFilePatterns(locale: string, config: DevScriptsConfig): string[] {
+  const patterns = config.i18n.messageGlobs && config.i18n.messageGlobs.length > 0
+    ? config.i18n.messageGlobs
+    : [path.join(config.i18n.messageRoot, `${locale}.json`)]
+
+  return patterns.map(pattern => pattern.split('{locale}').join(locale))
+}
+
+export function getTranslationFilePaths(
+  locale: string,
+  config: DevScriptsConfig,
+  cwd: string = typeof process !== 'undefined' ? process.cwd() : '.'
+): string[] {
+  const absoluteCwd = path.resolve(cwd)
+  const patterns = getTranslationFilePatterns(locale, config)
+  const matches = fg.sync(patterns, {
+    cwd: absoluteCwd,
+    onlyFiles: true,
+    unique: true
+  })
+
+  return matches
+    .map(filePath => path.join(absoluteCwd, filePath))
+    .sort((left, right) => left.localeCompare(right))
+}
+
 /**
  * load all translation files
  */
@@ -363,15 +413,24 @@ export function loadTranslations(config: DevScriptsConfig, cwd: string = typeof 
   const translations: Record<string, Record<string, any>> = {}
   
   for (const locale of config.i18n.locales) {
-    const filePath = getTranslationFilePath(locale, config, cwd)
-    const translation = readJsonFile(filePath)
-    
-    if (translation) {
-      translations[locale] = translation
-    } else {
+    const filePaths = getTranslationFilePaths(locale, config, cwd)
+
+    if (filePaths.length === 0) {
       console.warn(`Warning: Failed to load translation file for locale: ${locale}`)
       translations[locale] = {}
+      continue
     }
+
+    translations[locale] = filePaths.reduce<Record<string, any>>((merged, filePath) => {
+      const translation = readJsonFile<Record<string, any>>(filePath)
+
+      if (!translation) {
+        console.warn(`Warning: Failed to load translation file: ${filePath}`)
+        return merged
+      }
+
+      return deepMergeTranslations(merged, translation)
+    }, {})
   }
   
   return translations

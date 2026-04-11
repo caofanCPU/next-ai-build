@@ -1,5 +1,11 @@
 # @windrun-huaiin/dev-scripts
 
+## 15.1.2
+
+### Patch Changes
+
+- feat(i18n): support custome `biz` path
+
 ## 15.1.1
 
 ### Patch Changes

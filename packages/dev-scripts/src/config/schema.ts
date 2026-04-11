@@ -4,6 +4,7 @@ export interface DevScriptsConfig {
     locales: string[]
     defaultLocale: string
     messageRoot: string
+    messageGlobs?: string[]
   }
   
   // scan config
@@ -46,6 +47,7 @@ export interface PackageJsonDevScripts {
   locales?: string[]
   defaultLocale?: string
   messageRoot?: string
+  messageGlobs?: string[]
   scan?: {
     include?: string[]
     exclude?: string[]
@@ -64,7 +66,8 @@ export const DEFAULT_CONFIG: DevScriptsConfig = {
   i18n: {
     locales: ['en', 'zh'],
     defaultLocale: 'en',
-    messageRoot: 'messages'
+    messageRoot: 'messages',
+    messageGlobs: ['messages/{locale}.json']
   },
   scan: {
     include: ['src/**/*.{tsx,ts,jsx,js}'],

@@ -1,5 +1,5 @@
 import { DevScriptsConfig } from '@dev-scripts/config/schema'
-import { getTranslationFilePath, loadTranslations } from '@dev-scripts/utils/file-scanner'
+import { getTranslationFilePath, getTranslationFilePaths, loadTranslations } from '@dev-scripts/utils/file-scanner'
 import { Logger } from '@dev-scripts/utils/logger'
 import {
   cleanEmptyObjects,
@@ -28,6 +28,14 @@ export async function cleanTranslations(
   
   try {
     logger.log('start checking unused translation keys...')
+
+    if (shouldRemove) {
+      const localesWithMultipleFiles = config.i18n.locales.filter(locale => getTranslationFilePaths(locale, config, cwd).length > 1)
+      if (localesWithMultipleFiles.length > 0) {
+        logger.error(`clean-translations --remove does not support merged translation sources yet; multiple files were matched for locales: ${localesWithMultipleFiles.join(', ')}`)
+        return 1
+      }
+    }
 
     // load translation files
     const translations = loadTranslations(config, cwd)
@@ -114,7 +122,9 @@ export async function cleanTranslations(
         const cleanedTranslations = cleanEmptyObjects(translationsCopy)
 
         // save updated translation file
-        const filePath = getTranslationFilePath(locale, config, cwd)
+        const filePath = config.i18n.messageGlobs && config.i18n.messageGlobs.length > 0
+          ? getTranslationFilePaths(locale, config, cwd)[0] || getTranslationFilePath(locale, config, cwd)
+          : getTranslationFilePath(locale, config, cwd)
         writeFileSync(filePath, JSON.stringify(cleanedTranslations, null, 2), 'utf8')
 
         logger.log(`deleted ${removedKeys[locale].length} unused keys from the ${locale} translation file`)

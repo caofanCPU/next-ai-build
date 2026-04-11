@@ -144,6 +144,7 @@ export default function TestComponentsPage() {
   const [actionText, setActionText] = useState('点击任意按钮查看交互记录');
   const [copiedIconName, setCopiedIconName] = useState<string | null>(null);
   const [copyToastText, setCopyToastText] = useState<string | null>(null);
+  const [iconSearchValue, setIconSearchValue] = useState('');
   const [expandedSections, setExpandedSections] = useState<ExpandedSections>(() => createExpandedSections(false));
   const [singleValue, setSingleValue] = useState('frontend');
   const [singleCompactValue, setSingleCompactValue] = useState('design');
@@ -196,6 +197,10 @@ export default function TestComponentsPage() {
   };
 
   const allSectionsExpanded = collapsibleSectionIds.every((sectionId) => expandedSections[sectionId]);
+  const normalizedIconSearchValue = iconSearchValue.trim().toLowerCase();
+  const filteredIconEntries = normalizedIconSearchValue
+    ? iconEntries.filter(([iconName]) => iconName.toLowerCase().includes(normalizedIconSearchValue))
+    : iconEntries;
 
   const handleToggleAllSections = () => {
     setExpandedSections(createExpandedSections(!allSectionsExpanded));
@@ -239,40 +244,71 @@ export default function TestComponentsPage() {
 
       <CollapsibleSection
         title="Global Icon 全量展示"
+        description="支持按图标名做前后模糊匹配，点击卡片可复制 `icons.xxx` 用法。"
         isExpanded={expandedSections['global-icon']}
         onToggle={() => handleToggleSection('global-icon')}
       >
-        <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-7">
-          {iconEntries.map(([iconName, Icon]) => (
-            <button
-              key={iconName}
-              type="button"
-              className={cn(
-                iconCardClass,
-                'group relative cursor-pointer text-left outline-none transition-all duration-200 hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-primary/40',
-                copiedIconName === iconName && cn(themeIconColor, 'border-current bg-primary/5 shadow-[0_0_0_2px_currentColor]')
-              )}
-              onClick={() => handleCopyIconUsage(iconName)}
-              title={`点击复制 icons.${iconName}`}
-            >
-              <div
+        <div className="mt-5 flex flex-col gap-4">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <label className="relative block w-full md:max-w-sm">
+              <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                <icons.Search className="h-4 w-4" />
+              </span>
+              <input
+                type="text"
+                value={iconSearchValue}
+                onChange={(event) => setIconSearchValue(event.target.value)}
+                placeholder="搜索图标名，如 search / arrow / chevron"
                 className={cn(
-                  'absolute right-2 top-2 rounded-full border px-2 py-0.5 text-[10px] transition-opacity',
-                  copiedIconName === iconName
-                    ? 'border-emerald-300/70 bg-emerald-100 text-emerald-700 opacity-100 dark:border-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-300'
-                    : 'border-border/70 bg-background/90 text-muted-foreground opacity-100 sm:opacity-0 sm:group-hover:opacity-100'
+                  'h-11 w-full rounded-2xl border border-border/60 bg-background/80 pl-10 pr-4 text-sm text-foreground outline-none transition focus-visible:ring-2',
+                  themeIconColor,
+                  'focus:border-current focus-visible:border-current focus-visible:ring-current/30'
                 )}
-              >
-                {copiedIconName === iconName ? '已复制' : '点击复制'}
-              </div>
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-border/60 bg-linear-to-br from-background to-muted/60">
-                <Icon className="h-6 w-6" />
-              </div>
-              <div className="w-full">
-                <div className="truncate text-sm font-medium text-foreground">{iconName}</div>
-              </div>
-            </button>
-          ))}
+              />
+            </label>
+            <div className="text-sm text-muted-foreground">
+              匹配结果：<span className="font-medium text-foreground">{filteredIconEntries.length}</span> / {iconEntries.length}
+            </div>
+          </div>
+
+          {filteredIconEntries.length > 0 ? (
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-7">
+              {filteredIconEntries.map(([iconName, Icon]) => (
+                <button
+                  key={iconName}
+                  type="button"
+                  className={cn(
+                    iconCardClass,
+                    'group relative cursor-pointer text-left outline-none transition-all duration-200 hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-primary/40',
+                    copiedIconName === iconName && cn(themeIconColor, 'border-current bg-primary/5 shadow-[0_0_0_2px_currentColor]')
+                  )}
+                  onClick={() => handleCopyIconUsage(iconName)}
+                  title={`点击复制 icons.${iconName}`}
+                >
+                  <div
+                    className={cn(
+                      'absolute right-2 top-2 rounded-full border px-2 py-0.5 text-[10px] transition-opacity',
+                      copiedIconName === iconName
+                        ? 'border-emerald-300/70 bg-emerald-100 text-emerald-700 opacity-100 dark:border-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-300'
+                        : 'border-border/70 bg-background/90 text-muted-foreground opacity-100 sm:opacity-0 sm:group-hover:opacity-100'
+                    )}
+                  >
+                    {copiedIconName === iconName ? '已复制' : '点击复制'}
+                  </div>
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-border/60 bg-linear-to-br from-background to-muted/60">
+                    <Icon className="h-6 w-6" />
+                  </div>
+                  <div className="w-full">
+                    <div className="truncate text-sm font-medium text-foreground">{iconName}</div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          ) : (
+            <div className="rounded-2xl border border-dashed border-border/70 bg-background/60 px-4 py-10 text-center text-sm text-muted-foreground">
+              没有匹配到图标：<span className="font-medium text-foreground">{iconSearchValue}</span>
+            </div>
+          )}
         </div>
       </CollapsibleSection>
 

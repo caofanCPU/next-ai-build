@@ -1,6 +1,6 @@
 {
   "name": "@windrun-huaiin/lib",
-  "version": "15.1.0",
+  "version": "15.1.1",
   "description": "Common utilities and configuration",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -25,6 +25,16 @@
       "types": "./dist/common-app-config.d.ts",
       "import": "./dist/common-app-config.mjs",
       "require": "./dist/common-app-config.js"
+    },
+    "./i18n-utils": {
+      "types": "./dist/i18n-utils.d.ts",
+      "import": "./dist/i18n-utils.mjs",
+      "require": "./dist/i18n-utils.js"
+    },
+    "./i18n-server": {
+      "types": "./dist/i18n-server.d.ts",
+      "import": "./dist/i18n-server.mjs",
+      "require": "./dist/i18n-server.js"
     },
     "./package.json": "./package.json"
   },

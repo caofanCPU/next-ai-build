@@ -1,5 +1,7 @@
 import { getRequestConfig } from 'next-intl/server';
+import path from 'path';
 import { appConfig } from "@/lib/appConfig";
+import { loadMergedLocaleMessages, type RuntimeMessageSource } from '@windrun-huaiin/lib/i18n-server';
 import type { I18nConfig } from 'fumadocs-core/i18n';
  
 export const i18n: I18nConfig = {
@@ -10,6 +12,11 @@ export const i18n: I18nConfig = {
 
 // Can be imported from a shared config
 const locales = appConfig.i18n.locales;
+const messagesRoot = path.join(process.cwd(), 'messages');
+const runtimeMessageSources: readonly RuntimeMessageSource[] = [
+  { type: 'file' },
+  { type: 'dir', path: 'biz' },
+];
 
 export default getRequestConfig(async ({ requestLocale }) => {
   let locale = await requestLocale;
@@ -20,6 +27,10 @@ export default getRequestConfig(async ({ requestLocale }) => {
 
   return {
     locale,
-    messages: (await import(`../messages/${locale}.json`)).default
+    messages: await loadMergedLocaleMessages({
+      locale,
+      messagesRoot,
+      sources: runtimeMessageSources,
+    })
   };
 });

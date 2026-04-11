@@ -1,5 +1,15 @@
 # @windrun-huaiin/ddaas-website
 
+## 15.1.1
+
+### Patch Changes
+
+- feat(i18n): support custome `biz` path
+- Updated dependencies
+  - @windrun-huaiin/base-ui@15.1.1
+  - @windrun-huaiin/third-ui@15.1.0
+  - @windrun-huaiin/lib@15.1.1
+
 ## 15.1.0
 
 ### Minor Changes

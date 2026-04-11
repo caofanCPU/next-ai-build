@@ -21,11 +21,12 @@ function loadPackageJsonConfig(cwd: string): Partial<DevScriptsConfig> | null {
     // convert to standard config format
     const config: Partial<DevScriptsConfig> = {}
     
-    if (devScripts.locales || devScripts.defaultLocale || devScripts.messageRoot) {
+    if (devScripts.locales || devScripts.defaultLocale || devScripts.messageRoot || devScripts.messageGlobs) {
       config.i18n = {
         locales: devScripts.locales || DEFAULT_CONFIG.i18n.locales,
         defaultLocale: devScripts.defaultLocale || DEFAULT_CONFIG.i18n.defaultLocale,
-        messageRoot: devScripts.messageRoot || DEFAULT_CONFIG.i18n.messageRoot
+        messageRoot: devScripts.messageRoot || DEFAULT_CONFIG.i18n.messageRoot,
+        messageGlobs: devScripts.messageGlobs || undefined
       }
     }
     
@@ -155,6 +156,9 @@ function printConfigInfo(config: DevScriptsConfig, sources: string[], cwd: strin
   console.log(`   locales: [${config.i18n.locales.join(', ')}]`)
   console.log(`   defaultLocale: ${config.i18n.defaultLocale}`)
   console.log(`   messageRoot: ${config.i18n.messageRoot}`)
+  if (config.i18n.messageGlobs && config.i18n.messageGlobs.length > 0) {
+    console.log(`   messageGlobs: [${config.i18n.messageGlobs.join(', ')}]`)
+  }
   
   console.log('\n🔍 scan:')
   console.log(`   include: [${config.scan.include.join(', ')}]`)
@@ -211,6 +215,12 @@ export function validateConfig(config: DevScriptsConfig): void {
   
   if (!config.i18n.locales.includes(config.i18n.defaultLocale)) {
     throw new Error('default language must be in the supported language list')
+  }
+
+  if (config.i18n.messageGlobs !== undefined) {
+    if (!Array.isArray(config.i18n.messageGlobs) || config.i18n.messageGlobs.length === 0) {
+      throw new Error('i18n.messageGlobs must be a non-empty array when provided')
+    }
   }
   
   if (config.scan.include.length === 0) {

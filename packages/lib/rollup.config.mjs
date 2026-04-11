@@ -10,7 +10,9 @@ const entries = [
   'src/index.ts',
   'src/utils.ts',
   'src/llm-utils.ts',
-  'src/common-app-config.ts'
+  'src/common-app-config.ts',
+  'src/i18n-utils.ts',
+  'src/i18n-server.ts'
 ];
 
 const externalPackages = [

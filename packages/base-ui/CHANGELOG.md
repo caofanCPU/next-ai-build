@@ -1,5 +1,13 @@
 # @windrun-huaiin/base-ui
 
+## 15.1.1
+
+### Patch Changes
+
+- feat(i18n): support custome `biz` path
+- Updated dependencies
+  - @windrun-huaiin/lib@15.1.1
+
 ## 15.1.0
 
 ### Minor Changes
