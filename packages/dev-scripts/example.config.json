@@ -2,7 +2,11 @@
   "i18n": {
     "locales": ["en", "zh", "ja"],
     "defaultLocale": "en",
-    "messageRoot": "messages"
+    "messageRoot": "messages",
+    "messageGlobs": [
+      "messages/{locale}.json",
+      "messages/biz/*.{locale}.json"
+    ]
   },
   "scan": {
     "include": ["src/**/*.{tsx,ts,jsx,js}"],

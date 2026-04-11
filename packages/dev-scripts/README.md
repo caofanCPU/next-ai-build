@@ -1,11 +1,10 @@
 # @packages/dev-scripts
 
-一个用于多语言项目的开发脚本工具集，支持翻译检查、翻译清理、博客索引生成等功能。
+一个用于多语言项目的开发脚本工具集，支持翻译检查、博客索引生成等功能。
 
 ## 功能特性
 
-- ✅ **翻译检查**: 检查翻译文件的完整性和一致性
-- 🧹 **翻译清理**: 自动清理未使用的翻译键
+- ✅ **翻译检查**: 统一检查翻译缺失、翻译冗余和多语言一致性
 - 📝 **博客索引生成**: 自动生成博客索引和月度统计
 - 🧭 **Backend Core 集成**: 生成 Next.js 路由壳、合并 Prisma 模型、同步SQL
 - ⚙️ **配置驱动**: 支持多种配置方式，适配不同项目结构
@@ -31,7 +30,6 @@ npm install -D @packages/dev-scripts
 {
   "scripts": {
     "check-translations": "dev-scripts check-translations",
-    "clean-translations": "dev-scripts clean-translations",
     "generate-blog-index": "dev-scripts generate-blog-index"
   },
   "devScripts": {
@@ -52,14 +50,8 @@ npm install -D @packages/dev-scripts
 ### 2. 运行命令
 
 ```bash
-# 检查翻译完整性
+# 检查翻译缺失、冗余和多语言一致性
 pnpm check-translations
-
-# 清理未使用的翻译键（仅显示）
-pnpm clean-translations
-
-# 实际删除未使用的翻译键
-pnpm clean-translations --remove
 
 # 生成博客索引
 pnpm generate-blog-index
@@ -128,7 +120,7 @@ pnpm generate-blog-index
 
 ### check-translations
 
-检查翻译文件的完整性和一致性。
+统一检查翻译文件的缺失项、冗余项和多语言一致性。
 
 ```bash
 dev-scripts check-translations [options]
@@ -140,10 +132,13 @@ Options:
 ```
 
 **功能：**
-- 扫描代码中使用的翻译键
-- 检查翻译文件中是否存在对应的键
-- 检查不同语言文件之间的一致性
+- 扫描代码中使用的 namespace 和完整翻译键
+- 检查代码里使用了、但翻译集合中不存在的 namespace 和 key
+- 检查翻译集合里存在、但代码里没有使用的 namespace 和 key
+- 检查不同语言文件之间的 key 一致性
 - 生成详细的检查报告
+- 支持单文件翻译源和多文件翻译源
+- 多文件模式下会先合并同一 locale 命中的所有翻译文件，再做统一检查
 - 支持可选补扫 `@windrun-huaiin/*` 包源码和 `tsconfig` 中映射到 `packages/*/src/*` 的本地别名
 
 **输出示例：**
@@ -157,29 +152,21 @@ Options:
   - common.newFeature
   - dashboard.analytics
 
+🔍 en 翻译文件中未使用的键:
+  - legacy.oldBanner
+
 ✅ zh 翻译文件中包含所有使用的键
 ```
 
-### clean-translations
+**检查模型：**
+- 翻译缺失: 代码里用了，但翻译集合里没有
+- 翻译冗余: 翻译集合里有，但代码里没用
+- 多语言不一致: 某个 locale 相比其他 locale 多出或缺少 key
 
-清理未使用的翻译键。
-
-```bash
-dev-scripts clean-translations [options]
-
-Options:
-  -v, --verbose     显示详细日志
-  --remove          实际删除未使用的键（默认只显示）
-  --config <path>   指定配置文件路径
-  -h, --help       显示帮助信息
-```
-
-**功能：**
-- 找出翻译文件中未在代码中使用的键
-- 支持安全预览模式（默认）
-- 支持实际删除模式（--remove）
-- 自动清理空的命名空间对象
-- 遇到动态 namespace / 动态 key 时会保守处理，优先避免误删
+**多文件翻译模式：**
+- 可通过 `i18n.messageGlobs` 指定多个翻译文件匹配规则
+- 同一 locale 命中的多个文件会先深合并，再作为完整翻译集合参与检查
+- 这意味着脚本检查的是“合并后的最终翻译视图”，不是逐文件独立检查
 
 ### 白名单
 
@@ -205,7 +192,7 @@ Options:
 
 `check-translations` 输出的白名单建议只会包含精确 key，不会输出 namespace 级别建议，避免把一整组真实缺失问题直接压掉。
 
-命令在发现问题时，会在终端和 log 里输出可直接复制的白名单片段。加入白名单后，后续检查报告和清理报告将不再把这些精确项作为问题输出。
+命令在发现问题时，会在终端和 log 里输出可直接复制的白名单片段。加入白名单后，后续检查报告将不再把这些精确项作为问题输出。
 
 ### Monorepo 补扫
 
@@ -431,7 +418,7 @@ jobs:
 
 ## 后续安全计划
 
-当前 `dev-scripts` 的主要定位仍然是开发阶段工具。翻译检查、翻译清理这类命令主要是本地读写，风险较低；但部分脚手架和更新类命令天然带有更高的信任要求，后续会继续加强交互式风险提示与确认。
+当前 `dev-scripts` 的主要定位仍然是开发阶段工具。翻译检查这类命令主要是本地读取和分析，风险较低；但部分脚手架和更新类命令天然带有更高的信任要求，后续会继续加强交互式风险提示与确认。
 
 ### 风险分级
 
@@ -476,8 +463,8 @@ jobs:
    - 确保文件路径相对于项目根目录
 
 3. **翻译键检测不准确**
-   - 当前基于正则表达式匹配，对于复杂的动态键可能需要手动处理
-   - 使用命名规范来帮助脚本识别（如 t1, t2 用于不同命名空间）
+   - 当前基于 AST 静态分析，对于复杂的动态键、动态 namespace 仍可能需要人工判断
+   - 脚本对这类场景会尽量保守处理，避免误报或误判
 
 ### 调试模式
 

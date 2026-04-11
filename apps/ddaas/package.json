@@ -1,6 +1,6 @@
 {
   "name": "@windrun-huaiin/ddaas-website",
-  "version": "15.1.1",
+  "version": "15.2.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -15,8 +15,6 @@
     "diaomao-update": "pnpm add -D @windrun-huaiin/dev-scripts@latest && pnpm exec dev-scripts diaomao-update -v",
     "generate-blog-index": "dev-scripts generate-blog-index -v",
     "check-translations": "dev-scripts check-translations -v",
-    "clean-translations": "dev-scripts clean-translations -v",
-    "remove-translations": "dev-scripts clean-translations --remove -v",
     "core-list-route": "dev-scripts backend-core routes:list",
     "core-sync-route": "dev-scripts backend-core routes:sync",
     "core-sync-schema": "dev-scripts backend-core prisma:sync",

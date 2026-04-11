@@ -4,7 +4,8 @@ import { loadTranslations } from '@dev-scripts/utils/file-scanner'
 import { 
   getAllKeys, 
   checkKeyExists, 
-  checkNamespaceExists 
+  checkNamespaceExists,
+  pathOverlapsPrefix
 } from '@dev-scripts/utils/translation-parser'
 import { collectProjectTranslationUsage } from '@dev-scripts/utils/translation-usage'
 import {
@@ -16,18 +17,24 @@ interface TranslationReport {
   [key: string]: string[]
 }
 
-function groupKeysByNamespace(keys: Set<string>): Map<string, string[]> {
-  const grouped = new Map<string, string[]>()
-  keys.forEach(key => {
-    const [namespace] = key.split('.')
-    if (!namespace) {
-      return
-    }
-    const list = grouped.get(namespace) || []
-    list.push(key)
-    grouped.set(namespace, list)
-  })
-  return grouped
+function getKeysForNamespace(namespace: string, keys: Set<string>): string[] {
+  if (!namespace) {
+    return Array.from(keys)
+  }
+
+  return Array.from(keys).filter(key => key === namespace || key.startsWith(`${namespace}.`))
+}
+
+function isNamespaceUsed(namespace: string, usedNamespaces: Set<string>): boolean {
+  return Array.from(usedNamespaces).some(
+    usedNamespace => usedNamespace === namespace || usedNamespace.startsWith(`${namespace}.`)
+  )
+}
+
+function isProtectedByWholeNamespace(path: string, protectedNamespaces: Set<string>): boolean {
+  return Array.from(protectedNamespaces).some(
+    namespace => path === namespace || path.startsWith(`${namespace}.`)
+  )
 }
 
 export async function checkTranslations(config: DevScriptsConfig, cwd: string = typeof process !== 'undefined' ? process.cwd() : '.'): Promise<number> {
@@ -45,13 +52,14 @@ export async function checkTranslations(config: DevScriptsConfig, cwd: string = 
     const usage = await collectProjectTranslationUsage(config, cwd, logger)
     const foundTranslationKeys = usage.usedKeys
     const foundNamespaces = usage.usedNamespaces
-    const usedKeysByNamespace = groupKeysByNamespace(foundTranslationKeys)
+    const protectedPrefixes = usage.protectedPrefixes
+    const wholeNamespaceProtection = usage.wholeNamespaceProtection
 
     logger.log(`\nfound ${foundNamespaces.size} used namespaces in the code: ${Array.from(foundNamespaces).join(', ')}`)
     logger.log(`found ${foundTranslationKeys.size} used translation keys in the code`)
 
     if (usage.hasUnknownNamespaceUsage) {
-      logger.warn('detected unresolved namespace usage in some files, so missing-key checks may be incomplete for those dynamic cases')
+      logger.warn('detected unresolved namespace usage in some files, so missing and unused checks may be incomplete for those dynamic cases')
     }
 
     // check results
@@ -88,13 +96,47 @@ export async function checkTranslations(config: DevScriptsConfig, cwd: string = 
       const remainingMissingKeys = new Set(report[missingKey] || [])
 
       report[missingNamespaceKey] = (report[missingNamespaceKey] || []).filter(namespace => {
-        const namespaceKeys = usedKeysByNamespace.get(namespace) || []
+        const namespaceKeys = getKeysForNamespace(namespace, foundTranslationKeys)
         if (namespaceKeys.length === 0) {
           return true
         }
 
         return namespaceKeys.some(key => remainingMissingKeys.has(key))
       })
+    })
+
+    // check if there are unused namespaces and keys
+    config.i18n.locales.forEach(locale => {
+      const allTranslationKeys = getAllKeys(translations[locale])
+      const allNamespaces = Object.keys(translations[locale] || {})
+      const unusedNamespaceKey = `unusedNamespacesIn${locale.toUpperCase()}`
+      const unusedKey = `unusedIn${locale.toUpperCase()}`
+
+      report[unusedNamespaceKey] = []
+      report[unusedKey] = []
+
+      if (!usage.hasUnknownNamespaceUsage) {
+        allNamespaces.forEach(namespace => {
+          const isProtectedByPrefix = Array.from(protectedPrefixes).some(prefix => pathOverlapsPrefix(namespace, prefix))
+          const isWholeNamespaceProtected = isProtectedByWholeNamespace(namespace, wholeNamespaceProtection)
+
+          if (!isNamespaceUsed(namespace, foundNamespaces) && !isProtectedByPrefix && !isWholeNamespaceProtected) {
+            report[unusedNamespaceKey].push(namespace)
+          }
+        })
+      }
+
+      allTranslationKeys.forEach(key => {
+        const isProtectedByPrefix = Array.from(protectedPrefixes).some(prefix => pathOverlapsPrefix(key, prefix))
+        const isWholeNamespaceProtected = isProtectedByWholeNamespace(key, wholeNamespaceProtection)
+
+        if (!foundTranslationKeys.has(key) && !isProtectedByPrefix && !isWholeNamespaceProtected) {
+          report[unusedKey].push(key)
+        }
+      })
+
+      report[unusedNamespaceKey] = filterWhitelistedItems(report[unusedNamespaceKey], config)
+      report[unusedKey] = filterWhitelistedItems(report[unusedKey], config)
     })
 
     // check if the translation keys are consistent
@@ -118,6 +160,7 @@ export async function checkTranslations(config: DevScriptsConfig, cwd: string = 
     // generate report
     logger.log('\n=== translation check report ===\n')
     const missingKeySuggestions = new Set<string>()
+    const unusedKeySuggestions = new Set<string>()
     const inconsistentKeySuggestions = new Set<string>()
 
     // first report missing namespaces, which is usually the most serious problem
@@ -143,7 +186,29 @@ export async function checkTranslations(config: DevScriptsConfig, cwd: string = 
       }
     })
 
-    // finally report inconsistent keys
+    // then report unused namespaces and keys
+    config.i18n.locales.forEach(locale => {
+      const unusedNamespaceKey = `unusedNamespacesIn${locale.toUpperCase()}`
+      if (report[unusedNamespaceKey]?.length > 0) {
+        logger.log(`\n🔍 unused namespaces in the ${locale} translation file:`)
+        report[unusedNamespaceKey].forEach(namespace => logger.log(`  - ${namespace}`))
+      } else {
+        logger.success(`${locale} translation file has no unused namespaces`)
+      }
+    })
+
+    config.i18n.locales.forEach(locale => {
+      const unusedKey = `unusedIn${locale.toUpperCase()}`
+      if (report[unusedKey]?.length > 0) {
+        report[unusedKey].forEach(key => unusedKeySuggestions.add(key))
+        logger.log(`\n🔍 unused keys in the ${locale} translation file:`)
+        report[unusedKey].forEach(key => logger.log(`  - ${key}`))
+      } else {
+        logger.success(`${locale} translation file has no unused keys`)
+      }
+    })
+
+    // finally report inconsistent keys across locales
     config.i18n.locales.forEach(locale => {
       const onlyKeys = `${locale}OnlyKeys`
       if (report[onlyKeys]?.length > 0) {
@@ -159,6 +224,7 @@ export async function checkTranslations(config: DevScriptsConfig, cwd: string = 
     logWhitelistSuggestion(
       [
         ...Array.from(missingKeySuggestions),
+        ...Array.from(unusedKeySuggestions),
         ...Array.from(inconsistentKeySuggestions)
       ],
       logger,

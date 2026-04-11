@@ -2,6 +2,24 @@ function isPlainObject(value: unknown): value is Record<string, any> {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
 }
 
+function getValueAtPath(path: string, translations: Record<string, any>): any {
+  if (!path) {
+    return translations
+  }
+
+  const parts = path.split('.')
+  let current: any = translations
+
+  for (const part of parts) {
+    if (current === undefined || current === null || current[part] === undefined) {
+      return undefined
+    }
+    current = current[part]
+  }
+
+  return current
+}
+
 /**
  * get all leaf keys from an object (including nested keys)
  */
@@ -33,17 +51,7 @@ export function checkKeyExists(key: string, translations: Record<string, any>): 
     return false
   }
 
-  const parts = key.split('.')
-  let current: any = translations
-
-  for (const part of parts) {
-    if (current === undefined || current === null || current[part] === undefined) {
-      return false
-    }
-    current = current[part]
-  }
-
-  return true
+  return getValueAtPath(key, translations) !== undefined
 }
 
 /**
@@ -54,7 +62,7 @@ export function checkNamespaceExists(namespace: string, translations: Record<str
     return true
   }
 
-  return translations[namespace] !== undefined
+  return getValueAtPath(namespace, translations) !== undefined
 }
 
 /**

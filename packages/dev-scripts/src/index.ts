@@ -1,6 +1,5 @@
 // commands
 export { checkTranslations } from '@dev-scripts/commands/check-translations'
-export { cleanTranslations } from '@dev-scripts/commands/clean-translations'
 export { generateBlogIndex } from '@dev-scripts/commands/generate-blog-index'
 export { diaomaoUpdate } from '@dev-scripts/commands/diaomao-update'
 export {

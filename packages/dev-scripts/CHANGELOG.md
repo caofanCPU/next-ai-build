@@ -1,5 +1,12 @@
 # @windrun-huaiin/dev-scripts
 
+## 15.2.0
+
+### Minor Changes
+
+- fix(i18n): refactor `check-translations` cli command
+  - remove `clean-translations`
+
 ## 15.1.2
 
 ### Patch Changes

@@ -1,5 +1,19 @@
 # @windrun-huaiin/ddaas-website
 
+## 15.2.0
+
+### Minor Changes
+
+- fix(i18n): refactor `check-translations` cli command
+  - remove `clean-translations`
+
+### Patch Changes
+
+- Updated dependencies
+  - @windrun-huaiin/base-ui@15.1.1
+  - @windrun-huaiin/third-ui@15.1.0
+  - @windrun-huaiin/lib@15.1.1
+
 ## 15.1.1
 
 ### Patch Changes
