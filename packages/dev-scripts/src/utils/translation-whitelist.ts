@@ -1,14 +1,19 @@
 import { DevScriptsConfig } from '@dev-scripts/config/schema'
 import { Logger } from '@dev-scripts/utils/logger'
 
+function isWhitelistedByNamespace(item: string, config: DevScriptsConfig): boolean {
+  const namespaceWhitelist = config.scan.namespaceWhitelist || []
+  return namespaceWhitelist.some(namespace => item === namespace || item.startsWith(`${namespace}.`))
+}
+
 export function filterWhitelistedItems(items: string[], config: DevScriptsConfig): string[] {
   const whitelist = new Set(config.scan.whitelist || [])
-  return items.filter(item => !whitelist.has(item))
+  return items.filter(item => !whitelist.has(item) && !isWhitelistedByNamespace(item, config))
 }
 
 export function getNewWhitelistCandidates(items: string[], config: DevScriptsConfig): string[] {
   const whitelist = new Set(config.scan.whitelist || [])
-  return Array.from(new Set(items.filter(item => !whitelist.has(item)))).sort()
+  return Array.from(new Set(items.filter(item => !whitelist.has(item) && !isWhitelistedByNamespace(item, config)))).sort()
 }
 
 export function logWhitelistSuggestion(

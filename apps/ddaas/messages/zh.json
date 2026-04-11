@@ -1,7 +1,6 @@
 {
   "home": {
     "title": "Re8ger",
-    "slug": "再思·再议·再构",
     "banner": "再思·再议·再构",
     "webTitle": "Reve Image Directory - 展示优美图片和生图技巧",
     "webDescription": "探索精美的AI图片, 学习使用Reve Image强大的文生图算法创建优美的图片。",
@@ -392,8 +391,8 @@
     "sitemap": "网站地图",
     "contactUs": "联系我们",
     "email": "xyb5to0zcy@gmail.com",
-    "clickToCopyText": "点击复制",
-    "copiedText": "已复制!",
+    "clickToCopy": "点击复制",
+    "copied": "已复制!",
     "thanks": "感谢"
   },
   "clerk": {

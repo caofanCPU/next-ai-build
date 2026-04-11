@@ -14,6 +14,7 @@ export interface DevScriptsConfig {
     baseDir?: string
     includeWindrunPackages?: boolean
     whitelist?: string[]
+    namespaceWhitelist?: string[]
   }
   
   // blog config
@@ -53,10 +54,12 @@ export interface PackageJsonDevScripts {
     exclude?: string[]
     includeWindrunPackages?: boolean
     whitelist?: string[]
+    namespaceWhitelist?: string[]
   }
   scanDirs?: string[]
   includeWindrunPackages?: boolean
   whitelist?: string[]
+  namespaceWhitelist?: string[]
   blogDir?: string
   logDir?: string
   architectureExclude?: string[]
@@ -73,7 +76,8 @@ export const DEFAULT_CONFIG: DevScriptsConfig = {
     include: ['src/**/*.{tsx,ts,jsx,js}'],
     exclude: ['src/**/*.d.ts', 'src/**/*.test.ts', 'src/**/*.test.tsx', 'node_modules/**'],
     includeWindrunPackages: false,
-    whitelist: []
+    whitelist: [],
+    namespaceWhitelist: []
   },
   blog: {
     mdxDir: 'src/mdx/blog',

@@ -39,7 +39,8 @@ npm install -D @packages/dev-scripts
     "scan": {
       "include": ["src/**/*.{tsx,ts,jsx,js}"],
       "includeWindrunPackages": false,
-      "whitelist": []
+      "whitelist": [],
+      "namespaceWhitelist": []
     },
     "blogDir": "src/mdx/blog",
     "logDir": "logs"
@@ -72,7 +73,8 @@ pnpm generate-blog-index
     "scan": {
       "include": ["src/**/*.{tsx,ts,jsx,js}"], // 扫描的代码目录
       "includeWindrunPackages": false,         // 是否补扫 @windrun-huaiin/* 和 tsconfig 指向 packages/*/src/* 的本地别名
-      "whitelist": []                          // 精确白名单，必须逐项写完整 key
+      "whitelist": [],                         // 精确 key 白名单，必须逐项写完整 key
+      "namespaceWhitelist": []                 // namespace 级白名单，会同时忽略该 namespace 及其子路径
     },
     "blogDir": "src/mdx/blog",              // 博客MDX文件目录
     "logDir": "logs",                       // 日志输出目录
@@ -99,7 +101,8 @@ pnpm generate-blog-index
     "include": ["src/**/*.{tsx,ts,jsx,js}"],
     "exclude": ["src/**/*.d.ts", "src/**/*.test.ts", "src/**/*.test.tsx", "node_modules/**"],
     "includeWindrunPackages": false,
-    "whitelist": []
+    "whitelist": [],
+    "namespaceWhitelist": []
   },
   "blog": {
     "mdxDir": "src/mdx/blog",
@@ -140,6 +143,7 @@ Options:
 - 支持单文件翻译源和多文件翻译源
 - 多文件模式下会先合并同一 locale 命中的所有翻译文件，再做统一检查
 - 支持可选补扫 `@windrun-huaiin/*` 包源码和 `tsconfig` 中映射到 `packages/*/src/*` 的本地别名
+- 当代码已使用父级 key，例如 `a.b` 时，翻译中的 `a.b.c`、`a.b.0.x` 不会再被判定为 unused
 
 **输出示例：**
 ```
@@ -170,11 +174,25 @@ Options:
 
 ### 白名单
 
-由于翻译扫描依赖 AST 分析，仍然可能存在少量误判。对于确认无需处理的结果，可以通过 `scan.whitelist` 忽略：
+由于翻译扫描依赖 AST 分析，仍然可能存在少量误判。对于确认无需处理的结果，可以通过 `scan.whitelist` 或 `scan.namespaceWhitelist` 忽略：
 
 ```json
 {
   "scan": {
+    "namespaceWhitelist": [
+      "usage",
+      "faq",
+      "moneyPrice",
+      "features",
+      "tips",
+      "seoContent",
+      "cta",
+      "languageDetection",
+      "footer",
+      "clerk",
+      "fuma",
+      "pricePlan"
+    ],
     "whitelist": [
       "credit.subscription.active"
     ]
@@ -182,7 +200,16 @@ Options:
 }
 ```
 
-白名单是精确项，不是模糊规则：
+两种白名单的区别：
+
+- `whitelist`
+  - 精确 key 级白名单
+  - 必须逐项写完整 key
+- `namespaceWhitelist`
+  - namespace 级白名单
+  - 会同时忽略该 namespace 本身以及其下所有子路径
+
+精确白名单不是模糊规则：
 
 - 必须逐项写完整 key
 - `faq.a` 和 `faq.b` 需要分别写
@@ -190,7 +217,7 @@ Options:
 
 如果代码实际用了 `faq.a`、`faq.b`，但翻译里根本没有 `faq` 这个 namespace，那么白名单也必须把 `faq.a`、`faq.b` 都逐项写出来。这样用户仍然能知道到底有哪些真实使用的翻译键，只会忽略已经人工确认的误判项。
 
-`check-translations` 输出的白名单建议只会包含精确 key，不会输出 namespace 级别建议，避免把一整组真实缺失问题直接压掉。
+`check-translations` 输出的白名单建议只会包含精确 key，不会自动输出 namespace 级别建议，避免把一整组真实缺失问题直接压掉。
 
 命令在发现问题时，会在终端和 log 里输出可直接复制的白名单片段。加入白名单后，后续检查报告将不再把这些精确项作为问题输出。
 
@@ -211,6 +238,20 @@ Options:
     "include": ["src/**/*.{tsx,ts,jsx,js}"],
     "exclude": ["src/**/*.test.ts", "src/**/*.test.tsx", "src/**/*.d.ts", "node_modules/**"],
     "includeWindrunPackages": true,
+    "namespaceWhitelist": [
+      "usage",
+      "faq",
+      "moneyPrice",
+      "features",
+      "tips",
+      "seoContent",
+      "cta",
+      "languageDetection",
+      "footer",
+      "clerk",
+      "fuma",
+      "pricePlan"
+    ],
     "whitelist": []
   }
 }
@@ -219,9 +260,16 @@ Options:
 开启后脚本会：
 
 - 先扫描应用自身 `scan.include` 命中的文件
-- 再根据实际 import 递归补扫相关 `@windrun-huaiin/*` 包
+- 再根据实际 import 识别相关 `@windrun-huaiin/*` 包
+- 当前实现会补扫这些包的整个 `src/` 目录，而不是只补扫单个被 import 的文件
 - 识别 `tsconfig.json` 中映射到 `packages/*/src/*` 的本地 alias
 - 优先使用 workspace 里的真实包目录，避免和 `node_modules` 下的同包源码重复扫描
+
+这意味着：
+
+- 底层包内部真实使用的翻译 key 能被纳入检查
+- 但某些旧组件、未直接被宿主页面使用的包内文件，也可能一并被扫描到
+- 这类稳定的基础 namespace 更适合通过 `namespaceWhitelist` 统一过滤
 
 如果目标包只发布了构建产物、没有 `src/`，脚本会跳过该包源码扫描。测试性质代码默认不参与翻译扫描，包括 `src/**/*.test.ts` 和 `src/**/*.test.tsx`。
 

@@ -1,7 +1,6 @@
 {
   "home": {
     "title": "Re8ger",
-    "slug": "Rethink | Redefine | Rebuild",
     "banner": "Rethink | Redefine | Rebuild",
     "webTitle": "Reve Image Directory - Showcase Beautiful Images & Tips",
     "webDescription": "Discover stunning AI-generated images and learn expert tips for creating beautiful visuals with Reve Image's powerful text-to-image technology.",
@@ -392,8 +391,8 @@
     "sitemap": "Sitemap",
     "contactUs": "Contact Us",
     "email": "xyb5to0zcy@gmail.com",
-    "clickToCopyText": "Click to copy",
-    "copiedText": "Copied!",
+    "clickToCopy": "Click to copy",
+    "copied": "Copied!",
     "thanks": "Thanks to"
   },
   "clerk": {

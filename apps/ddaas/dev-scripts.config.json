@@ -12,7 +12,23 @@
     "include": ["src/**/*.{tsx,ts,jsx,js}"],
     "exclude": ["src/**/*.d.ts", "src/**/*.test.ts", "src/**/*.test.tsx", "node_modules/**"],
     "includeWindrunPackages": false,
-    "whitelist": [ ]
+    "whitelist": ["footer.title", "home.email", "home.banner"],
+    "namespaceWhitelist": [
+      "usage",
+      "credit",
+      "gallery",
+      "faq",
+      "moneyPrice",
+      "features",
+      "tips",
+      "seoContent",
+      "cta",
+      "languageDetection",
+      "footer",
+      "clerk",
+      "fuma",
+      "pricePlan"
+    ]
   },
   "blog": {
     "mdxDir": "src/mdx/blog",

@@ -37,6 +37,12 @@ function isProtectedByWholeNamespace(path: string, protectedNamespaces: Set<stri
   )
 }
 
+function isCoveredByUsedKey(path: string, usedKeys: Set<string>): boolean {
+  return Array.from(usedKeys).some(
+    usedKey => path === usedKey || path.startsWith(`${usedKey}.`)
+  )
+}
+
 export async function checkTranslations(config: DevScriptsConfig, cwd: string = typeof process !== 'undefined' ? process.cwd() : '.'): Promise<number> {
   const logger = new Logger(config)
   logger.warn('==============================')
@@ -86,7 +92,9 @@ export async function checkTranslations(config: DevScriptsConfig, cwd: string = 
       })
     })
     config.i18n.locales.forEach(locale => {
+      const missingNamespaceKey = `missingNamespacesIn${locale.toUpperCase()}`
       const missingKey = `missingIn${locale.toUpperCase()}`
+      report[missingNamespaceKey] = filterWhitelistedItems(report[missingNamespaceKey] || [], config)
       report[missingKey] = filterWhitelistedItems(report[missingKey] || [], config)
     })
 
@@ -129,8 +137,9 @@ export async function checkTranslations(config: DevScriptsConfig, cwd: string = 
       allTranslationKeys.forEach(key => {
         const isProtectedByPrefix = Array.from(protectedPrefixes).some(prefix => pathOverlapsPrefix(key, prefix))
         const isWholeNamespaceProtected = isProtectedByWholeNamespace(key, wholeNamespaceProtection)
+        const isCoveredByUsedParentKey = isCoveredByUsedKey(key, foundTranslationKeys)
 
-        if (!foundTranslationKeys.has(key) && !isProtectedByPrefix && !isWholeNamespaceProtected) {
+        if (!foundTranslationKeys.has(key) && !isCoveredByUsedParentKey && !isProtectedByPrefix && !isWholeNamespaceProtected) {
           report[unusedKey].push(key)
         }
       })

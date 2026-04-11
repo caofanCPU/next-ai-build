@@ -34,14 +34,16 @@ function loadPackageJsonConfig(cwd: string): Partial<DevScriptsConfig> | null {
     const hasLegacyScanConfig =
       devScripts.scanDirs !== undefined ||
       devScripts.includeWindrunPackages !== undefined ||
-      devScripts.whitelist !== undefined
+      devScripts.whitelist !== undefined ||
+      devScripts.namespaceWhitelist !== undefined
 
     if (scanConfig || hasLegacyScanConfig) {
       config.scan = {
         include: scanConfig?.include || devScripts.scanDirs || DEFAULT_CONFIG.scan.include,
         exclude: scanConfig?.exclude || DEFAULT_CONFIG.scan.exclude,
         includeWindrunPackages: scanConfig?.includeWindrunPackages ?? devScripts.includeWindrunPackages ?? DEFAULT_CONFIG.scan.includeWindrunPackages,
-        whitelist: scanConfig?.whitelist ?? devScripts.whitelist ?? DEFAULT_CONFIG.scan.whitelist
+        whitelist: scanConfig?.whitelist ?? devScripts.whitelist ?? DEFAULT_CONFIG.scan.whitelist,
+        namespaceWhitelist: scanConfig?.namespaceWhitelist ?? devScripts.namespaceWhitelist ?? DEFAULT_CONFIG.scan.namespaceWhitelist
       }
     }
     
@@ -170,6 +172,7 @@ function printConfigInfo(config: DevScriptsConfig, sources: string[], cwd: strin
   }
   console.log(`   includeWindrunPackages: ${config.scan.includeWindrunPackages === true}`)
   console.log(`   whitelist: ${(config.scan.whitelist || []).length} items`)
+  console.log(`   namespaceWhitelist: ${(config.scan.namespaceWhitelist || []).length} namespaces`)
   
   if (config.blog) {
     console.log('\n📝 blog:')
@@ -233,6 +236,10 @@ export function validateConfig(config: DevScriptsConfig): void {
 
   if (config.scan.whitelist !== undefined && !Array.isArray(config.scan.whitelist)) {
     throw new Error('scan.whitelist must be an array')
+  }
+
+  if (config.scan.namespaceWhitelist !== undefined && !Array.isArray(config.scan.namespaceWhitelist)) {
+    throw new Error('scan.namespaceWhitelist must be an array')
   }
 
   if (config.architectureExclude !== undefined && !Array.isArray(config.architectureExclude)) {
