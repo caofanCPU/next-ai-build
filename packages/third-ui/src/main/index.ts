@@ -21,3 +21,6 @@ export { MoneyPriceButton } from './money-price/money-price-button';
 
 export { CreditOverviewClient } from './credit/credit-overview-client';
 export { CreditNavButton } from './credit/credit-nav-button';
+
+export { HeroMedia } from './hero-media';
+export { HeroSection } from './hero-section';

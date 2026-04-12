@@ -1,5 +1,15 @@
 # @windrun-huaiin/ddaas-website
 
+## 15.3.1
+
+### Patch Changes
+
+- feat(hero): now use `HeroSection` or `HeroMedia` for default style with the same layout
+- Updated dependencies
+  - @windrun-huaiin/base-ui@15.1.1
+  - @windrun-huaiin/third-ui@15.1.1
+  - @windrun-huaiin/lib@15.1.1
+
 ## 15.3.0
 
 ### Minor Changes
