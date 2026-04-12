@@ -3,6 +3,7 @@ import { globalLucideIcons as icons} from '@base-ui/components/global-icon'
 import { themeHeroEyesOnClass } from '@base-ui/lib'
 import { GradientButton } from "@third-ui/fuma/mdx"
 import { HeroMedia, HeroSection } from "@third-ui/main"
+import { cn } from '@lib/utils';
 
 export async function Hero({ locale }: { locale: string }) {
   const t = await getTranslations({ locale, namespace: 'hero' });
@@ -13,7 +14,7 @@ export async function Hero({ locale }: { locale: string }) {
         <>
           <h1 className="text-4xl font-bold leading-tight md:text-6xl">
             {t('mainTitle')}<br />{" "}
-            <span className={`bg-clip-text text-transparent ${themeHeroEyesOnClass}`}>{t('mainEyesOn')}</span>
+            <span className={cn("bg-clip-text text-transparent", themeHeroEyesOnClass)}>{t('mainEyesOn')}</span>
           </h1>
           <p className="max-w-2xl text-lg text-gray-400">
             {t('description')}
