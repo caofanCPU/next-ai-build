@@ -20,6 +20,7 @@ const entries = [
   'src/services/aggregate/index.ts',
   'src/services/context/index.ts',
   'src/services/stripe/index.ts',
+  'src/services/ai/index.ts',
   'src/lib/index.ts',
   'src/auth/auth-utils.ts',
   'src/auth/auth-shared.ts',

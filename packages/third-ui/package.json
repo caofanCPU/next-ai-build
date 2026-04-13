@@ -41,6 +41,11 @@
       "import": "./dist/main/server.mjs",
       "require": "./dist/main/server.js"
     },
+    "./ai": {
+      "types": "./dist/ai/index.d.ts",
+      "import": "./dist/ai/index.mjs",
+      "require": "./dist/ai/index.js"
+    },
     "./fuma/server": {
       "types": "./dist/fuma/server.d.ts",
       "import": "./dist/fuma/server.mjs",
@@ -86,6 +91,7 @@
     "@clerk/shared": "catalog:",
     "@fingerprintjs/fingerprintjs": "catalog:",
     "@windrun-huaiin/base-ui": "workspace:^",
+    "@windrun-huaiin/contracts": "workspace:^",
     "@windrun-huaiin/lib": "workspace:^",
     "class-variance-authority": "catalog:",
     "framer-motion": "catalog:",

@@ -37,6 +37,11 @@
       "import": "./dist/services/stripe/index.mjs",
       "require": "./dist/services/stripe/index.js"
     },
+    "./ai": {
+      "types": "./dist/services/ai/index.d.ts",
+      "import": "./dist/services/ai/index.mjs",
+      "require": "./dist/services/ai/index.js"
+    },
     "./lib": {
       "types": "./dist/lib/index.d.ts",
       "import": "./dist/lib/index.mjs",
@@ -103,6 +108,7 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@windrun-huaiin/contracts": "workspace:^",
     "@clerk/nextjs": "catalog:",
     "@prisma/client": "catalog:",
     "@upstash/redis": "catalog:",
@@ -127,6 +133,7 @@
     "typescript": "catalog:"
   },
   "peerDependencies": {
+    "@windrun-huaiin/contracts": "workspace:^",
     "@clerk/nextjs": "catalog:",
     "@prisma/client": "catalog:",
     "next": "catalog:",

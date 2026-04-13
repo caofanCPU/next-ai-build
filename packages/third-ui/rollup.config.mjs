@@ -12,6 +12,7 @@ const entries = [
   'src/clerk/server.ts',
   'src/clerk/fingerprint/index.ts',
   'src/clerk/fingerprint/server.ts',
+  'src/ai/index.ts',
   'src/main/index.ts',
   'src/main/pill-select/index.ts',
   'src/main/server.ts',

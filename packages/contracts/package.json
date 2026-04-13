@@ -1,0 +1,53 @@
+{
+  "name": "@windrun-huaiin/contracts",
+  "version": "1.0.0",
+  "description": "Shared domain contracts for windrun-huaiin packages",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./ai": {
+      "types": "./dist/ai/index.d.ts",
+      "import": "./dist/ai/index.mjs",
+      "require": "./dist/ai/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "!dist/node_modules",
+    "!dist/node_modules/**",
+    "src",
+    "package.json",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "rollup -c rollup.config.mjs",
+    "build:prod": "rollup -c rollup.config.mjs",
+    "dev": "rollup -c rollup.config.mjs --watch",
+    "clean": "rm -rf dist",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "tslib": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "catalog:",
+    "@rollup/plugin-node-resolve": "catalog:",
+    "@rollup/plugin-typescript": "catalog:",
+    "@types/node": "catalog:",
+    "rollup": "catalog:",
+    "rollup-plugin-peer-deps-external": "catalog:",
+    "typescript": "catalog:"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

@@ -27,6 +27,7 @@
         "ENABLE_STRIPE_SUBSCRIPTION_UPGRADE",
         "SHOW_FINGERPRINT_STATUS",
         "ACTIVE_PAYMENT_PROVIDER",
+        "OPENROUTER_*",
         "MONEY_PRICE_*",
         "CREDITS_*",
         "STRIPE_*",
@@ -48,6 +49,7 @@
         "ENABLE_STRIPE_SUBSCRIPTION_UPGRADE",
         "SHOW_FINGERPRINT_STATUS",
         "ACTIVE_PAYMENT_PROVIDER",
+        "OPENROUTER_*",
         "MONEY_PRICE_*",
         "CREDITS_*",
         "STRIPE_*",
@@ -74,8 +76,13 @@
       "outputs": ["dist/**"],
       "env": ["NODE_ENV"]
     },
+    "@windrun-huaiin/contracts#build": {
+      "outputs": ["dist/**"],
+      "env": ["NODE_ENV"]
+    },
     "@windrun-huaiin/backend-core#build": {
       "dependsOn": [
+        "@windrun-huaiin/contracts#build",
         "@windrun-huaiin/lib#build",
         "@windrun-huaiin/base-ui#build",
         "@windrun-huaiin/third-ui#build"
@@ -91,6 +98,7 @@
         "ENABLE_STRIPE_SUBSCRIPTION_UPGRADE",
         "SHOW_FINGERPRINT_STATUS",
         "ACTIVE_PAYMENT_PROVIDER",
+        "OPENROUTER_*",
         "MONEY_PRICE_*",
         "CREDITS_*",
         "STRIPE_*",
@@ -104,10 +112,11 @@
       "env": ["NODE_ENV"]
     },
     "@windrun-huaiin/third-ui#build": {
-      "dependsOn": ["@windrun-huaiin/base-ui#build"],
+      "dependsOn": ["@windrun-huaiin/contracts#build", "@windrun-huaiin/base-ui#build"],
       "outputs": ["dist/**"],
       "env": [
         "NODE_ENV",
+        "OPENROUTER_*",
         "CLERK_SECRET_KEY",
         "CLERK_DEBUG",
         "NEXT_PUBLIC_CLERK_*",
@@ -131,8 +140,13 @@
       "outputs": ["dist/**"],
       "env": ["NODE_ENV"]
     },
+    "@windrun-huaiin/contracts#build:prod": {
+      "outputs": ["dist/**"],
+      "env": ["NODE_ENV"]
+    },
     "@windrun-huaiin/backend-core#build:prod": {
       "dependsOn": [
+        "@windrun-huaiin/contracts#build:prod",
         "@windrun-huaiin/lib#build:prod",
         "@windrun-huaiin/base-ui#build:prod",
         "@windrun-huaiin/third-ui#build:prod"
@@ -148,6 +162,7 @@
         "ENABLE_STRIPE_SUBSCRIPTION_UPGRADE",
         "SHOW_FINGERPRINT_STATUS",
         "ACTIVE_PAYMENT_PROVIDER",
+        "OPENROUTER_*",
         "MONEY_PRICE_*",
         "CREDITS_*",
         "STRIPE_*",
@@ -161,9 +176,11 @@
       "env": ["NODE_ENV"]
     },
     "@windrun-huaiin/third-ui#build:prod": {
+      "dependsOn": ["@windrun-huaiin/contracts#build:prod", "@windrun-huaiin/base-ui#build:prod"],
       "outputs": ["dist/**"],
       "env": [
         "NODE_ENV",
+        "OPENROUTER_*",
         "CLERK_SECRET_KEY",
         "CLERK_DEBUG",
         "NEXT_PUBLIC_CLERK_*",
@@ -198,6 +215,7 @@
         "ENABLE_STRIPE_SUBSCRIPTION_UPGRADE",
         "SHOW_FINGERPRINT_STATUS",
         "ACTIVE_PAYMENT_PROVIDER",
+        "OPENROUTER_*",
         "MONEY_PRICE_*",
         "CREDITS_*",
         "STRIPE_*",
