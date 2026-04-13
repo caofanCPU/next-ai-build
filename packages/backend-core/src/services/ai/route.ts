@@ -4,7 +4,7 @@ import {
   type AIStreamEvent,
 } from '@windrun-huaiin/contracts/ai';
 import { createUpstreamAbortSignal } from './abort';
-import { createOpenRouterClientConfigFromEnv, createOpenRouterMockFromEnv } from './env';
+import { createOpenRouterClientConfigFromEnv, createOpenRouterMockFromEnvForContext } from './env';
 import { normalizeAIError } from './error';
 import { buildModelMessages as defaultBuildModelMessages } from './message-builder';
 import { callOpenRouterStream, guardedOpenRouterStreamStart } from './openrouter-client';
@@ -108,7 +108,6 @@ async function createEventStream(response: Response, messageId: string) {
 
 export function createOpenRouterRoute(config: AIRouteConfig) {
   const openRouterConfig = createOpenRouterClientConfigFromEnv(config.openRouter);
-  const mockHandler = config.mock ?? createOpenRouterMockFromEnv();
 
   return async function POST(request: Request) {
     const parsedBody = AIRuntimeRequestSchema.safeParse(await request.json());
@@ -131,6 +130,7 @@ export function createOpenRouterRoute(config: AIRouteConfig) {
       startedAt: Date.now(),
       metadata: parsedBody.data.metadata,
     };
+    const mockHandler = config.mock ?? createOpenRouterMockFromEnvForContext(context);
 
     try {
       await config.adapters?.billing?.reserve?.(context);

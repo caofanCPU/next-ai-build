@@ -24,7 +24,7 @@ export function AIMessageList({
   }
 
   return (
-    <div className={cn('space-y-4', className)}>
+    <div className={cn('space-y-5', className)}>
       {messages.map((message: ConversationMessage) => (
         <AIMessageBubble key={message.id} message={message} />
       ))}

@@ -1,4 +1,4 @@
-import type { AIMockHandler, OpenRouterClientConfig } from './types';
+import type { AIMockHandler, AIRuntimeContext, OpenRouterClientConfig } from './types';
 import { createScenarioMockHandler } from './mock';
 
 function parseNumber(value: string | undefined, fallback: number) {
@@ -28,6 +28,14 @@ export type OpenRouterEnvConfig = {
   debug: boolean;
   baseUrl?: string;
   referer?: string;
+};
+
+type RequestMockOverride = {
+  enabled?: boolean;
+  type?: number;
+  timeoutSeconds?: number;
+  chunkDelayMs?: number;
+  chunkSize?: number;
 };
 
 export function getOpenRouterEnvConfig(): OpenRouterEnvConfig {
@@ -69,18 +77,44 @@ export function createOpenRouterClientConfigFromEnv(
 }
 
 export function createOpenRouterMockFromEnv(): AIMockHandler | undefined {
+  return createOpenRouterMockFromEnvForContext();
+}
+
+function getRequestMockOverride(context?: AIRuntimeContext): RequestMockOverride | null {
+  const value = context?.input.metadata?.mock;
+  if (!value || typeof value !== 'object') {
+    return null;
+  }
+
+  return value as RequestMockOverride;
+}
+
+export function createOpenRouterMockFromEnvForContext(
+  context?: AIRuntimeContext,
+): AIMockHandler | undefined {
   const envConfig = getOpenRouterEnvConfig();
 
   if (!envConfig.enableMock) {
     return undefined;
   }
 
+  const requestOverride = getRequestMockOverride(context);
+  if (requestOverride?.enabled === false) {
+    return undefined;
+  }
+
+  const mockType = requestOverride?.type ?? envConfig.mockType;
+  const mockTimeoutSeconds = requestOverride?.timeoutSeconds ?? envConfig.mockTimeoutSeconds;
+  const mockStreamChunkDelayMs =
+    requestOverride?.chunkDelayMs ?? envConfig.mockStreamChunkDelayMs;
+  const mockStreamChunkSize = requestOverride?.chunkSize ?? envConfig.mockStreamChunkSize;
+
   return createScenarioMockHandler({
     text:
       'This is a mock AI response from the shared backend-core runtime. Configure OPENROUTER_API_KEY and disable OPENROUTER_ENABLE_MOCK to use the real upstream model.',
-    mockType: envConfig.mockType,
-    mockTimeoutSeconds: envConfig.mockTimeoutSeconds,
-    mockStreamChunkDelayMs: envConfig.mockStreamChunkDelayMs,
-    mockStreamChunkSize: envConfig.mockStreamChunkSize,
+    mockType,
+    mockTimeoutSeconds,
+    mockStreamChunkDelayMs,
+    mockStreamChunkSize,
   });
 }

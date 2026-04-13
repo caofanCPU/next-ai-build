@@ -61,3 +61,12 @@ export type AIStatusIndicatorProps = {
 };
 
 export type TextMessagePart = Extract<MessagePart, { type: 'text' }>;
+
+export type AIMessageRuntimeMetadata = {
+  requestStartedAt?: number;
+  streamStartedAt?: number;
+  firstTokenAt?: number;
+  firstTokenMs?: number;
+  completedAt?: number;
+  totalMs?: number;
+};

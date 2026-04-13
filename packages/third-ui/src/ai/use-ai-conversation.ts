@@ -8,6 +8,7 @@ import {
 } from '@windrun-huaiin/contracts/ai';
 import { startTransition, useRef, useState } from 'react';
 import type {
+  AIMessageRuntimeMetadata,
   AIConversationOptions,
   AIConversationState,
   SendMessageInput,
@@ -37,13 +38,43 @@ function createUserMessage(input: SendMessageInput): ConversationMessage {
   };
 }
 
-function createAssistantPlaceholder(): ConversationMessage {
+function getRuntimeMetadata(message: ConversationMessage): AIMessageRuntimeMetadata {
+  const metadata = message.metadata?.aiRuntime;
+  if (!metadata || typeof metadata !== 'object') {
+    return {};
+  }
+
+  return metadata as AIMessageRuntimeMetadata;
+}
+
+function withRuntimeMetadata(
+  message: ConversationMessage,
+  nextMetadata: AIMessageRuntimeMetadata,
+): ConversationMessage {
+  return {
+    ...message,
+    metadata: {
+      ...(message.metadata ?? {}),
+      aiRuntime: {
+        ...getRuntimeMetadata(message),
+        ...nextMetadata,
+      },
+    },
+  };
+}
+
+function createAssistantPlaceholder(requestStartedAt: number): ConversationMessage {
   return {
     id: createId('assistant'),
     role: 'assistant',
     parts: [{ type: 'text', text: '' }],
     status: 'streaming',
     createdAt: Date.now(),
+    metadata: {
+      aiRuntime: {
+        requestStartedAt,
+      },
+    },
   };
 }
 
@@ -71,11 +102,46 @@ function updateAssistantText(
     }
 
     const currentText = getAssistantMessageText(message);
-    return {
-      ...message,
-      parts: [{ type: 'text', text: currentText + textDelta }],
-      status: 'streaming',
-    };
+    const runtimeMetadata = getRuntimeMetadata(message);
+    const now = Date.now();
+
+    return withRuntimeMetadata(
+      {
+        ...message,
+        parts: [{ type: 'text', text: currentText + textDelta }],
+        status: 'streaming',
+      },
+      runtimeMetadata.firstTokenAt
+        ? {}
+        : {
+            firstTokenAt: now,
+            firstTokenMs: runtimeMetadata.requestStartedAt
+              ? now - runtimeMetadata.requestStartedAt
+              : undefined,
+          },
+    );
+  });
+}
+
+function updateMessageStarted(
+  messages: ConversationMessage[],
+  placeholderId: string,
+  messageId: string,
+): ConversationMessage[] {
+  return messages.map((message): ConversationMessage => {
+    if (message.id !== placeholderId) {
+      return message;
+    }
+
+    return withRuntimeMetadata(
+      {
+        ...message,
+        id: messageId,
+      },
+      {
+        streamStartedAt: Date.now(),
+      },
+    );
   });
 }
 
@@ -89,10 +155,21 @@ function updateMessageStatus(
       return message;
     }
 
-    return {
-      ...message,
-      status,
-    };
+    const now = Date.now();
+    const runtimeMetadata = getRuntimeMetadata(message);
+
+    return withRuntimeMetadata(
+      {
+        ...message,
+        status,
+      },
+      {
+        completedAt: now,
+        totalMs: runtimeMetadata.requestStartedAt
+          ? now - runtimeMetadata.requestStartedAt
+          : undefined,
+      },
+    );
   });
 }
 
@@ -107,13 +184,23 @@ function applyErrorToLatestAssistant(
     }
 
     const nextMessages = [...messages];
-    nextMessages[index] = {
-      ...message,
-      status: error.status,
-      failureReason: error.failureReason,
-      errorMessage: error.error,
-      upstreamStatusCode: error.upstreamStatusCode,
-    };
+    const now = Date.now();
+    const runtimeMetadata = getRuntimeMetadata(message);
+    nextMessages[index] = withRuntimeMetadata(
+      {
+        ...message,
+        status: error.status,
+        failureReason: error.failureReason,
+        errorMessage: error.error,
+        upstreamStatusCode: error.upstreamStatusCode,
+      },
+      {
+        completedAt: now,
+        totalMs: runtimeMetadata.requestStartedAt
+          ? now - runtimeMetadata.requestStartedAt
+          : undefined,
+      },
+    );
     return nextMessages;
   }
 
@@ -172,7 +259,8 @@ export function useAIConversation(options: AIConversationOptions) {
     }
 
     const userMessage = createUserMessage(input);
-    const assistantMessage = createAssistantPlaceholder();
+    const requestStartedAt = Date.now();
+    const assistantMessage = createAssistantPlaceholder(requestStartedAt);
 
     startTransition(() => {
       setState((current) => ({
@@ -192,7 +280,10 @@ export function useAIConversation(options: AIConversationOptions) {
           sessionId: state.sessionId,
           messages: [...state.messages, userMessage],
           modelName: options.modelName,
-          metadata: options.metadata,
+          metadata: {
+            ...(options.metadata ?? {}),
+            ...(input.metadata ?? {}),
+          },
         },
         controller.signal,
       );
@@ -210,14 +301,7 @@ export function useAIConversation(options: AIConversationOptions) {
             if (event.type === 'message_started') {
               return {
                 ...current,
-                messages: current.messages.map((message): ConversationMessage =>
-                  message.id === assistantMessage.id
-                    ? {
-                        ...message,
-                        id: event.messageId,
-                      }
-                    : message,
-                ),
+                messages: updateMessageStarted(current.messages, assistantMessage.id, event.messageId),
               };
             }
 
