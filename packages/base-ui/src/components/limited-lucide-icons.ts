@@ -31,6 +31,7 @@ export {
   BrainCircuit,
   Briefcase,
   BringToFront,
+  BrushCleaning,
   Building2,
   Bug,
   BugOff,

@@ -56,6 +56,8 @@ export type AIChatComposerProps = {
   submitControl?: ReactNode;
   stopControl?: ReactNode;
   textareaRef?: RefObject<HTMLTextAreaElement | null>;
+  secondaryActions?: ReactNode;
+  actionLayout?: 'inline' | 'stacked';
 };
 
 export type AIMessageBubbleProps = {

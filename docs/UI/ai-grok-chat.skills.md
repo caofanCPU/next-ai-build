@@ -1,429 +1,234 @@
-# AI Chat UI
+# AI Grok Chat UI
 
 ## 目标
 
-本文档是当前仓库 AI Chat 页面交互与布局设计的唯一 UI 文档。
+本文档记录当前 `test/ai` 页面已经落地的 Grok 风格聊天 UI 实现结果。
 
-目标不是复刻 Grok 的视觉风格，而是抽取它在聊天主区域上的高质量交互结构，并与当前代码实现保持一致。
-
-本文档只讨论：
-
-- 页面骨架
-- 响应式布局
-- 历史面板交互
-- 消息区布局
-- 输入区结构
-- 聊天页可扩展的 UI 留位
-
-不讨论：
-
-- 后端逻辑
-- 请求协议
-- provider 调用
-- 错误标准化策略
-
-这些见 [ai-chat-architecture.skills.md](/Users/funeye/IdeaProjects/next-ai-build/docs/AI/ai-chat-architecture.skills.md)。
-
----
-
-## 当前设计原则
-
-当前 UI 设计遵守以下原则：
-
-- 聊天主区域必须是页面唯一核心
-- 页面结构优先于装饰风格
-- Web 与移动端必须分开处理历史面板
-- 输入区必须是稳定底座
-- 消息布局必须能承接后续多模态与操作按钮
-- 调试信息不得继续破坏聊天主轴
-
----
-
-## 当前页面骨架
+目标不是复刻 Grok 的视觉皮肤，而是沉淀一套适合通用 `ai-chat` 组件的页面级聊天布局与交互结构。本文档只讨论前端 UI 结构、交互和组件留位，不讨论后端协议、数据流和服务实现。
 
 当前测试页：
 
 - [ai-runtime-playground.tsx](/Users/funeye/IdeaProjects/next-ai-build/apps/ddaas/src/app/[locale]/(home)/test/ai/ai-runtime-playground.tsx)
 
-当前页面骨架已经调整为：
+底层核心组件：
 
-```tsx
-<main>
-  <header />
-
-  <div className="chat-body">
-    <aside className="desktop-history-panel" />
-    <section className="chat-main">
-      <div className="chat-main-header" />
-      <AIMessageList />
-      <AIChatComposer />
-    </section>
-  </div>
-
-  <div className="mobile-history-drawer" />
-</main>
-```
-
-这套骨架已经从“调试工作台布局”切换到了“聊天布局”。
-
----
-
-## 顶部区域
-
-## 职责
-
-顶部只做页面级内容：
-
-- 标题
-- 简要说明
-- 历史面板开关
-- 少量状态信息
-
-不再承载：
-
-- 大块 helper 卡片
-- 大段说明文本
-- 大面积示例 prompt 区
-- 独立并列控制台
-
-## 当前实现
-
-顶部 header 已经是独立容器，并提供：
-
-- Web 端侧栏开关
-- 移动端抽屉入口
-- 消息数 / 事件数 / streaming 状态
-
-原则：
-
-- 历史入口必须始终在头部可见
-- 状态信息可压缩为轻量 badge
-- 标题区与操作区左右分离
-
----
-
-## 历史面板
-
-## Web 端
-
-当前方案：
-
-- 左侧辅助面板
-- 可折叠
-- 宽度固定
-- 内部独立滚动
-
-当前用途：
-
-- 当前 session prompt 列表
-- reset 会话入口
-- runtime / mock controls
-
-说明：
-
-这不是最终产品级“历史会话系统”，而是当前聊天容器的辅助侧栏。
-
-设计原则：
-
-- 左栏永远是辅助区，不是内容主角
-- 宽度固定，不能随内容膨胀
-- 不应与消息区争抢阅读空间
-
-建议宽度：
-
-- `280px - 320px`
-
-## 移动端
-
-当前方案：
-
-- 改为底部抽屉
-- 从头部按钮或 composer 左按钮进入
-- 抽屉独立滚动
-
-设计原则：
-
-- 移动端不使用左侧栏
-- 抽屉高度控制在 `60vh - 75vh`
-- 保持当前聊天上下文，不跳页
-
----
-
-## 主聊天区
-
-主聊天区当前已采用标准聊天容器结构：
-
-- 上部可选说明区
-- 中部消息滚动区
-- 下部固定输入区
-
-关键规则：
-
-- `chat-main` 必须是纵向 `flex`
-- `AIMessageList` 所在区域必须 `min-h-0 flex-1 overflow-y-auto`
-- `AIChatComposer` 所在区域必须固定在底部，不参与消息滚动
-
-这点是当前 UI 改造的核心成果之一。
-
----
-
-## 消息列表
-
-当前实现：
-
+- [ai-chat-composer.tsx](/Users/funeye/IdeaProjects/next-ai-build/packages/third-ui/src/ai/ai-chat-composer.tsx)
 - [ai-message-list.tsx](/Users/funeye/IdeaProjects/next-ai-build/packages/third-ui/src/ai/ai-message-list.tsx)
-
-当前能力：
-
-- 空态展示
-- 自动滚动到底部
-- 内部统一阅读宽度
-- 自定义 `renderMessage`
-
-设计原则：
-
-- 外层负责滚动
-- 内层负责阅读宽度与消息间距
-- 宽屏下消息区不能无限展开
-
-当前做法：
-
-- 内层统一 `max-w-5xl`
-- 单条消息再额外控制自身最大宽度
-
-结果：
-
-- 超宽屏阅读不松散
-- 消息不会铺满整个页面
-
----
-
-## 单条消息布局
-
-当前实现：
-
 - [ai-message-bubble.tsx](/Users/funeye/IdeaProjects/next-ai-build/packages/third-ui/src/ai/ai-message-bubble.tsx)
 
-消息骨架已固定为：
+## 当前已实现
 
-```tsx
-<div className="message-row">
-  <article className="message-card">
-    <div className="message-content" />
-    <div className="message-footer">
-      <div className="message-meta" />
-      <div className="message-actions" />
-    </div>
-  </article>
-</div>
-```
+### 页面级骨架
 
-## 对齐规则
+当前测试页已经实现为标准聊天页骨架：
+
+- 顶部是聊天主区域头部，不再保留调试工作台式大卡片
+- Web 端为左侧辅助面板 + 右侧主聊天区
+- 主聊天区使用固定高度容器
+- 消息列表区域独立垂直滚动
+- 输入框区域固定在底部，不跟随消息滚动
+
+这意味着聊天消息再长，也不会继续把整个页面无限向下撑开。
+
+### 顶部头部
+
+当前主聊天区头部为三列结构：
+
+- 左侧：侧边面板折叠按钮
+- 中间：`Conversation` 标题 + `InfoTooltip`
+- 右侧：保留未来扩展位
+
+当前头部已经不再承担说明卡片、示例提示词区等杂项内容，只负责聊天主区域本身的顶层操作。
+
+### 左侧面板
+
+当前左侧面板已实现两种内容视图切换：
+
+- `Runtime Config`
+- `Recent sessions`
+
+当前交互规则：
+
+- Web 端左侧面板可折叠
+- 移动端改为底部抽屉
+- 面板内部独立滚动
+- footer 固定两个操作图标
+- `Settings2` 用于切换面板内容
+- `HousePlus` 用于创建新会话
+
+### Session 列表
+
+当前 session 列表已经从占位数据改为真实测试数据驱动，具备以下行为：
+
+- 新建会话时立即创建 `New Chat`
+- 首条用户消息会自动覆盖默认标题
+- 支持手动编辑标题
+- 支持置顶 / 取消置顶
+- 支持删除 session
+- 支持按更新时间排序
+- 置顶项始终排在前面
+- 当前选中 session 使用背景色区分，而不是边框线
+
+当前 session item 已优化为两段式交互：
+
+- 第一行：置顶标记 + 标题 + 展开按钮
+- 第二行：展开后显示编辑、置顶、删除操作按钮
+
+### 主消息区
+
+当前消息区已经实现 Grok 风格的主轴布局：
 
 - 用户消息右对齐
 - AI 消息左对齐
-- 两边都限制最大宽度
+- 消息宽度有上限，不会铺满整行
+- 聊天气泡具有最小宽高，短文本不会塌陷变形
+- 主阅读区在宽屏下仍保持可读性，不会过宽
 
-当前默认范围：
+当前测试页对单条消息做了二层结构拆分：
 
-- 移动端接近 `max-w-[92%]`
-- 桌面端接近 `max-w-[82%]`
+- 第一层：消息内容气泡
+- 第二层：气泡外部紧贴的元数据区
 
-这是当前消息布局的基础规则，后续不要回到“全宽消息块”。
+元数据区当前规则：
 
-## 底部信息与操作区
+- 只有最近一条消息默认显示
+- 其他消息默认占位但隐藏
+- 鼠标悬浮消息时显示
+- 元数据与气泡物理分离，不再放入气泡内部
 
-当前 message footer 已经拆成两部分：
+### 消息操作区
 
-- 左侧 `meta`
-- 右侧 `actions`
+当前 playground 中，UM 和 AM 都已经预留并接入了操作按钮。
 
-这解决了之前“状态文本和操作按钮混成一串 badge”的问题。
+用户消息当前支持：
 
-当前 `meta` 默认包括：
+- 复制
+- Reuse 到输入框
+- 删除
 
-- 时间
-- 状态
-- assistant runtime 耗时
-- failure reason
+AI 消息当前支持：
 
-当前 `actions` 在 playground 中已预留：
+- 复制
+- Retry
+- 删除
 
-- `Copy`
-- `Reuse` 或 `Retry`
-- `More`
+删除操作已经接入确认弹窗。
 
-设计原则：
+### AI 状态反馈
 
-- 提示文本与操作行为必须分区
-- 用户消息和 AI 消息保持同一骨架
-- 即使暂时没有动作，也应保留 action 区容器
+当前 AI 消息状态反馈已做基础收口：
 
----
+- 首 token 到达前显示 `AI is thinking`
+- 空响应时使用兜底文案，而不是空白消息
+- `Send` 按钮在生成中切换为 `CircleStop`
+- 停止按钮带轻量旋转动画
+- AM 状态标签根据状态做了颜色区分
 
-## 消息正文渲染
+### Markdown 文本消息
 
-当前实现：
+当前文本消息已经从纯文本展示升级为 Markdown 渲染，适用于 AI 返回 Markdown 格式文本的场景。
 
-- [ai-message-content.tsx](/Users/funeye/IdeaProjects/next-ai-build/packages/third-ui/src/ai/ai-message-content.tsx)
-- [ai-markdown.tsx](/Users/funeye/IdeaProjects/next-ai-build/packages/third-ui/src/ai/ai-markdown.tsx)
+当前可覆盖的内容包括：
 
-当前 text part 已改成 Markdown 渲染。
-
-当前支持：
-
-- 普通段落
 - 标题
+- 段落
 - 列表
-- 引用
-- 链接
-- 图片
-- 基础代码块
-- 表格
+- 行内代码
+- 代码块基础展示
+- 图片链接
+- 已注册的自定义 Markdown 组件协议内容
 
-当前默认图片已复用：
+这意味着当前聊天框已经具备承接结构化文本响应的基础能力。
 
-- [image-zoom.tsx](/Users/funeye/IdeaProjects/next-ai-build/packages/third-ui/src/fuma/mdx/image-zoom.tsx)
+### 输入框
 
-UI 层结论：
+当前输入框已经实现为通用 composer 结构，并支持两种动作布局模式：
 
-- 普通 AI 文本已经不再是纯字符串展示
-- 现阶段对普通用户已足够可读
-- 复杂多模态资源块仍留给独立 `part renderer`
+- `inline`
+- `stacked`
 
----
+#### Inline 模式
 
-## 输入区
+适用于没有额外功能按钮，或者只有少量辅助按钮的场景。
 
-当前实现：
+当前行为：
+
+- 输入框默认单行
+- 发送按钮与输入内容最后一行对齐
+- `Settings2` 按钮与发送按钮一起放在右侧
+- 内容变多时自动增高
+- 超过最大高度才出现内部滚动条
+
+#### Stacked 模式
+
+适用于输入框下方需要预留工具按钮区的场景。
+
+当前行为：
+
+- 输入区在上
+- 下方单独一行动作区
+- 左侧是扩展功能按钮位
+- 右侧是模式切换按钮
+- 最右侧是发送或停止按钮
+
+当前测试页的 stacked 模式示例：
+
+- 左侧：`BrushCleaning`
+- 右侧：`Settings2`
+- 最右：`Send` / `Stop`
+
+#### 输入交互
+
+当前输入交互规则：
+
+- `Enter` 发送
+- `Shift + Enter` 换行
+- 自动聚焦与光标回到末尾已接入
+- 切换 `inline / stacked` 布局时会重新计算输入框高度
+- 初始状态为单行，不再默认两行
+
+## 当前实现对应的 UI 结论
+
+基于当前代码，`test/ai` 页面已经不是“功能测试页拼装界面”，而是一个接近可复用产品形态的 Grok 风格聊天容器原型。
+
+它已经具备：
+
+- 页面级聊天骨架
+- 可折叠侧栏
+- session 列表交互
+- 消息滚动容器
+- 左右对齐消息布局
+- 气泡外元数据区
+- 用户 / AI 消息操作按钮预留
+- Markdown 文本消息展示
+- 双模式输入框结构
+
+这套实现已经可以作为后续通用 `ai-chat` UI 积木块的主要参考实现。
+
+## 组件落点
+
+当前页面级实现主要落在：
+
+- [ai-runtime-playground.tsx](/Users/funeye/IdeaProjects/next-ai-build/apps/ddaas/src/app/[locale]/(home)/test/ai/ai-runtime-playground.tsx)
+
+当前输入框通用能力主要落在：
 
 - [ai-chat-composer.tsx](/Users/funeye/IdeaProjects/next-ai-build/packages/third-ui/src/ai/ai-chat-composer.tsx)
 
-当前结构已改为三段式：
+当前消息渲染相关能力主要落在：
 
-```tsx
-<div className="composer-shell">
-  <div className="composer-left" />
-  <div className="composer-center">
-    <textarea />
-  </div>
-  <div className="composer-right" />
-</div>
-```
+- [ai-message-list.tsx](/Users/funeye/IdeaProjects/next-ai-build/packages/third-ui/src/ai/ai-message-list.tsx)
+- [ai-message-bubble.tsx](/Users/funeye/IdeaProjects/next-ai-build/packages/third-ui/src/ai/ai-message-bubble.tsx)
+- [ai-message-meta.tsx](/Users/funeye/IdeaProjects/next-ai-build/packages/third-ui/src/ai/ai-message-meta.tsx)
+- [ai-status-indicator.tsx](/Users/funeye/IdeaProjects/next-ai-build/packages/third-ui/src/ai/ai-status-indicator.tsx)
 
-并支持：
+## 待办清单
 
-- 自动增高
-- Enter 发送
-- Shift + Enter 换行
-- Streaming 时显示 Stop
-- 左侧 slot
-- helper 区
-- attachments 预留位
-
-## 当前设计规则
-
-- 输入区必须固定在聊天主区底部
-- 默认高度更接近聊天输入器，而不是大块表单
-- 左侧预留未来多模态入口
-- 中间始终是输入主轴
-- 右侧保留发送或停止操作
-
-这套结构已经足够承接未来图片上传、文件引用、模型选择、工具入口，而不用重做布局。
-
----
-
-## 响应式规则
-
-## Web 端
-
-当前目标：
-
-- 左侧历史面板
-- 右侧聊天主区
-- 顶部头部独立
-
-关键布局约束：
-
-- `min-w-0`
-- `min-h-0`
-- `overflow-hidden`
-
-这些约束必须保留，否则消息区和输入区容易把容器撑坏。
-
-## 移动端
-
-当前目标：
-
-- 不显示左侧栏
-- 使用底部抽屉承载 session / controls
-- 聊天主区全宽
-- 输入区贴底
-
-移动端体验原则：
-
-- 历史入口点击路径短
-- 输入区不被消息滚动区吞掉
-- 消息宽度大，但仍保留必要留白
-
----
-
-## 当前 Playground 的 UI 定位
-
-当前测试页已经不再是旧式调试面板，而是：
-
-- 一页真实可用的聊天主区域验证页
-- 同时保留 runtime / mock 调试入口
-- 用于沉淀 `third-ui/ai` 的页面骨架与组件实践
-
-因此它承担的是“双重角色”：
-
-- 验证聊天 UI 积木
-- 验证 runtime 通路
-
-后续如果继续演进，建议保持这个原则：
-
-- 调试信息可以存在
-- 但只能退到辅助区
-- 不能重新抢占聊天主区
-
----
-
-## 当前可复用的 UI 资产
-
-已经可复用：
-
-- 消息左右对齐骨架
-- message footer 的 `meta + actions` 分区
-- 消息区自动滚动到底
-- 三段式 composer
-- Web 侧栏 / 移动端抽屉 的主布局策略
-- text part Markdown 渲染
-
-后续继续扩展时，应优先复用这些能力，而不是重新在页面里拼临时 DOM。
-
----
-
-## 后续 UI 扩展建议
-
-优先级建议：
-
-1. 把聊天可复用的 Markdown component map 收口
-2. 完成 `image part` / `file part` 的资源块样式
-3. 完善消息级 action 设计
-4. 补齐 session 面板的数据来源与状态记忆
-
-当前不建议优先做：
-
-- 复杂皮肤化
-- 过重的装饰性样式
-- 类文档站级别的复杂代码块增强
-- 完整 Grok 历史系统复刻
-
----
-
-## 文档约束
-
-后续任何涉及聊天主布局、消息布局、输入交互、响应式方案的改动，优先更新本文档。
-
-若代码与本文档冲突，以当前代码为准，并立即同步修正文档。
+- 重点补强移动端兼容设计，包括抽屉交互、输入法遮挡、底部安全区、窄屏消息密度和手势体验
+- 将当前测试页中已经验证通过的 session 面板与聊天主区结构，继续下沉为更标准的通用组件 API
+- 进一步梳理 composer 的动作区协议，明确哪些是左侧工具按钮，哪些是右侧辅助按钮，哪些属于主提交动作
+- 完善移动端下消息元数据 hover 语义的替代交互，因为触屏环境不存在 hover
+- 补强 session 列表在极端数据量下的体验，例如长标题、超多会话、滚动定位与性能
+- 把当前测试页中的 session 操作按钮和确认交互进一步沉淀为更可复用的 UI 模式
+- 补充更完整的空态、异常态和断流态视觉规则
+- 后续接入多模态消息时，为图片、文件、音频、视频等内容设计独立消息块布局，而不是继续塞入纯文本气泡

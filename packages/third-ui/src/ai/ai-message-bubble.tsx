@@ -92,7 +92,8 @@ export function AIMessageBubble({
     >
       <article
         className={cn(
-          'min-h-12 min-w-[7.5rem] w-fit max-w-full rounded-3xl border px-4 py-3 sm:min-h-13 sm:min-w-[9rem]',
+          'min-h-12 min-w-30 max-w-full rounded-3xl border px-4 py-3 sm:min-h-13 sm:min-w-36',
+          isUser ? 'w-fit' : 'w-full',
           maxWidthClassName ?? 'max-w-[92%] sm:max-w-[82%]',
           isUser
             ? 'border-foreground/10 bg-foreground text-background'

@@ -38,6 +38,8 @@ export function AIChatComposer({
   submitControl,
   stopControl,
   textareaRef: externalTextareaRef,
+  secondaryActions,
+  actionLayout = 'inline',
 }: AIChatComposerProps) {
   const internalTextareaRef = useRef<HTMLTextAreaElement | null>(null);
   const textareaRef = externalTextareaRef ?? internalTextareaRef;
@@ -48,7 +50,7 @@ export function AIChatComposer({
     }
 
     resizeTextarea(textareaRef.current, minHeight, maxHeight);
-  }, [maxHeight, minHeight, value]);
+  }, [actionLayout, maxHeight, minHeight, value]);
 
   const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
     if (!submitOnEnter || event.nativeEvent.isComposing) {
@@ -68,6 +70,80 @@ export function AIChatComposer({
     }
   };
 
+  const primaryAction = isStreaming && onStop
+    ? (
+        stopControl ?? (
+          <button
+            type="button"
+            onClick={onStop}
+            className="inline-flex h-10 items-center justify-center rounded-2xl border border-border px-4 text-sm text-foreground transition hover:bg-muted"
+          >
+            {stopLabel}
+          </button>
+        )
+      )
+    : (
+        submitControl ?? (
+          <button
+            type="button"
+            onClick={onSubmit}
+            disabled={disabled || isStreaming || value.trim().length === 0}
+            className="inline-flex h-10 items-center justify-center rounded-2xl bg-foreground px-4 text-sm text-background transition disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {submitLabel}
+          </button>
+        )
+      );
+
+  if (actionLayout === 'stacked') {
+    return (
+      <div className={cn('space-y-3', className)}>
+        {attachments ? <div>{attachments}</div> : null}
+
+        <div
+          className={cn(
+            'rounded-3xl border border-border bg-background px-3 py-3',
+            shellClassName,
+          )}
+        >
+          <div className="flex items-end gap-3">
+            <div className="flex shrink-0 items-center">
+              {leftSlot}
+            </div>
+
+            <div className="min-w-0 flex-1">
+              <textarea
+                ref={textareaRef}
+                rows={1}
+                value={value}
+                onChange={(event) => onChange(event.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder={placeholder}
+                disabled={disabled}
+                className={cn(
+                  'block w-full resize-none border-0 bg-transparent px-0 py-2 text-sm leading-6 text-foreground outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-60 box-border',
+                  textareaClassName,
+                )}
+                style={{ minHeight: `${minHeight}px`, maxHeight: `${maxHeight}px` }}
+              />
+            </div>
+          </div>
+
+          <div className="mt-3 flex items-center justify-between gap-3 border-t border-border/70 pt-3">
+            <div className="flex min-w-0 flex-1 items-center gap-2">
+              {secondaryActions}
+            </div>
+            <div className="flex shrink-0 items-center gap-2">
+              {primaryAction}
+            </div>
+          </div>
+        </div>
+
+        {helper ? <div>{helper}</div> : null}
+      </div>
+    );
+  }
+
   return (
     <div className={cn('space-y-3', className)}>
       {attachments ? <div>{attachments}</div> : null}
@@ -85,13 +161,14 @@ export function AIChatComposer({
         <div className="min-w-0 flex-1">
           <textarea
             ref={textareaRef}
+            rows={1}
             value={value}
             onChange={(event) => onChange(event.target.value)}
             onKeyDown={handleKeyDown}
             placeholder={placeholder}
             disabled={disabled}
             className={cn(
-              'block w-full resize-none border-0 bg-transparent px-0 py-2 text-sm leading-6 text-foreground outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-60',
+              'block w-full resize-none border-0 bg-transparent px-0 py-2 text-sm leading-6 text-foreground outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-60 box-border',
               textareaClassName,
             )}
             style={{ minHeight: `${minHeight}px`, maxHeight: `${maxHeight}px` }}
@@ -99,30 +176,8 @@ export function AIChatComposer({
         </div>
 
         <div className="flex shrink-0 items-center gap-2">
-          {isStreaming && onStop
-            ? (
-                stopControl ?? (
-                  <button
-                    type="button"
-                    onClick={onStop}
-                    className="inline-flex h-10 items-center justify-center rounded-2xl border border-border px-4 text-sm text-foreground transition hover:bg-muted"
-                  >
-                    {stopLabel}
-                  </button>
-                )
-              )
-            : (
-                submitControl ?? (
-                  <button
-                    type="button"
-                    onClick={onSubmit}
-                    disabled={disabled || isStreaming || value.trim().length === 0}
-                    className="inline-flex h-10 items-center justify-center rounded-2xl bg-foreground px-4 text-sm text-background transition disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    {submitLabel}
-                  </button>
-                )
-              )}
+          {secondaryActions}
+          {primaryAction}
         </div>
       </div>
 

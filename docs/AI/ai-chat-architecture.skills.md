@@ -65,6 +65,7 @@
 - text part Markdown 渲染
 - 图片 Markdown 基础展示
 - playground 页聊天骨架重构
+- playground 页本地 session 管理与浏览器存储恢复
 
 暂未完成：
 
@@ -155,9 +156,10 @@
 - playground 页聊天骨架重构
 - Web 侧栏 / 移动端抽屉
 - 消息 `meta + actions` 分区
-- 三段式 composer
+- `inline / stacked` 双模式 composer
 - text part Markdown 渲染
 - Markdown 图片基础展示
+- playground 本地 session 列表与切换流程
 
 对应代码：
 
@@ -253,12 +255,17 @@
 
 后续最值得优先推进的事项：
 
-1. 统一聊天可复用的 Markdown component map
-2. 实现 `image part` / `file part` 独立 renderer
-3. 收口宿主默认 adapters
-4. 设计并接入真正的历史会话加载链路
-5. 扩展 provider 侧多模态与 structured event stream
-6. 再评估 tool calling 与 memory 能力
+1. 实现 `image part` / `file part` 独立 renderer
+2. 收口宿主默认 adapters
+3. 设计并接入真正的历史会话加载链路
+4. 扩展 provider 侧多模态与 structured event stream
+5. 再评估 tool calling 与 memory 能力
+
+补充说明：
+
+- 当前 playground 已有浏览器本地 session 存储与恢复，只用于测试页宿主验证
+- 这不等于正式业务历史会话链路已经完成
+- 正式宿主后续仍需要接入服务端持久化、历史拉取、缓存和权限边界
 
 不建议优先推进的事项：
 

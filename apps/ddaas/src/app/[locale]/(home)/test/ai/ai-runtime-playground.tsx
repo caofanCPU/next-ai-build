@@ -27,7 +27,7 @@ import { XPillSelect, type XPillOption } from '@third-ui/main/pill-select';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 const shellClass =
-  'mx-auto mt-12 flex h-[calc(100dvh-5.5rem)] w-full max-w-7xl flex-col gap-3 overflow-hidden px-3 py-2 sm:px-4 md:px-6 md:py-3';
+  'mx-auto mt-18 mb-8 flex h-[calc(100dvh-10rem)] w-full max-w-7xl flex-col gap-3 overflow-hidden px-3 py-2 sm:px-4 md:px-6 md:py-3';
 const panelClass = 'rounded-3xl border border-border bg-background';
 const workspaceHeightClass = 'min-h-0 flex-1';
 const panelSectionClass = 'rounded-[24px] border border-border/60 bg-background/80';
@@ -70,6 +70,7 @@ type SessionRecord = {
 };
 
 type SidePanelMode = 'sessions' | 'config';
+type ComposerActionLayout = 'inline' | 'stacked';
 
 type RuntimeControlsProps = {
   eventCount: number;
@@ -258,6 +259,8 @@ export function AIRuntimePlayground() {
   const [editingSessionTitle, setEditingSessionTitle] = useState('');
   const [expandedSessionId, setExpandedSessionId] = useState<string | null>(null);
   const [storageReady, setStorageReady] = useState(false);
+  const [composerActionLayout, setComposerActionLayout] =
+    useState<ComposerActionLayout>('inline');
   const [savedSessions, setSavedSessions] = useState<SessionRecord[]>(() => [
     createEmptySessionRecord(initialSessionId, 1),
   ]);
@@ -756,6 +759,47 @@ export function AIRuntimePlayground() {
     </div>
   );
 
+  const composerSecondaryActions = composerActionLayout === 'stacked'
+    ? (
+        <div className="flex w-full min-w-0 items-center justify-between gap-2">
+          <button
+            type="button"
+            title="Clear composer"
+            aria-label="Clear composer"
+            onClick={() => {
+              setInput('');
+              window.requestAnimationFrame(() => {
+                placeCursorToEnd(textareaRef.current);
+              });
+            }}
+            className="inline-flex size-9 items-center justify-center rounded-full border border-border text-muted-foreground transition hover:bg-muted hover:text-foreground"
+          >
+            <icons.BrushCleaning className="size-4" />
+          </button>
+
+          <button
+            type="button"
+            title="Switch composer to inline actions"
+            aria-label="Switch composer to inline actions"
+            onClick={() => setComposerActionLayout('inline')}
+            className="inline-flex size-9 items-center justify-center rounded-full border border-border text-muted-foreground transition hover:bg-muted hover:text-foreground"
+          >
+            <icons.Settings2 className="size-4" />
+          </button>
+        </div>
+      )
+    : (
+        <button
+          type="button"
+          title="Switch composer to stacked actions"
+          aria-label="Switch composer to stacked actions"
+          onClick={() => setComposerActionLayout('stacked')}
+          className="inline-flex size-9 items-center justify-center rounded-full border border-border text-muted-foreground transition hover:bg-muted hover:text-foreground"
+        >
+          <icons.Settings2 className="size-4" />
+        </button>
+      );
+
   return (
     <main className={shellClass}>
       <div className={cn('flex min-h-0 flex-1 gap-4 overflow-hidden', workspaceHeightClass)}>
@@ -833,7 +877,7 @@ export function AIRuntimePlayground() {
 
                 return (
                   <div className={cn('group flex w-full', isUser ? 'justify-end' : 'justify-start')}>
-                    <div className="w-full max-w-[92%] sm:max-w-[82%]">
+                    <div className={cn('w-full', isUser ? 'max-w-[92%] sm:max-w-[82%]' : 'max-w-full')}>
                       <AIMessageBubble
                         message={message}
                         maxWidthClassName="max-w-full"
@@ -936,8 +980,9 @@ export function AIRuntimePlayground() {
                 isStreaming={conversation.isStreaming}
                 placeholder="Ask the ddaaS AI runtime something..."
                 textareaRef={textareaRef}
-                minHeight={52}
+                minHeight={40}
                 maxHeight={180}
+                actionLayout={composerActionLayout}
                 leftSlot={(
                   <button
                     type="button"
@@ -947,6 +992,7 @@ export function AIRuntimePlayground() {
                     Session
                   </button>
                 )}
+                secondaryActions={composerSecondaryActions}
                 submitControl={(
                   <button
                     type="button"
