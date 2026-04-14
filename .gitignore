@@ -1,4 +1,7 @@
 .gemini*
+.claude*
+.cursor*
+
 # Logs
 logs
 *.log
@@ -173,3 +176,6 @@ Thumbs.db
 # Turbo cache
 **/.turbo
 
+.gitnexus
+AGENTS.md
+CLAUDE.md

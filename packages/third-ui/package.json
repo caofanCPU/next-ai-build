@@ -99,11 +99,17 @@
     "fumadocs-mdx": "catalog:",
     "fumadocs-typescript": "catalog:",
     "fumadocs-ui": "catalog:",
+    "hast-util-to-jsx-runtime": "^2.3.6",
     "katex": "catalog:",
+    "remark": "catalog:",
+    "remark-gfm": "catalog:",
+    "remark-parse": "^11.0.0",
+    "remark-rehype": "^11.1.2",
     "mermaid": "catalog:",
     "react-medium-image-zoom": "catalog:",
     "swiper": "catalog:",
     "tslib": "catalog:",
+    "unified": "^11.0.5",
     "zod": "catalog:"
   },
   "peerDependencies": {

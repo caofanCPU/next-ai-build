@@ -4,6 +4,7 @@ import type {
   ConversationMessage,
   MessagePart,
 } from '@windrun-huaiin/contracts/ai';
+import type { ComponentType, ReactNode, RefObject } from 'react';
 
 export type AIConversationTransport = (
   input: AIRuntimeRequest,
@@ -42,22 +43,78 @@ export type AIChatComposerProps = {
   isStreaming?: boolean;
   placeholder?: string;
   className?: string;
+  leftSlot?: ReactNode;
+  attachments?: ReactNode;
+  helper?: ReactNode;
+  submitLabel?: string;
+  stopLabel?: string;
+  minHeight?: number;
+  maxHeight?: number;
+  submitOnEnter?: boolean;
+  shellClassName?: string;
+  textareaClassName?: string;
+  submitControl?: ReactNode;
+  stopControl?: ReactNode;
+  textareaRef?: RefObject<HTMLTextAreaElement | null>;
 };
 
 export type AIMessageBubbleProps = {
   message: ConversationMessage;
   className?: string;
+  cardClassName?: string;
+  contentClassName?: string;
+  footerClassName?: string;
+  maxWidthClassName?: string;
+  showRoleLabel?: boolean;
+  markdownComponents?: AIMarkdownComponentMap;
+  showFooter?: boolean;
+  renderContent?: (message: ConversationMessage) => ReactNode;
+  renderMeta?: (message: ConversationMessage) => ReactNode;
+  renderActions?: (message: ConversationMessage) => ReactNode;
 };
 
 export type AIMessageListProps = {
   messages: ConversationMessage[];
   className?: string;
+  contentClassName?: string;
   emptyText?: string;
+  emptyState?: ReactNode;
+  autoScroll?: boolean;
+  scrollBehavior?: ScrollBehavior;
+  renderMessage?: (message: ConversationMessage) => ReactNode;
 };
 
 export type AIStatusIndicatorProps = {
   message: ConversationMessage;
   className?: string;
+};
+
+export type AIMessageContentProps = {
+  message: ConversationMessage;
+  className?: string;
+  markdownComponents?: AIMarkdownComponentMap;
+};
+
+export type AIMessageMetaProps = {
+  message: ConversationMessage;
+  className?: string;
+  showTime?: boolean;
+  showStatus?: boolean;
+  showRuntime?: boolean;
+  showFailureReason?: boolean;
+};
+
+export type AIMessageActionsProps = {
+  className?: string;
+  children?: ReactNode;
+};
+
+export type AIMarkdownComponentMap = Record<string, ComponentType<any>>;
+
+export type AIMarkdownProps = {
+  content: string;
+  className?: string;
+  components?: AIMarkdownComponentMap;
 };
 
 export type TextMessagePart = Extract<MessagePart, { type: 'text' }>;

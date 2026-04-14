@@ -6,6 +6,11 @@ export type MessagePart =
       text: string;
     }
   | {
+      type: 'trophy_card';
+      title: string;
+      description?: string;
+    }
+  | {
       type: 'image';
       url: string;
       mimeType?: string;

@@ -9,7 +9,8 @@ import {
   GradientButton,
   ZiaFile,
   ZiaFolder,
-  SunoEmbed
+  SunoEmbed,
+  baseMarkdownComponents
 } from "@third-ui/fuma/mdx";
 import { SiteX } from "@third-ui/fuma/server";
 import { CodeBlock, Pre } from "fumadocs-ui/components/codeblock";
@@ -113,6 +114,13 @@ export function getMDXComponents(
 ): MDXComponents {
   return {
     ...defaultMdxComponents,
+    ...baseMarkdownComponents,
+    img: (props) => (
+      <ImageZoom
+        {...(props as any)}
+        fallbackSrc={appConfig.style.placeHolder.image}
+      />
+    ),
     pre: (props) => {
       const customIcon = tryToMatchIcon(props, languageToIconMap);
       return (
@@ -127,9 +135,6 @@ export function getMDXComponents(
     AutoTypeTable: (props) => (
       <AutoTypeTable {...props} generator={typeTableGenerator} />
     ),
-    // 全局处理图片放大
-     
-    img: (props) => <ImageZoom {...(props as any)} />,
     // 全局配置的 Mermaid 组件
     Mermaid: (props) => (
       <Mermaid

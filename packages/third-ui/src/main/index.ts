@@ -24,3 +24,5 @@ export { CreditNavButton } from './credit/credit-nav-button';
 
 export { HeroMedia } from './hero-media';
 export { HeroSection } from './hero-section';
+
+export { InfoTooltip } from './info-tooltip';

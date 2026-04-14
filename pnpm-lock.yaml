@@ -836,6 +836,9 @@ importers:
       fumadocs-ui:
         specifier: 'catalog:'
         version: 16.0.9(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(lucide-react@0.577.0(react@19.2.4))(next@16.1.6(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwindcss@4.2.2)
+      hast-util-to-jsx-runtime:
+        specifier: ^2.3.6
+        version: 2.3.6
       katex:
         specifier: 'catalog:'
         version: 0.16.43
@@ -863,6 +866,18 @@ importers:
       react-medium-image-zoom:
         specifier: 'catalog:'
         version: 5.4.1(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      remark:
+        specifier: 'catalog:'
+        version: 15.0.1
+      remark-gfm:
+        specifier: 'catalog:'
+        version: 4.0.1
+      remark-parse:
+        specifier: ^11.0.0
+        version: 11.0.0
+      remark-rehype:
+        specifier: ^11.1.2
+        version: 11.1.2
       swiper:
         specifier: 'catalog:'
         version: 12.1.3
@@ -872,6 +887,9 @@ importers:
       tslib:
         specifier: 'catalog:'
         version: 2.8.1
+      unified:
+        specifier: ^11.0.5
+        version: 11.0.5
       zod:
         specifier: 'catalog:'
         version: 4.3.6

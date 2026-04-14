@@ -1,9 +1,12 @@
 'use client';
 
-import { getMessageText, type ConversationMessage } from '@windrun-huaiin/contracts/ai';
+import type { ConversationMessage } from '@windrun-huaiin/contracts/ai';
 import { cn } from '@windrun-huaiin/lib/utils';
-import type { AIMessageBubbleProps, AIMessageRuntimeMetadata } from './types';
-import { AIStatusIndicator } from './ai-status-indicator';
+import { useEffect, useRef, useState } from 'react';
+import { AIMessageActions } from './ai-message-actions';
+import { AIMessageContent } from './ai-message-content';
+import { AIMessageMeta } from './ai-message-meta';
+import type { AIMessageBubbleProps } from './types';
 
 function getRoleLabel(role: ConversationMessage['role']) {
   switch (role) {
@@ -18,30 +21,66 @@ function getRoleLabel(role: ConversationMessage['role']) {
   }
 }
 
-function getRuntimeMetadata(message: ConversationMessage): AIMessageRuntimeMetadata {
-  const metadata = message.metadata?.aiRuntime;
-  if (!metadata || typeof metadata !== 'object') {
-    return {};
-  }
-
-  return metadata as AIMessageRuntimeMetadata;
-}
-
-function formatDuration(durationMs?: number) {
-  if (durationMs === undefined || Number.isNaN(durationMs)) {
-    return '--';
-  }
-
-  if (durationMs < 1000) {
-    return `${durationMs}ms`;
-  }
-
-  return `${(durationMs / 1000).toFixed(2)}s`;
-}
-
-export function AIMessageBubble({ message, className }: AIMessageBubbleProps) {
+export function AIMessageBubble({
+  message,
+  className,
+  cardClassName,
+  contentClassName,
+  footerClassName,
+  maxWidthClassName,
+  showRoleLabel = false,
+  markdownComponents,
+  showFooter = true,
+  renderContent,
+  renderMeta,
+  renderActions,
+}: AIMessageBubbleProps) {
   const isUser = message.role === 'user';
-  const runtimeMetadata = getRuntimeMetadata(message);
+  const contentWrapperRef = useRef<HTMLDivElement | null>(null);
+  const [isCompactSingleLine, setIsCompactSingleLine] = useState(false);
+  const content = renderContent
+    ? renderContent(message)
+    : <AIMessageContent message={message} className={contentClassName} markdownComponents={markdownComponents} />;
+  const meta = renderMeta ? renderMeta(message) : <AIMessageMeta message={message} />;
+  const actions = renderActions ? renderActions(message) : null;
+  const hasFooter = Boolean(meta) || Boolean(actions);
+  const isTextOnlyMessage =
+    message.parts.length > 0
+      ? message.parts.every((part) => part.type === 'text')
+      : Boolean(message.errorMessage);
+
+  useEffect(() => {
+    if (!isTextOnlyMessage || !contentWrapperRef.current) {
+      setIsCompactSingleLine(false);
+      return;
+    }
+
+    const element = contentWrapperRef.current;
+
+    const measure = () => {
+      const computedStyle = window.getComputedStyle(element);
+      const lineHeight = Number.parseFloat(computedStyle.lineHeight);
+      if (!Number.isFinite(lineHeight) || lineHeight <= 0) {
+        setIsCompactSingleLine(false);
+        return;
+      }
+
+      const nextIsSingleLine = element.scrollHeight <= lineHeight * 1.75;
+      setIsCompactSingleLine(nextIsSingleLine);
+    };
+
+    measure();
+
+    const observer = new ResizeObserver(() => {
+      measure();
+    });
+
+    observer.observe(element);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [isTextOnlyMessage, message.errorMessage, message.id, message.parts]);
 
   return (
     <div
@@ -53,34 +92,43 @@ export function AIMessageBubble({ message, className }: AIMessageBubbleProps) {
     >
       <article
         className={cn(
-          'max-w-[88%] rounded-3xl border px-4 py-3 sm:max-w-[82%]',
+          'min-h-12 min-w-[7.5rem] w-fit max-w-full rounded-3xl border px-4 py-3 sm:min-h-13 sm:min-w-[9rem]',
+          maxWidthClassName ?? 'max-w-[92%] sm:max-w-[82%]',
           isUser
             ? 'border-foreground/10 bg-foreground text-background'
             : 'border-border bg-background text-foreground',
+          cardClassName,
         )}
       >
-        <div className="mb-2 flex items-center gap-3">
-          <span className="text-[11px] font-semibold uppercase tracking-[0.14em] opacity-60">
-            {getRoleLabel(message.role)}
-          </span>
-        </div>
-        <div className="whitespace-pre-wrap break-words text-sm leading-7">
-          {getMessageText(message) || message.errorMessage || ''}
-        </div>
-        {!isUser ? (
-          <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-border/70 pt-3 text-[11px] text-muted-foreground">
-            <span className="rounded-full bg-muted px-2 py-1">
-              First Token {formatDuration(runtimeMetadata.firstTokenMs)}
+        {showRoleLabel ? (
+          <div className="mb-2 flex items-center gap-3">
+            <span className="text-[11px] font-semibold uppercase tracking-[0.14em] opacity-60">
+              {getRoleLabel(message.role)}
             </span>
-            <span className="rounded-full bg-muted px-2 py-1">
-              Total {formatDuration(runtimeMetadata.totalMs)}
-            </span>
-            <AIStatusIndicator message={message} />
-            {message.failureReason ? (
-              <span className="rounded-full bg-muted px-2 py-1">
-                Reason {message.failureReason}
-              </span>
-            ) : null}
+          </div>
+        ) : null}
+
+        <div
+          ref={contentWrapperRef}
+          className={cn(
+            'min-w-0',
+            isTextOnlyMessage && isCompactSingleLine && 'flex justify-center',
+          )}
+        >
+          {content}
+        </div>
+
+        {showFooter && hasFooter ? (
+          <div
+            className={cn(
+              'mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-border/70 pt-3',
+              footerClassName,
+            )}
+          >
+            <div className="min-w-0 flex-1">
+              {meta}
+            </div>
+            {actions ? <AIMessageActions>{actions}</AIMessageActions> : null}
           </div>
         ) : null}
       </article>

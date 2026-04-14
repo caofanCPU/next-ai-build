@@ -392,10 +392,31 @@ export function useAIConversation(options: AIConversationOptions) {
     });
   };
 
+  const removeMessage = (messageId: string) => {
+    startTransition(() => {
+      setState((current) => ({
+        ...current,
+        messages: current.messages.filter((message) => message.id !== messageId),
+      }));
+    });
+  };
+
+  const loadConversation = (messages: ConversationMessage[], sessionId?: string) => {
+    startTransition(() => {
+      setState({
+        sessionId,
+        messages,
+        isStreaming: false,
+      });
+    });
+  };
+
   return {
     ...state,
     sendMessage,
     stopGeneration,
     resetConversation,
+    removeMessage,
+    loadConversation,
   };
 }

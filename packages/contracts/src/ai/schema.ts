@@ -21,6 +21,11 @@ export const MessagePartSchema = z.discriminatedUnion('type', [
     text: z.string(),
   }),
   z.object({
+    type: z.literal('trophy_card'),
+    title: z.string(),
+    description: z.string().optional(),
+  }),
+  z.object({
     type: z.literal('image'),
     url: z.string(),
     mimeType: z.string().optional(),

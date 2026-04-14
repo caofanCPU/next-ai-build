@@ -68,6 +68,7 @@ export function createErrorMockResponse(statusCode: number, message: string) {
 type MockFailureType = 'timeout' | 'request_aborted' | 'stream_error';
 
 type MockScenario = {
+  mode?: 'text_stream' | 'event_sequence';
   initialDelayMs?: number;
   streamFailureType?: MockFailureType;
   streamFailureAfterChunks?: number;
@@ -87,29 +88,44 @@ export function getMockScenario(mockType: number, mockTimeoutMs: number): MockSc
   switch (mockType) {
     case 1:
       return {
+        mode: 'text_stream',
         initialDelayMs: mockTimeoutMs,
       };
     case 2:
       return {
+        mode: 'text_stream',
         immediateErrorType: 'timeout',
       };
     case 3:
       return {
+        mode: 'text_stream',
         streamFailureType: 'timeout',
         streamFailureAfterChunks: 3,
       };
     case 4:
       return {
+        mode: 'text_stream',
         streamFailureType: 'request_aborted',
         streamFailureAfterChunks: 3,
       };
     case 5:
       return {
+        mode: 'text_stream',
         streamFailureType: 'stream_error',
         streamFailureAfterChunks: 3,
       };
+    case 6:
+      return {
+        mode: 'event_sequence',
+      };
+    case 7:
+      return {
+        mode: 'event_sequence',
+      };
     default:
-      return {};
+      return {
+        mode: 'text_stream',
+      };
   }
 }
 
@@ -232,6 +248,101 @@ export function createConfigurableMockHandler(options: ConfigurableMockOptions):
   };
 }
 
+function createEventSequenceMockHandler(events: AIStreamEvent[]): AIMockHandler {
+  return async () => createStreamResponse(events);
+}
+
+function createMarkdownShowcaseEvents(messageId: string): AIStreamEvent[] {
+  return [
+    {
+      type: 'message_started',
+      messageId,
+      createdAt: Date.now(),
+    },
+    {
+      type: 'text_delta',
+      messageId,
+      text: [
+        '# Markdown Showcase',
+        '',
+        'This scenario verifies headings, lists, quotes, tables, code, and image rendering in the chat message body.',
+        '',
+        '## Bullet List',
+        '',
+        '- Bullet list item one',
+        '- Bullet list item two',
+        '',
+        '## Quote',
+        '',
+        '> Blockquote content for layout verification.',
+        '',
+        '## Table',
+        '',
+        '| Column | Value |',
+        '| --- | --- |',
+        '| Status | OK |',
+        '| Mode | Markdown |',
+        '',
+        '## Code',
+        '',
+        '```ts',
+        "const mode = 'markdown-showcase';",
+        'console.log(mode);',
+        '```',
+        '',
+        '## Image',
+        '',
+        '![Mock Image](https://r2.d8ger.com/default.webp)',
+      ].join('\n'),
+    },
+    {
+      type: 'message_completed',
+      messageId,
+      createdAt: Date.now(),
+    },
+  ];
+}
+
+function createTrophyCardShowcaseEvents(messageId: string): AIStreamEvent[] {
+  return [
+    {
+      type: 'message_started',
+      messageId,
+      createdAt: Date.now(),
+    },
+    {
+      type: 'text_delta',
+      messageId,
+      text: [
+        '# Trophy Card Showcase',
+        '',
+        'This scenario verifies a structured chat part rendered between normal markdown blocks.',
+        '',
+        'The card below is emitted as a dedicated `trophy_card` part, not as Markdown component syntax.',
+      ].join('\n'),
+    },
+    {
+      type: 'part',
+      messageId,
+      part: {
+        type: 'trophy_card',
+        title: 'Structured Trophy Card',
+        description: 'This is rendered from `MessagePart`, which is the recommended path for chat-specific rich blocks.\n\n- Reusable shared React component\n- Chat-specific structured part\n- Ready to extend to file, audio, and video cards',
+      },
+    },
+    {
+      type: 'text_delta',
+      messageId,
+      text: '\n\nUse this as the reference pattern for future file, audio, video, or tool result parts.',
+    },
+    {
+      type: 'message_completed',
+      messageId,
+      createdAt: Date.now(),
+    },
+  ];
+}
+
 export function createScenarioMockHandler(params: {
   text: string;
   mockType: number;
@@ -240,9 +351,20 @@ export function createScenarioMockHandler(params: {
   mockStreamChunkSize: number;
 }): AIMockHandler {
   const scenario = getMockScenario(params.mockType, params.mockTimeoutSeconds * 1000);
+  const messageId = `mock-scenario-${params.mockType}`;
 
   if (scenario.immediateErrorType) {
     return async () => createMockFailureResponse(scenario.immediateErrorType!);
+  }
+
+  if (scenario.mode === 'event_sequence') {
+    if (params.mockType === 6) {
+      return createEventSequenceMockHandler(createMarkdownShowcaseEvents(messageId));
+    }
+
+    if (params.mockType === 7) {
+      return createEventSequenceMockHandler(createTrophyCardShowcaseEvents(messageId));
+    }
   }
 
   return createConfigurableMockHandler({
