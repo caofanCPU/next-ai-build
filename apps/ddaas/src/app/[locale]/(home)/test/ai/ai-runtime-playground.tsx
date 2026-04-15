@@ -1,6 +1,5 @@
 'use client';
 
-import { globalLucideIcons as icons } from '@base-ui/components/global-icon';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -11,6 +10,24 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@base-ui/ui';
+import {
+  ArrowUpIcon,
+  BrushCleaningIcon,
+  CircleStopIcon,
+  CopyCheckIcon,
+  CopyIcon,
+  EllipsisVerticalIcon,
+  GlobalAccentIcon,
+  HousePlusIcon,
+  PanelLeftIcon,
+  PencilIcon,
+  PinIcon,
+  PinOffIcon,
+  RefreshCcwIcon,
+  RotateCcwIcon,
+  Settings2Icon,
+  Trash2Icon,
+} from '@windrun-huaiin/base-ui/icons';
 import {
   AIChatComposer,
   AIMessageBubble,
@@ -648,7 +665,7 @@ export function AIRuntimePlayground() {
                               className="flex min-w-0 flex-1 items-center gap-2 text-left"
                             >
                               {item.pinned ? (
-                                <icons.Pin className="size-3.5 shrink-0 text-muted-foreground" />
+                                <PinIcon className="size-3.5 shrink-0 text-muted-foreground" />
                               ) : null}
                               <span className="min-w-0 flex-1 truncate text-sm leading-6 text-foreground">
                                 {getSessionDisplayTitle(item)}
@@ -664,7 +681,7 @@ export function AIRuntimePlayground() {
                               }}
                               className={actionButtonClass}
                             >
-                              <icons.EllipsisVertical className="size-4" />
+                              <EllipsisVerticalIcon className="size-4" />
                             </button>
                           </div>
 
@@ -677,7 +694,7 @@ export function AIRuntimePlayground() {
                                 onClick={() => startEditingSession(item)}
                                 className={actionButtonClass}
                               >
-                                <icons.Pencil className="size-4" />
+                                <PencilIcon className="size-4" />
                               </button>
                               <button
                                 type="button"
@@ -687,9 +704,9 @@ export function AIRuntimePlayground() {
                                 className={actionButtonClass}
                               >
                                 {item.pinned ? (
-                                  <icons.PinOff className="size-4" />
+                                  <PinOffIcon className="size-4" />
                                 ) : (
-                                  <icons.Pin className="size-4" />
+                                  <PinIcon className="size-4" />
                                 )}
                               </button>
                               <button
@@ -699,7 +716,7 @@ export function AIRuntimePlayground() {
                                 onClick={() => setDeleteSessionTargetId(item.id)}
                                 className={actionButtonClass}
                               >
-                                <icons.Trash2 className="size-4" />
+                                <Trash2Icon className="size-4" />
                               </button>
                             </div>
                           ) : null}
@@ -744,7 +761,7 @@ export function AIRuntimePlayground() {
             title={sidePanelMode === 'sessions' ? 'Switch to runtime config' : 'Switch to session list'}
             onClick={() => setSidePanelMode((current) => (current === 'sessions' ? 'config' : 'sessions'))}
           >
-            <icons.Settings2 className="size-4" />
+            <Settings2Icon className="size-4" />
           </button>
           <button
             type="button"
@@ -752,7 +769,7 @@ export function AIRuntimePlayground() {
             title="Create new session"
             onClick={createFreshSession}
           >
-            <icons.HousePlus className="size-4" />
+            <HousePlusIcon className="size-4" />
           </button>
         </div>
       </div>
@@ -774,7 +791,7 @@ export function AIRuntimePlayground() {
             }}
             className="inline-flex size-9 items-center justify-center rounded-full border border-border text-muted-foreground transition hover:bg-muted hover:text-foreground"
           >
-            <icons.BrushCleaning className="size-4" />
+            <BrushCleaningIcon className="size-4" />
           </button>
 
           <button
@@ -784,7 +801,7 @@ export function AIRuntimePlayground() {
             onClick={() => setComposerActionLayout('inline')}
             className="inline-flex size-9 items-center justify-center rounded-full border border-border text-muted-foreground transition hover:bg-muted hover:text-foreground"
           >
-            <icons.Settings2 className="size-4" />
+            <Settings2Icon className="size-4" />
           </button>
         </div>
       )
@@ -796,7 +813,7 @@ export function AIRuntimePlayground() {
           onClick={() => setComposerActionLayout('stacked')}
           className="inline-flex size-9 items-center justify-center rounded-full border border-border text-muted-foreground transition hover:bg-muted hover:text-foreground"
         >
-          <icons.Settings2 className="size-4" />
+          <Settings2Icon className="size-4" />
         </button>
       );
 
@@ -822,7 +839,7 @@ export function AIRuntimePlayground() {
                     className={`${actionButtonClass} hidden md:inline-flex`}
                     title={historyOpen ? 'Collapse left panel' : 'Expand left panel'}
                   >
-                    <icons.PanelLeft className="size-4" />
+                    <PanelLeftIcon className="size-4" />
                   </button>
                 </div>
 
@@ -902,9 +919,9 @@ export function AIRuntimePlayground() {
                             className={actionButtonClass}
                           >
                             {copiedMessageId === message.id ? (
-                              <icons.CopyCheck className="size-4" />
+                              <CopyCheckIcon className="size-4" />
                             ) : (
-                              <icons.Copy className="size-4" />
+                              <CopyIcon className="size-4" />
                             )}
                           </button>
 
@@ -916,7 +933,7 @@ export function AIRuntimePlayground() {
                               onClick={() => reuseMessage(text)}
                               className={actionButtonClass}
                             >
-                              <icons.RefreshCcw className="size-4" />
+                              <RefreshCcwIcon className="size-4" />
                             </button>
                           ) : (
                             <button
@@ -926,7 +943,7 @@ export function AIRuntimePlayground() {
                               onClick={() => retryFromMessage(message)}
                               className={actionButtonClass}
                             >
-                              <icons.RotateCcw className="size-4" />
+                              <RotateCcwIcon className="size-4" />
                             </button>
                           )}
 
@@ -937,7 +954,7 @@ export function AIRuntimePlayground() {
                             onClick={() => setDeleteTargetId(message.id)}
                             className={actionButtonClass}
                           >
-                            <icons.Trash2 className="size-4" />
+                            <Trash2Icon className="size-4" />
                           </button>
 
                           {!isUser ? (
@@ -1002,7 +1019,11 @@ export function AIRuntimePlayground() {
                     disabled={effectiveInput.length === 0}
                     className="inline-flex size-9 items-center justify-center rounded-full bg-foreground text-background transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
                   >
-                    <icons.ArrowUp className="size-4" />
+                    <GlobalAccentIcon
+                      icon={ArrowUpIcon}
+                      className="size-9"
+                      iconClassName="size-4"
+                    />
                   </button>
                 )}
                 stopControl={(
@@ -1011,9 +1032,13 @@ export function AIRuntimePlayground() {
                     title="Stop generation"
                     aria-label="Stop generation"
                     onClick={conversation.stopGeneration}
-                    className="inline-flex size-9 items-center justify-center rounded-full border border-border text-foreground transition hover:bg-muted"
+                    className="inline-flex size-9 items-center justify-center rounded-full transition hover:opacity-90"
                   >
-                    <icons.CircleStop className="size-4 animate-spin [animation-duration:1.6s]" />
+                    <GlobalAccentIcon
+                      icon={CircleStopIcon}
+                      className="size-9"
+                      iconClassName="size-4 animate-spin [animation-duration:1.6s]"
+                    />
                   </button>
                 )}
               />

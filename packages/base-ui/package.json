@@ -29,6 +29,11 @@
       "import": "./dist/components/server.mjs",
       "require": "./dist/components/server.js"
     },
+    "./icons": {
+      "types": "./dist/icons/index.d.ts",
+      "import": "./dist/icons/index.mjs",
+      "require": "./dist/icons/index.js"
+    },
     "./styles/base-ui.css": "./src/styles/base-ui.css",
     "./package.json": "./package.json"
   },

@@ -6,17 +6,15 @@
 */
 
 import { BUILTIN_ICON_COMPONENTS } from '@base-ui/assets';
-import { themeIconColor, themeSvgIconSize, themeBorderColor, themeRingColor } from '@base-ui/lib/theme-util';
-import { cn } from '@windrun-huaiin/lib/utils';
+import { createGlobalIcon, type StyledLucideIconComponent } from '@base-ui/components/icon-factory';
 import * as limitedIconsModule from '@base-ui/components/limited-lucide-icons';
+import { themeBorderColor, themeIconColor, themeRingColor } from '@base-ui/lib/theme-util';
+import { cn } from '@windrun-huaiin/lib/utils';
 import { type LucideProps } from 'lucide-react';
 import React from 'react';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 declare const process: any;
-
-// Type for styled Lucide icon components (accepts LucideProps)
-type StyledLucideIconComponent = (props: LucideProps) => React.ReactElement;
 
 // Union type for all icon components (both Lucide and built-in)
 type IconComponent = StyledLucideIconComponent | React.ComponentType<LucideProps>;
@@ -35,36 +33,8 @@ for (const iconNameKey in limitedIconsModule) {
          OriginalIconComponent !== null && 
          OriginalIconComponent.$$typeof === Symbol.for('react.forward_ref'))) {
       const ComponentToRender = OriginalIconComponent as React.ComponentType<LucideProps>;
-      
-      const StyledIcon = (props: LucideProps): React.ReactElement => {
-        const originalClassName = props.className || '';
-        // Check if user provided a text color class, if so, don't use global color
-        const hasTextColor = /\btext-\w+(-\d+)?\b/.test(originalClassName);
-        // Check if user provided size/dimension classes
-        const hasSizeClass = /\b(size-\d+|w-\d+|h-\d+)\b/.test(originalClassName);
-        
-        const newClassName = hasTextColor 
-          ? originalClassName 
-          : `${themeIconColor} ${originalClassName}`.trim();
-        
-        // If user provided size classes in className, don't use default size
-        // Otherwise, use inline styles to ensure size precedence over external CSS
-        const finalProps = hasSizeClass 
-          ? { ...props, className: newClassName, size: undefined }
-          : { 
-              ...props, 
-              className: newClassName,
-              style: { 
-                width: props.size || themeSvgIconSize, 
-                height: props.size || themeSvgIconSize,
-                ...props.style 
-              }
-            };
-          
-        return <ComponentToRender {...finalProps} />;
-      };
-      StyledIcon.displayName = `Styled(${iconName})`;
-      tempStyledLimitedIcons[iconName] = StyledIcon;
+
+      tempStyledLimitedIcons[iconName] = createGlobalIcon(ComponentToRender, String(iconName));
     } else {
       console.warn(`[global-icon.tsx] Skipped styling for "${iconName}" as it is not a function, undefined, or not a recognized React component type. Value:`, OriginalIconComponent);
     }
@@ -78,35 +48,7 @@ const styledLimitedIconsPart = tempStyledLimitedIcons as {
 // Wrap built-in SVG components with the same className handling logic
 const tempWrappedBuiltinIcons: Partial<Record<keyof typeof BUILTIN_ICON_COMPONENTS, StyledLucideIconComponent>> = {};
 for (const [iconName, IconComponent] of Object.entries(BUILTIN_ICON_COMPONENTS)) {
-  const WrappedIcon = (props: LucideProps): React.ReactElement => {
-    const originalClassName = props.className || '';
-    // Check if user provided a text color class, if so, don't use global color
-    const hasTextColor = /\btext-\w+(-\d+)?\b/.test(originalClassName);
-    // Check if user provided size/dimension classes
-    const hasSizeClass = /\b(size-\d+|w-\d+|h-\d+)\b/.test(originalClassName);
-    
-    const newClassName = hasTextColor 
-      ? originalClassName 
-      : `${themeIconColor} ${originalClassName}`.trim();
-    
-    // If user provided size classes in className, don't use default size
-    // Otherwise, use inline styles to ensure size precedence over external CSS
-    const finalProps = hasSizeClass 
-      ? { ...props, className: newClassName, size: undefined }
-      : { 
-          ...props, 
-          className: newClassName,
-          style: { 
-            width: props.size || themeSvgIconSize, 
-            height: props.size || themeSvgIconSize,
-            ...props.style 
-          }
-        };
-      
-    return <IconComponent {...finalProps} />;
-  };
-  WrappedIcon.displayName = `Wrapped(${iconName})`;
-  tempWrappedBuiltinIcons[iconName as keyof typeof BUILTIN_ICON_COMPONENTS] = WrappedIcon;
+  tempWrappedBuiltinIcons[iconName as keyof typeof BUILTIN_ICON_COMPONENTS] = createGlobalIcon(IconComponent, String(iconName));
 }
 
 const wrappedBuiltinIconsPart = tempWrappedBuiltinIcons as {

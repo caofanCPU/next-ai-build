@@ -10,6 +10,7 @@ import packageJson from './package.json' with { type: 'json' };
 const entries = [
   'src/ui/index.ts',
   'src/lib/index.ts',
+  'src/icons/index.ts',
   'src/components/index.ts',
   'src/components/script/index.ts',
   'src/components/server.ts'
