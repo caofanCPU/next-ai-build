@@ -210,6 +210,9 @@ catalogs:
     rollup-plugin-preserve-directives:
       specifier: ^0.4.0
       version: 0.4.0
+    roughjs:
+      specifier: ^4.6.6
+      version: 4.6.6
     semver:
       specifier: ^7.7.4
       version: 7.7.4
@@ -878,6 +881,9 @@ importers:
       remark-rehype:
         specifier: ^11.1.2
         version: 11.1.2
+      roughjs:
+        specifier: 'catalog:'
+        version: 4.6.6
       swiper:
         specifier: 'catalog:'
         version: 12.1.3

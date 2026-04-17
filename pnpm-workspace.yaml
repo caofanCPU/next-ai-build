@@ -105,6 +105,7 @@ catalog:
   rollup: 4.46.2
   rollup-plugin-peer-deps-external: ^2.2.4
   rollup-plugin-preserve-directives: ^0.4.0
+  roughjs: ^4.6.6
   semver: ^7.7.4
   shiki: ^4.0.0
   sonner: ^1.7.4

@@ -5,6 +5,7 @@ import { globalLucideIcons as icons } from '@windrun-huaiin/base-ui/components/s
 import type { MermaidConfig } from 'mermaid';
 import { cn } from '@windrun-huaiin/lib/utils';
 import { useTheme } from 'next-themes';
+import rough from 'roughjs';
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { themeIconColor, themeSvgIconColor } from '@windrun-huaiin/base-ui/lib';
 
@@ -20,13 +21,14 @@ interface MermaidProps {
   title?: string;
   watermarkEnabled?: boolean;
   watermarkText?: string;
+  handDrawn?: boolean;
   /**
    * enable preview dialog by clicking the chart, default is true
    */
   enablePreview?: boolean;
 }
  
-export function Mermaid({ chart, title, watermarkEnabled, watermarkText, enablePreview = true }: MermaidProps) {
+export function Mermaid({ chart, title, watermarkEnabled, watermarkText, handDrawn = true, enablePreview = true }: MermaidProps) {
   const id = useId();
   const [svg, setSvg] = useState('');
   const { resolvedTheme } = useTheme();
@@ -62,9 +64,9 @@ export function Mermaid({ chart, title, watermarkEnabled, watermarkText, enableP
           id.replaceAll(':', ''),
           chart.replaceAll('\\n', '\n')
         );
-        let svgWithWatermark = svg;
+        let svgWithWatermark = handDrawn ? applyHandDrawnStyle(svg) : svg;
         if (watermarkEnabled && watermarkText) {
-          svgWithWatermark = addWatermarkToSvg(svg, watermarkText, themeSvgIconColor);
+          svgWithWatermark = addWatermarkToSvg(svgWithWatermark, watermarkText, themeSvgIconColor);
         }
         if (isMounted) setSvg(svgWithWatermark);
       } catch (error) {
@@ -75,7 +77,7 @@ export function Mermaid({ chart, title, watermarkEnabled, watermarkText, enableP
       isMounted = false;
       setSvg('');
     };
-  }, [chart, id, resolvedTheme, watermarkEnabled, watermarkText]);
+  }, [chart, id, resolvedTheme, watermarkEnabled, watermarkText, handDrawn]);
 
   // helpers for preview zoom
   const clamp = (v: number, min: number, max: number) => Math.min(Math.max(v, min), max);
@@ -409,4 +411,137 @@ function addWatermarkToSvg(svg: string, watermark: string, watermarkColor: strin
     >${watermark}</text>
   `;
   return svg.replace('</svg>', `${watermarkText}</svg>`);
+}
+
+function applyHandDrawnStyle(svg: string) {
+  if (typeof window === 'undefined') return svg;
+
+  try {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(svg, 'image/svg+xml');
+    const svgElement = doc.documentElement;
+    if (!svgElement || svgElement.tagName.toLowerCase() !== 'svg') return svg;
+
+    const rc = rough.svg(svgElement as unknown as SVGSVGElement);
+    const serializer = new XMLSerializer();
+    const getNumber = (value: string | null) => Number.parseFloat(value ?? '') || 0;
+    const getStyleValue = (element: Element, name: string) => {
+      const inlineStyle = element.getAttribute('style');
+      if (inlineStyle) {
+        const match = inlineStyle.match(new RegExp(`(?:^|;)\\s*${name}\\s*:\\s*([^;]+)`));
+        if (match?.[1]) return match[1].trim();
+      }
+      return element.getAttribute(name);
+    };
+    const applyAttributes = (source: Element, target: Element) => {
+      for (const attr of source.getAttributeNames()) {
+        if (attr === 'x' || attr === 'y' || attr === 'x1' || attr === 'y1' || attr === 'x2' || attr === 'y2' || attr === 'width' || attr === 'height' || attr === 'rx' || attr === 'ry' || attr === 'points' || attr === 'd') continue;
+        target.setAttribute(attr, source.getAttribute(attr) ?? '');
+      }
+    };
+    const createOptions = (element: Element) => {
+      const stroke = getStyleValue(element, 'stroke') ?? '#000';
+      const fill = getStyleValue(element, 'fill') ?? 'none';
+      const strokeWidth = getNumber(getStyleValue(element, 'stroke-width')) || 1.5;
+      return {
+        stroke,
+        fill: fill === 'none' ? undefined : fill,
+        strokeWidth,
+        roughness: 1.6,
+        bowing: 1.25,
+        fillStyle: fill === 'none' ? 'hachure' : 'solid',
+        fillWeight: 0.8,
+        hachureGap: 10,
+        preserveVertices: true,
+        seed: 7,
+      };
+    };
+    const replaceShape = (element: Element, node: SVGElement | SVGGElement | null) => {
+      if (!node || !element.parentNode) return;
+      applyAttributes(element, node);
+      if (element.getAttribute('class')) {
+        node.setAttribute('class', element.getAttribute('class') ?? '');
+      }
+      if (element.getAttribute('style')) {
+        node.setAttribute('style', element.getAttribute('style') ?? '');
+      }
+      element.parentNode.replaceChild(node, element);
+    };
+
+    svgElement.querySelectorAll('rect').forEach((element) => {
+      const x = getNumber(element.getAttribute('x'));
+      const y = getNumber(element.getAttribute('y'));
+      const width = getNumber(element.getAttribute('width'));
+      const height = getNumber(element.getAttribute('height'));
+      const rx = getNumber(element.getAttribute('rx'));
+      const ry = getNumber(element.getAttribute('ry'));
+      const node = rx > 0 || ry > 0
+        ? rc.path(
+            `M ${x + rx} ${y}
+             H ${x + width - rx}
+             Q ${x + width} ${y} ${x + width} ${y + ry}
+             V ${y + height - ry}
+             Q ${x + width} ${y + height} ${x + width - rx} ${y + height}
+             H ${x + rx}
+             Q ${x} ${y + height} ${x} ${y + height - ry}
+             V ${y + ry}
+             Q ${x} ${y} ${x + rx} ${y}
+             Z`,
+            createOptions(element)
+          )
+        : rc.rectangle(
+            x,
+            y,
+            width,
+            height,
+            createOptions(element)
+          );
+      replaceShape(element, node);
+    });
+
+    svgElement.querySelectorAll('line').forEach((element) => {
+      const node = rc.line(
+        getNumber(element.getAttribute('x1')),
+        getNumber(element.getAttribute('y1')),
+        getNumber(element.getAttribute('x2')),
+        getNumber(element.getAttribute('y2')),
+        createOptions(element)
+      );
+      replaceShape(element, node);
+    });
+
+    svgElement.querySelectorAll('polyline').forEach((element) => {
+      const points = (element.getAttribute('points') ?? '')
+        .trim()
+        .split(/\s+/)
+        .map((pair) => pair.split(',').map(Number))
+        .filter((point) => point.length === 2 && Number.isFinite(point[0]) && Number.isFinite(point[1])) as [number, number][];
+      if (points.length < 2) return;
+      const node = rc.linearPath(points, createOptions(element));
+      replaceShape(element, node);
+    });
+
+    svgElement.querySelectorAll('polygon').forEach((element) => {
+      const points = (element.getAttribute('points') ?? '')
+        .trim()
+        .split(/\s+/)
+        .map((pair) => pair.split(',').map(Number))
+        .filter((point) => point.length === 2 && Number.isFinite(point[0]) && Number.isFinite(point[1])) as [number, number][];
+      if (points.length < 2) return;
+      const node = rc.polygon(points, createOptions(element));
+      replaceShape(element, node);
+    });
+
+    svgElement.querySelectorAll('path').forEach((element) => {
+      const d = element.getAttribute('d');
+      if (!d) return;
+      const node = rc.path(d, createOptions(element));
+      replaceShape(element, node);
+    });
+
+    return serializer.serializeToString(svgElement);
+  } catch (error) {
+    console.error('Error while applying hand-drawn mermaid style', error);
+    return svg;
+  }
 }
