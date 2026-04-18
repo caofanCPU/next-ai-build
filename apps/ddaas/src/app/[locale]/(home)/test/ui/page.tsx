@@ -1,13 +1,41 @@
 'use client';
 
-import { type ReactNode, useState } from 'react';
-import { globalLucideIcons as icons } from '@base-ui/components/global-icon';
+import { type ComponentType, type ReactNode, useState } from 'react';
+import type { LucideProps } from 'lucide-react';
+import {
+  AlbumIcon,
+  BadgeQuestionMarkIcon,
+  BugIcon,
+  ChevronDownIcon,
+  ChevronUpIcon,
+  CopyIcon,
+  DownloadIcon,
+  ExternalLinkIcon,
+  FileDownIcon,
+  FileUpIcon,
+  HandHeartIcon,
+  LinkIcon,
+  MailIcon,
+  RocketIcon,
+  SearchIcon,
+  SettingsIcon,
+  ShieldIcon,
+  ShieldUserIcon,
+  SparklesIcon,
+  ZapIcon,
+} from '@base-ui/icons';
+import * as exportedIcons from '@base-ui/icons';
 import { themeIconColor } from '@windrun-huaiin/base-ui/lib';
 import { cn } from '@lib/utils';
 import { GradientButton } from '@third-ui/fuma/mdx';
 import { XButton, XToggleButton, XPillSelect, XTokenInput, XFilterPills, XFormPills, type XPillOption } from '@third-ui/main';
 
-const iconEntries = Object.entries(icons).sort(([nameA], [nameB]) => nameA.localeCompare(nameB));
+type StaticIconComponent = ComponentType<LucideProps>;
+
+const iconEntries = Object.entries(exportedIcons)
+  .filter(([name]) => name.endsWith('Icon') && name !== 'GlobalAccentIcon')
+  .map(([name, value]) => [name, value as StaticIconComponent] as const)
+  .sort(([nameA], [nameB]) => nameA.localeCompare(nameB));
 
 const pageShellClass =
   'mx-auto mt-12 flex w-full max-w-7xl flex-col gap-6 px-3 py-6 sm:px-4 md:gap-8 md:px-6 md:py-8';
@@ -112,7 +140,7 @@ function CollapsibleSection({
   className,
   headerExtra,
 }: CollapsibleSectionProps) {
-  const ChevronIcon = isExpanded ? icons.ChevronUp : icons.ChevronDown;
+  const ChevronIcon = isExpanded ? ChevronUpIcon : ChevronDownIcon;
 
   return (
     <section className={cn(panelClass, className)}>
@@ -164,7 +192,7 @@ export default function TestComponentsPage() {
   };
 
   const handleCopyIconUsage = async (iconName: string) => {
-    const usageText = `icons.${iconName}`;
+    const usageText = iconName;
 
     try {
       const copied = await copyText(usageText);
@@ -174,13 +202,13 @@ export default function TestComponentsPage() {
       }
 
       setCopiedIconName(iconName);
-      setCopyToastText(`已复制：icons.${iconName}`);
+      setCopyToastText(`已复制：${iconName}`);
       setActionText(`已复制图标用法：${usageText}`);
       window.setTimeout(() => {
         setCopiedIconName((current) => (current === iconName ? null : current));
       }, 1600);
       window.setTimeout(() => {
-        setCopyToastText((current) => (current === `已复制：icons.${iconName}` ? null : current));
+        setCopyToastText((current) => (current === `已复制：${iconName}` ? null : current));
       }, 1800);
     } catch (error) {
       console.error('Copy icon usage failed:', error);
@@ -227,7 +255,7 @@ export default function TestComponentsPage() {
               onClick={handleToggleAllSections}
               className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-background/80 px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-accent"
             >
-              {allSectionsExpanded ? <icons.ChevronUp className="h-4 w-4" /> : <icons.ChevronDown className="h-4 w-4" />}
+              {allSectionsExpanded ? <ChevronUpIcon className="h-4 w-4" /> : <ChevronDownIcon className="h-4 w-4" />}
               {allSectionsExpanded ? '全部折叠' : '全部展开'}
             </button>
           </div>
@@ -244,7 +272,7 @@ export default function TestComponentsPage() {
 
       <CollapsibleSection
         title="Global Icon 全量展示"
-        description="支持按图标名做前后模糊匹配，点击卡片可复制 `icons.xxx` 用法。"
+        description="支持按图标名做前后模糊匹配，点击卡片可复制 `XxxIcon` 用法。"
         isExpanded={expandedSections['global-icon']}
         onToggle={() => handleToggleSection('global-icon')}
       >
@@ -252,7 +280,7 @@ export default function TestComponentsPage() {
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <label className="relative block w-full md:max-w-sm">
               <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                <icons.Search className="h-4 w-4" />
+                <SearchIcon className="h-4 w-4" />
               </span>
               <input
                 type="text"
@@ -283,7 +311,7 @@ export default function TestComponentsPage() {
                     copiedIconName === iconName && cn(themeIconColor, 'border-current bg-primary/5 shadow-[0_0_0_2px_currentColor]')
                   )}
                   onClick={() => handleCopyIconUsage(iconName)}
-                  title={`点击复制 icons.${iconName}`}
+                  title={`点击复制 ${iconName}`}
                 >
                   <div
                     className={cn(
@@ -339,7 +367,7 @@ export default function TestComponentsPage() {
                 title="左对齐带图标"
                 align="left"
                 className={gradientButtonDemoClass}
-                icon={<icons.Rocket />}
+                icon={<RocketIcon />}
                 onClick={() => handleAction('GradientButton 左对齐带图标')}
               />
               <GradientButton
@@ -347,7 +375,7 @@ export default function TestComponentsPage() {
                 align="center"
                 variant="soft"
                 className={gradientButtonDemoClass}
-                icon={<icons.Sparkles />}
+                icon={<SparklesIcon />}
                 onClick={() => handleAction('GradientButton 居中 soft')}
               />
               <GradientButton
@@ -355,7 +383,7 @@ export default function TestComponentsPage() {
                 align="center"
                 variant="subtle"
                 className={gradientButtonDemoClass}
-                icon={<icons.AlbumIcon />}
+                icon={<AlbumIcon />}
                 onClick={() => handleAction('GradientButton 居中 subtle')}
               />
               <GradientButton
@@ -363,7 +391,7 @@ export default function TestComponentsPage() {
                 align="right"
                 disabled
                 className={gradientButtonDemoClass}
-                icon={<icons.Shield />}
+                icon={<ShieldIcon />}
                 onClick={() => handleAction('GradientButton 禁用态')}
               />
             </div>
@@ -385,7 +413,7 @@ export default function TestComponentsPage() {
               <XButton
                 type="single"
                 button={{
-                  icon: <icons.Download />,
+                  icon: <DownloadIcon />,
                   text: '默认单按钮',
                   onClick: () => handleAction('XButton 默认 single'),
                 }}
@@ -395,7 +423,7 @@ export default function TestComponentsPage() {
                 type="single"
                 variant="soft"
                 button={{
-                  icon: <icons.BadgeQuestionMark />,
+                  icon: <BadgeQuestionMarkIcon />,
                   text: 'soft 单按钮',
                   onClick: () => handleAction('XButton soft single'),
                 }}
@@ -405,7 +433,7 @@ export default function TestComponentsPage() {
                 type="single"
                 variant="subtle"
                 button={{
-                  icon: <icons.AlbumIcon />,
+                  icon: <AlbumIcon />,
                   text: 'subtle 单按钮',
                   onClick: () => handleAction('XButton subtle single'),
                 }}
@@ -414,7 +442,7 @@ export default function TestComponentsPage() {
               <XButton
                 type="single"
                 button={{
-                  icon: <icons.Shield />,
+                  icon: <ShieldIcon />,
                   text: '禁用单按钮',
                   onClick: () => handleAction('XButton 禁用 single'),
                   disabled: true,
@@ -430,7 +458,7 @@ export default function TestComponentsPage() {
               <XButton
                 type="split"
                 mainButton={{
-                  icon: <icons.Rocket />,
+                  icon: <RocketIcon />,
                   text: '默认分体按钮',
                   onClick: () => handleAction('XButton 默认 split 主按钮'),
                 }}
@@ -438,17 +466,17 @@ export default function TestComponentsPage() {
                 dropdownButtonClassName={xButtonSplitDropdownDemoClass}
                 menuItems={[
                   {
-                    icon: <icons.Copy className="mr-2 h-4 w-4" />,
+                    icon: <CopyIcon className="mr-2 h-4 w-4" />,
                     text: '复制链接',
                     onClick: () => handleAction('XButton 默认 split 复制链接'),
                   },
                   {
-                    icon: <icons.ExternalLink className="mr-2 h-4 w-4" />,
+                    icon: <ExternalLinkIcon className="mr-2 h-4 w-4" />,
                     text: '打开详情页',
                     onClick: () => handleAction('XButton 默认 split 打开详情页'),
                   },
                   {
-                    icon: <icons.Shield className="mr-2 h-4 w-4" />,
+                    icon: <ShieldIcon className="mr-2 h-4 w-4" />,
                     text: '受保护操作',
                     onClick: () => handleAction('XButton 默认 split 受保护操作'),
                     splitTopBorder: true,
@@ -460,7 +488,7 @@ export default function TestComponentsPage() {
                 type="split"
                 variant="soft"
                 mainButton={{
-                  icon: <icons.Sparkles />,
+                  icon: <SparklesIcon />,
                   text: 'soft 分体按钮',
                   onClick: () => handleAction('XButton soft split 主按钮'),
                 }}
@@ -468,17 +496,17 @@ export default function TestComponentsPage() {
                 dropdownButtonClassName={xButtonSplitDropdownDemoClass}
                 menuItems={[
                   {
-                    icon: <icons.Mail className="mr-2 h-4 w-4" />,
+                    icon: <MailIcon className="mr-2 h-4 w-4" />,
                     text: '发送通知',
                     onClick: () => handleAction('XButton soft split 发送通知'),
                   },
                   {
-                    icon: <icons.Settings className="mr-2 h-4 w-4" />,
+                    icon: <SettingsIcon className="mr-2 h-4 w-4" />,
                     text: '进入设置',
                     onClick: () => handleAction('XButton soft split 进入设置'),
                   },
                   {
-                    icon: <icons.Bug className="mr-2 h-4 w-4" />,
+                    icon: <BugIcon className="mr-2 h-4 w-4" />,
                     text: '调试入口',
                     onClick: () => handleAction('XButton soft split 调试入口'),
                     tag: { text: '测试', color: '#0EA5E9' },
@@ -489,7 +517,7 @@ export default function TestComponentsPage() {
                 type="split"
                 variant="subtle"
                 mainButton={{
-                  icon: <icons.AlbumIcon />,
+                  icon: <AlbumIcon />,
                   text: 'subtle 分体按钮',
                   onClick: () => handleAction('XButton subtle split 主按钮'),
                 }}
@@ -497,12 +525,12 @@ export default function TestComponentsPage() {
                 dropdownButtonClassName={xButtonSplitDropdownDemoClass}
                 menuItems={[
                   {
-                    icon: <icons.Mail className="mr-2 h-4 w-4" />,
+                    icon: <MailIcon className="mr-2 h-4 w-4" />,
                     text: '发送邮件',
                     onClick: () => handleAction('XButton subtle split 发送邮件'),
                   },
                   {
-                    icon: <icons.Settings className="mr-2 h-4 w-4" />,
+                    icon: <SettingsIcon className="mr-2 h-4 w-4" />,
                     text: '调整配置',
                     onClick: () => handleAction('XButton subtle split 调整配置'),
                   },
@@ -557,7 +585,7 @@ export default function TestComponentsPage() {
                   <XButton
                     type="single"
                     button={{
-                      icon: <icons.Search />,
+                      icon: <SearchIcon />,
                       text: '',
                       onClick: () => handleAction('Toggle / 纯 icon 搜索按钮'),
                     }}
@@ -567,7 +595,7 @@ export default function TestComponentsPage() {
                   <XButton
                     type="single"
                     button={{
-                      icon: <icons.HandHeart />,
+                      icon: <HandHeartIcon />,
                       text: '',
                       onClick: () => handleAction('Toggle / 纯 icon 喜欢按钮'),
                     }}
@@ -577,7 +605,7 @@ export default function TestComponentsPage() {
                   <XButton
                     type="single"
                     button={{
-                      icon: <icons.ShieldUser/>,
+                      icon: <ShieldUserIcon />,
                       text: '',
                       onClick: () => handleAction('Toggle / 纯 icon 分享按钮'),
                     }}
@@ -629,7 +657,7 @@ export default function TestComponentsPage() {
                 <div className="flex flex-wrap items-center gap-3">
                   <GradientButton
                     title="Upgrade Now"
-                    icon={<icons.Rocket />}
+                    icon={<RocketIcon />}
                     className="min-w-[150px]"
                     onClick={() => handleAction('Toggle / 强调 Upgrade Now 按钮')}
                   />
@@ -637,7 +665,7 @@ export default function TestComponentsPage() {
                     type="single"
                     variant="soft"
                     button={{
-                      icon: <icons.Sparkles />,
+                      icon: <SparklesIcon />,
                       text: 'Try Pro',
                       onClick: () => handleAction('Toggle / 强调 Try Pro 按钮'),
                     }}
@@ -654,7 +682,7 @@ export default function TestComponentsPage() {
                     href="#"
                     openInNewTab={false}
                     variant="subtle"
-                    icon={<icons.ExternalLink />}
+                    icon={<ExternalLinkIcon />}
                     className="min-w-[148px] border-sky-300 text-sky-700 hover:bg-sky-50 dark:text-sky-300"
                   />
                   <GradientButton
@@ -685,10 +713,10 @@ export default function TestComponentsPage() {
                 minItemWidthClassName="min-w-[40px] sm:min-w-[100px]"
                 maxItemWidthClassName="max-w-[50px] sm:max-w-[160px]"
                 options={[
-                  { value: 'icon-only', label: 'Icon Only', mobileIcon: <icons.FileUp className="h-4 w-4" /> },
-                  { value: 'text-only', label: 'Text Only', badge: 'Popular', mobileIcon: <icons.FileDown className="h-4 w-4" /> },
-                  { value: 'accent', label: 'Accent', mobileIcon: <icons.Zap className="h-4 w-4" /> },
-                  { value: 'link-like', label: 'Link Like', badge: 'Light', mobileIcon: <icons.Link className="h-4 w-4" /> },
+                  { value: 'icon-only', label: 'Icon Only', mobileIcon: <FileUpIcon className="h-4 w-4" /> },
+                  { value: 'text-only', label: 'Text Only', badge: 'Popular', mobileIcon: <FileDownIcon className="h-4 w-4" /> },
+                  { value: 'accent', label: 'Accent', mobileIcon: <ZapIcon className="h-4 w-4" /> },
+                  { value: 'link-like', label: 'Link Like', badge: 'Light', mobileIcon: <LinkIcon className="h-4 w-4" /> },
                 ]}
               />
             </div>

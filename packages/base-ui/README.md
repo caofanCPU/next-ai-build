@@ -75,12 +75,12 @@ This package includes 28 built-in icons as React components. All icons are acces
 
 ### 1. Direct Icon Usage
 ```tsx
-import { globalLucideIcons } from '@windrun-huaiin/base-ui';
+import { GitHubIcon,  BTCIcon, MmdIcon} from '@windrun-huaiin/base-ui';
 
 // Use any built-in icon
-<globalLucideIcons.GitHub className="h-6 w-6" />
-<globalLucideIcons.BTC className="h-4 w-4" />
-<globalLucideIcons.Mmd className="h-4 w-4" /> // Auto 16x16 size for Mermaid
+<GitHubIcon className="h-6 w-6" />
+<BTCIcon className="h-4 w-4" />
+<MmdIcon className="h-4 w-4" /> // Auto 16x16 size for Mermaid
 ```
 
 ### 2. Dynamic Icon Loading

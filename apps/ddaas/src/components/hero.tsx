@@ -1,5 +1,5 @@
 import { getTranslations } from 'next-intl/server'
-import { globalLucideIcons as icons} from '@base-ui/components/global-icon'
+import { ZapIcon } from '@base-ui/icons'
 import { themeHeroEyesOnClass } from '@base-ui/lib'
 import { GradientButton } from "@third-ui/fuma/mdx"
 import { HeroMedia, HeroSection } from "@third-ui/main"
@@ -26,7 +26,7 @@ export async function Hero({ locale }: { locale: string }) {
             className="md:w-full"
           />
           <div className="flex items-center gap-2 text-sm text-gray-400">
-            <icons.Zap className="h-4 w-4" />
+            <ZapIcon className="h-4 w-4" />
             <span>{t('about')}</span>
           </div>
         </>

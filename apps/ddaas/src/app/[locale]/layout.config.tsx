@@ -1,5 +1,5 @@
 import Preview from '@/../public/banner.png';
-import { globalLucideIcons as icons } from '@base-ui/components/global-icon';
+import { HighlighterIcon, MmdIcon, ShieldUserIcon, SnippetsIcon } from '@base-ui/icons';
 import { SiteIcon } from '@/lib/site-config';
 import { BaseLayoutProps } from 'fumadocs-ui/layouts/shared';
 import { getTranslations } from 'next-intl/server';
@@ -76,7 +76,7 @@ export async function levelNavLinks(locale: string): Promise<ExtendedLinkItem[]>
           url: getAsNeededLocalizedUrl(locale, '/docs/introduction', localePrefixAsNeeded, defaultLocale),
         },
         {
-          icon: <icons.ShieldUser />,
+          icon: <ShieldUserIcon />,
           text: 'FumaMDX',
           description: 'FumaMDX tips',
           url: getAsNeededLocalizedUrl(locale, '/docs/introduction/fuma-mdx', localePrefixAsNeeded, defaultLocale),
@@ -85,7 +85,7 @@ export async function levelNavLinks(locale: string): Promise<ExtendedLinkItem[]>
           },
         },
         {
-          icon: <icons.Snippets />,
+          icon: <SnippetsIcon />,
           text: 'Quick generation',
           description: 'MDX Snippets',
           url: getAsNeededLocalizedUrl(locale, '/docs/introduction/mdx-snippets', localePrefixAsNeeded, defaultLocale),
@@ -94,7 +94,7 @@ export async function levelNavLinks(locale: string): Promise<ExtendedLinkItem[]>
           },
         },
         {
-          icon: <icons.Highlighter />,
+          icon: <HighlighterIcon />,
           text: 'Codeblock',
           description: 'Codeblock full case',
           url: getAsNeededLocalizedUrl(locale, '/docs/introduction/mdx-shiki', localePrefixAsNeeded, defaultLocale),
@@ -103,7 +103,7 @@ export async function levelNavLinks(locale: string): Promise<ExtendedLinkItem[]>
           },
         },
         {
-          icon: <icons.Mmd />,
+          icon: <MmdIcon />,
           text: 'Graph',
           description: 'Mermaid showcase.',
           url: getAsNeededLocalizedUrl(locale, '/docs/introduction/mdx-mermaid', localePrefixAsNeeded, defaultLocale),

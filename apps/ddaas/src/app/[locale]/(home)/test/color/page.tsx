@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import NProgress from 'nprogress';
+import { PiIcon } from '@windrun-huaiin/base-ui/icons';
 import {
   __SUPPORTED_THEME_COLORS,
   THEME_BUTTON_GRADIENT_CLASS_MAP,
@@ -13,7 +14,6 @@ import {
   type SupportedThemeColor,
 } from '@base-ui/lib/theme-util';
 import { cn } from '@lib/utils';
-import { globalLucideIcons as icons } from '@windrun-huaiin/base-ui/components/server';
 import { getLoadingCycleDurationMs, Loading } from '@third-ui/main/loading';
 import { SnakeLoadingFrame, SnakeLoadingPreview } from '@third-ui/main';
 
@@ -154,7 +154,7 @@ function TonePreview({
                       themeClass
                     )}
                   >
-                    <icons.Pi className={cn("h-9 w-9", themeClass)} />
+                    <PiIcon className={cn("h-9 w-9", themeClass)} />
                   </span>
                 </SnakeLoadingFrame>
               </div>
