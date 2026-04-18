@@ -1,8 +1,8 @@
 'use client';
 
+import { CheckIcon } from '@base-ui/icons';
 import * as React from 'react';
 import { useState } from 'react';
-import { globalLucideIcons as icons } from '@base-ui/components/global-icon';
 import { cn } from '@windrun-huaiin/lib/utils';
 
 export function CopyableText({
@@ -50,7 +50,7 @@ export function CopyableText({
         {children || text}
       </span>
 
-      <icons.Check
+      <CheckIcon
         className={cn(
           'size-3 shrink-0',
           'transition-opacity duration-200',

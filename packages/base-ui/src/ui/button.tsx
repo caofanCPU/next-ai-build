@@ -1,9 +1,9 @@
 "use client";
 
+import { Loader2Icon } from "@base-ui/icons"
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
-import { globalLucideIcons as icons } from "@base-ui/components/global-icon"
 import { cn } from "@windrun-huaiin/lib/utils"
 
 const buttonVariants = cva(
@@ -68,7 +68,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {...props}
       >
         {children}
-        {loading && <icons.Loader2 className="ml-2 h-4 w-4 animate-spin" />}
+        {loading && <Loader2Icon className="ml-2 h-4 w-4 animate-spin" />}
       </Comp>
     )
   }
