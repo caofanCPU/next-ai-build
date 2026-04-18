@@ -1,5 +1,18 @@
 # @windrun-huaiin/backend-core
 
+## 20.0.0
+
+### Major Changes
+
+- docs(packages): uniform major version
+
+### Patch Changes
+
+- Updated dependencies
+  - @windrun-huaiin/third-ui@20.0.0
+  - @windrun-huaiin/lib@20.0.0
+  - @windrun-huaiin/contracts@20.0.0
+
 ## 17.0.0
 
 ### Patch Changes

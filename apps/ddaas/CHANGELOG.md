@@ -1,5 +1,18 @@
 # @windrun-huaiin/ddaas-website
 
+## 20.0.0
+
+### Major Changes
+
+- docs(packages): uniform major version
+
+### Patch Changes
+
+- Updated dependencies
+  - @windrun-huaiin/base-ui@20.0.0
+  - @windrun-huaiin/third-ui@20.0.0
+  - @windrun-huaiin/lib@20.0.0
+
 ## 16.0.1
 
 ### Patch Changes
