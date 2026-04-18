@@ -19,6 +19,7 @@ let qstashWarnedHealthSchedule = false;
 
 let redisHealthTimer: ReturnType<typeof setTimeout> | null = null;
 let qstashHealthTimer: ReturnType<typeof setTimeout> | null = null;
+let cachedRedisPrefixed: Redis | null = null;
 
 const isNonEmpty = (value: string | undefined): value is string =>
   typeof value === 'string' && value.trim().length > 0;
@@ -30,6 +31,105 @@ const isValidUrl = (value: string): boolean => {
   } catch {
     return false;
   }
+};
+
+const getRequiredRedisAppName = (): string => {
+  const appName = process.env.NEXT_PUBLIC_APP_NAME;
+  if (!isNonEmpty(appName)) {
+    throw new Error(
+      '[Upstash Config] NEXT_PUBLIC_APP_NAME is required for Redis key prefixing and must not be empty'
+    );
+  }
+
+  const normalized = appName.replace(/\s+/g, '').toLowerCase();
+  if (!normalized) {
+    throw new Error(
+      '[Upstash Config] NEXT_PUBLIC_APP_NAME must contain non-whitespace characters for Redis key prefixing'
+    );
+  }
+
+  return normalized;
+};
+
+const getRedisKeyPrefix = (): string => {
+  const envSuffix = process.env.NODE_ENV === 'production' ? 'live' : 'test';
+  return `${getRequiredRedisAppName()}_${envSuffix}`;
+};
+
+const prefixRedisKey = (prefix: string, key: string): string => `${prefix}:${key}`;
+
+const prefixRedisKeys = (prefix: string, keys: string[]): string[] =>
+  keys.map((key) => prefixRedisKey(prefix, key));
+
+const prefixFirstStringArg = (args: unknown[], prefix: string): unknown[] => {
+  if (typeof args[0] !== 'string') {
+    return args;
+  }
+
+  const nextArgs = [...args];
+  nextArgs[0] = prefixRedisKey(prefix, args[0]);
+  return nextArgs;
+};
+
+const prefixAllStringArgs = (args: unknown[], prefix: string): unknown[] => {
+  return args.map((arg) => (typeof arg === 'string' ? prefixRedisKey(prefix, arg) : arg));
+};
+
+const keyArrayCommands = new Set(['mget', 'del']);
+const allStringKeyCommands = new Set(['exists']);
+
+const createPrefixedPipeline = <T extends object>(target: T, prefix: string): T => {
+  return new Proxy(target, {
+    get(obj, prop, receiver) {
+      const value = Reflect.get(obj, prop, receiver);
+      if (typeof value !== 'function') {
+        return value;
+      }
+
+      return (...args: unknown[]) => {
+        if (prop === 'eval' || prop === 'evalsha' || prop === 'evalro' || prop === 'evalshaRo') {
+          const [script, keys, argv] = args as [string, string[], unknown[]];
+          return (value as (...innerArgs: unknown[]) => unknown).call(
+            obj,
+            script,
+            prefixRedisKeys(prefix, keys),
+            argv
+          );
+        }
+
+        if (prop === 'pipeline' || prop === 'multi') {
+          const nested = (value as (...innerArgs: unknown[]) => unknown).call(obj);
+          return createPrefixedPipeline(nested as T, prefix);
+        }
+
+        if (typeof prop === 'string' && keyArrayCommands.has(prop)) {
+          const nextArgs = prefixAllStringArgs(args, prefix);
+          return (value as (...innerArgs: unknown[]) => unknown).apply(obj, nextArgs);
+        }
+
+        if (typeof prop === 'string' && allStringKeyCommands.has(prop)) {
+          const nextArgs = prefixAllStringArgs(args, prefix);
+          return (value as (...innerArgs: unknown[]) => unknown).apply(obj, nextArgs);
+        }
+
+        if (prop === 'mset') {
+          const [entries] = args as [Record<string, unknown>];
+          const prefixedEntries = Object.fromEntries(
+            Object.entries(entries).map(([key, entryValue]) => [prefixRedisKey(prefix, key), entryValue])
+          );
+          return (value as (...innerArgs: unknown[]) => unknown).call(obj, prefixedEntries);
+        }
+
+        if (prop === 'hmget') {
+          const nextArgs = prefixFirstStringArg(args, prefix);
+          return (value as (...innerArgs: unknown[]) => unknown).apply(obj, nextArgs);
+        }
+
+        const nextArgs = prefixFirstStringArg(args, prefix);
+        return (value as (...innerArgs: unknown[]) => unknown).apply(obj, nextArgs);
+      };
+    },
+  });
 };
 
 const parseMinutes = (value: string | undefined, fallback: number): number => {
@@ -138,12 +238,12 @@ const scheduleQstashHealthCheck = (token: string): void => {
  * - read-through cached instance only
  */
 export const getRedis = (): Redis | null => {
-  return cachedRedis;
+  return cachedRedisPrefixed;
 };
 
 const ensureRedis = async (): Promise<Redis | null> => {
-  if (cachedRedis) {
-    return cachedRedis;
+  if (cachedRedisPrefixed) {
+    return cachedRedisPrefixed;
   }
   if (redisInitPromise) {
     return redisInitPromise;
@@ -170,14 +270,16 @@ const ensureRedis = async (): Promise<Redis | null> => {
     }
 
     try {
+      const keyPrefix = getRedisKeyPrefix();
       const client = new Redis({
         url: UPSTASH_REDIS_REST_URL,
         token: UPSTASH_REDIS_REST_TOKEN,
       });
       await client.ping();
       cachedRedis = client;
+      cachedRedisPrefixed = createPrefixedPipeline(client, keyPrefix) as Redis;
       scheduleRedisHealthCheck();
-      return cachedRedis;
+      return cachedRedisPrefixed;
     } catch (error) {
       if (!redisWarnedInitError) {
         redisWarnedInitError = true;

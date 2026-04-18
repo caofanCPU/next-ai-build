@@ -46,63 +46,103 @@ const getReceiver = (): Receiver | null => {
 
 export type PublishBody = Record<string, unknown> | string | number | boolean | null;
 
-export interface PublishMessageOptions {
-  url: string;
-  body: PublishBody;
+export interface QstashEnvelope<TBody extends PublishBody = PublishBody> {
+  source_msg_id: string;
+  payload: TBody;
 }
+
+export interface PublishMessageOptions<TBody extends PublishBody = PublishBody> {
+  url: string;
+  body: TBody;
+}
+
+const generateSourceMessageId = (): string => {
+  try {
+    return crypto.randomUUID();
+  } catch {
+    return `${Date.now()}_${Math.random().toString(16).slice(2)}`;
+  }
+};
+
+const createEnvelope = <TBody extends PublishBody>(body: TBody): QstashEnvelope<TBody> => {
+  return {
+    source_msg_id: generateSourceMessageId(),
+    payload: body,
+  };
+};
 
 /**
  * Publish a message. Returns message id or null if QStash is unavailable.
  */
-export const publishMessage = async (options: PublishMessageOptions): Promise<string | null> => {
+export const publishMessage = async <TBody extends PublishBody>(
+  options: PublishMessageOptions<TBody>
+): Promise<{ messageId: string | null; message: QstashEnvelope<TBody> } | null> => {
+  const message = createEnvelope(options.body);
+
   return withQstash(async (client) => {
     const result = await (client as any).publishJSON({
       url: options.url,
-      body: options.body,
+      body: message,
     });
-    return typeof result === 'string' ? result : result?.messageId ?? null;
+    return {
+      messageId: typeof result === 'string' ? result : result?.messageId ?? null,
+      message,
+    };
   });
 };
 
 /**
  * Publish a delayed message. Returns message id or null if QStash is unavailable.
  */
-export const publishDelayedMessage = async (
-  options: PublishMessageOptions & { delaySec: number }
-): Promise<string | null> => {
+export const publishDelayedMessage = async <TBody extends PublishBody>(
+  options: PublishMessageOptions<TBody> & { delaySec: number }
+): Promise<{ messageId: string | null; message: QstashEnvelope<TBody> } | null> => {
+  const message = createEnvelope(options.body);
+
   return withQstash(async (client) => {
     const result = await (client as any).publishJSON({
       url: options.url,
-      body: options.body,
+      body: message,
       delay: options.delaySec,
     });
-    return typeof result === 'string' ? result : result?.messageId ?? null;
+    return {
+      messageId: typeof result === 'string' ? result : result?.messageId ?? null,
+      message,
+    };
   });
 };
 
-export interface ScheduleMessageOptions extends PublishMessageOptions {
+export interface ScheduleMessageOptions<TBody extends PublishBody = PublishBody>
+  extends PublishMessageOptions<TBody> {
   cron: string;
 }
 
 /**
  * Schedule a recurring message. Returns schedule id or null if QStash is unavailable.
  */
-export const scheduleMessage = async (options: ScheduleMessageOptions): Promise<string | null> => {
+export const scheduleMessage = async <TBody extends PublishBody>(
+  options: ScheduleMessageOptions<TBody>
+): Promise<{ scheduleId: string | null; message: QstashEnvelope<TBody> } | null> => {
+  const message = createEnvelope(options.body);
+
   return withQstash(async (client) => {
     const anyClient = client as any;
     const result =
       (await anyClient.schedules?.create?.({
         url: options.url,
-        body: options.body,
+        body: message,
         cron: options.cron,
       })) ??
       (await anyClient.publishJSON?.({
         url: options.url,
-        body: options.body,
+        body: message,
         cron: options.cron,
       }));
 
-    return typeof result === 'string' ? result : result?.scheduleId ?? result?.id ?? null;
+    return {
+      scheduleId: typeof result === 'string' ? result : result?.scheduleId ?? result?.id ?? null,
+      message,
+    };
   });
 };
 

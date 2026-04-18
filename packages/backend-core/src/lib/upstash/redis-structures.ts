@@ -1,4 +1,13 @@
+import type { Redis } from '@upstash/redis';
+
 import { withRedis } from '../upstash-config';
+
+export type RedisStringKeyValue = Record<string, string>;
+export type RedisJsonKeyValue<T> = Record<string, T>;
+export type RedisHashStringValue = Record<string, string>;
+export type RedisPipelineBuilder<TResult> = (pipeline: ReturnType<Redis['pipeline']>) => {
+  exec: () => Promise<TResult>;
+};
 
 /**
  * Set a plain string value with optional TTL (seconds).
@@ -24,6 +33,34 @@ export const setString = async (
  */
 export const getString = async (key: string): Promise<string | null> => {
   return withRedis((redis) => redis.get<string>(key));
+};
+
+/**
+ * MGET plain string values. Missing keys are returned as null.
+ */
+export const mget = async (keys: string[]): Promise<(string | null)[] | null> => {
+  return withRedis((redis) => {
+    if (keys.length === 0) {
+      return [];
+    }
+
+    return redis.mget<(string | null)[]>(...keys);
+  });
+};
+
+/**
+ * MSET plain string values.
+ */
+export const mset = async (entries: RedisStringKeyValue): Promise<boolean> => {
+  const keys = Object.keys(entries);
+  if (keys.length === 0) {
+    return true;
+  }
+
+  return withRedis(async (redis) => {
+    await redis.mset(entries);
+    return true;
+  }).then((result) => result ?? false);
 };
 
 /**
@@ -65,6 +102,49 @@ export const getJson = async <T>(key: string): Promise<T | null> => {
 };
 
 /**
+ * MGET JSON values stored as strings. Missing or invalid values are returned as null.
+ */
+export const mgetJson = async <T>(keys: string[]): Promise<(T | null)[] | null> => {
+  return withRedis(async (redis) => {
+    if (keys.length === 0) {
+      return [];
+    }
+
+    const payloads = await redis.mget<(string | null)[]>(...keys);
+    return payloads.map((payload) => {
+      if (!payload) {
+        return null;
+      }
+
+      try {
+        return JSON.parse(payload) as T;
+      } catch {
+        return null;
+      }
+    });
+  });
+};
+
+/**
+ * MSET JSON values as strings.
+ */
+export const msetJson = async <T>(entries: RedisJsonKeyValue<T>): Promise<boolean> => {
+  const keys = Object.keys(entries);
+  if (keys.length === 0) {
+    return true;
+  }
+
+  const payloads = Object.fromEntries(
+    Object.entries(entries).map(([key, value]) => [key, JSON.stringify(value)])
+  ) as RedisStringKeyValue;
+
+  return withRedis(async (redis) => {
+    await redis.mset(payloads);
+    return true;
+  }).then((result) => result ?? false);
+};
+
+/**
  * Delete a key. Returns false if Redis is unavailable.
  */
 export const deleteKey = async (key: string): Promise<boolean> => {
@@ -73,6 +153,52 @@ export const deleteKey = async (key: string): Promise<boolean> => {
     return deleted > 0;
   });
   return result ?? false;
+};
+
+/**
+ * DEL multiple keys. Returns deleted count, or null if Redis is unavailable.
+ */
+export const del = async (keys: string[]): Promise<number | null> => {
+  return withRedis((redis) => {
+    if (keys.length === 0) {
+      return 0;
+    }
+
+    return redis.del(...keys);
+  });
+};
+
+/**
+ * EXISTS a key.
+ */
+export const exists = async (key: string): Promise<boolean | null> => {
+  return withRedis(async (redis) => {
+    const count = await redis.exists(key);
+    return count > 0;
+  });
+};
+
+/**
+ * EXPIRE a key in seconds.
+ */
+export const expire = async (key: string, ttlSec: number): Promise<boolean> => {
+  if (ttlSec <= 0) {
+    return false;
+  }
+
+  const result = await withRedis(async (redis) => {
+    const changed = await redis.expire(key, ttlSec);
+    return changed > 0;
+  });
+
+  return result ?? false;
+};
+
+/**
+ * TTL for a key in seconds. Returns null if Redis is unavailable.
+ */
+export const ttl = async (key: string): Promise<number | null> => {
+  return withRedis((redis) => redis.ttl(key));
 };
 
 /**
@@ -91,6 +217,42 @@ export const setHashField = async (key: string, field: string, value: string): P
  */
 export const getHashField = async (key: string, field: string): Promise<string | null> => {
   return withRedis((redis) => redis.hget<string>(key, field));
+};
+
+/**
+ * HMSET hash fields.
+ */
+export const hmset = async (key: string, values: RedisHashStringValue): Promise<boolean> => {
+  const fields = Object.keys(values);
+  if (fields.length === 0) {
+    return true;
+  }
+
+  const result = await withRedis(async (redis) => {
+    await redis.hset(key, values);
+    return true;
+  });
+  return result ?? false;
+};
+
+/**
+ * HMGET hash fields.
+ */
+export const hmget = async (
+  key: string,
+  fields: string[]
+): Promise<Record<string, string | null> | null> => {
+  return withRedis(async (redis) => {
+    if (fields.length === 0) {
+      return {};
+    }
+
+    const result = await redis.hmget<Record<string, string | null>>(key, ...fields);
+    if (!result) {
+      return Object.fromEntries(fields.map((field) => [field, null]));
+    }
+    return result;
+  });
 };
 
 /**
@@ -138,6 +300,30 @@ export const getHashAll = async (key: string): Promise<Record<string, string> | 
 };
 
 /**
+ * HEXISTS a hash field.
+ */
+export const hexists = async (key: string, field: string): Promise<boolean | null> => {
+  return withRedis(async (redis) => {
+    const exists = await redis.hexists(key, field);
+    return exists > 0;
+  });
+};
+
+/**
+ * HKEYS for a hash.
+ */
+export const hkeys = async (key: string): Promise<string[] | null> => {
+  return withRedis((redis) => redis.hkeys(key));
+};
+
+/**
+ * HLEN for a hash.
+ */
+export const hlen = async (key: string): Promise<number | null> => {
+  return withRedis((redis) => redis.hlen(key));
+};
+
+/**
  * Remove a hash field.
  */
 export const deleteHashField = async (key: string, field: string): Promise<boolean> => {
@@ -146,6 +332,56 @@ export const deleteHashField = async (key: string, field: string): Promise<boole
     return removed > 0;
   });
   return result ?? false;
+};
+
+/**
+ * SADD members to a set. Returns count of newly added members, or null if Redis is unavailable.
+ */
+export const sadd = async (key: string, members: string[]): Promise<number | null> => {
+  return withRedis((redis) => {
+    if (members.length === 0) {
+      return 0;
+    }
+
+    return redis.sadd(key, members[0], ...members.slice(1));
+  });
+};
+
+/**
+ * SREM members from a set. Returns count of removed members, or null if Redis is unavailable.
+ */
+export const srem = async (key: string, members: string[]): Promise<number | null> => {
+  return withRedis((redis) => {
+    if (members.length === 0) {
+      return 0;
+    }
+
+    return redis.srem(key, ...members);
+  });
+};
+
+/**
+ * SISMEMBER for a set member.
+ */
+export const sismember = async (key: string, member: string): Promise<boolean | null> => {
+  return withRedis(async (redis) => {
+    const exists = await redis.sismember(key, member);
+    return exists > 0;
+  });
+};
+
+/**
+ * SMEMBERS for a set.
+ */
+export const smembers = async (key: string): Promise<string[] | null> => {
+  return withRedis((redis) => redis.smembers<string[]>(key));
+};
+
+/**
+ * SCARD for a set.
+ */
+export const scard = async (key: string): Promise<number | null> => {
+  return withRedis((redis) => redis.scard(key));
 };
 
 type ListDirection = 'left' | 'right';
@@ -197,4 +433,16 @@ export const rangeList = async (
  */
 export const listLength = async (key: string): Promise<number | null> => {
   return withRedis((redis) => redis.llen(key));
+};
+
+/**
+ * Execute a Redis pipeline and return the result array from exec().
+ */
+export const pipeline = async <TResult>(
+  build: RedisPipelineBuilder<TResult>
+): Promise<TResult | null> => {
+  return withRedis(async (redis) => {
+    const pipeline = redis.pipeline();
+    return build(pipeline).exec();
+  });
 };
