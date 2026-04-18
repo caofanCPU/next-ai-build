@@ -1,5 +1,14 @@
 # @windrun-huaiin/third-ui
 
+## 16.0.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @windrun-huaiin/base-ui@16.0.0
+  - @windrun-huaiin/lib@16.0.0
+  - @windrun-huaiin/contracts@16.0.0
+
 ## 16.0.0
 
 ### Major Changes
