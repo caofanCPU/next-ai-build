@@ -1,10 +1,10 @@
 'use client';
 
-import { globalLucideIcons as icons } from '@windrun-huaiin/base-ui/components/server';
+import { StarIcon } from '@windrun-huaiin/base-ui/icons';
 import React from 'react';
 
 export function TrophyCard({
-  icon = <icons.Star />,
+  icon = <StarIcon />,
   title,
   children,
 }: {

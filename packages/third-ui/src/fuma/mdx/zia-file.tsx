@@ -1,4 +1,4 @@
-import { globalLucideIcons as icons } from '@windrun-huaiin/base-ui/components/server'; 
+import { FileIcon, FolderOpenIcon, FolderIcon } from '@windrun-huaiin/base-ui/icons'; 
 import { type HTMLAttributes, type ReactNode, useState } from 'react';
 import { cn } from '@windrun-huaiin/lib/utils';
 import {
@@ -29,7 +29,7 @@ export interface ZiaFolderProps extends HTMLAttributes<HTMLDivElement> {
 
 export function ZiaFile({
   name,
-  icon = <icons.File />,
+  icon = <FileIcon />,
   className,
   anotion,
   href,
@@ -70,7 +70,7 @@ export function ZiaFolder({
   return (
     <Collapsible open={open} onOpenChange={setOpen} {...props}>
       <CollapsibleTrigger className={cn(itemVariants, className, 'w-full')}>
-        {open ? <icons.FolderOpen /> : <icons.Folder />}
+        {open ? <FolderOpenIcon /> : <FolderIcon />}
         <span>{name}</span>
         {validAnotion && (
           <span className={anotionClass}>{anotion}</span>

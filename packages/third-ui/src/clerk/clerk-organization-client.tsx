@@ -1,7 +1,7 @@
 'use client';
 
 import { OrganizationSwitcher } from '@clerk/nextjs';
-import { globalLucideIcons as icons } from '@windrun-huaiin/base-ui/components/server';
+import { D8Icon, ReceiptTextIcon, ShieldUserIcon } from '@windrun-huaiin/base-ui/icons';
 
 interface ClerkOrganizationData {
   homepage: string;
@@ -28,17 +28,17 @@ export function ClerkOrganizationClient({ data }: { data: ClerkOrganizationData 
           <OrganizationSwitcher.OrganizationProfilePage
             label={data.homepage}
             url="/"
-            labelIcon={<icons.D8 />}
+            labelIcon={<D8Icon />}
           />
           <OrganizationSwitcher.OrganizationProfilePage 
-            labelIcon={<icons.ReceiptText />}
+            labelIcon={<ReceiptTextIcon />}
             label={data.terms}
             url={`/${data.locale}/legal/terms`}
           >
           </OrganizationSwitcher.OrganizationProfilePage>
 
           <OrganizationSwitcher.OrganizationProfilePage
-            labelIcon={<icons.ShieldUser />}
+            labelIcon={<ShieldUserIcon />}
             label={data.privacy}
             url={`/${data.locale}/legal/privacy`}
           >

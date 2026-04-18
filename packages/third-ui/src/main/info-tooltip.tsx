@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { globalLucideIcons as icons } from '@windrun-huaiin/base-ui/components/server';
+import { CircleQuestionMarkIcon } from '@windrun-huaiin/base-ui/icons';
 import { themeBorderColor, themeIconColor, themeRingColor } from '@windrun-huaiin/base-ui/lib';
 import { cn } from '@windrun-huaiin/lib/utils';
 
@@ -74,7 +74,7 @@ export function InfoTooltip({
         aria-label={normalizedContent}
         aria-expanded={open}
       >
-        <icons.CircleQuestionMark className="h-4 w-4" />
+        <CircleQuestionMarkIcon className="h-4 w-4" />
       </button>
       <span
         className={cn(

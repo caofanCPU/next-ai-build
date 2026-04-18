@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { globalLucideIcons as icons } from '@windrun-huaiin/base-ui/components/server';
+import { ExternalLinkIcon, StarIcon } from '@windrun-huaiin/base-ui/icons';
 
 interface FumaGithubInfoProps {
   owner: string;
@@ -45,7 +45,7 @@ function GitHubInfoFallback({ owner, repo, className }: Pick<FumaGithubInfoProps
         {owner}/{repo}
       </p>
       <p className="flex text-xs items-center gap-1 text-fd-muted-foreground">
-        <icons.ExternalLink className="size-3" />
+        <ExternalLinkIcon className="size-3" />
         GitHub
       </p>
     </a>
@@ -76,7 +76,7 @@ function GitHubInfoSuccess({
         {owner}/{repo}
       </p>
       <p className="flex text-xs items-center gap-1 text-fd-muted-foreground">
-        <icons.Star className="size-3" />
+        <StarIcon className="size-3" />
         {humanizedStars}
       </p>
     </a>

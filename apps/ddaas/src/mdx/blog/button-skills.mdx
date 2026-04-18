@@ -5,6 +5,10 @@ date: 2026-04-02
 ---
 
 
+# Button Skills
+
+本说明给 AI 使用。目标是快速判断该用哪个按钮、参数怎么传、哪些样式可以通过 `className` 定制、哪些属于组件内强约束。
+
 ## 按钮体系定义
 
 这里的“按钮"不是只指传统 `button` 标签, 而是指一组同源的可点击交互控件。
@@ -493,9 +497,9 @@ date: 2026-04-02
   minItemWidthClassName="min-w-[40px] sm:min-w-[100px]"
   maxItemWidthClassName="max-w-[50px] sm:max-w-[160px]"
   options={[
-    { value: 'grid', label: 'Grid', mobileIcon: <icons.Grid className="h-4 w-4" /> },
-    { value: 'list', label: 'List', mobileIcon: <icons.List className="h-4 w-4" /> },
-    { value: 'detail', label: 'Detail', mobileIcon: <icons.Menu className="h-4 w-4" /> },
+    { value: 'grid', label: 'Grid', mobileIcon: <GridIcon className="h-4 w-4" /> },
+    { value: 'list', label: 'List', mobileIcon: <ListIcon className="h-4 w-4" /> },
+    { value: 'detail', label: 'Detail', mobileIcon: <MenuIcon className="h-4 w-4" /> },
   ]}
 />
 ```

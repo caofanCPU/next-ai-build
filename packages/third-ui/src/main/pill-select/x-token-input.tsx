@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { globalLucideIcons as icons } from '@windrun-huaiin/base-ui/components/server';
+import { XIcon } from '@windrun-huaiin/base-ui/icons';
 import { themeBgColor, themeBorderColor, themeIconColor, themeRingColor } from '@windrun-huaiin/base-ui/lib';
 import { cn } from '@windrun-huaiin/lib/utils';
 
@@ -118,7 +118,7 @@ export function XTokenInput({
                         disabled && 'cursor-not-allowed'
                       )}
                     >
-                      <icons.X className={cn(compact ? 'h-2 w-2' : 'h-2.5 w-2.5')} />
+                      <XIcon className={cn(compact ? 'h-2 w-2' : 'h-2.5 w-2.5')} />
                     </button>
                   </span>
                 </li>

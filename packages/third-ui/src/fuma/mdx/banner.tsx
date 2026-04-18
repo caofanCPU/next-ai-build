@@ -2,7 +2,7 @@
 
 import { cva } from 'class-variance-authority';
 import { type HTMLAttributes, useEffect, useState } from 'react';
-import { globalLucideIcons as icons } from '@windrun-huaiin/base-ui/components/server';
+import { XIcon } from '@windrun-huaiin/base-ui/icons';
 import { cn } from '@windrun-huaiin/lib/utils';
 
 const buttonVariants = cva(
@@ -179,12 +179,12 @@ export function Banner({
             buttonVariants({
               color: 'ghost',
               className:
-                'absolute end-2 top-1/2 -translate-y-1/2 text-neutral-600 dark:text-neutral-400',
+                'absolute inset-e-2 top-1/2 -translate-y-1/2 text-neutral-600 dark:text-neutral-400',
               size: 'icon',
             }),
           )}
         >
-          <icons.X />
+          <XIcon />
         </button>
       ) : null}
     </div>

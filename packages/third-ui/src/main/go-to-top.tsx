@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { globalLucideIcons as icons } from '@windrun-huaiin/base-ui/components/server';
+import { ArrowUpIcon } from '@windrun-huaiin/base-ui/icons';
 import { themeButtonGradientClass, themeButtonGradientHoverClass } from '@windrun-huaiin/base-ui/lib';
 
 export function GoToTop() {
@@ -37,7 +37,7 @@ export function GoToTop() {
           className={`fixed bottom-6 right-6 p-3 ${themeButtonGradientClass} ${themeButtonGradientHoverClass} text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 z-50`}
           aria-label="Go to top"
         >
-          <icons.ArrowUp size={20} className="text-white" />
+          <ArrowUpIcon size={20} className="text-white" />
         </button>
       )}
     </>

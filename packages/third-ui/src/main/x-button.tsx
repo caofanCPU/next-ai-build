@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useRef, useEffect, ReactNode } from 'react'
-import { globalLucideIcons as icons } from '@windrun-huaiin/base-ui/components/server'
+import { ChevronDownIcon, Loader2Icon } from '@windrun-huaiin/base-ui/icons'
 import { themeBgColor, themeBorderColor, themeIconColor, themeMainBgColor } from '@windrun-huaiin/base-ui/lib'
 import { cn } from '@windrun-huaiin/lib/utils'
 
@@ -175,7 +175,7 @@ export function XButton(props: xButtonProps) {
       >
         {isLoading ? (
           <>
-            <icons.Loader2 className={loadingIconClass} />
+            <Loader2Icon className={loadingIconClass} />
             <span>{actualLoadingText}</span>
           </>
         ) : (
@@ -221,7 +221,7 @@ export function XButton(props: xButtonProps) {
       >
         {isLoading ? (
           <>
-            <icons.Loader2 className={loadingIconClass} />
+            <Loader2Icon className={loadingIconClass} />
             <span>{actualLoadingText}</span>
           </>
         ) : (
@@ -244,7 +244,7 @@ export function XButton(props: xButtonProps) {
         aria-label="More actions"
         aria-expanded={menuOpen}
       >
-        <icons.ChevronDown className={chevronIconClass} />
+        <ChevronDownIcon className={chevronIconClass} />
       </button>
 
       {/* dropdown menu */}

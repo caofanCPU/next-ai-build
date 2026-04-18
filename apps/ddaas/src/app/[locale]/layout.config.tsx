@@ -1,15 +1,179 @@
-import Preview from '@/../public/banner.png';
-import { HighlighterIcon, MmdIcon, ShieldUserIcon, SnippetsIcon } from '@base-ui/icons';
+import Preview from '@/../public/banner.webp';
+import {
+  FingerprintIcon,
+  HighlighterIcon,
+  MmdIcon,
+  PaletteIcon,
+  ShieldUserIcon,
+  SnippetsIcon,
+  SparklesIcon,
+} from '@base-ui/icons';
 import { SiteIcon } from '@/lib/site-config';
 import { BaseLayoutProps } from 'fumadocs-ui/layouts/shared';
 import { getTranslations } from 'next-intl/server';
 import Image from 'next/image';
+import type { HTMLAttributes, ReactNode } from 'react';
 import { ClerkUser } from '@third-ui/clerk/server';
 import { i18n } from '@/i18n';
 import { appConfig, localePrefixAsNeeded, defaultLocale } from '@/lib/appConfig';
 import { CreditPopover } from '@/components/credit-popover';
 import { ExtendedLinkItem, HomeTitle } from '@third-ui/fuma/base';
 import { getAsNeededLocalizedUrl } from '@windrun-huaiin/lib';
+
+type MenuLeafConfig = {
+  text: string;
+  description: string;
+  path: string;
+  icon?: ReactNode;
+  className?: string;
+};
+
+type LevelMenuConfig = {
+  text: string;
+  path: string;
+  landing: MenuLeafConfig;
+  items: MenuLeafConfig[];
+};
+
+type MenuItemType = {
+  type?: 'main';
+  text: ReactNode;
+  description?: ReactNode;
+  url: string;
+  external?: boolean;
+  menu?: HTMLAttributes<HTMLElement> & { banner?: ReactNode };
+};
+
+function renderMenuBanner() {
+  return (
+    <div className="-mx-3 -mt-3">
+      <Image
+        src={Preview}
+        alt="Preview"
+        className="rounded-t-lg object-cover"
+        style={{
+          maskImage: 'linear-gradient(to bottom,white 60%,transparent)',
+        }}
+      />
+    </div>
+  );
+}
+
+function buildMenuLeaf(locale: string, item: MenuLeafConfig): MenuItemType {
+  return {
+    type: 'main',
+    text: item.text,
+    description: item.description,
+    url: getAsNeededLocalizedUrl(locale, item.path, localePrefixAsNeeded, defaultLocale),
+    menu: {
+      ...(item.className ? { className: item.className } : {}),
+      ...(item.icon ? { banner: item.icon } : {}),
+    },
+  };
+}
+
+function buildLevelMenu(locale: string, item: LevelMenuConfig): ExtendedLinkItem {
+  return {
+    type: 'menu',
+    text: item.text,
+    url: getAsNeededLocalizedUrl(locale, item.path, localePrefixAsNeeded, defaultLocale),
+    items: [
+      {
+        ...buildMenuLeaf(locale, item.landing),
+        menu: {
+          banner: renderMenuBanner(),
+          className: 'md:row-span-2',
+        },
+      },
+      ...item.items.map((child) => buildMenuLeaf(locale, child)),
+    ],
+  };
+}
+
+const previewTestLinks: MenuLeafConfig[] = [
+  {
+    text: 'Preview Hub',
+    description: 'Entry page for all preview and playground routes.',
+    path: '/test',
+    icon: <FingerprintIcon />,
+    className: 'lg:col-start-2 lg:row-start-1',
+  },
+  {
+    text: 'UI Playground',
+    description: 'Component and interaction preview cases.',
+    path: '/test/ui',
+    icon: <SparklesIcon />,
+    className: 'lg:col-start-2 lg:row-start-2',
+  },
+  {
+    text: 'Color Lab',
+    description: 'Theme color and visual token preview.',
+    path: '/test/color',
+    icon: <PaletteIcon />,
+    className: 'lg:col-start-3 lg:row-start-1',
+  },
+  {
+    text: 'AI Runtime',
+    description: 'AI runtime and prompt playground.',
+    path: '/test/ai',
+    icon: <HighlighterIcon />,
+    className: 'lg:col-start-3 lg:row-start-2',
+  },
+];
+
+const docsLinks: MenuLeafConfig[] = [
+  {
+    text: 'FumaMDX',
+    description: 'FumaMDX tips',
+    path: '/docs/introduction/fuma-mdx',
+    icon: <ShieldUserIcon />,
+    className: 'lg:col-start-2 lg:row-start-1',
+  },
+  {
+    text: 'Quick generation',
+    description: 'MDX Snippets',
+    path: '/docs/introduction/mdx-snippets',
+    icon: <SnippetsIcon />,
+    className: 'lg:col-start-2 lg:row-start-2',
+  },
+  {
+    text: 'Codeblock',
+    description: 'Codeblock full case',
+    path: '/docs/introduction/mdx-shiki',
+    icon: <HighlighterIcon />,
+    className: 'lg:col-start-3 lg:row-start-1',
+  },
+  {
+    text: 'Graph',
+    description: 'Mermaid showcase.',
+    path: '/docs/introduction/mdx-mermaid',
+    icon: <MmdIcon />,
+    className: 'lg:col-start-3 lg:row-start-2',
+  },
+];
+
+const levelMenus: LevelMenuConfig[] = [
+  {
+    text: 'docs',
+    path: '/docs',
+    landing: {
+      text: 'DDaaS Site',
+      description: 'Docs Driven as a Service.',
+      path: '/docs/introduction',
+    },
+    items: docsLinks,
+  },
+  {
+    text: 'preview',
+    path: '/test',
+    landing: {
+      text: 'Preview Suite',
+      description: 'Preview pages and interactive playgrounds.',
+      path: '/test',
+    },
+    items: previewTestLinks,
+  },
+];
 
 // 首页普通菜单
 export async function homeNavLinks(locale: string): Promise<ExtendedLinkItem[]> {
@@ -22,10 +186,6 @@ export async function homeNavLinks(locale: string): Promise<ExtendedLinkItem[]> 
     {
       text: t1('pricing'),
       url: getAsNeededLocalizedUrl(locale, '/pricing', localePrefixAsNeeded, defaultLocale),
-    },
-    {
-      text: t1('preview'),
-      url: getAsNeededLocalizedUrl(locale, '/test/color', localePrefixAsNeeded, defaultLocale),
     },
     {
       type: 'custom',
@@ -47,73 +207,12 @@ export async function homeNavLinks(locale: string): Promise<ExtendedLinkItem[]> 
 // 层级特殊菜单
 export async function levelNavLinks(locale: string): Promise<ExtendedLinkItem[]> {
   const t1 = await getTranslations({ locale: locale, namespace: 'linkPreview' });
-  return [
-    {
-      type: 'menu',
-      text: t1('docs'),
-      // 文档落地页
-      url: getAsNeededLocalizedUrl(locale, '/docs', localePrefixAsNeeded, defaultLocale),
-      items: [
-        {
-          menu: {
-            banner: (
-              <div className="-mx-3 -mt-3">
-                <Image
-                  src={Preview}
-                  alt="Perview"
-                  className="rounded-t-lg object-cover"
-                  style={{
-                    maskImage:
-                      'linear-gradient(to bottom,white 60%,transparent)',
-                  }}
-                />
-              </div>
-            ),
-            className: 'md:row-span-2',
-          },
-          text: 'FumaDocs',
-          description: 'Learn to use Fumadocs on your docs site.',
-          url: getAsNeededLocalizedUrl(locale, '/docs/introduction', localePrefixAsNeeded, defaultLocale),
-        },
-        {
-          icon: <ShieldUserIcon />,
-          text: 'FumaMDX',
-          description: 'FumaMDX tips',
-          url: getAsNeededLocalizedUrl(locale, '/docs/introduction/fuma-mdx', localePrefixAsNeeded, defaultLocale),
-          menu: {
-            className: 'lg:col-start-2 lg:row-start-1',
-          },
-        },
-        {
-          icon: <SnippetsIcon />,
-          text: 'Quick generation',
-          description: 'MDX Snippets',
-          url: getAsNeededLocalizedUrl(locale, '/docs/introduction/mdx-snippets', localePrefixAsNeeded, defaultLocale),
-          menu: {
-            className: 'lg:col-start-2 lg:row-start-2',
-          },
-        },
-        {
-          icon: <HighlighterIcon />,
-          text: 'Codeblock',
-          description: 'Codeblock full case',
-          url: getAsNeededLocalizedUrl(locale, '/docs/introduction/mdx-shiki', localePrefixAsNeeded, defaultLocale),
-          menu: {
-            className: 'lg:col-start-3 lg:row-start-1',
-          },
-        },
-        {
-          icon: <MmdIcon />,
-          text: 'Graph',
-          description: 'Mermaid showcase.',
-          url: getAsNeededLocalizedUrl(locale, '/docs/introduction/mdx-mermaid', localePrefixAsNeeded, defaultLocale),
-          menu: {
-            className: 'lg:col-start-3 lg:row-start-2',
-          },
-        },
-      ],
-    },
-  ]
+  return levelMenus.map((item) =>
+    buildLevelMenu(locale, {
+      ...item,
+      text: t1(item.text),
+    }),
+  );
 }
 
 export async function baseOptions(locale: string): Promise<BaseLayoutProps> {

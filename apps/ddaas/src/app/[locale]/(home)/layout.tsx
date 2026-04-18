@@ -10,8 +10,8 @@ async function homeOptions(locale: string): Promise<HomeLayoutProps> {
   return {
     ...(await baseOptions(locale)),
     links: [
-      ...(await levelNavLinks(locale)),
       ...(await homeNavLinks(locale)),
+      ...(await levelNavLinks(locale)),
     ]
   };
 }

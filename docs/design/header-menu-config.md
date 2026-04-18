@@ -32,7 +32,7 @@ Docs 菜单结构（apps/ddaas/src/app/[locale]/layout.config.tsx:47-112）
       - text/description/url: 卡片标题、副文案、点击跳转地址。
       - menu.banner: 自定义顶部 Banner。这里是一个 Image，使用 maskImage 做渐隐过渡；因为它挺高，还设置了 menu.className: 'md:row-span-2'，让它在网格中占两行。
   - 其余子项（如 FumaMDX、Quick generation 等）
-      - 加了 icon: <icons.ShieldUser /> 之类的图标，这些图标会显示在卡片左侧。
+      - 加了 icon: <ShieldUserIcon /> 之类的图标，这些图标会显示在卡片左侧。
       - menu.className 控制它们在网格中的列/行起始位置，让 2×3 布局排列整齐。
       - 其它字段与 FumaDocs 一样，都是描述和跳转链接。
 

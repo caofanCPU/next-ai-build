@@ -490,9 +490,9 @@
   minItemWidthClassName="min-w-[40px] sm:min-w-[100px]"
   maxItemWidthClassName="max-w-[50px] sm:max-w-[160px]"
   options={[
-    { value: 'grid', label: 'Grid', mobileIcon: <icons.Grid className="h-4 w-4" /> },
-    { value: 'list', label: 'List', mobileIcon: <icons.List className="h-4 w-4" /> },
-    { value: 'detail', label: 'Detail', mobileIcon: <icons.Menu className="h-4 w-4" /> },
+    { value: 'grid', label: 'Grid', mobileIcon: <GridIcon className="h-4 w-4" /> },
+    { value: 'list', label: 'List', mobileIcon: <ListIcon className="h-4 w-4" /> },
+    { value: 'detail', label: 'Detail', mobileIcon: <MenuIcon className="h-4 w-4" /> },
   ]}
 />
 ```

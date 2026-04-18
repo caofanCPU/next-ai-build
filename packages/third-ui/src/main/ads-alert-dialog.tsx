@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import { globalLucideIcons as icons } from "@windrun-huaiin/base-ui/components/server";
+import { ImageOffIcon, InfoIcon, XIcon } from "@windrun-huaiin/base-ui/icons";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -47,7 +47,7 @@ export function AdsAlertDialog({
         <div className="flex flex-row items-center justify-between mb-2">
           <AlertDialogTitle asChild>
             <div className="flex flex-row items-center gap-1 min-w-0 text-xl font-semibold">
-              <icons.Info className="w-5 h-5" />
+              <InfoIcon className="w-5 h-5" />
               <span className="truncate">{title}</span>
             </div>
           </AlertDialogTitle>
@@ -57,7 +57,7 @@ export function AdsAlertDialog({
             aria-label="Close"
             tabIndex={0}
           >
-            <icons.X className="w-5 h-5" />
+            <XIcon className="w-5 h-5" />
           </button>
         </div>
         
@@ -70,7 +70,7 @@ export function AdsAlertDialog({
           <div className="w-full max-w-[400px] h-[220px] relative flex items-center justify-center mb-2">
             {imgError ? (
               <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-100 dark:bg-neutral-800 border border-dashed border-neutral-300 dark:border-neutral-700 rounded-lg text-neutral-400 text-sm">
-                <icons.ImageOff className="w-12 h-12 mb-2" />
+                <ImageOffIcon className="w-12 h-12 mb-2" />
                 <span>Image loading failed</span>
               </div>
             ) : imgHref ? (

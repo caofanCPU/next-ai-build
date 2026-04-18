@@ -1,6 +1,6 @@
 'use client';
 
-import { globalLucideIcons as icons } from '@windrun-huaiin/base-ui/components/server';
+import { CircleSmallIcon } from '@windrun-huaiin/base-ui/icons';
 import { cn } from '@windrun-huaiin/lib/utils';
 import Link from 'next/link';
 import type { HTMLAttributes, ReactNode } from 'react';
@@ -31,7 +31,7 @@ export function ZiaCard({ icon, title, description, ...props }: ZiaCardProps) {
         {...props}
       >
         <div className="not-prose mb-2 w-fit rounded-md border bg-fd-muted p-1.5 text-fd-muted-foreground [&_svg]:size-4">
-          {icon ? icon : <icons.CircleSmall />}
+          {icon ? icon : <CircleSmallIcon />}
         </div>
         <h3 className="not-prose mb-1 text-sm font-medium line-clamp-2 min-h-10">{title}</h3>
         {validDescription ? (
@@ -57,7 +57,7 @@ export function ZiaCard({ icon, title, description, ...props }: ZiaCardProps) {
       {...props}
     >
       <div className="not-prose mb-2 w-fit rounded-md border bg-fd-muted p-1.5 text-fd-muted-foreground [&_svg]:size-4">
-        {icon ? icon : <icons.CircleSmall />}
+        {icon ? icon : <CircleSmallIcon />}
       </div>
       <h3 className="not-prose mb-1 text-sm font-medium line-clamp-2 min-h-10">{title}</h3>
       {validDescription ? (

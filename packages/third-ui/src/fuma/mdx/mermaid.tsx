@@ -1,6 +1,6 @@
 'use client';
 
-import { globalLucideIcons as icons } from '@windrun-huaiin/base-ui/components/server';
+import { DownloadIcon, MmdIcon, RefreshCcwIcon, XIcon } from '@windrun-huaiin/base-ui/icons';
 // Attention: do not use external dialog library, avoid react context conflict when building third-party applications
 import type { MermaidConfig } from 'mermaid';
 import { cn } from '@windrun-huaiin/lib/utils';
@@ -249,7 +249,7 @@ export function Mermaid({ chart, title, watermarkEnabled, watermarkText, handDra
         <div
           className={cn("mt-2 flex items-center justify-center text-center text-[13px] font-italic", themeIconColor)}
         >
-          <icons.Mmd className='mr-1 h-4 w-4' />
+          <MmdIcon className='mr-1 h-4 w-4' />
           <span>{title}</span>
         </div>
       )}
@@ -272,7 +272,7 @@ export function Mermaid({ chart, title, watermarkEnabled, watermarkText, handDra
             {/* Top bar */}
             <div className="flex items-center justify-between gap-3 px-3 py-2 border-b border-neutral-200 dark:border-neutral-700">
               <div className={cn("min-w-0 flex items-center gap-2 text-sm", themeIconColor)}>
-                <icons.Mmd className="h-4 w-4" />
+                <MmdIcon className="h-4 w-4" />
                 <span className="truncate max-w-[50vw]">{title ?? 'Mermaid Preview'}</span>
               </div>
               <div className="flex shrink-0 items-center gap-0.5">
@@ -326,21 +326,21 @@ export function Mermaid({ chart, title, watermarkEnabled, watermarkText, handDra
                   className={cn("ml-1 flex h-6 w-6 items-center justify-center rounded transition-colors hover:bg-neutral-100 active:bg-neutral-200 dark:hover:bg-neutral-700 dark:active:bg-neutral-600", themeIconColor)}
                   onClick={resetTransform}
                 >
-                  <icons.RefreshCcw className="h-3.5 w-3.5" />
+                  <RefreshCcwIcon className="h-3.5 w-3.5" />
                 </button>
                 <button
                   aria-label="Download SVG"
                   className={cn("ml-1 flex h-6 w-6 items-center justify-center rounded transition-colors hover:bg-neutral-100 active:bg-neutral-200 dark:hover:bg-neutral-700 dark:active:bg-neutral-600", themeIconColor)}
                   onClick={handleDownload}
                 >
-                  <icons.Download className="h-3.5 w-3.5" />
+                  <DownloadIcon className="h-3.5 w-3.5" />
                 </button>
                 <button
                   aria-label="Close"
                   className={cn("ml-1 flex h-6 w-6 items-center justify-center rounded transition-colors hover:bg-neutral-100 active:bg-neutral-200 dark:hover:bg-neutral-700 dark:active:bg-neutral-600", themeIconColor)}
                   onClick={() => { setOpen(false); resetTransform(); }}
                 >
-                  <icons.X className="h-3.5 w-3.5" />
+                  <XIcon className="h-3.5 w-3.5" />
                 </button>
               </div>
             </div>

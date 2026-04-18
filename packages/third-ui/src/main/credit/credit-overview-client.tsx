@@ -2,7 +2,15 @@
 
 import { useClerk } from '@clerk/nextjs';
 import { GradientButton } from '@third-ui/fuma/mdx/gradient-button';
-import { globalLucideIcons as icons } from '@windrun-huaiin/base-ui/components/server';
+import {
+  BellIcon,
+  ChevronDownIcon,
+  ChevronUpIcon,
+  CircleQuestionMarkIcon,
+  GemIcon,
+  Settings2Icon,
+  ShoppingCartIcon,
+} from '@windrun-huaiin/base-ui/icons';
 import { cn } from '@windrun-huaiin/lib/utils';
 import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { redirectToCustomerPortal } from '../money-price/customer-portal';
@@ -369,7 +377,7 @@ export function CreditOverviewClient({
       <header className="relative rounded-2xl bg-linear-to-bl from-indigo-200/60 via-indigo-400/90 to-purple-200/50 p-4 shadow-inner dark:from-indigo-300/20 dark:via-slate-400 dark:to-slate-500/50 sm:p-6">
         <div className="flex flex-col gap-2 sm:gap-3">
           <div className="flex items-center justify-start rounded-full ">
-            <icons.Gem aria-hidden className="mr-2 h-6 w-6 sm:h-8 sm:w-8" />
+            <GemIcon aria-hidden className="mr-2 h-6 w-6 sm:h-8 sm:w-8" />
             <span className="text-base sm:text-lg">{translations.totalLabel}</span>
           </div>
           <div className="flex justify-center text-3xl font-semibold leading-tight sm:text-4xl">
@@ -387,7 +395,7 @@ export function CreditOverviewClient({
             <GradientButton
               title={subscription ? translations.subscriptionManage : translations.subscribePay}
               align="center"
-              icon={subscription ? <icons.Settings2 /> : <icons.Bell />}
+              icon={subscription ? <Settings2Icon /> : <BellIcon />}
               openInNewTab={false}
               className="w-full"
               onClick={subscription ? handleManageAction : handleSubscribeAction}
@@ -417,9 +425,9 @@ export function CreditOverviewClient({
               className="flex h-7 w-7 items-center justify-center rounded-full border border-transparent bg-white text-purple-600 shadow-[0_6px_20px_rgba(99,102,241,0.25)] transition-colors hover:text-purple-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-purple-500 dark:bg-[#1b1541] dark:text-purple-100 dark:hover:text-purple-50 dark:shadow-[0_6px_22px_rgba(112,86,255,0.35)]"
             >
               {bucketExpanded ? (
-                <icons.ChevronUp className="h-4 w-4" />
+                <ChevronUpIcon className="h-4 w-4" />
               ) : (
-                <icons.ChevronDown className="h-4 w-4" />
+                <ChevronDownIcon className="h-4 w-4" />
               )}
             </button>
           ) : null}
@@ -476,7 +484,7 @@ export function CreditOverviewClient({
         )}
         <GradientButton
           title={translations.onetimeBuy}
-          icon={<icons.ShoppingCart />}
+          icon={<ShoppingCartIcon />}
           align="center"
           className="w-full text-sm sm:text-base"
           onClick={handleOnetimeAction}
@@ -537,7 +545,7 @@ function HoverInfo({ description, variant = 'default' }: HoverInfoProps) {
             : 'border-transparent bg-white text-purple-600 shadow-[0_6px_20px_rgba(99,102,241,0.25)] hover:text-purple-700 dark:bg-[#1b1541] dark:text-purple-100 dark:hover:text-purple-50 dark:shadow-[0_6px_22px_rgba(112,86,255,0.35)]',
         )}
       >
-        <icons.CircleQuestionMark className="h-3.5 w-3.5" />
+        <CircleQuestionMarkIcon className="h-3.5 w-3.5" />
       </button>
       <span
         role="tooltip"

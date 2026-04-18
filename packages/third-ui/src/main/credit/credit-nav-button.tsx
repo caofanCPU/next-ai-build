@@ -1,7 +1,7 @@
 'use client';
 
 import { cn } from '@windrun-huaiin/lib/utils';
-import { globalLucideIcons as icons } from '@windrun-huaiin/base-ui/components/server';
+import { GemIcon, XIcon } from '@windrun-huaiin/base-ui/icons';
 import {
   AlertDialog,
   AlertDialogContent,
@@ -191,7 +191,7 @@ export function CreditNavButton({
               aria-hidden="true"
             />
             <span className="relative z-10 flex h-6 w-6 items-center justify-center rounded-full bg-slate-100 text-slate-600 transition-transform duration-200 group-hover:scale-110 group-hover:bg-white/20 group-hover:text-white dark:bg-slate-800 dark:text-slate-200 dark:group-hover:bg-white/20 dark:group-hover:text-white">
-              <icons.Gem className="h-3.5 w-3.5" />
+              <GemIcon className="h-3.5 w-3.5" />
             </span>
             <span className="relative z-10 flex items-center">
               <span className="text-base font-semibold leading-none">
@@ -244,7 +244,7 @@ export function CreditNavButton({
                 className="rounded-full p-2 text-gray-400 transition hover:bg-gray-400 hover:text-gray-400 dark:text-white/80 dark:hover:bg-white/80 dark:hover:text-white/80"
                 onClick={closePricingModal}
               >
-                <icons.X className="h-6 w-6" />
+                <XIcon className="h-6 w-6" />
               </button>
             </AlertDialogHeader>
             <div className="max-h-[60vh] sm:max-h-[80vh] overflow-y-auto px-4 pt-2 pb-6">

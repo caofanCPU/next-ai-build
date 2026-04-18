@@ -9,8 +9,8 @@ import {
   useState,
 } from 'react';
 import { cva } from 'class-variance-authority';
+import { ChevronDownIcon, LanguagesIcon } from '@windrun-huaiin/base-ui/icons';
 import Link from 'fumadocs-core/link';
-import { globalLucideIcons as icons } from '@windrun-huaiin/base-ui/components/server';
 import { HomeLayoutProps } from 'fumadocs-ui/layouts/home';
 import {
   BaseLinkItem,
@@ -185,7 +185,7 @@ export function CustomHomeHeader({
         : null,
     i18n: i18n ? (
       <CompactLanguageToggle>
-        <icons.Languages className="size-5" />
+        <LanguagesIcon className="size-5" />
       </CompactLanguageToggle>
     ) : null,
     secondary: desktopSecondaryDisplayItems.length ? (
@@ -237,9 +237,9 @@ export function CustomHomeHeader({
     separator: <div role="separator" className="flex-1" />,
     i18n: i18n ? (
       <CompactLanguageToggle>
-        <icons.Languages className="size-5" />
+        <LanguagesIcon className="size-5" />
         <LanguageToggleText />
-        <icons.ChevronDown className="size-3 text-fd-muted-foreground" />
+        <ChevronDownIcon className="size-3 text-fd-muted-foreground" />
       </CompactLanguageToggle>
     ) : null,
     theme:
@@ -268,7 +268,7 @@ export function CustomHomeHeader({
         )}
         enableHover={nav.enableHoverToOpen}
       >
-        <icons.ChevronDown className="transition-transform duration-300 group-data-[state=open]:rotate-180" />
+        <ChevronDownIcon className="transition-transform duration-300 group-data-[state=open]:rotate-180" />
       </MenuTrigger>
       <MenuContent className="sm:flex-row sm:items-center sm:justify-end">
         {primaryMenuItems.map((item, i) => (

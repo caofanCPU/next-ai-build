@@ -1,7 +1,7 @@
 'use client';
 
 import { cn } from '@windrun-huaiin/lib/utils';
-import { globalLucideIcons as icons } from "@windrun-huaiin/base-ui/components/server";
+import { ArrowRightIcon, Loader2Icon } from "@windrun-huaiin/base-ui/icons";
 import {
   themeBgColor,
   themeBorderColor,
@@ -106,7 +106,7 @@ export function GradientButton({
 
   const iconNode = (() => {
     if (isLoading) {
-      return <icons.Loader2 className={cn(finalIconClass, 'animate-spin')} />;
+      return <Loader2Icon className={cn(finalIconClass, 'animate-spin')} />;
     }
 
     if (iconProvided) {
@@ -123,7 +123,7 @@ export function GradientButton({
       return icon;
     }
 
-    return <icons.ArrowRight className={cn(finalIconClass)} />;
+    return <ArrowRightIcon className={cn(finalIconClass)} />;
   })();
 
   const shouldRenderIcon = iconNode !== null && iconNode !== undefined;

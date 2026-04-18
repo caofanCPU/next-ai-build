@@ -5,7 +5,7 @@ import { useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useCopyButton } from 'fumadocs-ui/utils/use-copy-button';
 import Link from 'fumadocs-core/link';
-import { globalLucideIcons as icons } from '@windrun-huaiin/base-ui/components/server';
+import { CheckIcon, MarkdownIcon, GitHubIcon, LastUpdatedIcon} from '@windrun-huaiin/base-ui/icons';
 import { Button } from '@windrun-huaiin/base-ui/ui';
 
 const cache = new Map<string, string>();
@@ -69,12 +69,12 @@ export function LLMCopyButton({ llmApiUrl, sourceKey }: LLMCopyButtonProps = {})
     >
       {checked ? (
         <>
-          <icons.Check/>
+          <CheckIcon/>
           {t('copyMarkdownDone')}
         </>
       ) : (
         <>
-          <icons.Markdown/>
+          <MarkdownIcon/>
           {t('copyMarkdown')}
         </>
       )}
@@ -89,7 +89,7 @@ export function EditOnGitHub({ url }: { url: string }) {
       className="flex items-center gap-x-2 text-stone-600 hover:text-stone-500 dark:text-stone-400 dark:hover:text-stone-300 text-sm"
       href={url}
     >
-      <icons.GitHub/>
+      <GitHubIcon/>
       {t('editOnGithub')}
     </Link>
   );
@@ -101,7 +101,7 @@ export function LastUpdatedDate({ date }: { date: string | undefined }) {
   const viewDate = date ? `${t('lastUpdate')} ${date}` : `${t('emptyLastUpdate')}`
   return (
     <div className="flex items-center gap-x-2 text-stone-600 dark:text-stone-400 text-sm">
-      <icons.LastUpdated/>
+      <LastUpdatedIcon/>
       {viewDate}
     </div>
   );

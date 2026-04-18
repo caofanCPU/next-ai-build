@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { ClerkLoaded, ClerkLoading, SignInButton, UserButton, useAuth } from "@clerk/nextjs";
-import { globalLucideIcons as icons } from '@windrun-huaiin/base-ui/components/server';
+import { ReceiptTextIcon, ShieldUserIcon } from '@windrun-huaiin/base-ui/icons';
 import { themeButtonGradientClass } from '@windrun-huaiin/base-ui/lib';
 import { SignUpButtonWithFingerprint } from './signup-button-with-fingerprint-client';
 
@@ -70,12 +70,12 @@ export function ClerkUserClient({ data }: { data: ClerkUserData }) {
             <UserButton.MenuItems>
               <UserButton.Action label="manageAccount" />
               <UserButton.Link
-                labelIcon={<icons.ReceiptText className="size-4 fill-none stroke-(--clerk-icon-stroke-color)" />}
+                labelIcon={<ReceiptTextIcon className="size-4 fill-none stroke-(--clerk-icon-stroke-color)" />}
                 label={data.terms}
                 href={`/${data.locale}/legal/terms`}>
               </UserButton.Link>
               <UserButton.Link
-                labelIcon={<icons.ShieldUser className="size-4 fill-none stroke-(--clerk-icon-stroke-color)" />}
+                labelIcon={<ShieldUserIcon className="size-4 fill-none stroke-(--clerk-icon-stroke-color)" />}
                 label={data.privacy}
                 href={`/${data.locale}/legal/privacy`}>
               </UserButton.Link>

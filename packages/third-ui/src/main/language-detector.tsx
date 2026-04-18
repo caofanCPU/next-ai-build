@@ -8,7 +8,7 @@
  */
 'use client'
 
-import { globalLucideIcons as icons } from "@windrun-huaiin/base-ui/components/server"
+import { XIcon } from "@windrun-huaiin/base-ui/icons"
 import { useLocale, useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -149,7 +149,7 @@ export function LanguageDetector({ i18nConfig }: LanguageDetectorProps) {
                 onClick={handleClose}
                 className="text-gray-500 hover:text-gray-700"
               >
-                <icons.X className="h-5 w-5" />
+                <XIcon className="h-5 w-5" />
               </button>
             </div>
             <div className="flex items-center gap-3">

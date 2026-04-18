@@ -1,6 +1,18 @@
 'use client';
 
-import { globalLucideIcons as icons } from '@windrun-huaiin/base-ui/components/server';
+import {
+  BellIcon,
+  CoinsIcon,
+  DatabaseZapIcon,
+  FingerprintIcon,
+  GemIcon,
+  GiftIcon,
+  LightbulbIcon,
+  RefreshCcwIcon,
+  Settings2Icon,
+  ShieldUserIcon,
+  XIcon,
+} from '@windrun-huaiin/base-ui/icons';
 import { themeButtonGradientClass, themeButtonGradientHoverClass, themeIconColor } from '@windrun-huaiin/base-ui/lib';
 import { cn } from '@windrun-huaiin/lib/utils';
 import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react';
@@ -125,7 +137,7 @@ export function FingerprintStatus() {
       {
         key: 'paid',
         label: 'Paid',
-        icon: <icons.Settings2 className="size-4 text-green-500 dark:text-green-300" />,
+        icon: <Settings2Icon className="size-4 text-green-500 dark:text-green-300" />,
         balance: xCredit.balancePaid,
         total: xCredit.totalPaidLimit,
         start: xCredit.paidStart,
@@ -134,7 +146,7 @@ export function FingerprintStatus() {
       {
         key: 'oneTimePaid',
         label: 'OneTimePaid',
-        icon: <icons.Coins className="size-4 text-amber-500 dark:text-amber-300" />,
+        icon: <CoinsIcon className="size-4 text-amber-500 dark:text-amber-300" />,
         balance: xCredit.balanceOneTimePaid,
         total: xCredit.totalOneTimePaidLimit,
         start: xCredit.oneTimePaidStart,
@@ -143,7 +155,7 @@ export function FingerprintStatus() {
       {
         key: 'free',
         label: 'Free',
-        icon: <icons.Gift className="size-4 text-purple-500 dark:text-purple-300" />,
+        icon: <GiftIcon className="size-4 text-purple-500 dark:text-purple-300" />,
         balance: xCredit.balanceFree,
         total: xCredit.totalFreeLimit,
         start: xCredit.freeStart,
@@ -314,14 +326,14 @@ export function FingerprintStatus() {
           onClick={handleToggle}
           type="button"
           aria-label="Fingerprint debug panel"
-          className={cn(
-            'fixed left-2 top-2 md:left-2 md:top-3 z-10000 inline-flex size-8 md:size-11 items-center justify-center rounded-full',
-            themeButtonGradientClass,
-            themeButtonGradientHoverClass,
-            'text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300',
-          )}
-        >
-          <icons.Lightbulb className="size-6 text-white" />
+        className={cn(
+          'fixed left-2 top-2 md:left-2 md:top-3 z-10000 inline-flex size-8 md:size-11 items-center justify-center rounded-full',
+          themeButtonGradientClass,
+          themeButtonGradientHoverClass,
+          'text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300',
+        )}
+      >
+          <LightbulbIcon className="size-6 text-white" />
         </button>
       )}
 
@@ -341,7 +353,7 @@ export function FingerprintStatus() {
             <header className="mb-4">
               <div className="flex items-start justify-between gap-3">
                 <div className={cn("flex items-center gap-2 text-base font-bold tracking-wider", themeIconColor)}>
-                  <icons.ShieldUser className="size-4" />
+                  <ShieldUserIcon className="size-4" />
                   Fingerprint Debug Panel
                 </div>
                 <div className="flex items-center gap-2">
@@ -380,7 +392,7 @@ export function FingerprintStatus() {
                     className="rounded-full p-2 text-slate-500 transition hover:bg-slate-100 hover:text-slate-700 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white"
                     onClick={() => setIsOpen(false)}
                   >
-                    <icons.X className="size-4" />
+                    <XIcon className="size-4" />
                   </button>
                 </div>
               </div>
@@ -390,7 +402,7 @@ export function FingerprintStatus() {
               {panelMode === 'info' ? (
                 <>
                   <PanelSection
-                    icon={<icons.Fingerprint className="size-4" />}
+                    icon={<FingerprintIcon className="size-4" />}
                     title="User"
                     rightInfo={<StatusTag value={userStatus} />}
                     items={[
@@ -406,7 +418,7 @@ export function FingerprintStatus() {
 
                   <div className="space-y-2 rounded-xl border border-slate-200/70 bg-white/80 p-4 shadow-sm dark:border-white/12 dark:bg-slate-900/50">
                     <PanelHeader
-                      icon={<icons.Gem className="size-4" />}
+                      icon={<GemIcon className="size-4" />}
                       title="Credits Info"
                       rightInfo={<span className={cn("font-semibold", themeIconColor)}>{totalCredits}</span>}
                     />
@@ -439,13 +451,13 @@ export function FingerprintStatus() {
                           );
                         })
                       ) : (
-                        <EmptyPlaceholder label="No Credits Yet" icon={<icons.DatabaseZap className="size-4" />} />
+                        <EmptyPlaceholder label="No Credits Yet" icon={<DatabaseZapIcon className="size-4" />} />
                       )}
                     </div>
                   </div>
 
                   <PanelSection
-                    icon={<icons.Bell className="size-4" />}
+                    icon={<BellIcon className="size-4" />}
                     title="Subscription"
                     rightInfo={<StatusTag value={subStatus} />}
                     items={[
@@ -461,7 +473,7 @@ export function FingerprintStatus() {
               ) : (
                 <div className="space-y-3 rounded-xl border border-slate-200/70 bg-white/85 p-4 shadow-sm dark:border-white/12 dark:bg-slate-900/45">
                   <PanelHeader
-                    icon={<icons.DatabaseZap className="size-4" />}
+                    icon={<DatabaseZapIcon className="size-4" />}
                     title="Concurrent Base Info"
                     rightInfo={<StatusTag value={isRunningTest ? 'pending' : 'idle'} />}
                   />
@@ -484,7 +496,7 @@ export function FingerprintStatus() {
                           aria-label="Generate new test fingerprint"
                           className="inline-flex size-9 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 text-slate-700 transition hover:border-slate-300 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/10 dark:bg-slate-950 dark:text-slate-100 dark:hover:bg-slate-900"
                         >
-                          <icons.RefreshCcw className="size-4" />
+                          <RefreshCcwIcon className="size-4" />
                         </button>
                       </div>
                     </div>
@@ -528,7 +540,7 @@ export function FingerprintStatus() {
               {error && (
                 <div className="flex items-start justify-between gap-3 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-600 shadow-sm dark:border-amber-500/40 dark:bg-amber-500/10 dark:text-amber-200">
                   <div className="flex items-start gap-2">
-                    <icons.X className="mt-0.5 size-4 shrink-0" />
+                    <XIcon className="mt-0.5 size-4 shrink-0" />
                     <span>{error}</span>
                   </div>
                   <button
@@ -537,7 +549,7 @@ export function FingerprintStatus() {
                     onClick={clearError}
                     className="shrink-0 rounded-full p-1 text-amber-500 transition hover:bg-amber-100 hover:text-amber-700 dark:text-amber-200 dark:hover:bg-amber-500/10 dark:hover:text-amber-100"
                   >
-                    <icons.X className="size-4" />
+                    <XIcon className="size-4" />
                   </button>
                 </div>
               )}

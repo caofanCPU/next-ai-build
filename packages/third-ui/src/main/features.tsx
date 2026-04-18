@@ -1,10 +1,12 @@
 import { getTranslations } from 'next-intl/server';
 import { getGlobalIcon } from '@windrun-huaiin/base-ui/components/server';
-import { globalLucideIcons as icons } from '@windrun-huaiin/base-ui/components/server';
+import type { globalLucideIcons } from '@windrun-huaiin/base-ui/icons';
 import { themeIconColor } from '@windrun-huaiin/base-ui/lib';
 import { cn } from '@windrun-huaiin/lib/utils';
 import { richText } from './rich-text-expert';
 import { responsiveSection } from './section-layout';
+
+type GlobalIconKey = Extract<keyof typeof globalLucideIcons, string>;
 
 interface FeaturesData {
   title: string;
@@ -14,7 +16,7 @@ interface FeaturesData {
     id: string;
     title: string;
     description: string;
-    iconKey: keyof typeof icons;
+    iconKey: GlobalIconKey;
   }>;
 }
 
@@ -31,7 +33,7 @@ export async function Features({
   const featureItems = t.raw('items') as Array<{
     title: string;
     description: string;
-    iconKey: keyof typeof icons;
+    iconKey: GlobalIconKey;
   }>;
   
   const data: FeaturesData = {
