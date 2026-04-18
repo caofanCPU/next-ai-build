@@ -1,5 +1,20 @@
 # @windrun-huaiin/backend-core
 
+## 16.0.0
+
+### Major Changes
+
+- feat(ai): support ai-chat
+  - refactor icon's usage
+  - enhance Redis, QStash
+  - optimize page menu
+
+### Patch Changes
+
+- Updated dependencies
+  - @windrun-huaiin/third-ui@16.0.0
+  - @windrun-huaiin/lib@16.0.0
+
 ## 15.1.0
 
 ### Minor Changes
