@@ -16,6 +16,15 @@ export function TestPlayground({ initialSnapshot }: Props) {
   const [stringValue, setStringValue] = useState('hello-nextai');
   const [hashField, setHashField] = useState('name');
   const [hashValue, setHashValue] = useState('upstash-tester');
+  const [jsonValue, setJsonValue] = useState(`{
+  "id": 10666,
+  "title": "Redis JSON cache probe",
+  "tags": ["upstash", "mgetJson"],
+  "meta": {
+    "source": "ddaas-test-page",
+    "enabled": true
+  }
+}`);
   const [listValue, setListValue] = useState('task-1');
   const [counterDelta, setCounterDelta] = useState(1);
   const [lockConcurrency, setLockConcurrency] = useState(5);
@@ -94,6 +103,84 @@ export function TestPlayground({ initialSnapshot }: Props) {
           <span className="rounded-full border border-amber-300/70 bg-amber-100 px-3 py-1 font-medium text-amber-800 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-300">
             缓存 TTL：除锁外均 1 小时
           </span>
+        </div>
+      </section>
+
+      <section className={panelClass}>
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <h2 className="text-base font-semibold text-foreground">JSON 缓存测试</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              固定 key：{snapshot.jsonKey}
+            </p>
+          </div>
+          <button
+            type="button"
+            className={infoBtnClass}
+            onClick={() => runAction({ type: 'getJson' })}
+            disabled={isPending}
+          >
+            查询 JSON
+          </button>
+        </div>
+
+        <div className="mt-4 grid gap-4 lg:grid-cols-2">
+          <div className="rounded-xl border border-border/60 bg-background/70 p-3">
+            <div className="mb-2 flex items-center justify-between gap-2">
+              <h3 className="text-sm font-semibold text-foreground">写入 JSON</h3>
+              <span className="rounded-full border border-amber-300/70 bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-300">
+                TTL 1 小时
+              </span>
+            </div>
+            <textarea
+              className={`${inputClass} min-h-64 resize-y font-mono text-xs leading-relaxed`}
+              value={jsonValue}
+              onChange={(event) => setJsonValue(event.target.value)}
+              spellCheck={false}
+              placeholder="输入合法 JSON"
+            />
+            <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+              <button
+                type="button"
+                className={`${primaryBtnClass} w-full sm:w-auto`}
+                onClick={() => runAction({ type: 'setJson', value: jsonValue })}
+                disabled={isPending}
+              >
+                存 JSON
+              </button>
+              <button
+                type="button"
+                className={`${ghostBtnClass} w-full sm:w-auto`}
+                onClick={() => runAction({ type: 'getJson' })}
+                disabled={isPending}
+              >
+                读 JSON
+              </button>
+            </div>
+          </div>
+
+          <div className="rounded-xl border border-border/60 bg-muted/40 p-3">
+            <div className="mb-2 flex items-center justify-between gap-2">
+              <h3 className="text-sm font-semibold text-foreground">Redis 读出 JSON</h3>
+              <span className="rounded-full border border-cyan-300/70 bg-cyan-100 px-2 py-0.5 text-xs font-medium text-cyan-800 dark:border-cyan-800 dark:bg-cyan-950/40 dark:text-cyan-300">
+                getJson / mgetJson
+              </span>
+            </div>
+            <div className="grid gap-3">
+              <div>
+                <p className="mb-1 text-xs font-medium text-muted-foreground">getJson</p>
+                <pre className="min-h-28 overflow-x-auto rounded-lg border border-border/60 bg-background/80 p-3 text-xs text-foreground">
+{formatJson(snapshot.jsonValue)}
+                </pre>
+              </div>
+              <div>
+                <p className="mb-1 text-xs font-medium text-muted-foreground">mgetJson([key]) 第 1 项</p>
+                <pre className="min-h-28 overflow-x-auto rounded-lg border border-border/60 bg-background/80 p-3 text-xs text-foreground">
+{formatJson(snapshot.jsonMgetValue)}
+                </pre>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 

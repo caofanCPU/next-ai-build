@@ -56,7 +56,25 @@ const getRedisKeyPrefix = (): string => {
   return `${getRequiredRedisAppName()}_${envSuffix}`;
 };
 
-const prefixRedisKey = (prefix: string, key: string): string => `${prefix}:${key}`;
+const buildPrefixedRedisKey = (prefix: string, key: string): string => `${prefix}:${key}`;
+
+export const getPrefixedRedisKey = (key: string): string => buildPrefixedRedisKey(getRedisKeyPrefix(), key);
+
+export const getPrefixedRedisKeys = (keys: string[]): string[] => keys.map(getPrefixedRedisKey);
+
+export const getQstashNamePrefix = (): string => {
+  return getRedisKeyPrefix();
+};
+
+export const getPrefixedQstashQueueName = (name: string): string => {
+  if (!isNonEmpty(name)) {
+    throw new Error('[Upstash QStash] queue name must not be empty');
+  }
+
+  return `${getQstashNamePrefix()}_queue_${name}`;
+};
+
+const prefixRedisKey = (prefix: string, key: string): string => buildPrefixedRedisKey(prefix, key);
 
 const prefixRedisKeys = (prefix: string, keys: string[]): string[] =>
   keys.map((key) => prefixRedisKey(prefix, key));
@@ -71,8 +89,18 @@ const prefixFirstStringArg = (args: unknown[], prefix: string): unknown[] => {
   return nextArgs;
 };
 
-const prefixAllStringArgs = (args: unknown[], prefix: string): unknown[] => {
-  return args.map((arg) => (typeof arg === 'string' ? prefixRedisKey(prefix, arg) : arg));
+const prefixVariadicKeyArgs = (args: unknown[], prefix: string): unknown[] => {
+  return args.flatMap((arg) => {
+    if (typeof arg === 'string') {
+      return [prefixRedisKey(prefix, arg)];
+    }
+
+    if (Array.isArray(arg) && arg.every((key) => typeof key === 'string')) {
+      return prefixRedisKeys(prefix, arg);
+    }
+
+    return [arg];
+  });
 };
 
 const keyArrayCommands = new Set(['mget', 'del']);
@@ -103,12 +131,12 @@ const createPrefixedPipeline = <T extends object>(target: T, prefix: string): T 
         }
 
         if (typeof prop === 'string' && keyArrayCommands.has(prop)) {
-          const nextArgs = prefixAllStringArgs(args, prefix);
+          const nextArgs = prefixVariadicKeyArgs(args, prefix);
           return (value as (...innerArgs: unknown[]) => unknown).apply(obj, nextArgs);
         }
 
         if (typeof prop === 'string' && allStringKeyCommands.has(prop)) {
-          const nextArgs = prefixAllStringArgs(args, prefix);
+          const nextArgs = prefixVariadicKeyArgs(args, prefix);
           return (value as (...innerArgs: unknown[]) => unknown).apply(obj, nextArgs);
         }
 

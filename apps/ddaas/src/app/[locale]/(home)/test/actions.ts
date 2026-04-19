@@ -4,12 +4,15 @@ import {
   deleteKey,
   getCounter,
   getHashAll,
+  getJson,
   getString,
   incrCounter,
   listLength,
+  mgetJson,
   popList,
   pushList,
   rangeList,
+  setJson,
   setHashField,
   setString,
   withLock,
@@ -23,6 +26,7 @@ const TEST_PREFIX = `nextai-${RUNTIME_ENV}-test`;
 const TEST_KEYS = {
   string: `${TEST_PREFIX}:string:profile`,
   hash: `${TEST_PREFIX}:hash:user`,
+  json: `${TEST_PREFIX}:json:profile`,
   list: `${TEST_PREFIX}:list:tasks`,
   counter: `${TEST_PREFIX}:counter:views`,
   lock: `${TEST_PREFIX}:lock:demo`,
@@ -35,6 +39,9 @@ export type UpstashSnapshot = {
   redisAvailable: boolean;
   stringValue: string | null;
   hashValue: Record<string, string> | null;
+  jsonKey: string;
+  jsonValue: unknown | null;
+  jsonMgetValue: unknown | null;
   listValue: string[] | null;
   listLength: number | null;
   counterValue: number | null;
@@ -59,6 +66,8 @@ type UpstashActionInput =
   | { type: 'check' }
   | { type: 'setString'; value: string }
   | { type: 'setHashField'; field: string; value: string }
+  | { type: 'setJson'; value: string }
+  | { type: 'getJson' }
   | { type: 'pushList'; value: string; direction: 'left' | 'right' }
   | { type: 'popList'; direction: 'left' | 'right' }
   | { type: 'incrCounter'; delta: number }
@@ -82,6 +91,9 @@ const loadSnapshot = async (): Promise<UpstashSnapshot> => {
       redisAvailable: false,
       stringValue: null,
       hashValue: null,
+      jsonKey: TEST_KEYS.json,
+      jsonValue: null,
+      jsonMgetValue: null,
       listValue: null,
       listLength: null,
       counterValue: null,
@@ -89,10 +101,21 @@ const loadSnapshot = async (): Promise<UpstashSnapshot> => {
     };
   }
 
-  const [stringValue, hashValue, listValue, currentListLength, counterValue, lockSuccessCount] =
+  const [
+    stringValue,
+    hashValue,
+    jsonValue,
+    jsonMgetValues,
+    listValue,
+    currentListLength,
+    counterValue,
+    lockSuccessCount,
+  ] =
     await Promise.all([
       getString(TEST_KEYS.string),
       getHashAll(TEST_KEYS.hash),
+      getJson<unknown>(TEST_KEYS.json),
+      mgetJson<unknown>([TEST_KEYS.json]),
       rangeList(TEST_KEYS.list),
       listLength(TEST_KEYS.list),
       getCounter(TEST_KEYS.counter),
@@ -105,6 +128,9 @@ const loadSnapshot = async (): Promise<UpstashSnapshot> => {
     redisAvailable: true,
     stringValue,
     hashValue,
+    jsonKey: TEST_KEYS.json,
+    jsonValue,
+    jsonMgetValue: jsonMgetValues?.[0] ?? null,
     listValue,
     listLength: currentListLength,
     counterValue,
@@ -149,6 +175,23 @@ export const runUpstashAction = async (input: UpstashActionInput): Promise<Upsta
           await withTtl([TEST_KEYS.hash]);
         }
         return buildResult(ok, ok ? 'Hash 字段写入成功(TTL 1 小时)' : 'Hash 字段写入失败');
+      }
+
+      case 'setJson': {
+        let value: unknown;
+        try {
+          value = JSON.parse(input.value);
+        } catch {
+          return buildResult(false, 'JSON 格式不合法，写入已取消');
+        }
+
+        const ok = await setJson(TEST_KEYS.json, value, TEST_TTL_SECONDS);
+        return buildResult(ok, ok ? 'JSON 写入成功(TTL 1 小时)' : 'JSON 写入失败');
+      }
+
+      case 'getJson': {
+        const value = await getJson<unknown>(TEST_KEYS.json);
+        return buildResult(value !== null, value !== null ? 'JSON 查询成功' : 'JSON 不存在或 Redis 不可用');
       }
 
       case 'pushList': {

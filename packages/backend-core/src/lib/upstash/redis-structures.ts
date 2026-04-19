@@ -9,6 +9,26 @@ export type RedisPipelineBuilder<TResult> = (pipeline: ReturnType<Redis['pipelin
   exec: () => Promise<TResult>;
 };
 
+const parseJsonPayload = <T>(payload: unknown): T | null => {
+  if (payload == null) {
+    return null;
+  }
+
+  if (typeof payload === 'string') {
+    if (!payload) {
+      return null;
+    }
+
+    try {
+      return JSON.parse(payload) as T;
+    } catch {
+      return null;
+    }
+  }
+
+  return payload as T;
+};
+
 /**
  * Set a plain string value with optional TTL (seconds).
  */
@@ -88,21 +108,13 @@ export const setJson = async <T>(
  */
 export const getJson = async <T>(key: string): Promise<T | null> => {
   return withRedis(async (redis) => {
-    const payload = await redis.get<string>(key);
-    if (!payload) {
-      return null;
-    }
-
-    try {
-      return JSON.parse(payload) as T;
-    } catch {
-      return null;
-    }
+    const payload = await redis.get<unknown>(key);
+    return parseJsonPayload<T>(payload);
   });
 };
 
 /**
- * MGET JSON values stored as strings. Missing or invalid values are returned as null.
+ * MGET JSON values. Missing or invalid string values are returned as null.
  */
 export const mgetJson = async <T>(keys: string[]): Promise<(T | null)[] | null> => {
   return withRedis(async (redis) => {
@@ -110,18 +122,8 @@ export const mgetJson = async <T>(keys: string[]): Promise<(T | null)[] | null> 
       return [];
     }
 
-    const payloads = await redis.mget<(string | null)[]>(...keys);
-    return payloads.map((payload) => {
-      if (!payload) {
-        return null;
-      }
-
-      try {
-        return JSON.parse(payload) as T;
-      } catch {
-        return null;
-      }
-    });
+    const payloads = await redis.mget<unknown[]>(...keys);
+    return payloads.map((payload) => parseJsonPayload<T>(payload));
   });
 };
 

@@ -1,49 +1,15 @@
 import { Receiver } from '@upstash/qstash';
-import { withQstash } from '../upstash-config';
+import { getPrefixedQstashQueueName, withQstash } from '../upstash-config';
 
 let cachedReceiver: Receiver | null = null;
 let receiverWarnedMissingEnv = false;
 let receiverWarnedInitError = false;
-
-const isNonEmpty = (value: string | undefined): value is string =>
-  typeof value === 'string' && value.trim().length > 0;
 
 const isTruthy = (value: string | undefined): boolean =>
   value === '1' || value === 'true' || value === 'TRUE';
 
 const shouldSkipVerify = (): boolean =>
   process.env.NODE_ENV === 'development' && isTruthy(process.env.SKIP_UPSTASH_QSTASH_VERIFY);
-
-const getRequiredAppName = (): string => {
-  const appName = process.env.NEXT_PUBLIC_APP_NAME;
-  if (!isNonEmpty(appName)) {
-    throw new Error(
-      '[Upstash QStash] NEXT_PUBLIC_APP_NAME is required for QStash naming and must not be empty'
-    );
-  }
-
-  const normalized = appName.replace(/\s+/g, '').toLowerCase();
-  if (!normalized) {
-    throw new Error(
-      '[Upstash QStash] NEXT_PUBLIC_APP_NAME must contain non-whitespace characters for QStash naming'
-    );
-  }
-
-  return normalized;
-};
-
-const getQstashNamePrefix = (): string => {
-  const envSuffix = process.env.NODE_ENV === 'production' ? 'live' : 'test';
-  return `${getRequiredAppName()}_${envSuffix}`;
-};
-
-const prefixQstashName = (resourceType: 'queue', name: string): string => {
-  if (!isNonEmpty(name)) {
-    throw new Error(`[Upstash QStash] ${resourceType} name must not be empty`);
-  }
-
-  return `${getQstashNamePrefix()}_${resourceType}_${name}`;
-};
 
 const getReceiver = (): Receiver | null => {
   if (cachedReceiver) {
@@ -178,7 +144,7 @@ export const publishFIFOQueueMessage = async <TBody extends PublishBody>(
   options: PublishFIFOQueueMessageOptions<TBody>
 ): Promise<{ messageId: string | null; message: QstashEnvelope<TBody> } | null> => {
   const message = createEnvelope(options.body);
-  const queueName = prefixQstashName('queue', options.queueName);
+  const queueName = getPrefixedQstashQueueName(options.queueName);
 
   return withQstash(async (client) => {
     const anyClient = client as any;

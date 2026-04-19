@@ -1,5 +1,18 @@
 # @windrun-huaiin/backend-core
 
+## 20.1.0
+
+### Minor Changes
+
+- fix(upstash): redis key prefix issue fix, qstash config fix
+
+### Patch Changes
+
+- Updated dependencies
+  - @windrun-huaiin/third-ui@20.0.0
+  - @windrun-huaiin/lib@20.0.0
+  - @windrun-huaiin/contracts@20.0.0
+
 ## 20.0.1
 
 ### Patch Changes
