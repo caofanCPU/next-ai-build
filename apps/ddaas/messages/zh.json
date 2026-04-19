@@ -422,5 +422,76 @@
     "copyMarkdown": "复制Markdown源码",
     "copyMarkdownDone": "已复制",
     "editOnGithub": "在GitHub上编辑"
+  },
+  "fingerprint": {
+    "panel": {
+      "toggleAriaLabel": "指纹面板",
+      "title": "指纹面板",
+      "testModeLabel": "测试",
+      "closeAriaLabel": "关闭指纹面板"
+    },
+    "sections": {
+      "user": "用户",
+      "creditsInfo": "额度信息",
+      "subscription": "订阅",
+      "concurrentBaseInfo": "并发基础信息"
+    },
+    "labels": {
+      "userId": "用户ID",
+      "nickName": "昵称",
+      "fingerprintId": "指纹ID",
+      "clerkUserId": "Clerk用户ID",
+      "email": "邮箱",
+      "stripeCusId": "Stripe客户ID",
+      "createdAt": "创建时间",
+      "plan": "套餐",
+      "period": "周期",
+      "allocated": "已分配",
+      "subId": "订阅ID",
+      "orderId": "订单ID",
+      "priceId": "价格ID",
+      "realBrowser": "真实浏览器",
+      "testOverride": "测试覆盖"
+    },
+    "creditBuckets": {
+      "paid": "付费额度",
+      "oneTimePaid": "一次性付费",
+      "free": "免费额度"
+    },
+    "placeholders": {
+      "subscriptionStatusNever": "从未订阅",
+      "subscriptionPeriodUnavailable": "不可用",
+      "noCreditsYet": "暂无额度",
+      "noRecords": "无记录",
+      "noTestExecutedYet": "暂未执行测试",
+      "none": "无",
+      "unknownError": "未知错误"
+    },
+    "status": {
+      "pending": "处理中",
+      "idle": "空闲"
+    },
+    "actions": {
+      "frontendPreventionTest": "前端防重测试",
+      "backendIdempotencyTest": "后端幂等测试",
+      "generateNewTestFingerprintAriaLabel": "生成新测试指纹",
+      "dismissErrorAriaLabel": "关闭错误提示"
+    },
+    "messages": {
+      "testFingerprintNotReady": "测试指纹覆盖尚未就绪",
+      "runningFrontendPreventionTest": "正在使用指纹 {fingerprintId} 运行前端防重测试",
+      "frontendPreventionTestFinished": "前端防重测试完成，当前激活测试指纹：{fingerprintId}",
+      "frontendPreventionTestFailed": "前端防重测试失败：{error}",
+      "failedToInitializeAnonymousUser": "匿名用户初始化失败",
+      "runningBackendIdempotencyTest": "正在使用指纹 {fingerprintId} 运行后端幂等测试",
+      "backendIdempotencyTestDone": "后端幂等测试完成",
+      "backendIdempotencyTestFailed": "后端幂等测试失败：{error}",
+      "generatedTestFingerprintOverride": "已生成测试指纹覆盖：{fingerprintId}",
+      "createdCount": "已创建={count}",
+      "reusedCount": "已复用={count}",
+      "failedCount": "失败={count}",
+      "createdUserIds": "创建的用户ID=[{value}]",
+      "failedStatuses": "失败状态=[{value}]"
+    }
   }
 }

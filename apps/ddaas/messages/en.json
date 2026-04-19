@@ -422,5 +422,76 @@
     "copyMarkdown": "Copy page as Markdown",
     "copyMarkdownDone": "Copied!",
     "editOnGithub": "Edit this page on GitHub"
+  },
+  "fingerprint": {
+    "panel": {
+      "toggleAriaLabel": "Fingerprint panel",
+      "title": "Fingerprint Panel",
+      "testModeLabel": "Test",
+      "closeAriaLabel": "Close fingerprint panel"
+    },
+    "sections": {
+      "user": "User",
+      "creditsInfo": "Credits Info",
+      "subscription": "Subscription",
+      "concurrentBaseInfo": "Concurrent Base Info"
+    },
+    "labels": {
+      "userId": "UserID",
+      "nickName": "NickName",
+      "fingerprintId": "FingerprintID",
+      "clerkUserId": "ClerkUserID",
+      "email": "Email",
+      "stripeCusId": "StripeCusID",
+      "createdAt": "CreatedAt",
+      "plan": "Plan",
+      "period": "Period",
+      "allocated": "Allocated",
+      "subId": "SubID",
+      "orderId": "OrderID",
+      "priceId": "PriceID",
+      "realBrowser": "Real Browser",
+      "testOverride": "Test Override"
+    },
+    "creditBuckets": {
+      "paid": "Paid",
+      "oneTimePaid": "OneTimePaid",
+      "free": "Free"
+    },
+    "placeholders": {
+      "subscriptionStatusNever": "Never",
+      "subscriptionPeriodUnavailable": "Unavailable",
+      "noCreditsYet": "No Credits Yet",
+      "noRecords": "No records",
+      "noTestExecutedYet": "No test executed yet.",
+      "none": "None",
+      "unknownError": "Unknown error"
+    },
+    "status": {
+      "pending": "pending",
+      "idle": "idle"
+    },
+    "actions": {
+      "frontendPreventionTest": "Frontend Prevention Test",
+      "backendIdempotencyTest": "Backend Idempotency Test",
+      "generateNewTestFingerprintAriaLabel": "Generate new test fingerprint",
+      "dismissErrorAriaLabel": "Dismiss error"
+    },
+    "messages": {
+      "testFingerprintNotReady": "Test fingerprint override is not ready yet.",
+      "runningFrontendPreventionTest": "Running Frontend Prevention Test with fingerprint: {fingerprintId}",
+      "frontendPreventionTestFinished": "Frontend Prevention Test finished. Active test fingerprint: {fingerprintId}",
+      "frontendPreventionTestFailed": "Frontend Prevention Test failed: {error}",
+      "failedToInitializeAnonymousUser": "Failed to initialize anonymous user",
+      "runningBackendIdempotencyTest": "Running Backend Idempotency Test with fingerprint: {fingerprintId}",
+      "backendIdempotencyTestDone": "Backend Idempotency Test done.",
+      "backendIdempotencyTestFailed": "Backend Idempotency Test failed: {error}",
+      "generatedTestFingerprintOverride": "Generated test fingerprint override: {fingerprintId}",
+      "createdCount": "created={count}",
+      "reusedCount": "reused={count}",
+      "failedCount": "failed={count}",
+      "createdUserIds": "createdUserIds=[{value}]",
+      "failedStatuses": "failedStatuses=[{value}]"
+    }
   }
 }
