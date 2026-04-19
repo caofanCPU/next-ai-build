@@ -340,6 +340,22 @@ Options:
 ✅ 共清理 3 个目录或文件。
 ```
 
+### diaomao-update
+
+同步允许列表中的依赖版本，用于统一升级 diaomao 相关项目的公共依赖。
+
+```bash
+dev-scripts diaomao-update [options]
+
+Options:
+  -v, --verbose   显示详细日志
+  -h, --help      显示帮助信息
+```
+
+**Monorepo 提示：**
+
+支持 monorepo workspace catalog 场景。命令会检查当前应用的 `package.json`，如果依赖使用 `catalog:`，则更新向上查找到的 `pnpm-workspace.yaml` 中的 `catalog` 版本；不会自动遍历所有 workspace package。
+
 ### backend-core
 
 为 `@windrun-huaiin/backend-core` 提供路由壳生成与 Prisma 模型合并（需先安装 backend-core，可在 workspace/项目内被 resolve）。

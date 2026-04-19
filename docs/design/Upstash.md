@@ -41,7 +41,7 @@
 ### 3) 初始化可用性校验
 
 - Redis：`new Redis(...)` 后立即 `ping()`，成功才写入缓存。
-- QStash：创建客户端后立即执行健康探测，成功才写入缓存。
+- QStash：`new Client({ token })` 成功即认为客户端可用；可选健康检查仅作为诊断，不阻断初始化。
 - 初始化校验失败时：返回 `null` 并 `warn`，但不永久禁用，后续可重试。
 
 ## 容错与告警设计（重点）
@@ -71,15 +71,15 @@
 
 ### 2) QStash 健康检查
 
-- 初始化成功后开启后台定时检查（HTTP 探测）。
+- 初始化成功后可开启后台定时检查（HTTP 探测，仅诊断用途）。
 - 默认间隔：10 分钟。
 - 配置项：`UPSTASH_QSTASH_HEALTHCHECK_INTERVAL_MINUTES`（单位：分钟）。
-- 健康检查 URL 可配置：`UPSTASH_QSTASH_HEALTHCHECK_URL`。
+- 健康检查 URL 可配置：`UPSTASH_QSTASH_HEALTHCHECK_URL`；未配置时直接跳过，不再默认请求固定接口。
 
 ### 3) 设计取舍
 
 - 不在每次业务操作前执行 `ping`，避免每次调用多一次网络开销。
-- 采用“初始化强校验 + 低频后台巡检 + 故障后重建”的方案，平衡稳定性与性能。
+- QStash 采用“token 驱动初始化 + 可选低频诊断巡检”的方案，避免非官方或不稳定探测接口阻断消息发布。
 
 ## Redis 工具能力（高频场景）
 
@@ -154,9 +154,18 @@
 
 位置：`packages/backend-core/src/lib/upstash/qstash.ts`
 
+命名约定：
+
+- QStash 中队列名 `queueName` 会自动追加统一前缀
+- `urlGroup` 使用调用方传入的原始名称，不做改写，因为它通常需要先在 Upstash Dashboard 中预创建
+- 前缀规则与 Redis 保持一致：`${normalizedAppName}_${envSuffix}_...`
+- 例如业务传入 `order-events`，实际使用的队列名会是 `appname_live_queue_order-events`
+
 功能覆盖：
 
-- 发布消息
+- 发布单播消息
+- 发布广播消息（URL Group）
+- 发布单播 FIFO 队列消息（Queue）
 - 延时消息
 - 定时任务（schedule）
 - 取消定时任务

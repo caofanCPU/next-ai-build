@@ -149,8 +149,10 @@ const getRedisHealthIntervalMinutes = (): number =>
 const getQstashHealthIntervalMinutes = (): number =>
   parseMinutes(process.env.UPSTASH_QSTASH_HEALTHCHECK_INTERVAL_MINUTES, 10);
 
-const getQstashHealthcheckUrl = (): string =>
-  process.env.UPSTASH_QSTASH_HEALTHCHECK_URL ?? 'https://qstash.upstash.io/v2/topics';
+const getQstashHealthcheckUrl = (): string | null => {
+  const url = process.env.UPSTASH_QSTASH_HEALTHCHECK_URL;
+  return isNonEmpty(url) ? url : null;
+};
 
 const scheduleRedisHealthCheck = (): void => {
   if (redisHealthTimer || !cachedRedis) {
@@ -186,7 +188,12 @@ const scheduleRedisHealthCheck = (): void => {
 };
 
 const checkQstashHealth = async (token: string): Promise<void> => {
-  const response = await fetch(getQstashHealthcheckUrl(), {
+  const healthcheckUrl = getQstashHealthcheckUrl();
+  if (!healthcheckUrl) {
+    return;
+  }
+
+  const response = await fetch(healthcheckUrl, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -199,7 +206,7 @@ const checkQstashHealth = async (token: string): Promise<void> => {
 };
 
 const scheduleQstashHealthCheck = (token: string): void => {
-  if (qstashHealthTimer || !cachedQstash) {
+  if (qstashHealthTimer || !cachedQstash || !getQstashHealthcheckUrl()) {
     return;
   }
   const delayMs = getQstashHealthIntervalMinutes() * 60_000;
@@ -211,7 +218,6 @@ const scheduleQstashHealthCheck = (token: string): void => {
     try {
       await checkQstashHealth(token);
     } catch (error) {
-      cachedQstash = null;
       if (!qstashWarnedHealthCheck) {
         qstashWarnedHealthCheck = true;
         const message = error instanceof Error ? error.message : String(error);
@@ -325,8 +331,14 @@ const ensureQstash = async (): Promise<QstashClient | null> => {
 
     try {
       const client = new QstashClient({ token: QSTASH_TOKEN });
-      await checkQstashHealth(QSTASH_TOKEN);
       cachedQstash = client;
+      checkQstashHealth(QSTASH_TOKEN).catch((error) => {
+        if (!qstashWarnedHealthCheck) {
+          qstashWarnedHealthCheck = true;
+          const message = error instanceof Error ? error.message : String(error);
+          console.warn(`[Upstash Config] QStash health check failed: ${message}`);
+        }
+      });
       scheduleQstashHealthCheck(QSTASH_TOKEN);
       return cachedQstash;
     } catch (error) {

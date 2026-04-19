@@ -1,5 +1,11 @@
 # @windrun-huaiin/dev-scripts
 
+## 20.0.1
+
+### Patch Changes
+
+- feat(upstash): expend redis, qstash
+
 ## 20.0.0
 
 ### Major Changes
