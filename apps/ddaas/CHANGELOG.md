@@ -1,5 +1,19 @@
 # @windrun-huaiin/ddaas-website
 
+## 20.2.0
+
+### Minor Changes
+
+- feat(dialog): add useful alter-dialog
+  - fingerpring status componnets supports i18n
+
+### Patch Changes
+
+- Updated dependencies
+  - @windrun-huaiin/base-ui@20.1.0
+  - @windrun-huaiin/third-ui@20.1.0
+  - @windrun-huaiin/lib@20.0.0
+
 ## 20.1.0
 
 ### Minor Changes

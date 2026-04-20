@@ -1,5 +1,17 @@
 # @windrun-huaiin/base-ui
 
+## 20.1.0
+
+### Minor Changes
+
+- feat(dialog): add useful alter-dialog
+  - fingerpring status componnets supports i18n
+
+### Patch Changes
+
+- Updated dependencies
+  - @windrun-huaiin/lib@20.0.0
+
 ## 20.0.0
 
 ### Major Changes
