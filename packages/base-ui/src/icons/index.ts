@@ -37,7 +37,11 @@ import {
   ArrowRight as RawArrowRight,
   ArrowUp as RawArrowUp,
   Baby as RawBaby,
+  BadgeAlert as RawBadgeAlert,
+  BadgeCheck as RawBadgeCheck,
+  BadgeInfo as RawBadgeInfo,
   BadgeQuestionMark as RawBadgeQuestionMark,
+  BadgeX as RawBadgeX,
   Bell as RawBell,
   Binary as RawBinary,
   Blocks as RawBlocks,
@@ -198,6 +202,10 @@ export const ArrowLeftIcon = createGlobalLucideIcon(RawArrowLeft, 'ArrowLeftIcon
 export const ArrowRightIcon = createGlobalLucideIcon(RawArrowRight, 'ArrowRightIcon');
 export const ArrowUpIcon = createGlobalLucideIcon(RawArrowUp, 'ArrowUpIcon');
 export const BabyIcon = createGlobalLucideIcon(RawBaby, 'BabyIcon');
+export const BadgeInfoIcon = createGlobalLucideIcon(RawBadgeInfo, 'BadgeInfoIcon');
+export const BadgeAlertIcon = createGlobalLucideIcon(RawBadgeAlert, 'BadgeAlertIcon');
+export const BadgeCheckIcon = createGlobalLucideIcon(RawBadgeCheck, 'BadgeCheckIcon');
+export const BadgeXIcon = createGlobalLucideIcon(RawBadgeX, 'BadgeXIcon');
 export const BellIcon = createGlobalLucideIcon(RawBell, 'BellIcon');
 export const BinaryIcon = createGlobalLucideIcon(RawBinary, 'BinaryIcon');
 export const BlocksIcon = createGlobalLucideIcon(RawBlocks, 'BlocksIcon');

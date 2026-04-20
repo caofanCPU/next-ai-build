@@ -1,15 +1,28 @@
 'use client';
 
-import React, { useState } from "react";
-import Image from "next/image";
-import { ImageOffIcon, InfoIcon, XIcon } from "@windrun-huaiin/base-ui/icons";
+import React, { useState } from 'react';
+import Image from 'next/image';
+import { BellIcon, ImageOffIcon, XIcon } from '@windrun-huaiin/base-ui/icons';
 import {
   AlertDialog,
-  AlertDialogContent,
-  AlertDialogTitle,
-  AlertDialogDescription,
   AlertDialogAction,
-} from "@windrun-huaiin/base-ui/ui";
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogTitle,
+} from '@windrun-huaiin/base-ui/ui';
+import { cn } from '@windrun-huaiin/lib/utils';
+import {
+  closeButtonClass,
+  dialogContentClass,
+  dialogDescriptionClass,
+  dialogFooterClass,
+  dialogHeaderClass,
+  dialogThemedOverlayClass,
+  dialogTitleClass,
+  primaryButtonClass,
+  secondaryButtonClass,
+  subtlePrimaryButtonClass,
+} from './dialog-styles';
 
 interface AdsAlertDialogProps {
   open: boolean;
@@ -37,49 +50,52 @@ export function AdsAlertDialog({
   onConfirm,
 }: AdsAlertDialogProps) {
   const [imgError, setImgError] = useState(false);
+  const handleClose = () => onOpenChange(false);
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent
-        className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-neutral-900 rounded-2xl shadow-2xl border border-neutral-200 dark:border-neutral-700 max-w-md w-full min-w-[320px] p-4 flex flex-col items-stretch"
+        className={cn(dialogContentClass, 'max-w-md p-4')}
+        overlayClassName={dialogThemedOverlayClass}
+        onOverlayClick={handleClose}
       >
-        {/* Header: left icon + title, right X close */}
-        <div className="flex flex-row items-center justify-between mb-2">
+        <div className={dialogHeaderClass}>
           <AlertDialogTitle asChild>
-            <div className="flex flex-row items-center gap-1 min-w-0 text-xl font-semibold">
-              <InfoIcon className="w-5 h-5" />
+            <div className={dialogTitleClass}>
+              <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-neutral-100 text-neutral-600 ring-1 ring-neutral-200 dark:bg-neutral-900 dark:text-neutral-300 dark:ring-neutral-800">
+                <BellIcon className="size-5" />
+              </span>
               <span className="truncate">{title}</span>
             </div>
           </AlertDialogTitle>
           <button
-            className="text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 text-xl ml-4"
-            onClick={() => onOpenChange(false)}
+            type="button"
+            className={closeButtonClass}
+            onClick={handleClose}
             aria-label="Close"
-            tabIndex={0}
           >
-            <XIcon className="w-5 h-5" />
+            <XIcon className="size-4" />
           </button>
         </div>
-        
-        {/* description area */}
-        <AlertDialogDescription className="text-base font-medium text-neutral-800 dark:text-neutral-100 mb-2">
+
+        <AlertDialogDescription className={cn(dialogDescriptionClass, 'mb-3 text-base text-neutral-800 dark:text-neutral-100')}>
           {description}
         </AlertDialogDescription>
-        {/* image area (optional) */}
+
         {imgSrc && (
-          <div className="w-full max-w-[400px] h-[220px] relative flex items-center justify-center mb-2">
+          <div className="relative mb-2 flex h-[220px] w-full max-w-[400px] items-center justify-center overflow-hidden rounded-xl border border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-900">
             {imgError ? (
-              <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-100 dark:bg-neutral-800 border border-dashed border-neutral-300 dark:border-neutral-700 rounded-lg text-neutral-400 text-sm">
-                <ImageOffIcon className="w-12 h-12 mb-2" />
+              <div className="absolute inset-0 flex flex-col items-center justify-center border border-dashed border-neutral-300 text-sm text-neutral-400 dark:border-neutral-700">
+                <ImageOffIcon className="mb-2 size-12" />
                 <span>Image loading failed</span>
               </div>
             ) : imgHref ? (
-              <a href={imgHref} target="_blank" rel="noopener noreferrer" className="block w-full h-full">
+              <a href={imgHref} target="_blank" rel="noopener noreferrer" className="block h-full w-full">
                 <Image
                   src={imgSrc}
                   alt="image"
                   fill
-                  className="object-contain rounded-lg"
+                  className="rounded-lg object-contain"
                   priority={false}
                   placeholder="empty"
                   unoptimized
@@ -92,7 +108,7 @@ export function AdsAlertDialog({
                 src={imgSrc}
                 alt="image"
                 fill
-                className="object-contain rounded-lg"
+                className="rounded-lg object-contain"
                 priority={false}
                 placeholder="empty"
                 unoptimized
@@ -102,16 +118,17 @@ export function AdsAlertDialog({
             )}
           </div>
         )}
-        {/* button area (optional) */}
+
         {(cancelText || confirmText) && (
-          <div className="flex justify-end gap-2 mt-2">
+          <div className={dialogFooterClass}>
             {cancelText && (
               <button
+                type="button"
                 onClick={() => {
                   onOpenChange(false);
                   onCancel?.();
                 }}
-                className="px-6 py-2 rounded-lg border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200 font-semibold hover:bg-neutral-100 dark:hover:bg-neutral-700 transition"
+                className={secondaryButtonClass}
               >
                 {cancelText}
               </button>
@@ -122,7 +139,7 @@ export function AdsAlertDialog({
                   onOpenChange(false);
                   onConfirm?.();
                 }}
-                className="px-6 py-2 rounded-lg bg-purple-500 text-white font-semibold hover:bg-purple-600 transition"
+                className={confirmText && !cancelText ? subtlePrimaryButtonClass : primaryButtonClass}
               >
                 {confirmText}
               </AlertDialogAction>

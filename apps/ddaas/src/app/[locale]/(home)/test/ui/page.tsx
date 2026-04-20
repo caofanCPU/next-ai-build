@@ -5,12 +5,20 @@ import type { LucideProps } from 'lucide-react';
 import {
   AlbumIcon,
   BadgeQuestionMarkIcon,
+  BadgeAlertIcon,
+  BadgeCheckIcon,
+  BadgeInfoIcon,
+  BadgeXIcon,
+  BellIcon,
   BugIcon,
+  CircleAlertIcon,
+  CircleQuestionMarkIcon,
   ChevronDownIcon,
   ChevronUpIcon,
   CopyIcon,
   DownloadIcon,
   ExternalLinkIcon,
+  FAQSIcon,
   FileDownIcon,
   FileUpIcon,
   HandHeartIcon,
@@ -28,12 +36,32 @@ import * as exportedIcons from '@base-ui/icons';
 import { themeIconColor } from '@windrun-huaiin/base-ui/lib';
 import { cn } from '@lib/utils';
 import { GradientButton } from '@third-ui/fuma/mdx';
-import { XButton, XToggleButton, XPillSelect, XTokenInput, XFilterPills, XFormPills, type XPillOption } from '@third-ui/main';
+import {
+  AdsAlertDialog,
+  ConfirmDialog,
+  HighPriorityConfirmDialog,
+  InfoDialog,
+  XButton,
+  XFilterPills,
+  XFormPills,
+  XPillSelect,
+  XTokenInput,
+  XToggleButton,
+  type XPillOption,
+} from '@third-ui/main';
 
 type StaticIconComponent = ComponentType<LucideProps>;
 
+const nonRenderableIconExportNames = new Set([
+  'createGlobalIcon',
+  'createGlobalLucideIcon',
+  'createSiteIcon',
+  'getGlobalIcon',
+  'GlobalAccentIcon',
+]);
+
 const iconEntries = Object.entries(exportedIcons)
-  .filter(([name]) => name.endsWith('Icon') && name !== 'GlobalAccentIcon')
+  .filter(([name]) => name.endsWith('Icon') && !nonRenderableIconExportNames.has(name))
   .map(([name, value]) => [name, value as StaticIconComponent] as const)
   .sort(([nameA], [nameB]) => nameA.localeCompare(nameB));
 
@@ -50,16 +78,29 @@ const gradientButtonCustomClass = 'inline-flex min-h-8 min-w-20 items-center jus
 const xButtonSingleDemoClass = 'text-xs sm:text-sm';
 const xButtonSplitMainDemoClass = 'text-xs sm:text-sm';
 const xButtonSplitDropdownDemoClass = 'py-1 sm:py-1.5';
+const dialogDemoButtonClass = 'w-auto border-border/70 bg-background/80 px-4 py-2 text-sm text-foreground hover:bg-accent';
+const dialogInfoDemoMinWidthClass = 'min-w-[120px]';
+const dialogDangerDemoButtonClass = 'w-auto min-w-0 border-red-300 text-red-700 hover:bg-red-50 dark:border-red-800 dark:text-red-300 dark:hover:bg-red-950/40';
 // const textButtonDemoClass = 'w-auto min-w-0 border border-slate-300 text-sm font-medium text-slate-700 dark:border-slate-600 dark:text-slate-300';
 const iconButtonDemoClass = 'w-auto min-w-0 rounded-full border border-border/70 bg-background/80 px-3 py-3 text-foreground hover:bg-accent';
 const fieldCardClass = 'rounded-2xl border border-border/60 bg-background/70 p-4';
 const compareCardClass = 'rounded-2xl border border-border/60 bg-background/60 p-3 sm:p-4';
 const codeHintClass = 'mt-3 rounded-2xl border border-dashed border-border/70 bg-background/70 px-3 py-2 font-mono text-[11px] leading-5 text-muted-foreground sm:text-xs';
 
-const collapsibleSectionIds = ['global-icon', 'gradient-button', 'x-button', 'x-toggle-button', 'pill-select'] as const;
+const collapsibleSectionIds = ['alert-dialog', 'global-icon', 'gradient-button', 'x-button', 'x-toggle-button', 'pill-select'] as const;
 
 type SectionId = (typeof collapsibleSectionIds)[number];
 type ExpandedSections = Record<SectionId, boolean>;
+type ActiveDialogDemo =
+  | null
+  | 'ads'
+  | 'info-info'
+  | 'info-warn'
+  | 'info-success'
+  | 'info-error'
+  | 'confirm-normal'
+  | 'confirm-danger'
+  | 'high-priority';
 
 const sleep = (ms: number) => new Promise((resolve) => window.setTimeout(resolve, ms));
 
@@ -170,6 +211,7 @@ function CollapsibleSection({
 
 export default function TestComponentsPage() {
   const [actionText, setActionText] = useState('点击任意按钮查看交互记录');
+  const [activeDialogDemo, setActiveDialogDemo] = useState<ActiveDialogDemo>(null);
   const [copiedIconName, setCopiedIconName] = useState<string | null>(null);
   const [copyToastText, setCopyToastText] = useState<string | null>(null);
   const [iconSearchValue, setIconSearchValue] = useState('');
@@ -234,6 +276,8 @@ export default function TestComponentsPage() {
     setExpandedSections(createExpandedSections(!allSectionsExpanded));
   };
 
+  const closeActiveDialog = () => setActiveDialogDemo(null);
+
   return (
     <div className={pageShellClass}>
       <section className={cn(panelClass, 'relative overflow-hidden')}>
@@ -269,6 +313,112 @@ export default function TestComponentsPage() {
           </span>
         </div>
       </section>
+
+      <CollapsibleSection
+        title="Alert Dialog 展示"
+        description="快速打开广告、信息提示、确认和高优先级确认弹窗，便于检查主题色、暗色模式、关闭按钮和按钮语义。"
+        isExpanded={expandedSections['alert-dialog']}
+        onToggle={() => handleToggleSection('alert-dialog')}
+        className="relative z-20"
+      >
+        <div className="mt-5 grid gap-4 lg:grid-cols-2">
+          <div className={compareCardClass}>
+            <div className="mb-3 text-sm font-medium text-foreground">AdsAlertDialog</div>
+            <p className="mb-4 text-xs leading-6 text-muted-foreground">
+              图片、链接、右上角关闭、可选取消/确认按钮。图片使用 R2 测试地址。
+            </p>
+            <XButton
+              type="single"
+              variant="subtle"
+              minWidth="min-w-0"
+              className={dialogDemoButtonClass}
+              button={{
+                icon: <BellIcon />,
+                text: '打开广告弹窗',
+                onClick: () => setActiveDialogDemo('ads'),
+              }}
+            />
+          </div>
+
+          <div className={compareCardClass}>
+            <div className="mb-3 text-sm font-medium text-foreground">InfoDialog</div>
+            <p className="mb-4 text-xs leading-6 text-muted-foreground">
+              单确认按钮，按 info / warn / success / error 区分提示语义和视觉状态。
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <XButton
+                type="single"
+                variant="subtle"
+                minWidth={dialogInfoDemoMinWidthClass}
+                className={dialogDemoButtonClass}
+                button={{ icon: <BadgeInfoIcon />, text: 'Info', onClick: () => setActiveDialogDemo('info-info') }}
+              />
+              <XButton
+                type="single"
+                variant="subtle"
+                minWidth={dialogInfoDemoMinWidthClass}
+                className={dialogDemoButtonClass}
+                button={{ icon: <BadgeAlertIcon />, text: 'Warn', onClick: () => setActiveDialogDemo('info-warn') }}
+              />
+              <XButton
+                type="single"
+                variant="subtle"
+                minWidth={dialogInfoDemoMinWidthClass}
+                className={dialogDemoButtonClass}
+                button={{ icon: <BadgeCheckIcon />, text: 'Success', onClick: () => setActiveDialogDemo('info-success') }}
+              />
+              <XButton
+                type="single"
+                variant="subtle"
+                minWidth={dialogInfoDemoMinWidthClass}
+                className={dialogDemoButtonClass}
+                button={{ icon: <BadgeXIcon />, text: 'Error', onClick: () => setActiveDialogDemo('info-error') }}
+              />
+            </div>
+          </div>
+
+          <div className={compareCardClass}>
+            <div className="mb-3 text-sm font-medium text-foreground">ConfirmDialog</div>
+            <p className="mb-4 text-xs leading-6 text-muted-foreground">
+              双按钮确认弹窗，normal 跟随主题色，danger 使用红色危险语义。
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <XButton
+                type="single"
+                variant="subtle"
+                minWidth="min-w-0"
+                className={dialogDemoButtonClass}
+                button={{ icon: <CircleQuestionMarkIcon />, text: '普通确认', onClick: () => setActiveDialogDemo('confirm-normal') }}
+              />
+              <XButton
+                type="single"
+                variant="subtle"
+                minWidth="min-w-0"
+                className={dialogDangerDemoButtonClass}
+                button={{ icon: <CircleAlertIcon />, text: '危险确认', onClick: () => setActiveDialogDemo('confirm-danger') }}
+              />
+            </div>
+          </div>
+
+          <div className={compareCardClass}>
+            <div className="mb-3 text-sm font-medium text-foreground">HighPriorityConfirmDialog</div>
+            <p className="mb-4 text-xs leading-6 text-muted-foreground">
+              强遮罩、高层级、必须决策，适合流程中断、离开页面、丢失状态这类高优先级场景。
+            </p>
+            <XButton
+              type="single"
+              variant="subtle"
+              minWidth="min-w-0"
+              className={cn(dialogDemoButtonClass, themeIconColor, 'border-current bg-primary/5 hover:bg-primary/10')}
+              button={{
+                icon: <FAQSIcon />,
+                text: '打开高优先级确认',
+                onClick: () => setActiveDialogDemo('high-priority'),
+              }}
+            />
+          </div>
+        </div>
+      </CollapsibleSection>
 
       <CollapsibleSection
         title="Global Icon 全量展示"
@@ -913,6 +1063,95 @@ export default function TestComponentsPage() {
           </div>
         </div>
       ) : null}
+
+      <AdsAlertDialog
+        open={activeDialogDemo === 'ads'}
+        onOpenChange={(open) => setActiveDialogDemo(open ? 'ads' : null)}
+        title="R2 Image Promotion"
+        description="用于测试广告弹窗的图片展示、图片点击链接、关闭按钮和主题按钮样式。"
+        imgSrc="https://r2.d8ger.com/default.webp"
+        imgHref="https://r2.d8ger.com/default.webp"
+        cancelText="Later"
+        confirmText="View Image"
+        onCancel={() => setActionText('广告弹窗：点击 Later')}
+        onConfirm={() => setActionText('广告弹窗：点击 View Image')}
+      />
+
+      <InfoDialog
+        open={activeDialogDemo === 'info-info'}
+        onOpenChange={(open) => setActiveDialogDemo(open ? 'info-info' : null)}
+        type="info"
+        title="Information"
+        description="这是一条普通信息提示，用来测试 info 类型的图标、边框、背景和确认按钮。"
+        confirmText="Got it"
+        onConfirm={() => setActionText('InfoDialog：info 确认')}
+      />
+      <InfoDialog
+        open={activeDialogDemo === 'info-warn'}
+        onOpenChange={(open) => setActiveDialogDemo(open ? 'info-warn' : null)}
+        type="warn"
+        title="Warning"
+        description="这是一条警告提示，用来测试 warn 类型在浅色和暗色主题下的可读性。"
+        confirmText="I understand"
+        onConfirm={() => setActionText('InfoDialog：warn 确认')}
+      />
+      <InfoDialog
+        open={activeDialogDemo === 'info-success'}
+        onOpenChange={(open) => setActiveDialogDemo(open ? 'info-success' : null)}
+        type="success"
+        title="Success"
+        description="操作已经完成。这个弹窗用于检查 success 类型的语义色和单按钮确认交互。"
+        confirmText="Done"
+        onConfirm={() => setActionText('InfoDialog：success 确认')}
+      />
+      <InfoDialog
+        open={activeDialogDemo === 'info-error'}
+        onOpenChange={(open) => setActiveDialogDemo(open ? 'info-error' : null)}
+        type="error"
+        title="Error"
+        description="操作失败，请稍后重试。这个弹窗用于检查 error 类型的红色提示样式。"
+        confirmText="Close"
+        onConfirm={() => setActionText('InfoDialog：error 确认')}
+      />
+
+      <ConfirmDialog
+        open={activeDialogDemo === 'confirm-normal'}
+        onOpenChange={(open) => setActiveDialogDemo(open ? 'confirm-normal' : null)}
+        type="normal"
+        title="Apply changes?"
+        description="这是一个普通确认弹窗，用来测试取消、确认、右上角关闭以及主题色确认按钮。"
+        cancelText="Cancel"
+        confirmText="Apply"
+        onCancel={() => setActionText('ConfirmDialog：normal 取消')}
+        onConfirm={() => setActionText('ConfirmDialog：normal 确认')}
+      />
+      <ConfirmDialog
+        open={activeDialogDemo === 'confirm-danger'}
+        onOpenChange={(open) => setActiveDialogDemo(open ? 'confirm-danger' : null)}
+        type="danger"
+        title="Delete this item?"
+        description="这是一个危险确认弹窗，用来测试删除、清空、重置等破坏性操作的红色警醒样式。"
+        cancelText="Cancel"
+        confirmText="Delete"
+        onCancel={() => setActionText('ConfirmDialog：danger 取消')}
+        onConfirm={() => setActionText('ConfirmDialog：danger 确认')}
+      />
+
+      <HighPriorityConfirmDialog
+        open={activeDialogDemo === 'high-priority'}
+        title="Leave this flow?"
+        description="这是一个高优先级确认弹窗，用来测试强遮罩、高 z-index、关闭按钮和二选一决策。"
+        cancelText="Stay"
+        confirmText="Leave"
+        onCancel={() => {
+          closeActiveDialog();
+          setActionText('HighPriorityConfirmDialog：取消/关闭');
+        }}
+        onConfirm={() => {
+          closeActiveDialog();
+          setActionText('HighPriorityConfirmDialog：确认');
+        }}
+      />
     </div>
   );
 }
