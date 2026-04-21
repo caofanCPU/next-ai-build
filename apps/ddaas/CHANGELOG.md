@@ -1,5 +1,20 @@
 # @windrun-huaiin/ddaas-website
 
+## 20.3.0
+
+### Minor Changes
+
+- feat(stripe): upgrade stripe version from 20.0.0 to 22.0.2
+  - fix version chore updates
+  - remove rare envs
+
+### Patch Changes
+
+- Updated dependencies
+  - @windrun-huaiin/base-ui@20.1.0
+  - @windrun-huaiin/third-ui@20.1.0
+  - @windrun-huaiin/lib@20.0.0
+
 ## 20.2.0
 
 ### Minor Changes

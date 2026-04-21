@@ -1,5 +1,20 @@
 # @windrun-huaiin/backend-core
 
+## 20.2.0
+
+### Minor Changes
+
+- feat(stripe): upgrade stripe version from 20.0.0 to 22.0.2
+  - fix version chore updates
+  - remove rare envs
+
+### Patch Changes
+
+- Updated dependencies
+  - @windrun-huaiin/third-ui@20.1.0
+  - @windrun-huaiin/lib@20.0.0
+  - @windrun-huaiin/contracts@20.0.0
+
 ## 20.1.0
 
 ### Minor Changes

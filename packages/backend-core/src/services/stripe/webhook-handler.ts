@@ -18,7 +18,7 @@ import Stripe from 'stripe';
 import { viewLocalTime } from '@windrun-huaiin/lib/utils';
 
 const mapPaymentStatus = (
-  status?: Stripe.Checkout.Session.PaymentStatus | null
+  status?: Stripe.Checkout.Session['payment_status'] | null
 ): PaymentStatus => {
   switch (status) {
     case 'paid':

@@ -3,6 +3,9 @@ import { Apilogger, userService, subscriptionService } from '../services/databas
 
 let stripeInstance: Stripe | null = null;
 
+type CheckoutSessionCreateParams = Parameters<Stripe['checkout']['sessions']['create']>[0];
+type CheckoutSubscriptionData = NonNullable<CheckoutSessionCreateParams>['subscription_data'];
+
 export const getStripe = (): Stripe => {
   const apiKey = process.env.STRIPE_SECRET_KEY;
   if (!apiKey) {
@@ -11,7 +14,7 @@ export const getStripe = (): Stripe => {
 
   if (!stripeInstance) {
     stripeInstance = new Stripe(apiKey, {
-      apiVersion: '2025-11-17.clover',
+      apiVersion: '2026-03-25.dahlia',
     });
   }
 
@@ -43,7 +46,7 @@ export interface BasicCheckoutSessionParams {
 // Helper function to create checkout session
 export const createCheckoutSession = async (
   params: BasicCheckoutSessionParams,
-  subscriptionData?: Stripe.Checkout.SessionCreateParams.SubscriptionData
+  subscriptionData?: CheckoutSubscriptionData
 ): Promise<Stripe.Checkout.Session> => {
   const {
     priceId,
@@ -69,7 +72,7 @@ export const createCheckoutSession = async (
     }
   }
 
-  const sessionParams: Stripe.Checkout.SessionCreateParams = {
+  const sessionParams: CheckoutSessionCreateParams = {
     mode, // ✅ Dynamic mode
     payment_method_types: ['card'],
     line_items: [
