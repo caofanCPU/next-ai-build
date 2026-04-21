@@ -1,3 +1,5 @@
+.zsh*
+.zprofile
 .gemini*
 .claude*
 .cursor*

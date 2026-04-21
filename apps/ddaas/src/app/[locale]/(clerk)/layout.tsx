@@ -1,12 +1,3 @@
-/**
- * @license
- * MIT License
- * Copyright (c) 2026 D8ger
- * 
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-
 import { baseOptions } from '@/app/[locale]/layout.config';
 import { fingerprintConfig } from '@windrun-huaiin/backend-core/lib';
 import { FingerprintProvider } from '@third-ui/clerk/fingerprint';
