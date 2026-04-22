@@ -65,6 +65,24 @@ export const globalLucideIcons = {
 // Use a safe fallback that we know exists in both Lucide and custom icons
 const DEFAULT_FALLBACK_ICON = 'Sparkles' as keyof typeof globalLucideIcons;
 
+function resolveIconKey(iconKey: string): keyof typeof globalLucideIcons | undefined {
+  const trimmedKey = iconKey.trim();
+  if (trimmedKey === '') return undefined;
+
+  const candidates = [
+    trimmedKey,
+    trimmedKey.endsWith('Icon') ? trimmedKey.slice(0, -4) : `${trimmedKey}Icon`,
+  ];
+
+  for (const candidate of candidates) {
+    if (candidate in globalLucideIcons) {
+      return candidate as keyof typeof globalLucideIcons;
+    }
+  }
+
+  return undefined;
+}
+
 /**
  * use iconKey to load icon safely
  * @param iconKey translation or configuration
@@ -89,7 +107,8 @@ export function getGlobalIcon(
     return globalLucideIcons[DEFAULT_FALLBACK_ICON] as IconComponent;
   }
   
-  const Icon = globalLucideIcons[iconKey as keyof typeof globalLucideIcons];
+  const resolvedIconKey = resolveIconKey(iconKey);
+  const Icon = resolvedIconKey ? globalLucideIcons[resolvedIconKey] : undefined;
   if (!Icon) {
     if (typeof process !== 'undefined' && process.env?.NODE_ENV !== 'production') {
       // only show in dev|test

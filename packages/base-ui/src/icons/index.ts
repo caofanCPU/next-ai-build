@@ -31,7 +31,7 @@ import RawXMLIcon from '@base-ui/assets/xml';
 import RawYamlIcon from '@base-ui/assets/yaml';
 import { createGlobalIcon, createGlobalLucideIcon } from '@base-ui/components/icon-factory';
 import {
-  AlbumIcon as RawAlbumIcon,
+  Album as RawAlbumIcon,
   AlignHorizontalJustifyEnd as RawAlignHorizontalJustifyEnd,
   ArrowLeft as RawArrowLeft,
   ArrowRight as RawArrowRight,
@@ -84,7 +84,7 @@ import {
   CircleStop as RawCircleStop,
   Coffee as RawCoffee,
   Coins as RawCoins,
-  ComponentIcon as RawComponentIcon,
+  Component as RawComponentIcon,
   Copy as RawCopy,
   CopyCheck as RawCopyCheck,
   Cpu as RawCpu,
@@ -129,7 +129,7 @@ import {
   Languages as RawLanguages,
   Layout as RawLayout,
   LayoutTemplate as RawLayoutTemplate,
-  LibraryIcon as RawLibraryIcon,
+  Library as RawLibraryIcon,
   Lightbulb as RawLightbulb,
   Link as RawLink,
   ListTodo as RawListTodo,

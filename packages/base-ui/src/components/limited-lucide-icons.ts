@@ -5,7 +5,7 @@
  * in globalLucideIcons.
  */
 export {
-  AlbumIcon,
+  Album,
   AlignHorizontalJustifyEnd,
   ArrowLeft,
   ArrowRight,
@@ -58,7 +58,7 @@ export {
   ChevronUp,
   Coffee,
   Coins,
-  ComponentIcon,
+  Component,
   Copy,
   CopyCheck,
   Cpu,
@@ -104,7 +104,7 @@ export {
   Languages,
   Layout,
   LayoutTemplate,
-  LibraryIcon,
+  Library,
   Lightbulb,
   Link,
   ListTodo,
