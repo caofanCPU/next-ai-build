@@ -1,5 +1,22 @@
 # @windrun-huaiin/ddaas-website
 
+## 21.0.0
+
+### Major Changes
+
+- feat(mdx): local-md with light runtime build
+  - patch for fumadocs `16.0.9` as fixed
+  - icons bugfix
+  - local-md adapt source
+
+### Patch Changes
+
+- Updated dependencies
+  - @windrun-huaiin/lib@21.0.0
+  - @windrun-huaiin/base-ui@21.0.0
+  - @windrun-huaiin/third-ui@21.0.0
+  - @windrun-huaiin/fumadocs-local-md@21.0.0
+
 ## 20.3.0
 
 ### Minor Changes

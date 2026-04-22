@@ -53,6 +53,7 @@ const NPM_TARGET_PACKAGES = [
   '@windrun-huaiin/lib',
   '@windrun-huaiin/third-ui',
   '@windrun-huaiin/backend-core',
+  '@windrun-huaiin/fumadocs-local-md',
   '@windrun-huaiin/dev-scripts'
 ] as const
 

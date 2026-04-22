@@ -116,6 +116,7 @@ export const DEFAULT_CONFIG: DevScriptsConfig = {
       "@types/react-dom",
       "@typescript-eslint/parser",
       "@windrun-huaiin/backend-core",
+      "@windrun-huaiin/fumadocs-local-md",
       "@windrun-huaiin/base-ui",
       "@windrun-huaiin/dev-scripts",
       "@windrun-huaiin/lib",
@@ -205,7 +206,7 @@ export const DEFAULT_CONFIG: DevScriptsConfig = {
     ".env.local": "本地环境变量配置",
     ".eslintrc.json": "ESLint 代码规范配置",
     ".gitignore": "Git忽略文件配置",
-    ".source": "Fuma数据源Build产物",
+    "local-md": "Fuma local md补丁包",
     "CHANGELOG.md": "变更记录",
     "components.json": "组件依赖清单",
     "dev-scripts.config.json": "dev-scripts脚本工具配置",
@@ -254,9 +255,6 @@ export const DEFAULT_CONFIG: DevScriptsConfig = {
     "readme.mdx": "Next.js项目结构",
     ".github": "GitHub 配置目录",
     "workflows": "CI/CD 工作流配置",
-    "fumadocs-ui@15.3.3.patch": "fumadocs-ui版本15.3.3补丁",
-    "fumadocs-ui@16.0.9.patch": "fumadocs-ui版本16.0.9补丁",
-    "fumadocs-core@16.0.9.patch": "fumadocs-core版本16.0.9补丁",
     ".env.local.txt": "config example"
   }
 } 
