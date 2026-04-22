@@ -14,3 +14,4 @@ export * from './toc-clerk-portable';
 export * from './banner';
 export * from './suno-embed';
 export * from './markdown-component-map';
+export * from './math';

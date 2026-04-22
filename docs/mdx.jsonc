@@ -204,45 +204,6 @@
 		"description": "MDX Tabs Item",
 		"isFileTemplate": false
 	},
-  "mdx-include-tabs": {
-		"prefix": "@mdxitabs",
-		"body": [
-			"<Tabs groupId=\"${2}\" items={[\"${1}\"]}>",
-			"  <Tab value=\"${1}\">",
-      "    <include cwd lang=\"${1}\" meta='title=\"${3}.${1}\"'>",
-      "      ${4}/${3}.${1}",
-      "    </include>",
-      "  </Tab>",
-      "</Tabs>",
-			"${0}"
-		],
-		"description": "MDX Tabs",
-		"isFileTemplate": false
-	},
-  "mdx-include-tab-item": {
-		"prefix": "@mdxistab",
-		"body": [
-			"<Tab value=\"${1}\">",
-      "  <include cwd lang=\"${1}\" meta='title=\"${2}.${1}\"'>",
-      "    ${3}/${2}.${1}",
-      "  </include>",
-      "</Tab>",
-			"${0}"
-		],
-		"description": "MDX Tabs",
-		"isFileTemplate": false
-	},
-  "mdx-include-file": {
-		"prefix": "@mdxif",
-		"body": [
-      "<include cwd lang=\"${1}\" meta='title=\"${2}.${1}\"'>",
-      "  ${3}/${2}.${1}",
-      "</include>",
-			"${0}"
-		],
-		"description": "MDX Tabs",
-		"isFileTemplate": false
-	},
 	"mdx-accordion-faq": {
 		"prefix": "@mdxfaq",
 		"body": [
@@ -389,18 +350,6 @@
 			"${1}"
 		],
 		"description": "MDX Single Page",
-		"isFileTemplate": false
-	},
-	"mdx-math-block": {
-		"prefix": "@mdxmath",
-		"body": [
-			"```math",
-			"  ${1}",
-			"```",
-			"",
-			"${0}"
-		],
-		"description": "MDX Math Block",
 		"isFileTemplate": false
 	},
   "mdx-image-grid": {

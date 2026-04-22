@@ -1,10 +1,7 @@
 import createNextIntlPlugin from 'next-intl/plugin';
-import { createMDX } from 'fumadocs-mdx/next';
 import { NextConfig } from 'next';
 
 const withNextIntl = createNextIntlPlugin('./src/i18n.ts');
-
-const withMDX = createMDX();
 
 /** @type {import('next').NextConfig} */
 const nextConfig: NextConfig = {
@@ -13,6 +10,7 @@ const nextConfig: NextConfig = {
     '@windrun-huaiin/base-ui',
     '@windrun-huaiin/third-ui',
     '@windrun-huaiin/lib',
+    '@windrun-huaiin/fumadocs-local-md',
   ],
   
   // mdx config
@@ -38,12 +36,13 @@ const nextConfig: NextConfig = {
   
   // Ensuring outputFileTracingIncludes is a top-level property
   outputFileTracingIncludes: {
-    // Ensure MDX files for the llm-content API route are included in the serverless function
-    // Adjust the key if your API route path is different in the output structure
     '/api/docs/llm-content': ['./src/mdx/docs/**/*'],
     '/api/blog/llm-content': ['./src/mdx/blog/**/*'],  
     '/api/legal/llm-content': ['./src/mdx/legal/**/*'],
+    '/[locale]/docs/[...slug]': ['./src/mdx/docs/**/*'],
+    '/[locale]/blog/[[...slug]]': ['./src/mdx/blog/**/*'],
+    '/[locale]/legal/[[...slug]]': ['./src/mdx/legal/**/*'],
   }
 };
 
-export default withNextIntl(withMDX(nextConfig));
+export default withNextIntl(nextConfig);

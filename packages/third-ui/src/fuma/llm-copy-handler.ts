@@ -42,8 +42,8 @@ export async function LLMCopyHandler(options: LLMCopyHandlerOptions): Promise<{ 
       return { error: 'Page file path information missing', status: 500 };
     }
 
-    const title = page.title;
-    const description = page.description;
+    const title = page.data?.title ?? page.title;
+    const description = page.data?.description ?? page.description;
     const relativeMdxFilePath = page.path;
     const absoluteFilePath = nodePath.join(process.cwd(), sourceDir, relativeMdxFilePath);
     console.log(`[LLMCopy] Attempting to read MDX content from: ${absoluteFilePath}`);

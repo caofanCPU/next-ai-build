@@ -6,55 +6,69 @@ date: 2025-06-23
 ---
 
 
-## KateX公式语法 $x·y·z$
+## KateX公式语法
+
+这是一个行内公式示例 <InlineMath math="x\cdot y\cdot z" />。
 
 ### 基础
 
 <Tabs items={["希腊字母", "上下标", "括号", "矩阵", "行列式", "流程标识"]}>
   <Tab value="希腊字母">
-    ```math
-    \alpha \cdot \beta \cdot \gamma \cdot \delta \cdot \epsilon \cdot \zeta \cdot \eta \cdot \theta \cdot \iota \cdot \kappa \cdot \lambda \cdot \mu \cdot \nu \cdot \xi \cdot \pi \cdot \rho \cdot \sigma \cdot \tau \cdot \upsilon \cdot \phi \cdot \chi \cdot \psi \cdot \omega
-    ```
+    <MathBlock>
+    {String.raw`
+\alpha \cdot \beta \cdot \gamma \cdot \delta \cdot \epsilon \cdot \zeta \cdot \eta \cdot \theta \cdot \iota \cdot \kappa \cdot \lambda \cdot \mu \cdot \nu \cdot \xi \cdot \pi \cdot \rho \cdot \sigma \cdot \tau \cdot \upsilon \cdot \phi \cdot \chi \cdot \psi \cdot \omega
+    `}
+    </MathBlock>
   </Tab>
   
   <Tab value="上下标">
-    ```math
-    x^y \cdot x_y \cdot x^{y_1} \cdot x_{y_1} \cdot x^{y_1}_{y_2} \cdot x_{y_1}^{y_2}
-    ```
+    <MathBlock>
+    {String.raw`
+x^y \cdot x_y \cdot x^{y_1} \cdot x_{y_1} \cdot x^{y_1}_{y_2} \cdot x_{y_1}^{y_2}
+    `}
+    </MathBlock>
   </Tab>
 
   <Tab value="括号">
-    ```math
-    (x) \cdot [x] \cdot \{x\} \cdot \langle x \rangle \cdot \lceil x \rceil \cdot \lfloor x \rfloor \cdot \lvert x \rvert \cdot \lVert x \rVert
-    ```
+    <MathBlock>
+    {String.raw`
+(x) \cdot [x] \cdot \{x\} \cdot \langle x \rangle \cdot \lceil x \rceil \cdot \lfloor x \rfloor \cdot \lvert x \rvert \cdot \lVert x \rVert
+    `}
+    </MathBlock>
   </Tab>
 
   <Tab value="矩阵">
-    ```math
-    \begin{pmatrix}
-    a & b \\
-    c & d
-    \end{pmatrix}
-    ```
+    <MathBlock>
+    {String.raw`
+\begin{pmatrix}
+a & b \\
+c & d
+\end{pmatrix}
+    `}
+    </MathBlock>
   </Tab>
 
   <Tab value="行列式">
-    ```math
-    \begin{vmatrix}
-    a & b \\
-    c & d 
-    \end{vmatrix}
-    ```
+    <MathBlock>
+    {String.raw`
+\begin{vmatrix}
+a & b \\
+c & d 
+\end{vmatrix}
+    `}
+    </MathBlock>
   </Tab>
 
   <Tab value="流程标识">
-    ```math
-    \begin{CD}
-      A @>a>> B \\
-    @VbVV @AAcA \\
-      C @= D
-    \end{CD}
-    ```
+    <MathBlock>
+    {String.raw`
+\begin{CD}
+  A @>a>> B \\
+@VbVV @AAcA \\
+  C @= D
+\end{CD}
+    `}
+    </MathBlock>
   </Tab>
 </Tabs>
 
@@ -63,27 +77,35 @@ date: 2025-06-23
 
 <Tabs items={["角标与标注", "颜色", "波浪线", "运算符号"]}>
   <Tab value="角标与标注">
-    ```math
-    \tag{hi} x_{\color{red} i} + {\color{green} y}^{2{\color{orange} z}}
-    ```
+    <MathBlock>
+    {String.raw`
+\tag{hi} x_{\color{red} i} + {\color{green} y}^{2{\color{orange} z}}
+    `}
+    </MathBlock>
   </Tab>
 
   <Tab value="颜色">
-    ```math
-    \fcolorbox{red}{yellow}{$Time \approx Money$}
-    ```
+    <MathBlock>
+    {String.raw`
+\fcolorbox{red}{yellow}{$Time \approx Money$}
+    `}
+    </MathBlock>
   </Tab>
 
   <Tab value="波浪线">
-    ```math
-    20000\text{\textasciitilde}30000
-    ```
+    <MathBlock>
+    {String.raw`
+20000\text{\textasciitilde}30000
+    `}
+    </MathBlock>
   </Tab>
 
   <Tab value="运算符号">
-    ```math
-    \amalg \approx \pm \cdot \div \ge \gg \hat{x} \hat{y} \hat{z} \in \infty \int \leq \leqq \leqslant \lessapprox \ll \log \ni \ominus \oplus \oslash \otimes \overline{x} \overline{y} \overline{z} \parallel
-    ```
+    <MathBlock>
+    {String.raw`
+\amalg \approx \pm \cdot \div \ge \gg \hat{x} \hat{y} \hat{z} \in \infty \int \leq \leqq \leqslant \lessapprox \ll \log \ni \ominus \oplus \oslash \otimes \overline{x} \overline{y} \overline{z} \parallel
+    `}
+    </MathBlock>
   </Tab>
 </Tabs>
 
@@ -92,39 +114,51 @@ date: 2025-06-23
 <Tabs items={["欧拉公式", "正态分布", "贝叶斯公式", "欧拉-拉格朗日方程", "纳维-斯托克斯方程", "黎曼猜想ζ函数"]}>
 
   <Tab value="欧拉公式">
-    ```math
-    e^{i\pi}+1=0
-    ```
+    <MathBlock>
+    {String.raw`
+e^{i\pi}+1=0
+    `}
+    </MathBlock>
   </Tab>
 
   <Tab value="正态分布">
-    ```math
-    f(x)=\frac{1}{\sqrt{2\pi}\sigma}e^{-\frac{(x - \mu)^2}{2\sigma^2}}
-    ```
+    <MathBlock>
+    {String.raw`
+f(x)=\frac{1}{\sqrt{2\pi}\sigma}e^{-\frac{(x - \mu)^2}{2\sigma^2}}
+    `}
+    </MathBlock>
   </Tab>
 
   <Tab value="贝叶斯公式">    
-    ```math
-    P(B_j|A)=\frac{P(B_j)P(A|B_j)}{\sum_{i = 1}^{n}P(B_i)P(A|B_i)}
-    ```
+    <MathBlock>
+    {String.raw`
+P(B_j|A)=\frac{P(B_j)P(A|B_j)}{\sum_{i = 1}^{n}P(B_i)P(A|B_i)}
+    `}
+    </MathBlock>
   </Tab>
 
   <Tab value="欧拉-拉格朗日方程">     
-    ```math
-    \frac{\partial F}{\partial y}-\frac{d}{dx}(\frac{\partial F}{\partial y'}) = 0
-    ```
+    <MathBlock>
+    {String.raw`
+\frac{\partial F}{\partial y}-\frac{d}{dx}(\frac{\partial F}{\partial y'}) = 0
+    `}
+    </MathBlock>
   </Tab>
 
   <Tab value="纳维-斯托克斯方程"> 
-    ```math
-    \rho(\frac{\partial \mathbf{v}}{\partial t}+\mathbf{v}\cdot\nabla\mathbf{v})=-\nabla p + \mu\nabla^2\mathbf{v}+\mathbf{f}
-    ```
+    <MathBlock>
+    {String.raw`
+\rho(\frac{\partial \mathbf{v}}{\partial t}+\mathbf{v}\cdot\nabla\mathbf{v})=-\nabla p + \mu\nabla^2\mathbf{v}+\mathbf{f}
+    `}
+    </MathBlock>
   </Tab>
 
   <Tab value="黎曼猜想ζ函数">     
-    ```math
-    \zeta(s)=\sum_{n = 1}^{\infty}\frac{1}{n^s}=\prod_{p}\frac{1}{1 - p^{-s}}
-    ```
+    <MathBlock>
+    {String.raw`
+\zeta(s)=\sum_{n = 1}^{\infty}\frac{1}{n^s}=\prod_{p}\frac{1}{1 - p^{-s}}
+    `}
+    </MathBlock>
   </Tab>
 
 </Tabs>
@@ -133,39 +167,51 @@ date: 2025-06-23
 
 <Tabs items={["爱因斯坦场方程", "麦克斯韦协变方程", "狄拉克方程", "贝塞尔函数", "伽马函数", "矩阵指数函数"]}>
   <Tab value="爱因斯坦场方程">        
-    ```math
-    G_{\mu\nu}=R_{\mu\nu}-\frac{1}{2}Rg_{\mu\nu}=\frac{8\pi G}{c^4}T_{\mu\nu}
-    ```
+    <MathBlock>
+    {String.raw`
+G_{\mu\nu}=R_{\mu\nu}-\frac{1}{2}Rg_{\mu\nu}=\frac{8\pi G}{c^4}T_{\mu\nu}
+    `}
+    </MathBlock>
   </Tab>
 
   <Tab value="麦克斯韦协变方程">      
-    ```math
-    D_{\mu}F^{\mu\nu}=J^{\nu}
-    ```
+    <MathBlock>
+    {String.raw`
+D_{\mu}F^{\mu\nu}=J^{\nu}
+    `}
+    </MathBlock>
   </Tab>
 
   <Tab value="狄拉克方程">  
-    ```math
-    (i\gamma^{\mu}\partial_{\mu}-m)\psi = 0
-    ```
+    <MathBlock>
+    {String.raw`
+(i\gamma^{\mu}\partial_{\mu}-m)\psi = 0
+    `}
+    </MathBlock>
   </Tab>
 
   <Tab value="贝塞尔函数">    
-    ```math
-    J_{n - 1}(x)+J_{n + 1}(x)=\frac{2n}{x}J_n(x)
-    ```
+    <MathBlock>
+    {String.raw`
+J_{n - 1}(x)+J_{n + 1}(x)=\frac{2n}{x}J_n(x)
+    `}
+    </MathBlock>
   </Tab>
 
   <Tab value="伽马函数">      
-    ```math
-    \Gamma(z)=\int_{0}^{\infty}t^{z - 1}e^{-t}dt,\text{Re}(z)>0
-    ```
+    <MathBlock>
+    {String.raw`
+\Gamma(z)=\int_{0}^{\infty}t^{z - 1}e^{-t}dt,\text{Re}(z)>0
+    `}
+    </MathBlock>
   </Tab>
 
   <Tab value="矩阵指数函数">        
-    ```math
-    e^A=\sum_{n = 0}^{\infty}\frac{1}{n!}A^n
-    ```
+    <MathBlock>
+    {String.raw`
+e^A=\sum_{n = 0}^{\infty}\frac{1}{n!}A^n
+    `}
+    </MathBlock>
   </Tab>
 </Tabs>
 
@@ -173,32 +219,38 @@ date: 2025-06-23
 
 <Tabs items={["麦克斯韦方程组", "薛定谔方程·1", "薛定谔方程·2"]}>
   <Tab value="麦克斯韦方程组">
-    ```math
-    \left\{\begin{array}{ll}
-    \nabla\cdot\mathbf{E}=\frac{\rho}{\epsilon_0} & \quad(1)\\
-    \nabla\cdot\mathbf{B} = 0 & \quad(2)\\
-    \nabla\times\mathbf{E}=-\frac{\partial\mathbf{B}}{\partial t} & \quad(3)\\
-    \nabla\times\mathbf{B}=\mu_0\mathbf{J}+\mu_0\epsilon_0\frac{\partial\mathbf{E}}{\partial t} & \quad(4)
-    \end{array}\right.
-    ```
+    <MathBlock>
+    {String.raw`
+\left\{\begin{array}{ll}
+\nabla\cdot\mathbf{E}=\frac{\rho}{\epsilon_0} & \quad(1)\\
+\nabla\cdot\mathbf{B} = 0 & \quad(2)\\
+\nabla\times\mathbf{E}=-\frac{\partial\mathbf{B}}{\partial t} & \quad(3)\\
+\nabla\times\mathbf{B}=\mu_0\mathbf{J}+\mu_0\epsilon_0\frac{\partial\mathbf{E}}{\partial t} & \quad(4)
+\end{array}\right.
+    `}
+    </MathBlock>
   </Tab>
 
   <Tab value="薛定谔方程·1">
-    ```math
-    \left.\begin{array}{l}
-    (1)\quad-\frac{\hbar^2}{2m}\nabla^2\psi(\mathbf{r})+V(\mathbf{r})\psi(\mathbf{r}) = E\psi(\mathbf{r})\\
-    (2)\quad i\hbar\frac{\partial\Psi(\mathbf{r},t)}{\partial t}=-\frac{\hbar^2}{2m}\nabla^2\Psi(\mathbf{r},t)+V(\mathbf{r},t)\Psi(\mathbf{r},t)  
-    \end{array}\right\}
-    ```
+    <MathBlock>
+    {String.raw`
+\left.\begin{array}{l}
+(1)\quad-\frac{\hbar^2}{2m}\nabla^2\psi(\mathbf{r})+V(\mathbf{r})\psi(\mathbf{r}) = E\psi(\mathbf{r})\\
+(2)\quad i\hbar\frac{\partial\Psi(\mathbf{r},t)}{\partial t}=-\frac{\hbar^2}{2m}\nabla^2\Psi(\mathbf{r},t)+V(\mathbf{r},t)\Psi(\mathbf{r},t)  
+\end{array}\right\}
+    `}
+    </MathBlock>
   </Tab>
 
   <Tab value="薛定谔方程·2">
-    ```math
-    \begin{cases}
-    -\frac{\hbar^2}{2m}\nabla^2\psi(\mathbf{r})+V(\mathbf{r})\psi(\mathbf{r}) = E\psi(\mathbf{r}) & \quad(1)\\
-    i\hbar\frac{\partial\Psi(\mathbf{r},t)}{\partial t}=-\frac{\hbar^2}{2m}\nabla^2\Psi(\mathbf{r},t)+V(\mathbf{r},t)\Psi(\mathbf{r},t) & \quad(2)
-    \end{cases}
-    ```
+    <MathBlock>
+    {String.raw`
+\begin{cases}
+-\frac{\hbar^2}{2m}\nabla^2\psi(\mathbf{r})+V(\mathbf{r})\psi(\mathbf{r}) = E\psi(\mathbf{r}) & \quad(1)\\
+i\hbar\frac{\partial\Psi(\mathbf{r},t)}{\partial t}=-\frac{\hbar^2}{2m}\nabla^2\Psi(\mathbf{r},t)+V(\mathbf{r},t)\Psi(\mathbf{r},t) & \quad(2)
+\end{cases}
+    `}
+    </MathBlock>
   </Tab>
 </Tabs>
 

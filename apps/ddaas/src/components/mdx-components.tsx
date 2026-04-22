@@ -10,6 +10,8 @@ import {
   ZiaFile,
   ZiaFolder,
   SunoEmbed,
+  MathBlock,
+  InlineMath,
   baseMarkdownComponents
 } from "@third-ui/fuma/mdx";
 import { SiteX } from "@third-ui/fuma/server";
@@ -121,7 +123,9 @@ const customUiComponents = {
   SiteX,
   ZiaFile,
   ZiaFolder,
-  SunoEmbed
+  SunoEmbed,
+  MathBlock,
+  InlineMath,
 };
 
 const typeTableGenerator = createTypeTableGenerator();

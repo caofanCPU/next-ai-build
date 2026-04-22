@@ -22,6 +22,7 @@ export function ZiaCard({ icon, title, description, ...props }: ZiaCardProps) {
     return (
       <Link
         href={props.href!}
+        prefetch={false}
         data-card
         className={cn(
           'block rounded-lg border bg-fd-card p-4 text-fd-card-foreground shadow-md transition-colors @max-lg:col-span-full',

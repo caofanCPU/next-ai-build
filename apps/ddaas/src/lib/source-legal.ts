@@ -1,11 +1,4 @@
-import { legal } from '@/.source';
-import { i18n } from '@/i18n';
-import { getIconElement } from '@base-ui/components/global-icon';
-import { loader } from 'fumadocs-core/source';
+import { appConfig } from '@/lib/appConfig';
+import { createCachedLocalMdLoader } from '@/lib/local-md-source';
 
-export const legalSource = loader({
-  i18n,
-  baseUrl: '/legal',
-  source: legal.toFumadocsSource(),
-  icon: getIconElement,
-});
+export const getLegalSource = createCachedLocalMdLoader(appConfig.mdxSourceDir.legal, '/legal');

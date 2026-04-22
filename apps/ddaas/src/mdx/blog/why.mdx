@@ -446,20 +446,23 @@ date: 2025-05-26
   ```
 </Tabs>
 
-
 ## 数学公式
 
 <Tabs groupId="math" items={["example", "source", "@keywords"]}>
   <Tab value="example">
-    ```math title="正态分布公式
-      f(x)=\frac{1}{\sqrt{2\pi}\sigma}e^{-\frac{(x - \mu)^2}{2\sigma^2}}
-    ```
+    <MathBlock title="正态分布公式">
+    {String.raw`
+    f(x)=\frac{1}{\sqrt{2\pi}\sigma}e^{-\frac{(x - \mu)^2}{2\sigma^2}}
+    `}
+    </MathBlock>
   </Tab>
 
   ````mdx title="数学公式示例" tab="source" 
-    ```math title="正态分布公式"
-      f(x)=\frac{1}{\sqrt{2\pi}\sigma}e^{-\frac{(x - \mu)^2}{2\sigma^2}}
-    ```
+    <MathBlock title="正态分布公式">
+    {String.raw`
+    f(x)=\frac{1}{\sqrt{2\pi}\sigma}e^{-\frac{(x - \mu)^2}{2\sigma^2}}
+    `}
+    </MathBlock>
   ````
 
   ```txt title="触发关键词" tab="@keywords"   
@@ -511,28 +514,5 @@ date: 2025-05-26
   @mdxfolder   生成mdx文件夹
   @mdxifolder  生成mdx置灰文件夹
   @mdxefolder  生成mdx空文件夹
-  ```
-</Tabs>
-
-
-## 内部文件引用
-
-<Tabs groupId="internal-file-reference" items={["example", "source", "@keywords"]}>
-  <Tab value="example">
-    <include cwd lang="ts" meta='title="i18n.ts"'>
-      src/i18n.ts
-    </include>
-  </Tab>
-
-  ```mdx title="内部文件引用示例" tab="source" 
-  <include cwd lang="ts" meta='title="i18n.ts"'>
-    src/i18n.ts
-  </include>
-  ```
-
-  ```txt title="触发关键词" tab="@keywords"   
-  @mdxitabs   生成mdx引入文件Tab组
-  @mdxistab   生成mdx单个引入文件Tab组子项
-  @mdxif      生成mdx单独引入文件
   ```
 </Tabs>

@@ -1,5 +1,5 @@
 import { baseOptions } from '@/app/[locale]/layout.config';
-import { docsSource } from '@/lib/source-docs';
+import { getDocsSource } from '@/lib/source-docs';
 import type { ReactNode } from 'react';
 // https://fumadocs.dev/docs/ui/layouts/notebook
 import { FumaGithubInfo } from '@third-ui/fuma/mdx';
@@ -7,10 +7,11 @@ import { DocsLayout, type DocsLayoutProps } from 'fumadocs-ui/layouts/docs';
 import { appConfig } from '@/lib/appConfig';
 
 async function docsOptions(locale: string): Promise<DocsLayoutProps> {
+  const docsSource = await getDocsSource();
   const options = await baseOptions(locale);
   return {
     ...options,
-    tree: docsSource.pageTree[locale],
+    tree: docsSource.getPageTree(locale),
     links: [
       {
         type: 'custom',

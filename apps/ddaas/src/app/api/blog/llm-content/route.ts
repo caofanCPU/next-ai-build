@@ -2,7 +2,7 @@
 
 import { type NextRequest, NextResponse } from 'next/server';
 
-import { blogSource } from '@/lib/source-blog';
+import { getBlogSource } from '@/lib/source-blog';
 import { appConfig } from '@/lib/appConfig';
 import { LLMCopyHandler } from '@third-ui/fuma/server';
 
@@ -10,6 +10,7 @@ export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const locale = searchParams.get('locale') ?? appConfig.i18n.defaultLocale;
   const requestedPath = searchParams.get('path') || '';
+  const blogSource = await getBlogSource();
 
   const result = await LLMCopyHandler({
     sourceDir: appConfig.mdxSourceDir.blog,

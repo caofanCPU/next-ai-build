@@ -23,18 +23,6 @@ date: 2025-06-23
 
 `ClerkProvider`本质上是为后续所有用到的Clerk组件提供全局一致的Context信息, 因而我们可以按照需要来放置`ClerkProvider`的布局层次。
 例如, 有一个更重要的**YourRootProvider**, 它在更外层提供更基础的Context信息, 那么就可以如下代码来处理
-<Tabs groupId="clerk-root-layout" items={["Root", "Config"]}>
-  <Tab value="Root">
-    <include cwd lang="tsx" meta='title="layout.tsx"'>
-      src/app/[locale]/layout.tsx
-    </include>
-  </Tab>
-  <Tab value="Config">
-    <include cwd lang="ts" meta='title="appConfig.ts"'>
-      src/lib/appConfig.ts
-    </include>
-  </Tab>
-</Tabs>
 
 ### Config URL
 `ClerkProvider`支持url参数配置, 配置方式也有如下3种, 官方推荐使用环境变量, 其次是代码级配置, 不建议使用Clerk Dashboard的远程配置
@@ -73,10 +61,6 @@ date: 2025-06-23
 建议使用一个登录按钮, 点击登录按钮后, 弹框或者跳转到登录页面, 出现的Clerk `SignIn`卡片组件能自动携带未登录就去注册的指引
 
 如下是一个简单包装过的Clerk用户组件:
-
-<include cwd lang="tsx" meta='title="ClerkUser.tsx"'>
-  ../../packages/third-ui/src/clerk/clerk-user.tsx
-</include>
 
 
 ### 国际化

@@ -29,6 +29,7 @@
     "@clerk/nextjs": "catalog:",
     "@clerk/themes": "catalog:",
     "@clerk/shared": "catalog:",
+    "@windrun-huaiin/fumadocs-local-md": "workspace:*",
     "@fingerprintjs/fingerprintjs": "catalog:",
     "@hookform/resolvers": "catalog:",
     "@radix-ui/react-alert-dialog": "catalog:",

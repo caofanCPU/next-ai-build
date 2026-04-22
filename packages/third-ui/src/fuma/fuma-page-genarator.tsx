@@ -13,7 +13,7 @@ interface FumaPageParams {
   /* 
    * The source of the mdx content
    */
-  mdxContentSource: any;
+  mdxContentSource: any | (() => Promise<any>);
   /* 
    * The  mdx components handler, refer to fumadocs 
    */
@@ -81,11 +81,20 @@ export function createFumaPage({
   localePrefixAsNeeded = true,
   defaultLocale = 'en',
 }: FumaPageParams) {
+  const getSource = async () => {
+    if (typeof mdxContentSource === 'function') {
+      return await mdxContentSource();
+    }
+
+    return mdxContentSource;
+  };
+
   const Page = async function Page({ params }: { params: Promise<{ locale: string; slug?: string[] }> }) {
     const { slug, locale } = await params;
-    const page = mdxContentSource.getPage(slug, locale);
+    const source = await getSource();
+    const page = source.getPage(slug, locale);
     if (!page) {
-      console.log('[FumaPage] missing page', { slug, locale, available: mdxContentSource.pageTree?.[locale]?.children?.map((c: any) => c.url) });
+      console.log('[FumaPage] missing page', { slug, locale, available: source.pageTree?.[locale]?.children?.map((c: any) => c.url) });
       return <FallbackPage siteIcon={siteIcon} />;
     }
 
@@ -103,7 +112,14 @@ export function createFumaPage({
       />
     );
 
-    const MDX = page.data.body;
+    const content =
+      typeof page.data.load === 'function'
+        ? await page.data.load(getMDXComponents())
+        : {
+            body: await page.data.body({ components: getMDXComponents() }),
+            toc: page.data.toc ?? [],
+          };
+
     return (
       <DocsPage
         breadcrumb={{enabled: showBreadcrumb}}
@@ -112,7 +128,7 @@ export function createFumaPage({
           single: false,
           component: (
             <PortableClerkTOC
-              toc={page.data.toc}
+              toc={content.toc}
               footer={tocFooterElement}
             />
           ),
@@ -120,25 +136,26 @@ export function createFumaPage({
         tableOfContentPopover={{
           enabled: false,
         }}
-        toc={page.data.toc}
+        toc={content.toc}
         article={{ className: 'max-sm:pb-16' }}
       >
         <DocsTitle>{page.data.title}</DocsTitle>
         <DocsDescription className="mb-2">{page.data.description}</DocsDescription>
         <DocsBody className="text-fd-foreground/80">
-          <MDX components={getMDXComponents()} />
+          {content.body}
         </DocsBody>
       </DocsPage>
     );
   };
 
   function generateStaticParams() {
-    return mdxContentSource.generateParams('slug', 'locale');
+    return getSource().then((source) => source.generateParams('slug', 'locale'));
   }
 
   async function generateMetadata(props: { params: Promise<{ slug?: string[]; locale?: string }> }) {
     const { slug, locale } = await props.params;
-    const page = mdxContentSource.getPage(slug, locale);
+    const source = await getSource();
+    const page = source.getPage(slug, locale);
     if (!page) {
       return {
         title: '404 - Page Not Found',
