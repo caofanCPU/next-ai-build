@@ -31,6 +31,7 @@
   },
   "scripts": {
     "build": "tsdown",
+    "build:prod": "tsdown",
     "clean": "rm -rf dist",
     "dev": "tsdown --watch",
     "lint": "oxlint .",

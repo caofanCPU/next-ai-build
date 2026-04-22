@@ -76,6 +76,10 @@
       "outputs": ["dist/**"],
       "env": ["NODE_ENV"]
     },
+    "@windrun-huaiin/fumadocs-local-md#build": {
+      "outputs": ["dist/**"],
+      "env": ["NODE_ENV", "LOCAL_MD_CACHE_DISABLE"]
+    },
     "@windrun-huaiin/contracts#build": {
       "outputs": ["dist/**"],
       "env": ["NODE_ENV"]
@@ -139,6 +143,10 @@
     "@windrun-huaiin/lib#build:prod": {
       "outputs": ["dist/**"],
       "env": ["NODE_ENV"]
+    },
+    "@windrun-huaiin/fumadocs-local-md#build:prod": {
+      "outputs": ["dist/**"],
+      "env": ["NODE_ENV", "LOCAL_MD_CACHE_DISABLE"]
     },
     "@windrun-huaiin/contracts#build:prod": {
       "outputs": ["dist/**"],
