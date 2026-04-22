@@ -1,0 +1,98 @@
+{
+  "name": "@windrun-huaiin/fumadocs-local-md",
+  "version": "1.0.0",
+  "description": "A compatibility-focused local Markdown source package based on @fumadocs/local-md",
+  "keywords": [
+    "Docs",
+    "fumadocs"
+  ],
+  "homepage": "https://github.com/caofanCPU/next-ai-build",
+  "license": "MIT",
+  "author": "windrun-huaiin",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/caofanCPU/next-ai-build.git",
+    "directory": "packages/local-md"
+  },
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./js/executor": "./dist/js/executor.js",
+    "./js/executor-native": "./dist/js/executor-native.js",
+    "./js/executor-virtual": "./dist/js/executor-virtual.js",
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "clean": "rm -rf dist",
+    "dev": "tsdown --watch",
+    "lint": "oxlint .",
+    "types:check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@mdx-js/mdx": "^3.1.1",
+    "@standard-schema/spec": "^1.1.0",
+    "estree-util-build-jsx": "^3.0.1",
+    "estree-util-to-js": "^2.0.0",
+    "hast-util-to-jsx-runtime": "^2.3.6",
+    "remark": "catalog:",
+    "remark-rehype": "^11.1.2",
+    "tinyglobby": "^0.2.16",
+    "unified": "^11.0.5",
+    "vfile": "^6.0.3",
+    "yaml": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@types/estree": "^1.0.8",
+    "@types/estree-jsx": "^1.0.5",
+    "@types/hast": "^3.0.4",
+    "@types/mdx": "^2.0.13",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "@types/unist": "^3.0.3",
+    "fumadocs-core": "catalog:",
+    "react": "catalog:",
+    "tslib": "catalog:",
+    "tsdown": "0.21.9",
+    "typescript": "catalog:"
+  },
+  "peerDependencies": {
+    "@types/estree": "*",
+    "@types/estree-jsx": "*",
+    "@types/hast": "*",
+    "@types/mdx": "*",
+    "@types/react": "*",
+    "@types/unist": "*",
+    "fumadocs-core": "16.0.x",
+    "react": "catalog:",
+    "react-dom": "catalog:"
+  },
+  "peerDependenciesMeta": {
+    "@types/mdx": {
+      "optional": true
+    },
+    "@types/estree": {
+      "optional": true
+    },
+    "@types/estree-jsx": {
+      "optional": true
+    },
+    "@types/hast": {
+      "optional": true
+    },
+    "@types/unist": {
+      "optional": true
+    },
+    "@types/react": {
+      "optional": true
+    }
+  }
+}

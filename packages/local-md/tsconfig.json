@@ -1,0 +1,23 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": false,
+    "declaration": true,
+    "declarationMap": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
+    "jsx": "react-jsx",
+    "incremental": false,
+    "baseUrl": "./src",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    "lib": ["ESNext", "DOM"],
+    "module": "ESNext",
+    "target": "ES2020"
+  },
+  "include": ["src/**/*", "tsdown.config.ts"],
+  "exclude": ["node_modules", "eslint.config.mjs", "dist"]
+}
