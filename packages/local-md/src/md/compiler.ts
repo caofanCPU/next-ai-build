@@ -15,7 +15,8 @@ import * as Mdx from '@mdx-js/mdx';
 import { remark } from 'remark';
 import type { PluggableList } from 'unified';
 import remarkRehype, { type Options as RemarkRehypeOptions } from 'remark-rehype';
-import type { Root as MdastRoot, Content, Parent } from 'mdast';
+import type { Root as MdastRoot, RootContent, Parent } from 'mdast';
+import type { Data, Node } from 'unist';
 
 export interface MarkdownCompilerOptions {
   mdOptions?: MarkdownProcessorOptions;
@@ -60,11 +61,11 @@ export type CompileResult =
       code: string;
     };
 
-type MathNode = Content & {
+type MathNode = Node & {
   type: 'math';
   value: string;
   meta?: string;
-  data?: Record<string, unknown>;
+  data?: Data;
 };
 
 function remarkMathFence() {
@@ -77,10 +78,10 @@ function remarkMathFence() {
       const nextNode: MathNode = {
         type: 'math',
         value: node.value,
-        meta: node.meta,
       };
 
       if (node.meta) {
+        nextNode.meta = node.meta;
         nextNode.data = {
           hProperties: {
             meta: node.meta,
@@ -88,14 +89,14 @@ function remarkMathFence() {
         };
       }
 
-      parent.children[index] = nextNode;
+      parent.children[index] = nextNode as RootContent;
     });
   };
 }
 
 function visitParents(
-  node: Content | MdastRoot,
-  visitor: (node: Content, index: number | undefined, parent: Parent | undefined) => void,
+  node: RootContent | MdastRoot,
+  visitor: (node: RootContent, index: number | undefined, parent: Parent | undefined) => void,
   index?: number,
   parent?: Parent,
 ) {
