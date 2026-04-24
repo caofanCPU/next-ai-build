@@ -4,6 +4,8 @@ import { FingerprintProvider } from '@third-ui/clerk/fingerprint';
 import { SiteHomeLayout, type SiteHomeLayoutConfig } from '@third-ui/fuma/base';
 import { ReactNode } from 'react';
 import { clerkPageBanner, localePrefixAsNeeded, defaultLocale } from '@/lib/appConfig';
+import { i18n } from '@/i18n';
+import { appConfig } from '@/lib/appConfig';
 
 async function homeOptions(locale: string): Promise<SiteHomeLayoutConfig> {
   const resolvedBaseOptions = await baseOptions(locale);
@@ -24,6 +26,8 @@ export default async function RootLayout({
 
   const homeLayoutOptions: SiteHomeLayoutConfig = {
     ...customeOptions,
+    i18n,
+    githubUrl: appConfig.github,
     searchToggle: {
       enabled: false,
     },

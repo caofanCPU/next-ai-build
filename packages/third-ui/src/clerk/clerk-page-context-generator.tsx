@@ -8,6 +8,9 @@
 import { SignUpWithFingerprint } from './signup-with-fingerprint-client';
 import { SignInWithFingerprint } from './signin-with-fingerprint-client';
 
+const clerkPageContainerClassName =
+  'flex min-h-dvh w-full items-start justify-center px-6 pt-[calc(var(--fd-banner-height,0px)+var(--fd-header-height,3.5rem)+1rem)] pb-6 md:px-8 md:pt-[calc(var(--fd-banner-height,0px)+var(--fd-header-height,3.5rem)+1.5rem)] md:pb-8';
+
 /**
  * Create a SignUp page with fingerprint support
  * Note: This must be used within a FingerprintProvider
@@ -15,7 +18,7 @@ import { SignInWithFingerprint } from './signin-with-fingerprint-client';
 export function createSignUpPageWithFingerprint() {
   return function SignUpPage() {
     return (
-      <div className="flex-1 flex justify-center m-16">
+      <div className={clerkPageContainerClassName}>
         <SignUpWithFingerprint />
       </div>
     );
@@ -29,7 +32,7 @@ export function createSignUpPageWithFingerprint() {
 export function createSignInPageWithFingerprint() {
   return function SignInPage() {
     return (
-      <div className="flex-1 flex justify-center m-16">
+      <div className={clerkPageContainerClassName}>
         <SignInWithFingerprint />
       </div>
     );

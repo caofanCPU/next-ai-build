@@ -39,7 +39,7 @@ import { HeaderThemeSwitch } from './header-theme-switch';
 
 export type NavbarCSSVars = CSSProperties & {
   '--fd-banner-height'?: string;
-  '--fd-nav-height'?: string;
+  '--fd-header-height'?: string;
   '--fd-nav-max-width'?: string;
 };
 
@@ -372,7 +372,7 @@ function CustomNavbar({
 
   const cssVars: NavbarCSSVars = {
     '--fd-banner-height': `${bannerHeight}rem`,
-    '--fd-nav-height': `${headerHeight}rem`,
+    '--fd-header-height': `${headerHeight}rem`,
     ...(maxContentWidth
       ? {
           '--fd-nav-max-width':
@@ -390,9 +390,8 @@ function CustomNavbar({
         : maxContentWidth
       : '88rem';
   const minNavWidth = '15rem';
-  const floatingWidth = `clamp(${minNavWidth}, 100vw, ${resolvedMaxWidth})`;
   const widthStyle = floating
-    ? { width: floatingWidth }
+    ? { width: `clamp(${minNavWidth}, 100vw, ${resolvedMaxWidth})` }
     : { width: '100%', maxWidth: resolvedMaxWidth, minWidth: minNavWidth };
   const headerStyle = {
     ...cssVars,
@@ -420,7 +419,7 @@ function CustomNavbar({
       >
         <NavigationMenuList
           className="flex w-full items-center gap-4 px-1"
-          style={{ height: 'var(--fd-nav-height)' }}
+          style={{ height: 'var(--fd-header-height)' }}
           asChild
         >
           <nav>{props.children}</nav>

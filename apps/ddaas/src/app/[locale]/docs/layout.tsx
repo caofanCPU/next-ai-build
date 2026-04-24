@@ -4,12 +4,15 @@ import type { ReactNode } from 'react';
 import { FumaGithubInfo } from '@third-ui/fuma/mdx/fuma-github-info';
 import { SiteDocsLayout, type SiteDocsLayoutConfig } from '@third-ui/fuma/base';
 import { appConfig } from '@/lib/appConfig';
+import { i18n } from '@/i18n';
 
 async function docsOptions(locale: string): Promise<SiteDocsLayoutConfig> {
   const docsSource = await getContentSource('docs');
   const options = await baseOptions(locale);
   return {
     ...options,
+    i18n,
+    githubUrl: appConfig.github,
     tree: docsSource.getPageTree(locale),
     links: [
       {

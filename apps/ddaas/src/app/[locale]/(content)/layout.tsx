@@ -4,6 +4,7 @@ import { fingerprintConfig } from '@windrun-huaiin/backend-core/lib';
 import { FingerprintProvider } from '@third-ui/clerk/fingerprint';
 import { SiteHomeLayout, type SiteHomeLayoutConfig } from '@third-ui/fuma/base';
 import type { ReactNode } from 'react';
+import { appConfig } from '@/lib/appConfig';
 
 async function homeOptions(locale: string): Promise<SiteHomeLayoutConfig> {
   return {
@@ -27,6 +28,7 @@ export default async function Layout({
 
   const homeLayoutOptions: SiteHomeLayoutConfig = {
     ...customeOptions,
+    githubUrl: appConfig.github,
     searchToggle: {
       enabled: false,
     },

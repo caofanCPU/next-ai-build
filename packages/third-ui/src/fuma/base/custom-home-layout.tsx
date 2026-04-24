@@ -129,7 +129,7 @@ export function CustomHomeLayout({
 
   const layoutStyle: NavbarCSSVars = {
     '--fd-banner-height': `${resolvedBannerHeight}rem`,
-    '--fd-nav-height': `${headerHeight}rem`,
+    '--fd-header-height': `${headerHeight}rem`,
     paddingTop: floatingNav
       ? `calc(var(--fd-banner-height) + ${resolvedPaddingTop}rem)`
       : `${resolvedPaddingTop}rem`,

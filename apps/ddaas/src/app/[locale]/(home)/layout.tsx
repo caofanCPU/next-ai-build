@@ -1,5 +1,6 @@
 import { baseOptions, homeNavLinks, levelNavLinks } from '@/app/[locale]/layout.config';
 import { showBanner, localePrefixAsNeeded, defaultLocale } from '@/lib/appConfig';
+import { i18n } from '@/i18n';
 import { fingerprintConfig } from '@windrun-huaiin/backend-core/lib';
 import { FingerprintProvider } from '@third-ui/clerk/fingerprint';
 import { SiteHomeLayout, type SiteHomeLayoutConfig } from '@third-ui/fuma/base';
@@ -26,6 +27,7 @@ export default async function Layout({
   const customeOptions = await homeOptions(locale);
   const homeLayoutOptions: SiteHomeLayoutConfig = {
     ...customeOptions,
+    i18n,
     searchToggle: {
       enabled: false,
     },

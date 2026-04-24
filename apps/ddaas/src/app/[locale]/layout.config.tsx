@@ -12,7 +12,6 @@ import { SiteIcon } from '@/lib/site-config';
 import { getTranslations } from 'next-intl/server';
 import Image from 'next/image';
 import { ClerkUser } from '@third-ui/clerk/server';
-import { i18n } from '@/i18n';
 import { appConfig, localePrefixAsNeeded, defaultLocale } from '@/lib/appConfig';
 import { CreditPopover } from '@/components/credit-popover';
 import {
@@ -194,8 +193,6 @@ export async function baseOptions(locale: string): Promise<SiteBaseLayoutConfig>
         </HomeTitle>
       </>
     ),
-    i18n,
-    githubUrl: appConfig.github,
     transparentMode: 'none',
   });
 }

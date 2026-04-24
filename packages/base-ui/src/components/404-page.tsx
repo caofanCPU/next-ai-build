@@ -33,7 +33,7 @@ export function NotFoundPage({ siteIcon }: NotFoundPageProps) {
   }, []);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[75vh] w-full px-4 py-8">
+    <div className="flex min-h-dvh w-full flex-col items-center justify-center px-4 py-8">
       {/* main content area */}
       <div className="text-center space-y-8 max-w-2xl">
         {/* 404 number - glitch effect */}
