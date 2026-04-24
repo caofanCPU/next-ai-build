@@ -1,12 +1,11 @@
 import { baseOptions } from '@/app/[locale]/layout.config';
 import { getDocsSource } from '@/lib/source-docs';
 import type { ReactNode } from 'react';
-// https://fumadocs.dev/docs/ui/layouts/notebook
 import { FumaGithubInfo } from '@third-ui/fuma/mdx';
-import { DocsLayout, type DocsLayoutProps } from 'fumadocs-ui/layouts/docs';
+import { SiteDocsLayout, type SiteDocsLayoutConfig } from '@third-ui/fuma/base';
 import { appConfig } from '@/lib/appConfig';
 
-async function docsOptions(locale: string): Promise<DocsLayoutProps> {
+async function docsOptions(locale: string): Promise<SiteDocsLayoutConfig> {
   const docsSource = await getDocsSource();
   const options = await baseOptions(locale);
   return {
@@ -43,15 +42,18 @@ export default async function Layout({
   const customeOptions = await docsOptions(locale);
  
   return (
-    <DocsLayout {...customeOptions} 
-      themeSwitch={{
-        enabled: true,
-        mode: 'light-dark-system',
+    <SiteDocsLayout
+      config={{
+        ...customeOptions,
+        themeSwitch: {
+          enabled: true,
+          mode: 'light-dark-system',
+        },
+        sidebar: { enabled: true },
+        searchToggle: { enabled: false },
       }}
-      sidebar={{ enabled: true }}
-      searchToggle={{enabled: false}}
     >
       {children}
-    </DocsLayout>
+    </SiteDocsLayout>
   );
 }

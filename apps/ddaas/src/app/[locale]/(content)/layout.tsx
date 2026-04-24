@@ -2,11 +2,10 @@ import { baseOptions, homeNavLinks, levelNavLinks } from '@/app/[locale]/layout.
 import { showBanner, localePrefixAsNeeded, defaultLocale } from '@/lib/appConfig';
 import { fingerprintConfig } from '@windrun-huaiin/backend-core/lib';
 import { FingerprintProvider } from '@third-ui/clerk/fingerprint';
-import { CustomHomeLayout } from '@third-ui/fuma/base';
-import type { HomeLayoutProps } from 'fumadocs-ui/layouts/home';
+import { SiteHomeLayout, type SiteHomeLayoutConfig } from '@third-ui/fuma/base';
 import type { ReactNode } from 'react';
 
-async function homeOptions(locale: string): Promise<HomeLayoutProps> {
+async function homeOptions(locale: string): Promise<SiteHomeLayoutConfig> {
   return {
     ...(await baseOptions(locale)),
     links: [
@@ -26,7 +25,7 @@ export default async function Layout({
   const { locale } = await params;
   const customeOptions = await homeOptions(locale);
 
-  const homeLayoutOptions: HomeLayoutProps = {
+  const homeLayoutOptions: SiteHomeLayoutConfig = {
     ...customeOptions,
     searchToggle: {
       enabled: false,
@@ -39,22 +38,24 @@ export default async function Layout({
 
   return (
     <FingerprintProvider config={fingerprintConfig}>
-      <CustomHomeLayout
+      <SiteHomeLayout
         locale={locale}
-        localePrefixAsNeeded={localePrefixAsNeeded}
-        defaultLocale={defaultLocale}
-        options={homeLayoutOptions}
-        showBanner={showBanner}
-        showFooter={false}
-        floatingNav={true}
-        actionOrders={{
-          desktop: ['search', 'theme', 'github', 'i18n', 'secondary'],
-          mobileBar: ['search', 'pinned', 'menu'],
-          mobileMenu: ['theme', 'i18n', 'separator', 'secondary', 'github'],
+        config={{
+          ...homeLayoutOptions,
+          localePrefixAsNeeded,
+          defaultLocale,
+          showBanner,
+          showFooter: false,
+          floatingNav: true,
+          actionOrders: {
+            desktop: ['search', 'theme', 'github', 'i18n', 'secondary'],
+            mobileBar: ['search', 'pinned', 'menu'],
+            mobileMenu: ['theme', 'i18n', 'separator', 'secondary', 'github'],
+          },
         }}
       >
         {children}
-      </CustomHomeLayout>
+      </SiteHomeLayout>
     </FingerprintProvider>
   );
 }

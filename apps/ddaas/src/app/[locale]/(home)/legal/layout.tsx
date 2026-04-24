@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { getLegalSource } from '@/lib/source-legal';
-import { DocsLayout } from 'fumadocs-ui/layouts/docs';
+import { SiteDocsLayout } from '@third-ui/fuma/base';
 
 export default async function Layout({
   params,
@@ -13,8 +13,14 @@ export default async function Layout({
   const legalSource = await getLegalSource();
  
   return (
-    <DocsLayout sidebar={{enabled: false}} searchToggle={{enabled: false}} tree={legalSource.getPageTree(locale)}>
+    <SiteDocsLayout
+      config={{
+        tree: legalSource.getPageTree(locale),
+        sidebar: { enabled: false },
+        searchToggle: { enabled: false },
+      }}
+    >
       {children}
-    </DocsLayout>
+    </SiteDocsLayout>
   );
 }

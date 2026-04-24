@@ -9,40 +9,23 @@ import {
   SparklesIcon,
 } from '@base-ui/icons';
 import { SiteIcon } from '@/lib/site-config';
-import { BaseLayoutProps } from 'fumadocs-ui/layouts/shared';
 import { getTranslations } from 'next-intl/server';
 import Image from 'next/image';
-import type { HTMLAttributes, ReactNode } from 'react';
 import { ClerkUser } from '@third-ui/clerk/server';
 import { i18n } from '@/i18n';
 import { appConfig, localePrefixAsNeeded, defaultLocale } from '@/lib/appConfig';
 import { CreditPopover } from '@/components/credit-popover';
-import { ExtendedLinkItem, HomeTitle } from '@third-ui/fuma/base';
+import {
+  HomeTitle,
+  createSiteBaseLayoutConfig,
+  createSiteNavGroup,
+  type CreateSiteNavItemContext,
+  type SiteBaseLayoutConfig,
+  type SiteMenuGroupConfig,
+  type SiteMenuLeafConfig,
+  type SiteNavItemConfig,
+} from '@third-ui/fuma/base';
 import { getAsNeededLocalizedUrl } from '@windrun-huaiin/lib';
-
-type MenuLeafConfig = {
-  text: string;
-  description: string;
-  path: string;
-  icon?: ReactNode;
-  className?: string;
-};
-
-type LevelMenuConfig = {
-  text: string;
-  path: string;
-  landing: MenuLeafConfig;
-  items: MenuLeafConfig[];
-};
-
-type MenuItemType = {
-  type?: 'main';
-  text: ReactNode;
-  description?: ReactNode;
-  url: string;
-  external?: boolean;
-  menu?: HTMLAttributes<HTMLElement> & { banner?: ReactNode };
-};
 
 function renderMenuBanner() {
   return (
@@ -59,38 +42,15 @@ function renderMenuBanner() {
   );
 }
 
-function buildMenuLeaf(locale: string, item: MenuLeafConfig): MenuItemType {
+function createNavContext(locale: string): CreateSiteNavItemContext {
   return {
-    type: 'main',
-    text: item.text,
-    description: item.description,
-    url: getAsNeededLocalizedUrl(locale, item.path, localePrefixAsNeeded, defaultLocale),
-    menu: {
-      ...(item.className ? { className: item.className } : {}),
-      ...(item.icon ? { banner: item.icon } : {}),
+    resolveUrl(path: string) {
+      return getAsNeededLocalizedUrl(locale, path, localePrefixAsNeeded, defaultLocale);
     },
   };
 }
 
-function buildLevelMenu(locale: string, item: LevelMenuConfig): ExtendedLinkItem {
-  return {
-    type: 'menu',
-    text: item.text,
-    url: getAsNeededLocalizedUrl(locale, item.path, localePrefixAsNeeded, defaultLocale),
-    items: [
-      {
-        ...buildMenuLeaf(locale, item.landing),
-        menu: {
-          banner: renderMenuBanner(),
-          className: 'md:row-span-2',
-        },
-      },
-      ...item.items.map((child) => buildMenuLeaf(locale, child)),
-    ],
-  };
-}
-
-const previewTestLinks: MenuLeafConfig[] = [
+const previewTestLinks: SiteMenuLeafConfig[] = [
   {
     text: 'Preview Hub',
     description: 'Entry page for all preview and playground routes.',
@@ -121,7 +81,7 @@ const previewTestLinks: MenuLeafConfig[] = [
   },
 ];
 
-const docsLinks: MenuLeafConfig[] = [
+const docsLinks: SiteMenuLeafConfig[] = [
   {
     text: 'FumaMDX',
     description: 'FumaMDX tips',
@@ -152,7 +112,7 @@ const docsLinks: MenuLeafConfig[] = [
   },
 ];
 
-const levelMenus: LevelMenuConfig[] = [
+const levelMenus: SiteMenuGroupConfig[] = [
   {
     text: 'docs',
     path: '/docs',
@@ -176,7 +136,7 @@ const levelMenus: LevelMenuConfig[] = [
 ];
 
 // 首页普通菜单
-export async function homeNavLinks(locale: string): Promise<ExtendedLinkItem[]> {
+export async function homeNavLinks(locale: string): Promise<SiteNavItemConfig[]> {
   const t1 = await getTranslations({ locale: locale, namespace: 'linkPreview' });
   return [
     {
@@ -205,37 +165,37 @@ export async function homeNavLinks(locale: string): Promise<ExtendedLinkItem[]> 
 }
 
 // 层级特殊菜单
-export async function levelNavLinks(locale: string): Promise<ExtendedLinkItem[]> {
+export async function levelNavLinks(locale: string): Promise<SiteNavItemConfig[]> {
   const t1 = await getTranslations({ locale: locale, namespace: 'linkPreview' });
+  const context = createNavContext(locale);
   return levelMenus.map((item) =>
-    buildLevelMenu(locale, {
-      ...item,
-      text: t1(item.text),
-    }),
+    createSiteNavGroup(
+      {
+        ...item,
+        text: t1(item.text as string),
+      },
+      context,
+      {
+        featuredBanner: renderMenuBanner(),
+      },
+    ),
   );
 }
 
-export async function baseOptions(locale: string): Promise<BaseLayoutProps> {
+export async function baseOptions(locale: string): Promise<SiteBaseLayoutConfig> {
   const t = await getTranslations({ locale: locale, namespace: 'home' });
-  return {
-    // 导航Header配置
-    nav: {
-      url: getAsNeededLocalizedUrl(locale, '/', localePrefixAsNeeded, defaultLocale),
-      title: (
-        <>
-          <SiteIcon />
-          <HomeTitle>
-            {t('title')}
-          </HomeTitle>
-        </>
-      ),
-      // 导航Header, 透明模式选项: none | top | always
-      // https://fumadocs.dev/docs/ui/layouts/docs#transparent-mode
-      transparentMode: 'none',
-    },
-    // 导航Header, 语言切换
+  return createSiteBaseLayoutConfig({
+    homeUrl: getAsNeededLocalizedUrl(locale, '/', localePrefixAsNeeded, defaultLocale),
+    title: (
+      <>
+        <SiteIcon />
+        <HomeTitle>
+          {t('title')}
+        </HomeTitle>
+      </>
+    ),
     i18n,
-    // 导航Header, Github链接
     githubUrl: appConfig.github,
-  };
+    transparentMode: 'none',
+  });
 }

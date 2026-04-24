@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { getBlogSource } from '@/lib/source-blog';
-import { DocsLayout } from 'fumadocs-ui/layouts/docs';
+import { SiteDocsLayout } from '@third-ui/fuma/base';
 
 export default async function Layout({
   params,
@@ -12,8 +12,14 @@ export default async function Layout({
   const { locale } = await params;
   const blogSource = await getBlogSource();
   return (
-    <DocsLayout sidebar={{enabled: false}} searchToggle={{enabled: false}} tree={blogSource.getPageTree(locale)}>
+    <SiteDocsLayout
+      config={{
+        tree: blogSource.getPageTree(locale),
+        sidebar: { enabled: false },
+        searchToggle: { enabled: false },
+      }}
+    >
       {children}
-    </DocsLayout>
+    </SiteDocsLayout>
   );
 }

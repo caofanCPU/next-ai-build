@@ -1,12 +1,11 @@
 import { baseOptions } from '@/app/[locale]/layout.config';
 import { fingerprintConfig } from '@windrun-huaiin/backend-core/lib';
 import { FingerprintProvider } from '@third-ui/clerk/fingerprint';
-import { CustomHomeLayout } from '@third-ui/fuma/base';
-import { type HomeLayoutProps } from 'fumadocs-ui/layouts/home';
+import { SiteHomeLayout, type SiteHomeLayoutConfig } from '@third-ui/fuma/base';
 import { ReactNode } from 'react';
 import { clerkPageBanner, localePrefixAsNeeded, defaultLocale } from '@/lib/appConfig';
 
-async function homeOptions(locale: string): Promise<HomeLayoutProps>{
+async function homeOptions(locale: string): Promise<SiteHomeLayoutConfig> {
   const resolvedBaseOptions = await baseOptions(locale);
   return {
     ...resolvedBaseOptions,
@@ -23,7 +22,7 @@ export default async function RootLayout({
   const { locale } = await params;
   const customeOptions = await homeOptions(locale);
 
-  const homeLayoutOptions: HomeLayoutProps = {
+  const homeLayoutOptions: SiteHomeLayoutConfig = {
     ...customeOptions,
     searchToggle: {
       enabled: false,
@@ -35,18 +34,20 @@ export default async function RootLayout({
   };
   return (
     <FingerprintProvider config={fingerprintConfig}>
-      <CustomHomeLayout
-          locale={locale}
-          localePrefixAsNeeded={localePrefixAsNeeded}
-          defaultLocale={defaultLocale}
-          options={homeLayoutOptions}
-          showBanner={clerkPageBanner}
-          showFooter={false}
-          showGoToTop={false}
-          floatingNav={true}
-        >
-          {children}
-        </CustomHomeLayout>
+      <SiteHomeLayout
+        locale={locale}
+        config={{
+          ...homeLayoutOptions,
+          localePrefixAsNeeded,
+          defaultLocale,
+          showBanner: clerkPageBanner,
+          showFooter: false,
+          showGoToTop: false,
+          floatingNav: true,
+        }}
+      >
+        {children}
+      </SiteHomeLayout>
     </FingerprintProvider>
   );
 }

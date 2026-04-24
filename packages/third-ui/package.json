@@ -66,6 +66,11 @@
       "import": "./dist/lib/server.mjs",
       "require": "./dist/lib/server.js"
     },
+    "./lib/seo-metadata": {
+      "types": "./dist/lib/seo-metadata.d.ts",
+      "import": "./dist/lib/seo-metadata.mjs",
+      "require": "./dist/lib/seo-metadata.js"
+    },
     "./styles/third-ui.css": "./src/styles/third-ui.css",
     "./package.json": "./package.json"
   },
