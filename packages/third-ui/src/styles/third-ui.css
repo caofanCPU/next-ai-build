@@ -55,10 +55,6 @@
   box-shadow: 0 0 10px var(--nprogress-bar-color, #AC62FD) !important;
 }
 
-/* @theme {
-  --fd-page-width: 1800px;
-} */
-
 /* Icon stroke colors for light/dark themes */
 :root {
   --clerk-icon-stroke-color: #616161; /* Light theme */

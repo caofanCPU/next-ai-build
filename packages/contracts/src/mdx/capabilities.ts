@@ -28,7 +28,7 @@ export function toLocalMdxFeatures(
 export function toSiteMdxFeatures(
   capabilities: readonly MdxCapability[],
 ): SiteMdxFeature[] {
-  return capabilities.filter(
+  const features = capabilities.filter(
     (capability): capability is SiteMdxFeature =>
       capability === 'base' ||
       capability === 'code' ||
@@ -36,4 +36,8 @@ export function toSiteMdxFeatures(
       capability === 'mermaid' ||
       capability === 'type-table',
   );
+
+  return features.includes('base')
+    ? features
+    : ['base', ...features];
 }
