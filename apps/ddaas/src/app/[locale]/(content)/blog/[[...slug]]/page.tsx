@@ -1,7 +1,7 @@
 import { getMDXComponents } from '@/components/mdx-components';
 import { appConfig } from '@/lib/appConfig';
+import { getContentSource } from '@/lib/content-source';
 import { NotFoundPage } from '@base-ui/components';
-import { getBlogSource } from '@/lib/source-blog';
 import { createFumaPage } from '@third-ui/fuma/server';
 import { SiteIcon } from '@/lib/site-config';
 import { LLMCopyButton } from '@third-ui/fuma/mdx/toc-base';
@@ -9,7 +9,7 @@ import { LLMCopyButton } from '@third-ui/fuma/mdx/toc-base';
 const sourceKey = 'blog';
 const { Page, generateStaticParams, generateMetadata } = createFumaPage({
   sourceKey: sourceKey,
-  mdxContentSource: getBlogSource,
+  mdxContentSource: () => getContentSource('blog'),
   getMDXComponents,
   mdxSourceDir: appConfig.mdxSourceDir[sourceKey],
   githubBaseUrl: appConfig.githubBaseUrl,

@@ -1,5 +1,4 @@
 import { z, ZodObject } from 'zod';
-import { frontmatterSchema, metaSchema } from 'fumadocs-mdx/config';
 
 // Reusable schema for date
 export const createDateSchema = () =>
@@ -22,9 +21,27 @@ export const createDateSchema = () =>
     .refine((val: any) => !isNaN(new Date(val).getTime()), 'Invalid date!')
   );
 
+const baseFrontmatterSchema = z
+  .object({
+    title: z.string().optional(),
+    description: z.string().optional(),
+    icon: z.string().optional(),
+  })
+  .loose();
+
+const baseMetaSchema = z
+  .object({
+    title: z.string().optional(),
+    pages: z.array(z.string()).optional(),
+    description: z.string().optional(),
+    root: z.boolean().optional(),
+    defaultOpen: z.boolean().optional(),
+    icon: z.string().optional(),
+  })
+  .loose();
+
 // common docs frontmatter  schema
-// @ts-ignore
-export const createCommonDocsSchema = (): ZodObject<any> => frontmatterSchema
+export const createCommonDocsSchema = (): ZodObject<any> => baseFrontmatterSchema
   .extend({
     date: createDateSchema(),
     author: z.string().optional(),
@@ -32,8 +49,7 @@ export const createCommonDocsSchema = (): ZodObject<any> => frontmatterSchema
   });
 
 // common meta schema
-// @ts-ignore
-export const createCommonMetaSchema = (): ZodObject<any> => metaSchema.extend({
+export const createCommonMetaSchema = (): ZodObject<any> => baseMetaSchema.extend({
   
 });
 

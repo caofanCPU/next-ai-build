@@ -2,7 +2,7 @@ import { getRequestConfig } from 'next-intl/server';
 import path from 'path';
 import { appConfig } from "@/lib/appConfig";
 import { loadMergedLocaleMessages, type RuntimeMessageSource } from '@windrun-huaiin/lib/i18n-server';
-import type { I18nConfig } from 'fumadocs-core/i18n';
+import type { I18nConfig } from '@windrun-huaiin/fumadocs-local-md/server';
  
 export const i18n: I18nConfig = {
   defaultLanguage: appConfig.i18n.defaultLocale,

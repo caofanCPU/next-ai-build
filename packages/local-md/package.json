@@ -43,6 +43,7 @@
   "dependencies": {
     "@mdx-js/mdx": "catalog:",
     "@standard-schema/spec": "catalog:",
+    "@windrun-huaiin/contracts": "workspace:^",
     "estree-util-build-jsx": "catalog:",
     "estree-util-to-js": "catalog:",
     "hast-util-to-jsx-runtime": "catalog:",

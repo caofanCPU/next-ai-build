@@ -13,11 +13,10 @@ export interface CreateFumaDocsCompilerOptions {
   code?: boolean;
   math?: boolean;
   npm?: boolean;
-  steps?: boolean;
   remarkInstallOptions?: RemarkNpmOptions;
 }
 
-const DEFAULT_LOCAL_MDX_FEATURES: LocalMdxFeature[] = ['code', 'math', 'npm', 'steps'];
+const DEFAULT_LOCAL_MDX_FEATURES: LocalMdxFeature[] = ['code', 'math', 'npm'];
 
 export function createFumaDocsCompilerOptions(
   options: CreateFumaDocsCompilerOptions = {},
@@ -27,7 +26,6 @@ export function createFumaDocsCompilerOptions(
     code = true,
     math = true,
     npm = true,
-    steps = true,
     remarkInstallOptions,
   } = options;
   const enabledFeatures = new Set(
@@ -35,7 +33,6 @@ export function createFumaDocsCompilerOptions(
       ...(code ? ['code' as const] : []),
       ...(math ? ['math' as const] : []),
       ...(npm ? ['npm' as const] : []),
-      ...(steps ? ['steps' as const] : []),
     ],
   );
   if (enabledFeatures.size === 0 && !features) {
@@ -51,7 +48,7 @@ export function createFumaDocsCompilerOptions(
         ? createCodeFeatureOptions()
         : { rehypeCodeOptions: false }),
       remarkPlugins: [
-        ...(enabledFeatures.has('steps') ? (createStepsFeatureOptions().remarkPlugins ?? []) : []),
+        ...(createStepsFeatureOptions().remarkPlugins ?? []),
         ...(enabledFeatures.has('math') ? (createMathFeatureOptions().remarkPlugins ?? []) : []),
         ...(enabledFeatures.has('npm') ? (createNpmFeatureOptions(remarkInstallOptions).remarkPlugins ?? []) : []),
       ],

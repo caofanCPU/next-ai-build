@@ -12,6 +12,7 @@ import {
   createTypeTableMdxComponents,
   createWidgetMdxComponents,
 } from './optional-features';
+import { SiteX } from '../site-x';
 import type { SiteMdxComponentsOptions } from './site-mdx-components';
 import type { SiteMdxFeature } from '@windrun-huaiin/contracts/mdx';
 
@@ -32,8 +33,6 @@ export const DEFAULT_SITE_MDX_FEATURES: SiteMdxFeature[] = [
   'math',
   'mermaid',
   'type-table',
-  'fuma-ui',
-  'widgets',
 ];
 
 export function createSiteFeatureComponentMap(
@@ -48,13 +47,16 @@ export function createSiteFeatureComponentMap(
   } = options;
 
   return {
-    base: createBaseMdxComponents(imageFallbackSrc),
+    base: {
+      ...defaultFumaUiComponents,
+      SiteX,
+      ...createBaseMdxComponents(imageFallbackSrc),
+      ...createWidgetMdxComponents(cdnBaseUrl, imageFallbackSrc),
+    },
     code: createCodeMdxComponents(iconMap),
     math: createMathMdxComponents(),
     mermaid: createMermaidMdxComponents(watermarkEnabled, watermarkText),
     'type-table': createTypeTableMdxComponents(),
-    'fuma-ui': defaultFumaUiComponents,
-    widgets: createWidgetMdxComponents(cdnBaseUrl, imageFallbackSrc),
   } satisfies Record<SiteMdxFeature, MDXComponents>;
 }
 

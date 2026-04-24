@@ -8,7 +8,6 @@ const config = [
       "unused-imports": unusedImports,
     },
     ignores: [
-      ".source/source.config.mjs",
       // 其他文件或模式
     ],
     rules: {

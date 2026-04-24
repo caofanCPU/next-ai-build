@@ -1,16 +1,16 @@
  
-
+ 
 import { type NextRequest, NextResponse } from 'next/server';
 
-import { getLegalSource } from '@/lib/source-legal';
 import { appConfig } from '@/lib/appConfig';
+import { getContentSource } from '@/lib/content-source';
 import { LLMCopyHandler } from '@third-ui/fuma/server';
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const locale = searchParams.get('locale') ?? appConfig.i18n.defaultLocale;
   const requestedPath = searchParams.get('path') || '';
-  const legalSource = await getLegalSource();
+  const legalSource = await getContentSource('legal');
 
   const result = await LLMCopyHandler({
     sourceDir: appConfig.mdxSourceDir.legal,

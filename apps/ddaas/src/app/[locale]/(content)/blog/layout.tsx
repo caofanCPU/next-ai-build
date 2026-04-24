@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { getBlogSource } from '@/lib/source-blog';
+import { getContentSource } from '@/lib/content-source';
 import { SiteDocsLayout } from '@third-ui/fuma/base';
 
 export default async function Layout({
@@ -10,7 +10,7 @@ export default async function Layout({
   children: ReactNode;
 }) {
   const { locale } = await params;
-  const blogSource = await getBlogSource();
+  const blogSource = await getContentSource('blog');
   return (
     <SiteDocsLayout
       config={{

@@ -6,10 +6,7 @@ export type MdxCapability =
   | 'math'
   | 'mermaid'
   | 'type-table'
-  | 'npm'
-  | 'steps'
-  | 'fuma-ui'
-  | 'widgets';
+  | 'npm';
 
 export function defineMdxCapabilities<const T extends readonly MdxCapability[]>(
   capabilities: T,
@@ -24,8 +21,7 @@ export function toLocalMdxFeatures(
     (capability): capability is LocalMdxFeature =>
       capability === 'code' ||
       capability === 'math' ||
-      capability === 'npm' ||
-      capability === 'steps',
+      capability === 'npm',
   );
 }
 
@@ -38,8 +34,6 @@ export function toSiteMdxFeatures(
       capability === 'code' ||
       capability === 'math' ||
       capability === 'mermaid' ||
-      capability === 'type-table' ||
-      capability === 'fuma-ui' ||
-      capability === 'widgets',
+      capability === 'type-table',
   );
 }

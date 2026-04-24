@@ -7,7 +7,4 @@ export const ddaasMdxCapabilities = defineMdxCapabilities([
   'mermaid',
   'type-table',
   'npm',
-  'steps',
-  'fuma-ui',
-  'widgets',
 ] as const satisfies readonly MdxCapability[]);

@@ -9,9 +9,6 @@ The exact scope depends on the project structure, but in a normal `local-md` int
 - `package.json`
 - `next.config.ts`
 - `local-md-source.ts`
-- `source-docs.ts`
-- `source-blog.ts`
-- `source-legal.ts`
 - `layout.tsx`
 - `page.tsx`
 - `mdx-components.tsx`
@@ -23,7 +20,6 @@ The exact scope depends on the project structure, but in a normal `local-md` int
 - `package.json`: switch dependency from upstream package to our forked package name.
 - `next.config.ts`: ensure workspace package transpilation and tracing behavior are correct.
 - `local-md-source.ts`: create the runtime markdown source and adapt it back into the older Fumadocs loader shape.
-- `source-docs.ts`, `source-blog.ts`, `source-legal.ts`: replace old generated-source usage with the new local source loader.
 - `layout.tsx`, `page.tsx`: adjust tree typing and content loading usage if the old generated source contract was different.
 - `mdx-components.tsx`: register custom MDX runtime components.
 - `math.tsx`: provide custom `MathBlock` and `InlineMath` rendering.

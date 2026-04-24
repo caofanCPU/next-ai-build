@@ -1,14 +1,11 @@
 export type LocalMdxFeature =
   | 'code'
   | 'math'
-  | 'npm'
-  | 'steps';
+  | 'npm';
 
 export type SiteMdxFeature =
   | 'base'
   | 'code'
   | 'math'
   | 'mermaid'
-  | 'type-table'
-  | 'fuma-ui'
-  | 'widgets';
+  | 'type-table';

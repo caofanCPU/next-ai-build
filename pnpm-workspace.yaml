@@ -81,9 +81,6 @@ catalog:
   framer-motion: ^12.23.24
   fs-extra: ^11.2.0
   fumadocs-core: 16.0.9
-  fumadocs-docgen: 3.0.4
-  fumadocs-mdx: 13.0.6
-  fumadocs-typescript: 4.0.13
   fumadocs-ui: 16.0.9
   glob: ^13.0.6
   hast-util-to-jsx-runtime: ^2.3.6

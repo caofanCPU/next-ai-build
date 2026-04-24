@@ -2,8 +2,24 @@ import type { MDXComponents, MDXProps } from 'mdx/types';
 import type { ReactNode } from 'react';
 import { CodeBlock, Pre } from 'fumadocs-ui/components/codeblock';
 import { TypeTable } from 'fumadocs-ui/components/type-table';
-import { createGenerator as createTypeTableGenerator } from 'fumadocs-typescript';
-import { AutoTypeTable } from 'fumadocs-typescript/ui';
+import {
+  CSSIcon,
+  CSVIcon,
+  DiffIcon,
+  HtmlIcon,
+  HttpIcon,
+  JavaIcon,
+  JsonIcon,
+  LogIcon,
+  MDXIcon,
+  RegexIcon,
+  SQLIcon,
+  SchemeIcon,
+  SquareDashedBottomCodeIcon,
+  TxtIcon,
+  XMLIcon,
+  YamlIcon,
+} from '@windrun-huaiin/base-ui/icons';
 import { baseMarkdownComponents } from '../share/markdown-component-map';
 import { Mermaid, ImageGrid, ImageZoom, MathBlock, InlineMath } from '../heavy';
 import { TrophyCard } from '../mdx/trophy-card';
@@ -12,7 +28,27 @@ import { GradientButton } from '../mdx/gradient-button';
 import { ZiaFile, ZiaFolder } from '../mdx/zia-file';
 import { SunoEmbed } from '../mdx/suno-embed';
 
-const typeTableGenerator = createTypeTableGenerator();
+const defaultCodeLanguageIconMap: Record<string, ReactNode> = {
+  css: <CSSIcon />,
+  csv: <CSVIcon />,
+  diff: <DiffIcon />,
+  html: <HtmlIcon />,
+  http: <HttpIcon />,
+  java: <JavaIcon />,
+  json: <JsonIcon />,
+  jsonc: <SquareDashedBottomCodeIcon />,
+  log: <LogIcon />,
+  mdx: <MDXIcon />,
+  plaintext: <TxtIcon />,
+  regex: <RegexIcon />,
+  scheme: <SchemeIcon />,
+  sql: <SQLIcon />,
+  text: <TxtIcon />,
+  txt: <TxtIcon />,
+  xml: <XMLIcon />,
+  yaml: <YamlIcon />,
+  yml: <YamlIcon />,
+};
 
 function tryToMatchIcon(
   props: Readonly<MDXProps & { 'data-language'?: string; title?: string }>,
@@ -59,11 +95,16 @@ export function createBaseMdxComponents(
 }
 
 export function createCodeMdxComponents(
-  iconMap: Record<string, ReactNode>,
+  iconMap: Record<string, ReactNode> = {},
 ): MDXComponents {
+  const mergedIconMap = {
+    ...defaultCodeLanguageIconMap,
+    ...iconMap,
+  };
+
   return {
     pre: (props) => {
-      const customIcon = tryToMatchIcon(props, iconMap);
+      const customIcon = tryToMatchIcon(props, mergedIconMap);
       return (
         <CodeBlock
           {...props}
@@ -103,9 +144,6 @@ export function createMermaidMdxComponents(
 export function createTypeTableMdxComponents(): MDXComponents {
   return {
     TypeTable,
-    AutoTypeTable: (props) => (
-      <AutoTypeTable {...props} generator={typeTableGenerator} />
-    ),
   };
 }
 

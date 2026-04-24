@@ -1,5 +1,4 @@
 import { rehypeCodeDefaultOptions, remarkNpm, remarkSteps } from 'fumadocs-core/mdx-plugins';
-import type { LocalMdxFeature } from '@windrun-huaiin/contracts/mdx';
 import type { Element } from 'hast';
 import rehypeKatex from 'rehype-katex';
 import remarkMath from 'remark-math';

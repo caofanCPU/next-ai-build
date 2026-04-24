@@ -121,8 +121,6 @@
     "class-variance-authority": "catalog:",
     "framer-motion": "catalog:",
     "fumadocs-core": "catalog:",
-    "fumadocs-mdx": "catalog:",
-    "fumadocs-typescript": "catalog:",
     "fumadocs-ui": "catalog:",
     "hast-util-to-jsx-runtime": "^2.3.6",
     "katex": "catalog:",
