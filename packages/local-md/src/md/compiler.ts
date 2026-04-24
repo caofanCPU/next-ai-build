@@ -37,6 +37,7 @@ export interface MarkdownProcessorOptions {
 }
 
 export interface MDXProcessorOptions extends Mdx.ProcessorOptions {
+  remarkImageOptions?: boolean;
   remarkStructureOptions?: StructureOptions | false;
   remarkHeadingOptions?: RemarkHeadingOptions | false;
   remarkCodeTabOptions?: RemarkCodeTabOptions | false;

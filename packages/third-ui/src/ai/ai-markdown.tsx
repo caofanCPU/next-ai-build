@@ -2,7 +2,7 @@
 
 import { cn } from '@windrun-huaiin/lib/utils';
 import { toJsxRuntime } from 'hast-util-to-jsx-runtime';
-import { baseMarkdownComponents } from '../fuma/mdx/markdown-component-map';
+import { baseMarkdownComponents } from '../fuma/share/markdown-component-map';
 import { useMemo } from 'react';
 import { Fragment, jsx, jsxs } from 'react/jsx-runtime';
 import remarkGfm from 'remark-gfm';

@@ -7,7 +7,8 @@ import packageJson from './package.json' with { type: 'json' };
 
 const entries = [
   'src/index.ts',
-  'src/ai/index.ts'
+  'src/ai/index.ts',
+  'src/mdx/index.ts'
 ];
 
 const externalPackages = [

@@ -41,6 +41,7 @@
     "@windrun-huaiin/base-ui": "workspace:*",
     "@windrun-huaiin/lib": "workspace:*",
     "@windrun-huaiin/third-ui": "workspace:*",
+    "@windrun-huaiin/contracts": "workspace:*",
     "autoprefixer": "catalog:",
     "class-variance-authority": "catalog:",
     "clsx": "catalog:",

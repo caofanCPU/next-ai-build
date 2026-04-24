@@ -197,7 +197,7 @@ export function XButton(props: xButtonProps) {
   return (
     <div className={cn(
       "relative flex flex-row items-stretch w-full sm:w-auto rounded-full gap-0",
-      menuOpen && "z-[90]",
+      menuOpen && "z-90",
       variant === 'soft'
         ? cn(themeBgColor, themeBorderColor, "border")
         : variant === 'subtle'
@@ -251,7 +251,7 @@ export function XButton(props: xButtonProps) {
       {menuOpen && (
         <div
           ref={menuRef}
-          className={`absolute right-0 top-full ${menuWidth} bg-white dark:bg-neutral-800 text-neutral-800 dark:text-white text-sm rounded-xl shadow-lg z-[100] border border-neutral-200 dark:border-neutral-700 overflow-hidden animate-fade-in`}
+          className={`absolute right-0 top-full ${menuWidth} bg-white dark:bg-neutral-800 text-neutral-800 dark:text-white text-sm rounded-xl shadow-lg z-100 border border-neutral-200 dark:border-neutral-700 overflow-hidden animate-fade-in`}
         >
           {menuItems.map((item, index) => (
             <button

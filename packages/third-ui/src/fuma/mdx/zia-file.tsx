@@ -1,3 +1,5 @@
+'use client';
+
 import { FileIcon, FolderOpenIcon, FolderIcon } from '@windrun-huaiin/base-ui/icons'; 
 import { type HTMLAttributes, type ReactNode, useState } from 'react';
 import { cn } from '@windrun-huaiin/lib/utils';

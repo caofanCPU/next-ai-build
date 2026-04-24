@@ -17,6 +17,10 @@ const entries = [
   'src/main/pill-select/index.ts',
   'src/main/server.ts',
   'src/fuma/server.ts',
+  'src/fuma/server/optional-features.tsx',
+  'src/fuma/server/site-mdx-components.tsx',
+  'src/fuma/share/index.ts',
+  'src/fuma/heavy/index.ts',
   'src/fuma/mdx/index.ts',
   'src/fuma/base/index.ts',
   'src/lib/server.ts'

@@ -130,3 +130,12 @@ export type {
   MarkdownProcessorOptions,
 } from './md/compiler';
 export type { MarkdownRendererOptions, PageRenderer } from './md/renderer';
+export {
+  createCodeFeatureOptions,
+  createMathFeatureOptions,
+  createNpmFeatureOptions,
+  createStepsFeatureOptions,
+} from './server/features';
+export type { LocalMdxFeature } from '@windrun-huaiin/contracts/mdx';
+export { createFumaDocsCompilerOptions } from './presets/fuma-docs';
+export type { CreateFumaDocsCompilerOptions } from './presets/fuma-docs';

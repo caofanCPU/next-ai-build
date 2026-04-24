@@ -1,7 +1,7 @@
 import { cn } from '@windrun-huaiin/lib/utils';
 import defaultMdxComponents from 'fumadocs-ui/mdx';
 import { type ComponentType } from 'react';
-import { ImageZoom } from './image-zoom';
+import { ImageZoom } from '../heavy';
 
 export type MarkdownComponentMap = Record<string, ComponentType<any>>;
 

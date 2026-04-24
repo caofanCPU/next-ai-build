@@ -398,6 +398,9 @@ importers:
       '@windrun-huaiin/base-ui':
         specifier: workspace:*
         version: link:../../packages/base-ui
+      '@windrun-huaiin/contracts':
+        specifier: workspace:*
+        version: link:../../packages/contracts
       '@windrun-huaiin/fumadocs-local-md':
         specifier: workspace:*
         version: link:../../packages/local-md
@@ -839,12 +842,21 @@ importers:
       react-dom:
         specifier: 'catalog:'
         version: 19.2.4(react@19.2.4)
+      rehype-katex:
+        specifier: 'catalog:'
+        version: 7.0.1
       remark:
         specifier: 'catalog:'
         version: 15.0.1
+      remark-math:
+        specifier: 'catalog:'
+        version: 6.0.0
       remark-rehype:
         specifier: 'catalog:'
         version: 11.1.2
+      shiki:
+        specifier: 'catalog:'
+        version: 4.0.2
       tinyglobby:
         specifier: 'catalog:'
         version: 0.2.16

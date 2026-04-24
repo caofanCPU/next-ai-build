@@ -51,10 +51,30 @@
       "import": "./dist/fuma/server.mjs",
       "require": "./dist/fuma/server.js"
     },
+    "./fuma/server/site-mdx-components": {
+      "types": "./dist/fuma/server/site-mdx-components.d.ts",
+      "import": "./dist/fuma/server/site-mdx-components.mjs",
+      "require": "./dist/fuma/server/site-mdx-components.js"
+    },
+    "./fuma/share": {
+      "types": "./dist/fuma/share/index.d.ts",
+      "import": "./dist/fuma/share/index.mjs",
+      "require": "./dist/fuma/share/index.js"
+    },
+    "./fuma/heavy": {
+      "types": "./dist/fuma/heavy/index.d.ts",
+      "import": "./dist/fuma/heavy/index.mjs",
+      "require": "./dist/fuma/heavy/index.js"
+    },
     "./fuma/mdx": {
       "types": "./dist/fuma/mdx/index.d.ts",
       "import": "./dist/fuma/mdx/index.mjs",
       "require": "./dist/fuma/mdx/index.js"
+    },
+    "./fuma/server/optional-features": {
+      "types": "./dist/fuma/server/optional-features.d.ts",
+      "import": "./dist/fuma/server/optional-features.mjs",
+      "require": "./dist/fuma/server/optional-features.js"
     },
     "./fuma/base": {
       "types": "./dist/fuma/base/index.d.ts",

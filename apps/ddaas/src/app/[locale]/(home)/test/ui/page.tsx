@@ -35,7 +35,7 @@ import {
 import * as exportedIcons from '@base-ui/icons';
 import { themeIconColor } from '@windrun-huaiin/base-ui/lib';
 import { cn } from '@lib/utils';
-import { GradientButton } from '@third-ui/fuma/mdx';
+import { GradientButton } from '@third-ui/fuma/mdx/gradient-button';
 import {
   AdsAlertDialog,
   ConfirmDialog,

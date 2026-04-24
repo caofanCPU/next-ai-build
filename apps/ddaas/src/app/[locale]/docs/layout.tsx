@@ -1,7 +1,7 @@
 import { baseOptions } from '@/app/[locale]/layout.config';
 import { getDocsSource } from '@/lib/source-docs';
 import type { ReactNode } from 'react';
-import { FumaGithubInfo } from '@third-ui/fuma/mdx';
+import { FumaGithubInfo } from '@third-ui/fuma/mdx/fuma-github-info';
 import { SiteDocsLayout, type SiteDocsLayoutConfig } from '@third-ui/fuma/base';
 import { appConfig } from '@/lib/appConfig';
 
