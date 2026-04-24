@@ -21,10 +21,6 @@
   @apply top-24!;
 }
 
-/* #nd-subnav {
-  top: 20px !important;
-} */
-
 #nd-subnav {
   @apply 
     relative!
@@ -62,9 +58,9 @@ button[aria-label="Open Search"][data-search=""] {
 
 :root {
   --fd-layout-width: 100vw;
-  --fd-banner-height: 0px;       /* 如果有 banner，可换成真实高度 */
-  --fd-nav-height: 0px;         /* 这里写你的 Header 实际高度 */
-  --fd-tocnav-height: 0px;      /* 可选：移动端 TOC 顶栏高度 */
+  --fd-banner-height: 0px;      /* 如果有 banner，可换成真实高度 */
+  --fd-nav-height: 0px;             /* 这里写你的 Header 实际高度 */
+  --fd-tocnav-height: 0px;       /* 可选：移动端 TOC 顶栏高度 */
 }
 
 /* fuma image-zoom COPY */
