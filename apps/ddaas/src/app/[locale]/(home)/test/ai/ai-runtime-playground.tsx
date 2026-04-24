@@ -41,7 +41,7 @@ import {
 import { InfoTooltip } from '@windrun-huaiin/third-ui/main';
 import { cn } from '@windrun-huaiin/lib/utils';
 import { XPillSelect, type XPillOption } from '@third-ui/main/pill-select';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { startTransition, useEffect, useMemo, useRef, useState } from 'react';
 
 const shellClass =
   'mx-auto mt-18 mb-8 flex h-[calc(100dvh-10rem)] w-full max-w-7xl flex-col gap-3 overflow-hidden px-3 py-2 sm:px-4 md:px-6 md:py-3';
@@ -275,7 +275,6 @@ export function AIRuntimePlayground() {
   const [editingSessionId, setEditingSessionId] = useState<string | null>(null);
   const [editingSessionTitle, setEditingSessionTitle] = useState('');
   const [expandedSessionId, setExpandedSessionId] = useState<string | null>(null);
-  const [storageReady, setStorageReady] = useState(false);
   const [composerActionLayout, setComposerActionLayout] =
     useState<ComposerActionLayout>('inline');
   const [savedSessions, setSavedSessions] = useState<SessionRecord[]>(() => [
@@ -301,36 +300,37 @@ export function AIRuntimePlayground() {
       return;
     }
 
-    didHydrateStorageRef.current = true;
+    let nextSessions: SessionRecord[] | null = null;
+    let nextActiveSession: SessionRecord | null = null;
 
     try {
       const raw = window.localStorage.getItem(sessionStorageKey);
-      if (!raw) {
-        setStorageReady(true);
-        return;
+      if (raw) {
+        const parsed = JSON.parse(raw) as SessionRecord[];
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          nextSessions = sortSessions(parsed);
+          nextActiveSession = nextSessions[0];
+        }
       }
-
-      const parsed = JSON.parse(raw) as SessionRecord[];
-      if (!Array.isArray(parsed) || parsed.length === 0) {
-        setStorageReady(true);
-        return;
-      }
-
-      const nextSessions = sortSessions(parsed);
-      const nextActiveSession = nextSessions[0];
-
-      setSavedSessions(nextSessions);
-      setActiveSessionId(nextActiveSession.id);
-      conversation.loadConversation(nextActiveSession.messages, nextActiveSession.id);
     } catch {
       // ignore invalid local storage snapshots and keep fallback session
     } finally {
-      setStorageReady(true);
+      didHydrateStorageRef.current = true;
     }
+
+    if (!nextSessions || !nextActiveSession) {
+      return;
+    }
+
+    startTransition(() => {
+      setSavedSessions(nextSessions);
+      setActiveSessionId(nextActiveSession.id);
+    });
+    conversation.loadConversation(nextActiveSession.messages, nextActiveSession.id);
   }, [conversation]);
 
   useEffect(() => {
-    if (!storageReady) {
+    if (!didHydrateStorageRef.current) {
       return;
     }
 
@@ -339,7 +339,7 @@ export function AIRuntimePlayground() {
     } catch {
       // ignore storage write failures in playground mode
     }
-  }, [savedSessions, storageReady]);
+  }, [savedSessions]);
 
   useEffect(() => {
     if (!expandedSessionId) {
