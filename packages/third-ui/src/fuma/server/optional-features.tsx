@@ -104,7 +104,7 @@ export function createCodeMdxComponents(
 
   return {
     pre: (props) => {
-      const customIcon = tryToMatchIcon(props, mergedIconMap);
+      const customIcon = tryToMatchIcon(props as MDXProps & { 'data-language'?: string; title?: string }, mergedIconMap);
       return (
         <CodeBlock
           {...props}

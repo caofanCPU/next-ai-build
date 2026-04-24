@@ -1,5 +1,5 @@
 import type { StandardSchemaV1 } from '@standard-schema/spec';
-import { loader, type LoaderOptions, type MetaData, type PageData, type Source } from 'fumadocs-core/source';
+import { loader, type LoaderOptions, type MetaData, type PageData, type StaticSource } from 'fumadocs-core/source';
 import type { I18nConfig } from 'fumadocs-core/i18n';
 import type { MDXComponents } from 'mdx/types';
 import type { ReactNode } from 'react';
@@ -44,6 +44,9 @@ export interface ConfiguredLocalMdSourceFactoryOptions<
   sourceRootDir?: string;
 }
 
+type LocalMdLoaderResult = Awaited<ReturnType<typeof createLocalMdSourceLoader>>;
+type LocalMdLoaderPromise = Promise<LocalMdLoaderResult>;
+
 function isLocalMdCacheDisabled() {
   return process.env.LOCAL_MD_CACHE_DISABLE?.toLowerCase() === 'true';
 }
@@ -76,7 +79,7 @@ async function createRuntimeSource<
 >(
   dir: string,
   config: Omit<CreateLocalMdSourceLoaderOptions<FrontmatterSchema, MetaSchema>, 'sourceKey' | 'dir' | 'baseUrl' | 'sourceRootDir' | 'i18n' | 'icon'>,
-): Promise<Source<{ pageData: LegacyDocData<Record<string, unknown>>; metaData: MetaData }>> {
+): Promise<StaticSource<{ pageData: LegacyDocData<Record<string, unknown>>; metaData: MetaData }>> {
   const instance = localMd({
     dir,
     ...config,
@@ -162,7 +165,7 @@ export function createCachedLocalMdSourceLoader<
 >(
   options: CreateLocalMdSourceLoaderOptions<FrontmatterSchema, MetaSchema>,
 ) {
-  let cached: Promise<ReturnType<typeof loader>> | undefined;
+  let cached: LocalMdLoaderPromise | undefined;
 
   return function getLocalMdSource() {
     if (isLocalMdCacheDisabled()) {
@@ -180,7 +183,7 @@ export function createConfiguredLocalMdSourceFactory<
 >(
   options: ConfiguredLocalMdSourceFactoryOptions<FrontmatterSchema, MetaSchema>,
 ) {
-  const cache = new Map<string, Promise<ReturnType<typeof loader>>>();
+  const cache = new Map<string, LocalMdLoaderPromise>();
 
   return {
     async getSource(
@@ -209,17 +212,19 @@ export function createConfiguredLocalMdSourceFactory<
         });
       }
 
-      let cached = cache.get(cacheKey);
-      if (!cached) {
-        cached = createLocalMdSourceLoader({
+      const existing = cache.get(cacheKey);
+      if (existing) {
+        return existing;
+      }
+
+      const created = createLocalMdSourceLoader({
           ...options,
           ...overrides,
           sourceKey,
         });
-        cache.set(cacheKey, cached);
-      }
+      cache.set(cacheKey, created);
 
-      return cached;
+      return created;
     },
   };
 }

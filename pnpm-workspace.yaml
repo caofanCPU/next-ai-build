@@ -80,8 +80,8 @@ catalog:
   fast-glob: ^3.3.3
   framer-motion: ^12.23.24
   fs-extra: ^11.2.0
-  fumadocs-core: 16.0.9
-  fumadocs-ui: 16.0.9
+  fumadocs-core: 16.8.2
+  fumadocs-ui: 16.8.2
   glob: ^13.0.6
   hast-util-to-jsx-runtime: ^2.3.6
   input-otp: 1.4.2

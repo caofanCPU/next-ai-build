@@ -33,10 +33,9 @@
     "access": "public"
   },
   "scripts": {
-    "build": "tsdown",
-    "build:prod": "tsdown",
+    "build": "pnpm types:check && tsdown",
+    "build:prod": "pnpm types:check && tsdown",
     "clean": "rm -rf dist",
-    "dev": "tsdown --watch",
     "lint": "oxlint .",
     "types:check": "tsc --noEmit"
   },

@@ -31,6 +31,7 @@ import RawXMLIcon from '@base-ui/assets/xml';
 import RawYamlIcon from '@base-ui/assets/yaml';
 import { createGlobalIcon, createGlobalLucideIcon } from '@base-ui/components/icon-factory';
 import {
+  Airplay as RawAirplay,
   Album as RawAlbumIcon,
   AlignHorizontalJustifyEnd as RawAlignHorizontalJustifyEnd,
   ArrowLeft as RawArrowLeft,
@@ -143,6 +144,7 @@ import {
   MoreHorizontal as RawMoreHorizontal,
   MousePointerClick as RawMousePointerClick,
   Music4 as RawMusic4,
+  Moon as RawMoon,
   NotepadText as RawNotepadText,
   Palette as RawPalette,
   PanelLeft as RawPanelLeft,
@@ -180,6 +182,7 @@ import {
   SquareDashedBottomCode as RawSquareDashedBottomCode,
   SquareTerminal as RawSquareTerminal,
   Star as RawStar,
+  Sun as RawSun,
   Tablets as RawTablets,
   Terminal as RawTerminal,
   Trash2 as RawTrash2,
@@ -197,6 +200,7 @@ export { getGlobalIcon, getIconElement, globalLucideIcons } from '@base-ui/compo
 export { createSiteIcon } from '@base-ui/components/site-icon';
 
 export const AlbumIcon = createGlobalLucideIcon(RawAlbumIcon, 'AlbumIcon');
+export const AirplayIcon = createGlobalLucideIcon(RawAirplay, 'AirplayIcon');
 export const AlignHorizontalJustifyEndIcon = createGlobalLucideIcon(RawAlignHorizontalJustifyEnd, 'AlignHorizontalJustifyEndIcon');
 export const ArrowLeftIcon = createGlobalLucideIcon(RawArrowLeft, 'ArrowLeftIcon');
 export const ArrowRightIcon = createGlobalLucideIcon(RawArrowRight, 'ArrowRightIcon');
@@ -307,6 +311,7 @@ export const MessageCircleMoreIcon = createGlobalLucideIcon(RawMessageCircleMore
 export const MessageCircleCodeIcon = createGlobalLucideIcon(RawMessageCircleCode, 'MessageCircleCodeIcon');
 export const MessageSquareDiffIcon = createGlobalLucideIcon(RawMessageSquareDiff, 'MessageSquareDiffIcon');
 export const Music4Icon = createGlobalLucideIcon(RawMusic4, 'Music4Icon');
+export const MoonIcon = createGlobalLucideIcon(RawMoon, 'MoonIcon');
 export const MoreHorizontalIcon = createGlobalLucideIcon(RawMoreHorizontal, 'MoreHorizontalIcon');
 export const MousePointerClickIcon = createGlobalLucideIcon(RawMousePointerClick, 'MousePointerClickIcon');
 export const NotepadTextIcon = createGlobalLucideIcon(RawNotepadText, 'NotepadTextIcon');
@@ -345,6 +350,7 @@ export const ServerIcon = createGlobalLucideIcon(RawServer, 'ServerIcon');
 export const SplinePointerIcon = createGlobalLucideIcon(RawSplinePointer, 'SplinePointerIcon');
 export const SparklesIcon = createGlobalLucideIcon(RawSparkles, 'SparklesIcon');
 export const StarIcon = createGlobalLucideIcon(RawStar, 'StarIcon');
+export const SunIcon = createGlobalLucideIcon(RawSun, 'SunIcon');
 export const TabletsIcon = createGlobalLucideIcon(RawTablets, 'TabletsIcon');
 export const TerminalIcon = createGlobalLucideIcon(RawTerminal, 'TerminalIcon');
 export const Trash2Icon = createGlobalLucideIcon(RawTrash2, 'Trash2Icon');

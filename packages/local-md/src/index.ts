@@ -1,4 +1,4 @@
-import type { MetaData, PageData, Source, VirtualFile } from 'fumadocs-core/source';
+import type { MetaData, PageData, StaticSource, VirtualFile } from 'fumadocs-core/source';
 import type { StandardSchemaV1 } from '@standard-schema/spec';
 import { createStorage } from './storage';
 import * as defaultSchemas from './schema';
@@ -28,7 +28,7 @@ export interface LocalMarkdown<
   MetaSchema extends StandardSchemaV1,
 > {
   staticSource: <ModuleExports = Record<string, unknown>>() => Promise<
-    Source<{
+    StaticSource<{
       pageData: LocalMarkdownPage<StandardSchemaV1.InferOutput<FrontmatterSchema>, ModuleExports>;
       metaData: StandardSchemaV1.InferOutput<MetaSchema> & MetaData;
     }>
@@ -63,7 +63,7 @@ export function localMd<
   const compiler = createMarkdownCompiler(config);
   const renderer = createMarkdownRenderer(compiler, config.rendererOptions);
   let cachedStaticSource: Promise<
-    Source<{
+    StaticSource<{
       pageData: LocalMarkdownPage<StandardSchemaV1.InferOutput<FrontmatterSchema>, never>;
       metaData: StandardSchemaV1.InferOutput<MetaSchema> & MetaData;
     }>

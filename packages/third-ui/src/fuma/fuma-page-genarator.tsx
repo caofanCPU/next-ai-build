@@ -137,7 +137,7 @@ export function createFumaPage({
           enabled: false,
         }}
         toc={content.toc}
-        article={{ className: 'max-sm:pb-16' }}
+        className="max-sm:pb-16"
       >
         <DocsTitle>{page.data.title}</DocsTitle>
         <DocsDescription className="mb-2">{page.data.description}</DocsDescription>

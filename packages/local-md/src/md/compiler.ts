@@ -69,6 +69,10 @@ type MathNode = Node & {
   data?: Data;
 };
 
+type ParentLike = {
+  children?: RootContent[];
+};
+
 function remarkMathFence() {
   return function transformer(tree: MdastRoot) {
     visitParents(tree, (node, index, parent) => {
@@ -99,10 +103,10 @@ function visitParents(
   node: RootContent | MdastRoot,
   visitor: (node: RootContent, index: number | undefined, parent: Parent | undefined) => void,
   index?: number,
-  parent?: Parent,
+  parent?: ParentLike,
 ) {
   if ('type' in node && node.type !== 'root') {
-    visitor(node, index, parent);
+    visitor(node, index, parent as Parent | undefined);
   }
 
   if (!('children' in node) || !Array.isArray(node.children)) {

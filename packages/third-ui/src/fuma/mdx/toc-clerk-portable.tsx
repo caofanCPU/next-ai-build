@@ -6,12 +6,11 @@
  */
 import * as Primitive from 'fumadocs-core/toc';
 import {
-  PageTOC,
-  PageTOCPopover,
-  PageTOCPopoverContent,
-  PageTOCPopoverTrigger,
-  PageTOCTitle,
-} from 'fumadocs-ui/layouts/docs/page';
+  TOC as PageTOC,
+  TOCPopover as PageTOCPopover,
+  type TOCProps as PageTOCProps,
+  type TOCPopoverProps as PageTOCPopoverProps,
+} from 'fumadocs-ui/layouts/docs/page/slots/toc';
 import {
   type ComponentProps,
   type ReactNode,
@@ -85,14 +84,20 @@ export function PortableClerkTOC({
   className,
 }: PortableClerkTOCProps) {
   return (
-    <PageTOC className={className}>
-      {header}
-      {title ?? <PageTOCTitle />}
-      <PortableClerkTOCScrollArea>
-        <PortableClerkTOCItems toc={toc} emptyLabel={emptyLabel} />
-      </PortableClerkTOCScrollArea>
-      {footer}
-    </PageTOC>
+    <PageTOC
+      style="clerk"
+      container={{ className }}
+      header={
+        <>
+          {header}
+          {title ?? null}
+        </>
+      }
+      footer={footer}
+      list={{
+        children: <PortableClerkTOCItems toc={toc} emptyLabel={emptyLabel} />,
+      } as PageTOCProps['list']}
+    />
   );
 }
 
@@ -103,16 +108,14 @@ export function PortableClerkTOCPopover({
   emptyLabel = 'No headings',
 }: Omit<PortableClerkTOCProps, 'title' | 'className'>) {
   return (
-    <PageTOCPopover>
-      <PageTOCPopoverTrigger />
-      <PageTOCPopoverContent>
-        {header}
-        <PortableClerkTOCScrollArea>
-          <PortableClerkTOCItems toc={toc} emptyLabel={emptyLabel} />
-        </PortableClerkTOCScrollArea>
-        {footer}
-      </PageTOCPopoverContent>
-    </PageTOCPopover>
+    <PageTOCPopover
+      style="clerk"
+      header={header}
+      footer={footer}
+      list={{
+        children: <PortableClerkTOCItems toc={toc} emptyLabel={emptyLabel} />,
+      } as PageTOCPopoverProps['list']}
+    />
   );
 }
 

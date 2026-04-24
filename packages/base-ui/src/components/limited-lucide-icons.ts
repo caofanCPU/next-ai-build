@@ -5,6 +5,7 @@
  * in globalLucideIcons.
  */
 export {
+  Airplay,
   Album,
   AlignHorizontalJustifyEnd,
   ArrowLeft,
@@ -116,6 +117,7 @@ export {
   MessageCircleCode,
   MessageSquareDiff,
   Music4,
+  Moon,
   MoreHorizontal,
   MousePointerClick,
   NotepadText,
@@ -154,6 +156,7 @@ export {
   SplinePointer,
   Sparkles,
   Star,
+  Sun,
   Tablets,
   Terminal,
   Trash2,

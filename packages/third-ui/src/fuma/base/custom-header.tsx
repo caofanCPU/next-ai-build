@@ -5,28 +5,24 @@ import {
   type CSSProperties,
   Fragment,
   type ReactNode,
+  type FC,
   useMemo,
   useState,
 } from 'react';
 import { cva } from 'class-variance-authority';
 import { ChevronDownIcon, LanguagesIcon } from '@windrun-huaiin/base-ui/icons';
+import { cn } from '@windrun-huaiin/lib/utils';
 import Link from 'fumadocs-core/link';
 import { HomeLayoutProps } from 'fumadocs-ui/layouts/home';
 import {
-  BaseLinkItem,
+  LinkItem,
   type LinkItemType,
-  getLinks,
+  resolveLinkItems,
 } from 'fumadocs-ui/layouts/shared';
-import { cn } from 'fumadocs-ui/utils/cn';
 import {
-  LargeSearchToggle,
-  SearchToggle,
-} from 'fumadocs-ui/components/layout/search-toggle';
-import { ThemeToggle } from 'fumadocs-ui/components/layout/theme-toggle';
-import {
-  LanguageToggleText,
   type LanguageSelectProps,
-} from 'fumadocs-ui/components/layout/language-toggle';
+  LanguageSelectText,
+} from 'fumadocs-ui/layouts/shared/slots/language-select';
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -38,8 +34,8 @@ import {
 } from 'fumadocs-ui/components/ui/navigation-menu';
 import { Popover, PopoverContent, PopoverTrigger } from 'fumadocs-ui/components/ui/popover';
 import { buttonVariants } from 'fumadocs-ui/components/ui/button';
-import { useNav } from 'fumadocs-ui/contexts/layout';
 import { useI18n } from 'fumadocs-ui/contexts/i18n';
+import { HeaderThemeSwitch } from './header-theme-switch';
 
 export type NavbarCSSVars = CSSProperties & {
   '--fd-banner-height'?: string;
@@ -143,7 +139,7 @@ export function CustomHomeHeader({
   mobileMenuActionsOrder = DEFAULT_MOBILE_MENU_ACTIONS,
 }: CustomHomeHeaderProps) {
   const finalLinks = useMemo(
-    () => getLinks(links, githubUrl),
+    () => resolveLinkItems({ links, githubUrl }),
     [links, githubUrl],
   );
 
@@ -172,16 +168,11 @@ export function CustomHomeHeader({
   const desktopActionNodes: Record<DesktopAction, ReactNode> = {
     search:
       searchToggle.enabled !== false
-        ? searchToggle.components?.lg ?? (
-            <LargeSearchToggle
-              className="w-full rounded-full ps-2.5 max-w-[240px]"
-              hideIfDisabled
-            />
-          )
+        ? searchToggle.components?.lg ?? null
         : null,
     theme:
       themeSwitch.enabled !== false
-        ? themeSwitch.component ?? <ThemeToggle mode={themeSwitch?.mode} />
+        ? themeSwitch.component ?? <HeaderThemeSwitch mode={themeSwitch?.mode} />
         : null,
     i18n: i18n ? (
       <CompactLanguageToggle>
@@ -238,13 +229,13 @@ export function CustomHomeHeader({
     i18n: i18n ? (
       <CompactLanguageToggle>
         <LanguagesIcon className="size-5" />
-        <LanguageToggleText />
+        <LanguageSelectText />
         <ChevronDownIcon className="size-3 text-fd-muted-foreground" />
       </CompactLanguageToggle>
     ) : null,
     theme:
       themeSwitch.enabled !== false
-        ? themeSwitch.component ?? <ThemeToggle mode={themeSwitch?.mode} />
+        ? themeSwitch.component ?? <HeaderThemeSwitch mode={themeSwitch?.mode} />
         : null,
   };
   const shouldRenderMobileUtilities = mobileMenuActionsOrder.some(
@@ -305,9 +296,7 @@ export function CustomHomeHeader({
     ) : null;
   const mobileSearchNode =
     searchToggle.enabled !== false
-      ? searchToggle.components?.sm ?? (
-          <SearchToggle className="p-2" hideIfDisabled />
-        )
+      ? searchToggle.components?.sm ?? null
       : null;
   const mobileBarNodes: Record<MobileBarAction, ReactNode> = {
     pinned: mobilePinnedNode,
@@ -329,7 +318,7 @@ export function CustomHomeHeader({
         href={nav.url ?? '/'}
         className="inline-flex items-center gap-2.5 font-semibold"
       >
-        {nav.title}
+        {renderNavTitle(nav.title)}
       </Link>
       {nav.children}
       <ul className="flex flex-row items-center gap-2 px-6 max-sm:hidden">
@@ -379,7 +368,7 @@ function CustomNavbar({
   ...props
 }: CustomNavbarProps) {
   const [value, setValue] = useState('');
-  const { isTransparent } = useNav();
+  const isTransparent = false;
 
   const cssVars: NavbarCSSVars = {
     '--fd-banner-height': `${bannerHeight}rem`,
@@ -535,7 +524,7 @@ function NavbarLinkItem({
   return (
     <NavigationMenuItem>
       <NavigationMenuLink asChild>
-        <BaseLinkItem
+        <LinkItem
           item={item}
           aria-label={item.type === 'icon' ? item.label : undefined}
           {...props}
@@ -545,7 +534,7 @@ function NavbarLinkItem({
           )}
         >
           {item.type === 'icon' ? item.icon : item.text}
-        </BaseLinkItem>
+        </LinkItem>
       </NavigationMenuLink>
     </NavigationMenuItem>
   );
@@ -593,7 +582,7 @@ function MenuLinkItem({
 
   return (
     <NavigationMenuLink asChild>
-      <BaseLinkItem
+      <LinkItem
         item={item}
         className={cn(
           {
@@ -613,7 +602,7 @@ function MenuLinkItem({
       >
         {item.icon}
         {item.type === 'icon' ? undefined : item.text}
-      </BaseLinkItem>
+      </LinkItem>
     </NavigationMenuLink>
   );
 }
@@ -718,4 +707,13 @@ function isSecondary(item: LinkItemType): boolean {
 
 function isMobilePinned(item: LinkItemType): boolean {
   return Boolean((item as { mobilePinned?: boolean }).mobilePinned);
+}
+
+function renderNavTitle(title: unknown): ReactNode {
+  if (typeof title === 'function') {
+    const TitleComponent = title as FC<ComponentProps<'a'>>;
+    return <TitleComponent />;
+  }
+
+  return (title as ReactNode | null | undefined) ?? null;
 }
