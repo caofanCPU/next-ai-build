@@ -1,5 +1,18 @@
 # @windrun-huaiin/third-ui
 
+## 24.0.0
+
+### Major Changes
+
+- fix(mdx): uniform major version
+
+### Patch Changes
+
+- Updated dependencies
+  - @windrun-huaiin/lib@24.0.0
+  - @windrun-huaiin/contracts@24.0.0
+  - @windrun-huaiin/base-ui@24.0.0
+
 ## 23.1.1
 
 ### Patch Changes

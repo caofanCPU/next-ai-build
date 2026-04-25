@@ -1,5 +1,16 @@
 # @windrun-huaiin/base-ui
 
+## 24.0.0
+
+### Major Changes
+
+- fix(mdx): uniform major version
+
+### Patch Changes
+
+- Updated dependencies
+  - @windrun-huaiin/lib@24.0.0
+
 ## 23.1.0
 
 ### Minor Changes

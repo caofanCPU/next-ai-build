@@ -1,5 +1,15 @@
 # @windrun-huaiin/backend-core
 
+## 25.0.0
+
+### Patch Changes
+
+- fix(mdx): uniform major version
+- Updated dependencies
+  - @windrun-huaiin/lib@24.0.0
+  - @windrun-huaiin/contracts@24.0.0
+  - @windrun-huaiin/third-ui@24.0.0
+
 ## 24.0.0
 
 ### Minor Changes

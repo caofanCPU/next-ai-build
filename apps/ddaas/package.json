@@ -1,6 +1,6 @@
 {
   "name": "@windrun-huaiin/ddaas-website",
-  "version": "23.1.1",
+  "version": "24.0.0",
   "private": true,
   "type": "module",
   "scripts": {

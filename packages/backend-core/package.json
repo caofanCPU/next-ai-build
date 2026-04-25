@@ -1,6 +1,6 @@
 {
   "name": "@windrun-huaiin/backend-core",
-  "version": "24.0.0",
+  "version": "25.0.0",
   "description": "Shared backend primitives: Prisma schema/client, database services, routing helpers",
   "type": "module",
   "main": "./dist/index.js",
@@ -133,7 +133,7 @@
     "typescript": "catalog:"
   },
   "peerDependencies": {
-    "@windrun-huaiin/contracts": "workspace:^",
+    "@windrun-huaiin/contracts": ">=24.0.0",
     "@clerk/nextjs": "catalog:",
     "@prisma/client": "catalog:",
     "next": "catalog:",

@@ -1,5 +1,11 @@
 # @windrun-huaiin/contracts
 
+## 24.0.0
+
+### Major Changes
+
+- fix(mdx): uniform major version
+
 ## 23.1.0
 
 ### Minor Changes

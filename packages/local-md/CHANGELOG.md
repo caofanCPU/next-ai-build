@@ -1,5 +1,11 @@
 # @windrun-huaiin/fumadocs-local-md
 
+## 24.0.0
+
+### Major Changes
+
+- fix(mdx): uniform major version
+
 ## 23.2.0
 
 ### Minor Changes
