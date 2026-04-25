@@ -30,6 +30,21 @@ function isLocalMdCacheDisabled() {
   return process.env.LOCAL_MD_CACHE_DISABLE?.toLowerCase() === 'true';
 }
 
+function isLocalMdDebugEnabled() {
+  return process.env.LOCAL_MD_DEBUG?.toLowerCase() === 'true';
+}
+
+function logLocalMdDebug(message: string, details?: Record<string, unknown>) {
+  if (!isLocalMdDebugEnabled()) return;
+
+  if (details) {
+    console.log(`[local-md] ${message}`, details);
+    return;
+  }
+
+  console.log(`[local-md] ${message}`);
+}
+
 export function createStorage<
   FrontmatterSchema extends StandardSchemaV1 = typeof defaultSchemas.pageSchema,
   MetaSchema extends StandardSchemaV1 = typeof defaultSchemas.metaSchema,
@@ -129,6 +144,13 @@ export function createStorage<
       const files = await glob(include, {
         cwd: dir,
       });
+      logLocalMdDebug('storage:getPages:glob', {
+        dir,
+        processCwd: process.cwd(),
+        include,
+        fileCount: files.length,
+        sampleFiles: files.slice(0, 10),
+      });
       const chunks: Promise<($Page | $Meta | undefined)[]>[] = [];
 
       for (let i = 0; i < files.length; i += CHUNK_SIZE) {
@@ -151,6 +173,13 @@ export function createStorage<
           else metas.push(item);
         }
       }
+
+      logLocalMdDebug('storage:getPages:parsed', {
+        dir,
+        processCwd: process.cwd(),
+        pageFileCount: pages.length,
+        metaFileCount: metas.length,
+      });
 
       return { pages, metas };
     },

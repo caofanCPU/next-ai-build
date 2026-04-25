@@ -51,6 +51,87 @@ function isLocalMdCacheDisabled() {
   return process.env.LOCAL_MD_CACHE_DISABLE?.toLowerCase() === 'true';
 }
 
+function isLocalMdDebugEnabled() {
+  return process.env.LOCAL_MD_DEBUG?.toLowerCase() === 'true';
+}
+
+function shouldCacheEmptySource() {
+  return process.env.LOCAL_MD_CACHE_EMPTY?.toLowerCase() === 'true';
+}
+
+function logLocalMdDebug(message: string, details?: Record<string, unknown>) {
+  if (!isLocalMdDebugEnabled()) return;
+
+  if (details) {
+    console.log(`[local-md] ${message}`, details);
+    return;
+  }
+
+  console.log(`[local-md] ${message}`);
+}
+
+function logLocalMdWarn(message: string, details?: Record<string, unknown>) {
+  console.warn(`[local-md] ${message}`, details ?? {});
+}
+
+function countSourceFiles(
+  source: StaticSource<{ pageData: PageData; metaData: MetaData }>,
+) {
+  let pageFileCount = 0;
+  let metaFileCount = 0;
+
+  for (const file of source.files) {
+    if (file.type === 'page') pageFileCount += 1;
+    if (file.type === 'meta') metaFileCount += 1;
+  }
+
+  return {
+    sourceFileCount: source.files.length,
+    pageFileCount,
+    metaFileCount,
+  };
+}
+
+function countLocaleTreeChildren(tree: unknown) {
+  if (!tree || typeof tree !== 'object') return {};
+
+  return Object.fromEntries(
+    Object.entries(tree as Record<string, unknown>).map(([locale, node]) => {
+      const children = Array.isArray((node as { children?: unknown[] } | null)?.children)
+        ? (node as { children: unknown[] }).children.length
+        : 0;
+
+      return [locale, children];
+    }),
+  );
+}
+
+function countLocalePages(result: LocalMdLoaderResult) {
+  const pages = ((result as unknown) as Record<string, unknown>).pages as Record<string, unknown> | undefined;
+  if (!pages || typeof pages !== 'object') return {};
+
+  return Object.fromEntries(
+    Object.entries(pages).map(([locale, entries]) => [
+      locale,
+      Array.isArray(entries) ? entries.length : 0,
+    ]),
+  );
+}
+
+function isLoaderResultEmpty(result: LocalMdLoaderResult) {
+  const pageTreeCounts = Object.values(countLocaleTreeChildren(result.pageTree)).filter(
+    (value): value is number => typeof value === 'number',
+  );
+  const pageCounts = Object.values(countLocalePages(result)).filter(
+    (value): value is number => typeof value === 'number',
+  );
+
+  return (
+    pageTreeCounts.every((count) => count === 0) &&
+    pageCounts.every((count) => count === 0)
+  );
+}
+
 function resolveSourceDir(
   sourceKey: string,
   dir: string | undefined,
@@ -77,15 +158,29 @@ async function createRuntimeSource<
   FrontmatterSchema extends StandardSchemaV1,
   MetaSchema extends StandardSchemaV1,
 >(
+  sourceKey: string,
   dir: string,
   config: Omit<CreateLocalMdSourceLoaderOptions<FrontmatterSchema, MetaSchema>, 'sourceKey' | 'dir' | 'baseUrl' | 'sourceRootDir' | 'i18n' | 'icon'>,
 ): Promise<StaticSource<{ pageData: LegacyDocData<Record<string, unknown>>; metaData: MetaData }>> {
+  logLocalMdDebug('createRuntimeSource:start', {
+    sourceKey,
+    resolvedDir: dir,
+    processCwd: process.cwd(),
+  });
+
   const instance = localMd({
     dir,
     ...config,
   });
 
   const source = await instance.staticSource();
+  logLocalMdDebug('createRuntimeSource:static-source', {
+    sourceKey,
+    resolvedDir: dir,
+    processCwd: process.cwd(),
+    ...countSourceFiles(source),
+  });
+
   type SourceFile = (typeof source.files)[number];
   const files = await Promise.all(
     source.files.map(async (file: SourceFile) => {
@@ -150,14 +245,55 @@ export async function createLocalMdSourceLoader<
 
   const resolvedDir = resolveSourceDir(sourceKey, dir, sourceRootDir);
   const resolvedBaseUrl = resolveBaseUrl(sourceKey, baseUrl);
-  const source = await createRuntimeSource(resolvedDir, localMdConfig);
+  logLocalMdDebug('createLocalMdSourceLoader:start', {
+    sourceKey,
+    resolvedDir,
+    baseUrl: resolvedBaseUrl,
+    processCwd: process.cwd(),
+    isLocalMdCacheDisabled: isLocalMdCacheDisabled(),
+  });
+  const source = await createRuntimeSource(sourceKey, resolvedDir, localMdConfig);
+  const sourceCounts = countSourceFiles(source);
+  logLocalMdDebug('createLocalMdSourceLoader:before-loader', {
+    sourceKey,
+    resolvedDir,
+    baseUrl: resolvedBaseUrl,
+    processCwd: process.cwd(),
+    ...sourceCounts,
+  });
 
-  return loader({
+  const result = loader({
     i18n,
     baseUrl: resolvedBaseUrl,
     source,
     ...(icon ? { icon } : {}),
   });
+
+  const pageTreeLocaleCounts = countLocaleTreeChildren(result.pageTree);
+  const localePageCounts = countLocalePages(result);
+  logLocalMdDebug('createLocalMdSourceLoader:after-loader', {
+    sourceKey,
+    resolvedDir,
+    baseUrl: resolvedBaseUrl,
+    processCwd: process.cwd(),
+    ...sourceCounts,
+    localePageCounts,
+    pageTreeLocaleCounts,
+  });
+
+  if (sourceCounts.pageFileCount === 0 || isLoaderResultEmpty(result)) {
+    logLocalMdWarn('source loader produced empty pages', {
+      sourceKey,
+      resolvedDir,
+      baseUrl: resolvedBaseUrl,
+      processCwd: process.cwd(),
+      ...sourceCounts,
+      localePageCounts,
+      pageTreeLocaleCounts,
+    });
+  }
+
+  return result;
 }
 
 export function createCachedLocalMdSourceLoader<
@@ -170,10 +306,23 @@ export function createCachedLocalMdSourceLoader<
 
   return function getLocalMdSource() {
     if (isLocalMdCacheDisabled()) {
+      logLocalMdDebug('createCachedLocalMdSourceLoader:cache-disabled', {
+        sourceKey: options.sourceKey ?? 'docs',
+      });
       return createLocalMdSourceLoader(options);
     }
 
-    cached ??= createLocalMdSourceLoader(options);
+    if (cached) {
+      logLocalMdDebug('createCachedLocalMdSourceLoader:cache-hit', {
+        sourceKey: options.sourceKey ?? 'docs',
+      });
+      return cached;
+    }
+
+    logLocalMdDebug('createCachedLocalMdSourceLoader:cache-miss', {
+      sourceKey: options.sourceKey ?? 'docs',
+    });
+    cached = createLocalMdSourceLoader(options);
     return cached;
   };
 }
@@ -206,6 +355,13 @@ export function createConfiguredLocalMdSourceFactory<
       const cacheKey = `${sourceKey}:${resolvedDir}:${resolvedBaseUrl}`;
 
       if (isLocalMdCacheDisabled()) {
+        logLocalMdDebug('getCachedSource:cache-disabled', {
+          sourceKey,
+          cacheKey,
+          resolvedDir,
+          baseUrl: resolvedBaseUrl,
+          processCwd: process.cwd(),
+        });
         return createLocalMdSourceLoader({
           ...options,
           ...overrides,
@@ -215,17 +371,68 @@ export function createConfiguredLocalMdSourceFactory<
 
       const existing = cache.get(cacheKey);
       if (existing) {
+        logLocalMdDebug('getCachedSource:cache-hit', {
+          sourceKey,
+          cacheKey,
+          resolvedDir,
+          baseUrl: resolvedBaseUrl,
+          processCwd: process.cwd(),
+        });
         return existing;
       }
+
+      logLocalMdDebug('getCachedSource:cache-miss', {
+        sourceKey,
+        cacheKey,
+        resolvedDir,
+        baseUrl: resolvedBaseUrl,
+        processCwd: process.cwd(),
+        isLocalMdCacheDisabled: isLocalMdCacheDisabled(),
+      });
 
       const created = createLocalMdSourceLoader({
           ...options,
           ...overrides,
           sourceKey,
         });
-      cache.set(cacheKey, created);
+      const result = await created;
+      const empty = isLoaderResultEmpty(result);
 
-      return created;
+      logLocalMdDebug('getCachedSource:created', {
+        sourceKey,
+        cacheKey,
+        resolvedDir,
+        baseUrl: resolvedBaseUrl,
+        processCwd: process.cwd(),
+        empty,
+        localePageCounts: countLocalePages(result),
+        pageTreeLocaleCounts: countLocaleTreeChildren(result.pageTree),
+      });
+
+      if (empty && !shouldCacheEmptySource()) {
+        logLocalMdWarn('skip caching empty source result', {
+          sourceKey,
+          cacheKey,
+          resolvedDir,
+          baseUrl: resolvedBaseUrl,
+          processCwd: process.cwd(),
+        });
+        return result;
+      }
+
+      if (empty) {
+        logLocalMdWarn('caching empty source result because LOCAL_MD_CACHE_EMPTY=true', {
+          sourceKey,
+          cacheKey,
+          resolvedDir,
+          baseUrl: resolvedBaseUrl,
+          processCwd: process.cwd(),
+        });
+      }
+
+      cache.set(cacheKey, Promise.resolve(result));
+
+      return result;
     },
   };
 }

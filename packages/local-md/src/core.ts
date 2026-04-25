@@ -52,6 +52,21 @@ function isLocalMdCacheDisabled() {
   return process.env.LOCAL_MD_CACHE_DISABLE?.toLowerCase() === 'true';
 }
 
+function isLocalMdDebugEnabled() {
+  return process.env.LOCAL_MD_DEBUG?.toLowerCase() === 'true';
+}
+
+function logLocalMdDebug(message: string, details?: Record<string, unknown>) {
+  if (!isLocalMdDebugEnabled()) return;
+
+  if (details) {
+    console.log(`[local-md] ${message}`, details);
+    return;
+  }
+
+  console.log(`[local-md] ${message}`);
+}
+
 export function localMd<
   FrontmatterSchema extends StandardSchemaV1 = typeof defaultSchemas.pageSchema,
   MetaSchema extends StandardSchemaV1 = typeof defaultSchemas.metaSchema,
@@ -71,6 +86,12 @@ export function localMd<
 
   async function createFiles() {
     const { metas, pages } = await storage.getPages();
+    logLocalMdDebug('localMd:createFiles', {
+      dir: config.dir,
+      processCwd: process.cwd(),
+      pageFileCount: pages.length,
+      metaFileCount: metas.length,
+    });
     const files: VirtualFile<{
       pageData: LocalMarkdownPage<StandardSchemaV1.InferOutput<FrontmatterSchema>, never>;
       metaData: StandardSchemaV1.InferOutput<MetaSchema> & MetaData;
@@ -107,16 +128,41 @@ export function localMd<
   }
 
   async function createSource() {
-    return { files: await createFiles() };
+    const files = await createFiles();
+    logLocalMdDebug('localMd:createSource', {
+      dir: config.dir,
+      processCwd: process.cwd(),
+      sourceFileCount: files.length,
+      pageFileCount: files.filter((file) => file.type === 'page').length,
+      metaFileCount: files.filter((file) => file.type === 'meta').length,
+    });
+    return { files };
   }
 
   return {
     staticSource() {
       if (!shouldCache) {
+        logLocalMdDebug('localMd:staticSource:cache-disabled', {
+          dir: config.dir,
+          processCwd: process.cwd(),
+        });
         return createSource();
       }
 
-      return (cachedStaticSource ??= createSource());
+      if (cachedStaticSource) {
+        logLocalMdDebug('localMd:staticSource:cache-hit', {
+          dir: config.dir,
+          processCwd: process.cwd(),
+        });
+        return cachedStaticSource;
+      }
+
+      logLocalMdDebug('localMd:staticSource:cache-miss', {
+        dir: config.dir,
+        processCwd: process.cwd(),
+      });
+      cachedStaticSource = createSource();
+      return cachedStaticSource;
     },
   };
 }

@@ -1,5 +1,11 @@
 # @windrun-huaiin/fumadocs-local-md
 
+## 26.0.1
+
+### Patch Changes
+
+- feat(package): local-md add log
+
 ## 26.0.0
 
 ### Major Changes
