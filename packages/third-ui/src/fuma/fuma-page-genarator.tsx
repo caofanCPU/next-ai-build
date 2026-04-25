@@ -174,8 +174,9 @@ export function createFumaPage({
     );
   };
 
-  function generateStaticParams() {
-    return getSource().then((source) => source.generateParams('slug', 'locale'));
+  async function generateStaticParams() {
+    const source = await getSource();
+    return source.generateParams('slug', 'locale');
   }
 
   async function generateMetadata(props: { params: Promise<{ slug?: string[]; locale?: string }> }) {
