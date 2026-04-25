@@ -1,5 +1,12 @@
 # @windrun-huaiin/backend-core
 
+## 26.0.1
+
+### Patch Changes
+
+- fix(mdx): uniform major version
+  - fix 404page style
+
 ## 26.0.0
 
 ### Major Changes
