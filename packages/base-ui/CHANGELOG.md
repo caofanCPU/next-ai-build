@@ -1,5 +1,16 @@
 # @windrun-huaiin/base-ui
 
+## 23.0.0
+
+### Major Changes
+
+- refactor(mdx): support cut packages by adjust mdx config
+
+### Patch Changes
+
+- Updated dependencies
+  - @windrun-huaiin/lib@23.0.0
+
 ## 22.0.0
 
 ### Major Changes

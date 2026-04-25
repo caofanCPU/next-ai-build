@@ -1,5 +1,11 @@
 # @windrun-huaiin/contracts
 
+## 23.0.0
+
+### Major Changes
+
+- refactor(mdx): support cut packages by adjust mdx config
+
 ## 22.0.0
 
 ### Major Changes
