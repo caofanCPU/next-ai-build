@@ -77,6 +77,7 @@
       "env": ["NODE_ENV"]
     },
     "@windrun-huaiin/fumadocs-local-md#build": {
+      "dependsOn": ["@windrun-huaiin/contracts#build"],
       "outputs": ["dist/**"],
       "env": ["NODE_ENV", "LOCAL_MD_CACHE_DISABLE"]
     },
@@ -116,7 +117,11 @@
       "env": ["NODE_ENV"]
     },
     "@windrun-huaiin/third-ui#build": {
-      "dependsOn": ["@windrun-huaiin/contracts#build", "@windrun-huaiin/base-ui#build"],
+      "dependsOn": [
+        "@windrun-huaiin/contracts#build",
+        "@windrun-huaiin/base-ui#build",
+        "@windrun-huaiin/lib#build"
+      ],
       "outputs": ["dist/**"],
       "env": [
         "NODE_ENV",
@@ -145,6 +150,7 @@
       "env": ["NODE_ENV"]
     },
     "@windrun-huaiin/fumadocs-local-md#build:prod": {
+      "dependsOn": ["@windrun-huaiin/contracts#build:prod"],
       "outputs": ["dist/**"],
       "env": ["NODE_ENV", "LOCAL_MD_CACHE_DISABLE"]
     },
@@ -184,7 +190,11 @@
       "env": ["NODE_ENV"]
     },
     "@windrun-huaiin/third-ui#build:prod": {
-      "dependsOn": ["@windrun-huaiin/contracts#build:prod", "@windrun-huaiin/base-ui#build:prod"],
+      "dependsOn": [
+        "@windrun-huaiin/contracts#build:prod",
+        "@windrun-huaiin/base-ui#build:prod",
+        "@windrun-huaiin/lib#build:prod"
+      ],
       "outputs": ["dist/**"],
       "env": [
         "NODE_ENV",
