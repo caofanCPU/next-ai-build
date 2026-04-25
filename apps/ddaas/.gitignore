@@ -13,6 +13,7 @@ lerna-debug.log*
 .claude*
 .codex*
 .gemini*
+.gitNexus*
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
