@@ -1,5 +1,11 @@
 # @windrun-huaiin/backend-core
 
+## 26.0.2
+
+### Patch Changes
+
+- fix(package): changeset cli bug fix
+
 ## 26.0.1
 
 ### Patch Changes
