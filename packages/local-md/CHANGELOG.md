@@ -1,5 +1,12 @@
 # @windrun-huaiin/fumadocs-local-md
 
+## 25.0.0
+
+### Major Changes
+
+- fix(mdx): uniform major version
+  - fix 404page style
+
 ## 24.0.0
 
 ### Major Changes

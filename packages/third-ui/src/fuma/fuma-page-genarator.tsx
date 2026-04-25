@@ -113,7 +113,18 @@ export function createFumaPage({
     const page = source.getPage(slug, locale);
     if (!page) {
       console.log('[FumaPage] missing page', { slug, locale, available: source.pageTree?.[locale]?.children?.map((c: any) => c.url) });
-      return <FallbackPage siteIcon={siteIcon} />;
+      return (
+        <DocsPage
+          full
+          breadcrumb={{ enabled: false }}
+          footer={{ enabled: false }}
+          tableOfContent={{ enabled: false }}
+          tableOfContentPopover={{ enabled: false }}
+          className="max-w-none px-0 py-0"
+        >
+          <FallbackPage siteIcon={siteIcon} />
+        </DocsPage>
+      );
     }
 
     const path = githubBaseUrl ? `${mdxSourceDir}/${page.path}` : undefined;

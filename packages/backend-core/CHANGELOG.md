@@ -1,5 +1,14 @@
 # @windrun-huaiin/backend-core
 
+## 26.0.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @windrun-huaiin/lib@25.0.0
+  - @windrun-huaiin/contracts@25.0.0
+  - @windrun-huaiin/third-ui@25.0.0
+
 ## 25.0.1
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@windrun-huaiin/contracts",
-  "version": "24.0.0",
+  "version": "25.0.0",
   "description": "Shared domain contracts for windrun-huaiin packages",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",

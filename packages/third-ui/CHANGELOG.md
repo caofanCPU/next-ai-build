@@ -1,5 +1,19 @@
 # @windrun-huaiin/third-ui
 
+## 25.0.0
+
+### Major Changes
+
+- fix(mdx): uniform major version
+  - fix 404page style
+
+### Patch Changes
+
+- Updated dependencies
+  - @windrun-huaiin/lib@25.0.0
+  - @windrun-huaiin/contracts@25.0.0
+  - @windrun-huaiin/base-ui@25.0.0
+
 ## 24.0.0
 
 ### Major Changes

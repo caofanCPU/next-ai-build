@@ -1,6 +1,6 @@
 {
   "name": "@windrun-huaiin/dev-scripts",
-  "version": "24.0.0",
+  "version": "25.0.0",
   "description": "Development scripts for multilingual projects",
   "main": "dist/index.js",
   "bin": {
