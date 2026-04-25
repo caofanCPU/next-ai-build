@@ -206,3 +206,51 @@ ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA yesand
 
 ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA yesand
   GRANT EXECUTE ON FUNCTIONS TO yesand_app;
+
+
+
+-- =========================
+-- dailyt
+-- 账户：dailyt_app
+-- 密码：XXXdailyt_app
+-- =========================
+
+REVOKE ALL ON SCHEMA dailyt FROM anon, authenticated, service_role;
+REVOKE ALL ON ALL TABLES IN SCHEMA dailyt FROM anon, authenticated, service_role;
+REVOKE ALL ON ALL SEQUENCES IN SCHEMA dailyt FROM anon, authenticated, service_role;
+REVOKE ALL ON ALL FUNCTIONS IN SCHEMA dailyt FROM anon, authenticated, service_role;
+
+REVOKE ALL ON SCHEMA dailyt FROM PUBLIC;
+REVOKE ALL ON ALL TABLES IN SCHEMA dailyt FROM PUBLIC;
+REVOKE ALL ON ALL SEQUENCES IN SCHEMA dailyt FROM PUBLIC;
+REVOKE ALL ON ALL FUNCTIONS IN SCHEMA dailyt FROM PUBLIC;
+
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_roles WHERE rolname = 'dailyt_app'
+  ) THEN
+    CREATE ROLE dailyt_app
+      LOGIN
+      PASSWORD 'XXXdailyt_app';
+  END IF;
+END
+$$;
+
+GRANT CONNECT ON DATABASE postgres TO dailyt_app;
+GRANT USAGE ON SCHEMA dailyt TO dailyt_app;
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA dailyt TO dailyt_app;
+GRANT USAGE, SELECT, UPDATE ON ALL SEQUENCES IN SCHEMA dailyt TO dailyt_app;
+GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA dailyt TO dailyt_app;
+
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA dailyt
+  REVOKE EXECUTE ON FUNCTIONS FROM PUBLIC;
+
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA dailyt
+  GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO dailyt_app;
+
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA dailyt
+  GRANT USAGE, SELECT, UPDATE ON SEQUENCES TO dailyt_app;
+
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA dailyt
+  GRANT EXECUTE ON FUNCTIONS TO dailyt_app;
