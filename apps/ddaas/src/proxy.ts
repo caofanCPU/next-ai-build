@@ -52,9 +52,15 @@ export default clerkMiddleware(
   async (auth, req: NextRequest) => {
     const { defaultLocale, locales } = appConfig.i18n;
     const pathname = req.nextUrl.pathname;
+    const isWellKnownPath =
+      pathname === '/.well-known' || pathname.startsWith('/.well-known/');
     const hasLocalePrefix = locales.some(
       (loc) => pathname === `/${loc}` || pathname.startsWith(`/${loc}/`)
     );
+
+    if (isWellKnownPath) {
+      return NextResponse.next();
+    }
 
     const authResponse = await handleAuthMiddleware(auth, req, {
       protectedPageRoutes,
@@ -101,7 +107,7 @@ export default clerkMiddleware(
 export const config = {
   matcher: [
     // Skip Next.js internals and all static files, but include API routes
-    "/((?!_next|sitemap.xml?|robots.txt?|[^?]*.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
+    "/((?!_next|\\.well-known|sitemap.xml?|robots.txt?|[^?]*.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
     // Include API routes explicitly
     "/api/(.*)",
   ],

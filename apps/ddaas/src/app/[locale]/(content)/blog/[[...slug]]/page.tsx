@@ -22,5 +22,12 @@ const { Page, generateStaticParams, generateMetadata } = createFumaPage({
   tocRenderMode: 'portable-clerk'
 });
 
-export default Page;
+export default async function BlogPage(props: {
+  params: Promise<{ locale: string; slug?: string[] }>;
+}) {
+  const { locale, slug } = await props.params;
+  console.log('[blog page] entered', { locale, slug });
+  return <Page {...props} />;
+}
+
 export { generateStaticParams, generateMetadata };

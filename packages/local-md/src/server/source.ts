@@ -4,6 +4,7 @@ import type { I18nConfig } from 'fumadocs-core/i18n';
 import type { MDXComponents } from 'mdx/types';
 import type { ReactNode } from 'react';
 import { localMd, type LocalMarkdownConfig } from '../core';
+import { logLocalMdDebug, logLocalMdWarn } from '../debug';
 
 type BodyComponent = (props: { components?: MDXComponents }) => Promise<ReactNode>;
 
@@ -51,27 +52,8 @@ function isLocalMdCacheDisabled() {
   return process.env.LOCAL_MD_CACHE_DISABLE?.toLowerCase() === 'true';
 }
 
-function isLocalMdDebugEnabled() {
-  return process.env.LOCAL_MD_DEBUG?.toLowerCase() === 'true';
-}
-
 function shouldCacheEmptySource() {
   return process.env.LOCAL_MD_CACHE_EMPTY?.toLowerCase() === 'true';
-}
-
-function logLocalMdDebug(message: string, details?: Record<string, unknown>) {
-  if (!isLocalMdDebugEnabled()) return;
-
-  if (details) {
-    console.log(`[local-md] ${message}`, details);
-    return;
-  }
-
-  console.log(`[local-md] ${message}`);
-}
-
-function logLocalMdWarn(message: string, details?: Record<string, unknown>) {
-  console.warn(`[local-md] ${message}`, details ?? {});
 }
 
 function countSourceFiles(
@@ -390,49 +372,52 @@ export function createConfiguredLocalMdSourceFactory<
         isLocalMdCacheDisabled: isLocalMdCacheDisabled(),
       });
 
-      const created = createLocalMdSourceLoader({
+      const created = (async () => {
+        const result = await createLocalMdSourceLoader({
           ...options,
           ...overrides,
           sourceKey,
         });
-      const result = await created;
-      const empty = isLoaderResultEmpty(result);
+        const empty = isLoaderResultEmpty(result);
 
-      logLocalMdDebug('getCachedSource:created', {
-        sourceKey,
-        cacheKey,
-        resolvedDir,
-        baseUrl: resolvedBaseUrl,
-        processCwd: process.cwd(),
-        empty,
-        localePageCounts: countLocalePages(result),
-        pageTreeLocaleCounts: countLocaleTreeChildren(result.pageTree),
-      });
-
-      if (empty && !shouldCacheEmptySource()) {
-        logLocalMdWarn('skip caching empty source result', {
+        logLocalMdDebug('getCachedSource:created', {
           sourceKey,
           cacheKey,
           resolvedDir,
           baseUrl: resolvedBaseUrl,
           processCwd: process.cwd(),
+          empty,
+          localePageCounts: countLocalePages(result),
+          pageTreeLocaleCounts: countLocaleTreeChildren(result.pageTree),
         });
+
+        if (empty && !shouldCacheEmptySource()) {
+          cache.delete(cacheKey);
+          logLocalMdWarn('skip caching empty source result', {
+            sourceKey,
+            cacheKey,
+            resolvedDir,
+            baseUrl: resolvedBaseUrl,
+            processCwd: process.cwd(),
+          });
+          return result;
+        }
+
+        if (empty) {
+          logLocalMdWarn('caching empty source result because LOCAL_MD_CACHE_EMPTY=true', {
+            sourceKey,
+            cacheKey,
+            resolvedDir,
+            baseUrl: resolvedBaseUrl,
+            processCwd: process.cwd(),
+          });
+        }
+
         return result;
-      }
+      })();
 
-      if (empty) {
-        logLocalMdWarn('caching empty source result because LOCAL_MD_CACHE_EMPTY=true', {
-          sourceKey,
-          cacheKey,
-          resolvedDir,
-          baseUrl: resolvedBaseUrl,
-          processCwd: process.cwd(),
-        });
-      }
-
-      cache.set(cacheKey, Promise.resolve(result));
-
-      return result;
+      cache.set(cacheKey, created);
+      return created;
     },
   };
 }

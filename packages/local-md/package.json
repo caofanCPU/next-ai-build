@@ -1,6 +1,6 @@
 {
   "name": "@windrun-huaiin/fumadocs-local-md",
-  "version": "26.0.1",
+  "version": "26.0.2",
   "description": "A compatibility-focused local Markdown source package based on @fumadocs/local-md",
   "keywords": [
     "Docs",

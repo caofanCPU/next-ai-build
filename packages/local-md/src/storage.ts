@@ -6,6 +6,7 @@ import type { StandardSchemaV1 } from '@standard-schema/spec';
 import type { PageData } from 'fumadocs-core/source';
 import { parseFrontmatter } from './frontmatter';
 import * as defaultSchemas from './schema';
+import { logLocalMdDebug } from './debug';
 
 export interface RawPage<Frontmatter = Record<string, unknown>> {
   path: string;
@@ -28,21 +29,6 @@ const CHUNK_SIZE = 100;
 
 function isLocalMdCacheDisabled() {
   return process.env.LOCAL_MD_CACHE_DISABLE?.toLowerCase() === 'true';
-}
-
-function isLocalMdDebugEnabled() {
-  return process.env.LOCAL_MD_DEBUG?.toLowerCase() === 'true';
-}
-
-function logLocalMdDebug(message: string, details?: Record<string, unknown>) {
-  if (!isLocalMdDebugEnabled()) return;
-
-  if (details) {
-    console.log(`[local-md] ${message}`, details);
-    return;
-  }
-
-  console.log(`[local-md] ${message}`);
 }
 
 export function createStorage<

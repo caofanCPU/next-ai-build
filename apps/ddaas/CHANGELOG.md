@@ -1,5 +1,17 @@
 # @windrun-huaiin/ddaas-website
 
+## 26.0.2
+
+### Patch Changes
+
+- feat(package): local-md add log
+- Updated dependencies
+  - @windrun-huaiin/lib@26.0.0
+  - @windrun-huaiin/contracts@26.0.0
+  - @windrun-huaiin/base-ui@26.0.0
+  - @windrun-huaiin/third-ui@26.0.0
+  - @windrun-huaiin/fumadocs-local-md@26.0.2
+
 ## 26.0.1
 
 ### Patch Changes

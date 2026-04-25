@@ -4,6 +4,7 @@ import { createStorage } from './storage';
 import * as defaultSchemas from './schema';
 import { createMarkdownRenderer, type MarkdownRendererOptions, type PageRenderer } from './md/renderer';
 import { createMarkdownCompiler, type MarkdownCompilerOptions } from './md/compiler';
+import { logLocalMdDebug } from './debug';
 
 export interface LocalMarkdownConfig<
   FrontmatterSchema extends StandardSchemaV1,
@@ -50,21 +51,6 @@ export interface LocalMarkdownPage<
 
 function isLocalMdCacheDisabled() {
   return process.env.LOCAL_MD_CACHE_DISABLE?.toLowerCase() === 'true';
-}
-
-function isLocalMdDebugEnabled() {
-  return process.env.LOCAL_MD_DEBUG?.toLowerCase() === 'true';
-}
-
-function logLocalMdDebug(message: string, details?: Record<string, unknown>) {
-  if (!isLocalMdDebugEnabled()) return;
-
-  if (details) {
-    console.log(`[local-md] ${message}`, details);
-    return;
-  }
-
-  console.log(`[local-md] ${message}`);
 }
 
 export function localMd<
