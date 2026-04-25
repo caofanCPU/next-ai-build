@@ -1,10 +1,7 @@
 {
   "name": "@windrun-huaiin/third-ui",
-  "version": "22.0.0",
+  "version": "22.0.1",
   "description": "Third-party integrated UI components for windrun-huaiin projects",
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
   "exports": {
     "./clerk": {
       "types": "./dist/clerk/index.d.ts",

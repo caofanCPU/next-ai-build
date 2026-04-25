@@ -23,7 +23,8 @@ const entries = [
   'src/fuma/heavy/index.ts',
   'src/fuma/mdx/index.ts',
   'src/fuma/base/index.ts',
-  'src/lib/server.ts'
+  'src/lib/server.ts',
+  'src/lib/seo-metadata.ts'
 ];
 
 const externalPackages = [

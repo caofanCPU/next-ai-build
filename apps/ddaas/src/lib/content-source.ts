@@ -1,6 +1,6 @@
 import { createConfiguredLocalMdSourceFactory, createFumaDocsCompilerOptions } from '@windrun-huaiin/fumadocs-local-md/server';
 import { toLocalMdxFeatures } from '@windrun-huaiin/contracts/mdx';
-import { createCommonDocsSchema, createCommonMetaSchema, remarkInstallOptions } from '@third-ui/lib/fuma-schema-check-util';
+import { createCommonDocsSchema, createCommonMetaSchema, remarkInstallOptions } from '@third-ui/lib/server';
 import { getGlobalIcon } from '@base-ui/components/server';
 import { i18n } from '@/i18n';
 import { ddaasMdxCapabilities } from '@/lib/mdx-capabilities';

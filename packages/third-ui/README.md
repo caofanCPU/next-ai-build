@@ -42,10 +42,7 @@ Your-project/
 
 ## Usage Example
 
-### Import all components
-```tsx
-import { ClerkUser, CTA, TOC } from '@windrun-huaiin/third-ui';
-```
+Root entry import is not supported. Always import from an explicit subpath such as `@windrun-huaiin/third-ui/clerk` or `@windrun-huaiin/third-ui/main`.
 
 ### Import components by module
 ```tsx
@@ -56,7 +53,10 @@ import { ClerkUser, ClerkOrganization } from '@windrun-huaiin/third-ui/clerk';
 import { CTA, Features } from '@windrun-huaiin/third-ui/main';
 
 // Only import Fumadocs components  
-import { TOC, FumaBannerSuit } from '@windrun-huaiin/third-ui/fuma';
+import { FumaPageGenerator, FumaBannerSuit } from '@windrun-huaiin/third-ui/fuma/server';
+
+// Shared MDX building blocks
+import { TocFooterWrapper, PortableClerkTOC } from '@windrun-huaiin/third-ui/fuma/mdx';
 ```
 
 ### Use components

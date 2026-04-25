@@ -1,5 +1,17 @@
 # @windrun-huaiin/ddaas-website
 
+## 22.0.1
+
+### Patch Changes
+
+- fix(package): export package issue fixed
+- Updated dependencies
+  - @windrun-huaiin/lib@22.0.0
+  - @windrun-huaiin/contracts@22.0.0
+  - @windrun-huaiin/base-ui@22.0.0
+  - @windrun-huaiin/third-ui@22.0.1
+  - @windrun-huaiin/fumadocs-local-md@22.0.0
+
 ## 22.0.0
 
 ### Major Changes

@@ -27,9 +27,6 @@
       "@/*": [
         "./src/*"
       ],
-      "@/.source": [
-        ".source"
-      ],
       "@third-ui/*": [
         "../../packages/third-ui/src/*"
       ],

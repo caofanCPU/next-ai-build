@@ -1,5 +1,11 @@
 # @windrun-huaiin/third-ui
 
+## 22.0.1
+
+### Patch Changes
+
+- fix(package): export package issue fixed
+
 ## 22.0.0
 
 ### Major Changes
