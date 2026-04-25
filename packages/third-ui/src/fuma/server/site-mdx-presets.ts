@@ -14,7 +14,8 @@ import {
 } from './optional-features';
 import { SiteX } from '../site-x';
 import type { SiteMdxComponentsOptions } from './site-mdx-components';
-import type { SiteMdxFeature } from '@windrun-huaiin/contracts/mdx';
+
+export type SiteMdxFeature = 'base' | 'code' | 'math' | 'mermaid' | 'type-table';
 
 const defaultFumaUiComponents: MDXComponents = {
   Callout,
@@ -60,6 +61,37 @@ export function createSiteFeatureComponentMap(
   } satisfies Record<SiteMdxFeature, MDXComponents>;
 }
 
+function createSiteFeatureComponents(
+  feature: SiteMdxFeature,
+  options: SiteMdxComponentsOptions,
+): MDXComponents {
+  const {
+    cdnBaseUrl,
+    iconMap = {},
+    imageFallbackSrc,
+    watermarkEnabled,
+    watermarkText,
+  } = options;
+
+  switch (feature) {
+    case 'base':
+      return {
+        ...defaultFumaUiComponents,
+        SiteX,
+        ...createBaseMdxComponents(imageFallbackSrc),
+        ...createWidgetMdxComponents(cdnBaseUrl, imageFallbackSrc),
+      };
+    case 'code':
+      return createCodeMdxComponents(iconMap);
+    case 'math':
+      return createMathMdxComponents();
+    case 'mermaid':
+      return createMermaidMdxComponents(watermarkEnabled, watermarkText);
+    case 'type-table':
+      return createTypeTableMdxComponents();
+  }
+}
+
 export function composeSiteMdxComponents(
   features: readonly SiteMdxFeature[],
   featureMap: Record<SiteMdxFeature, MDXComponents>,
@@ -72,6 +104,25 @@ export function composeSiteMdxComponents(
       return {
         ...acc,
         ...featureMap[feature],
+      };
+    }, {}),
+    ...additionalComponents,
+    ...components,
+  };
+}
+
+export function createComposedSiteMdxComponents(
+  features: readonly SiteMdxFeature[],
+  options: SiteMdxComponentsOptions,
+  additionalComponents?: MDXComponents,
+  components?: MDXComponents,
+): MDXComponents {
+  return {
+    ...defaultMdxComponents,
+    ...features.reduce<MDXComponents>((acc, feature) => {
+      return {
+        ...acc,
+        ...createSiteFeatureComponents(feature, options),
       };
     }, {}),
     ...additionalComponents,

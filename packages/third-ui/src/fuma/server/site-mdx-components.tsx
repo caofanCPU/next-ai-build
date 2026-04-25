@@ -1,10 +1,9 @@
 import type { MDXComponents } from 'mdx/types';
 import type { ReactNode } from 'react';
-import type { SiteMdxFeature } from '@windrun-huaiin/contracts/mdx';
 import {
-  composeSiteMdxComponents,
-  createSiteFeatureComponentMap,
+  createComposedSiteMdxComponents,
   DEFAULT_SITE_MDX_FEATURES,
+  type SiteMdxFeature,
 } from './site-mdx-presets';
 
 export interface SiteMdxComponentsOptions {
@@ -29,18 +28,17 @@ export function createSiteMdxComponents(
     watermarkEnabled,
     watermarkText,
   } = options;
-  const featureMap = createSiteFeatureComponentMap({
-    cdnBaseUrl,
-    iconMap,
-    imageFallbackSrc,
-    watermarkEnabled,
-    watermarkText,
-  });
 
   return function getMDXComponents(components?: MDXComponents): MDXComponents {
-    return composeSiteMdxComponents(
+    return createComposedSiteMdxComponents(
       features,
-      featureMap,
+      {
+        cdnBaseUrl,
+        iconMap,
+        imageFallbackSrc,
+        watermarkEnabled,
+        watermarkText,
+      },
       additionalComponents,
       components,
     );

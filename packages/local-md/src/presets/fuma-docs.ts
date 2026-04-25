@@ -1,12 +1,7 @@
 import type { MarkdownCompilerOptions } from '../md/compiler';
 import type { RemarkNpmOptions } from 'fumadocs-core/mdx-plugins/remark-npm';
-import type { LocalMdxFeature } from '@windrun-huaiin/contracts/mdx';
-import {
-  createCodeFeatureOptions,
-  createMathFeatureOptions,
-  createNpmFeatureOptions,
-  createStepsFeatureOptions,
-} from '../server/features';
+
+export type LocalMdxFeature = 'code' | 'math' | 'npm';
 
 export interface CreateFumaDocsCompilerOptions {
   features?: LocalMdxFeature[];
@@ -18,9 +13,9 @@ export interface CreateFumaDocsCompilerOptions {
 
 const DEFAULT_LOCAL_MDX_FEATURES: LocalMdxFeature[] = ['code', 'math', 'npm'];
 
-export function createFumaDocsCompilerOptions(
+export async function createFumaDocsCompilerOptions(
   options: CreateFumaDocsCompilerOptions = {},
-): MarkdownCompilerOptions {
+): Promise<MarkdownCompilerOptions> {
   const {
     features,
     code = true,
@@ -41,19 +36,39 @@ export function createFumaDocsCompilerOptions(
     }
   }
 
+  const { createStepsFeatureOptions } = await import('../server/features/steps');
+  const codeFeatureOptions = enabledFeatures.has('code')
+    ? (await import('../server/features/code')).createCodeFeatureOptions()
+    : {};
+  const mathFeatureOptions = enabledFeatures.has('math')
+    ? (await import('../server/features/math')).createMathFeatureOptions()
+    : {};
+  const npmFeatureOptions = enabledFeatures.has('npm')
+    ? (await import('../server/features/npm')).createNpmFeatureOptions(remarkInstallOptions)
+    : {};
+
   return {
-    mdxOptions: {
-      remarkImageOptions: false,
-      ...(enabledFeatures.has('code')
-        ? createCodeFeatureOptions()
-        : { rehypeCodeOptions: false }),
+    mdOptions: {
       remarkPlugins: [
         ...(createStepsFeatureOptions().remarkPlugins ?? []),
-        ...(enabledFeatures.has('math') ? (createMathFeatureOptions().remarkPlugins ?? []) : []),
-        ...(enabledFeatures.has('npm') ? (createNpmFeatureOptions(remarkInstallOptions).remarkPlugins ?? []) : []),
+        ...(mathFeatureOptions.remarkPlugins ?? []),
+        ...(npmFeatureOptions.remarkPlugins ?? []),
       ],
       rehypePlugins: [
-        ...(enabledFeatures.has('math') ? (createMathFeatureOptions().rehypePlugins ?? []) : []),
+        ...(codeFeatureOptions.rehypePlugins ?? []),
+        ...(mathFeatureOptions.rehypePlugins ?? []),
+      ],
+    },
+    mdxOptions: {
+      remarkImageOptions: false,
+      remarkPlugins: [
+        ...(createStepsFeatureOptions().remarkPlugins ?? []),
+        ...(mathFeatureOptions.remarkPlugins ?? []),
+        ...(npmFeatureOptions.remarkPlugins ?? []),
+      ],
+      rehypePlugins: [
+        ...(codeFeatureOptions.rehypePlugins ?? []),
+        ...(mathFeatureOptions.rehypePlugins ?? []),
       ],
     },
   };

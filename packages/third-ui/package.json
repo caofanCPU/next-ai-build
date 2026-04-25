@@ -53,6 +53,31 @@
       "import": "./dist/fuma/server/site-mdx-components.mjs",
       "require": "./dist/fuma/server/site-mdx-components.js"
     },
+    "./fuma/server/site-mdx/base": {
+      "types": "./dist/fuma/server/site-mdx-base.d.ts",
+      "import": "./dist/fuma/server/site-mdx-base.mjs",
+      "require": "./dist/fuma/server/site-mdx-base.js"
+    },
+    "./fuma/server/site-mdx/features/code": {
+      "types": "./dist/fuma/server/site-mdx-features/code.d.ts",
+      "import": "./dist/fuma/server/site-mdx-features/code.mjs",
+      "require": "./dist/fuma/server/site-mdx-features/code.js"
+    },
+    "./fuma/server/site-mdx/features/math": {
+      "types": "./dist/fuma/server/site-mdx-features/math.d.ts",
+      "import": "./dist/fuma/server/site-mdx-features/math.mjs",
+      "require": "./dist/fuma/server/site-mdx-features/math.js"
+    },
+    "./fuma/server/site-mdx/features/mermaid": {
+      "types": "./dist/fuma/server/site-mdx-features/mermaid.d.ts",
+      "import": "./dist/fuma/server/site-mdx-features/mermaid.mjs",
+      "require": "./dist/fuma/server/site-mdx-features/mermaid.js"
+    },
+    "./fuma/server/site-mdx/features/type-table": {
+      "types": "./dist/fuma/server/site-mdx-features/type-table.d.ts",
+      "import": "./dist/fuma/server/site-mdx-features/type-table.mjs",
+      "require": "./dist/fuma/server/site-mdx-features/type-table.js"
+    },
     "./fuma/share": {
       "types": "./dist/fuma/share/index.d.ts",
       "import": "./dist/fuma/share/index.mjs",

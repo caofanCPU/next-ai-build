@@ -1,7 +1,9 @@
 import { cn } from '@windrun-huaiin/lib/utils';
-import defaultMdxComponents from 'fumadocs-ui/mdx';
-import { type ComponentType } from 'react';
-import { ImageZoom } from '../heavy';
+import { lazy, type ComponentType } from 'react';
+
+const ImageZoom = lazy(() =>
+  import('../heavy/image-zoom').then((mod) => ({ default: mod.ImageZoom })),
+);
 
 export type MarkdownComponentMap = Record<string, ComponentType<any>>;
 
@@ -18,7 +20,6 @@ function normalizeMarkdownProps<T extends Record<string, any>>(props: T) {
 }
 
 export const baseMarkdownComponents: MarkdownComponentMap = {
-  ...defaultMdxComponents,
   a: ({ className, ...props }) => (
     <a
       {...normalizeMarkdownProps(props)}

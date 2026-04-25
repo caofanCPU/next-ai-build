@@ -3,7 +3,7 @@ import { loader, type LoaderOptions, type MetaData, type PageData, type StaticSo
 import type { I18nConfig } from 'fumadocs-core/i18n';
 import type { MDXComponents } from 'mdx/types';
 import type { ReactNode } from 'react';
-import { localMd, type LocalMarkdownConfig } from '../index';
+import { localMd, type LocalMarkdownConfig } from '../core';
 
 type BodyComponent = (props: { components?: MDXComponents }) => Promise<ReactNode>;
 

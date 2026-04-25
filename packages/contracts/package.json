@@ -16,11 +16,6 @@
       "import": "./dist/ai/index.mjs",
       "require": "./dist/ai/index.js"
     },
-    "./mdx": {
-      "types": "./dist/mdx/index.d.ts",
-      "import": "./dist/mdx/index.mjs",
-      "require": "./dist/mdx/index.js"
-    },
     "./package.json": "./package.json"
   },
   "files": [

@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises';
 import { glob } from 'tinyglobby';
 import path from 'node:path';
-import { LocalMarkdownConfig } from '.';
+import type { LocalMarkdownConfig } from './core';
 import type { StandardSchemaV1 } from '@standard-schema/spec';
 import type { PageData } from 'fumadocs-core/source';
 import { parseFrontmatter } from './frontmatter';

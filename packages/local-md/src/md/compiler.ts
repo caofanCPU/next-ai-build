@@ -1,12 +1,9 @@
 import { remarkGfm } from 'fumadocs-core/mdx-plugins/remark-gfm';
-import { plugin, plugins } from './utils';
 import { remarkHeading, type RemarkHeadingOptions } from 'fumadocs-core/mdx-plugins/remark-heading';
-import { remarkNpm, type RemarkNpmOptions } from 'fumadocs-core/mdx-plugins/remark-npm';
 import {
   remarkCodeTab,
   type RemarkCodeTabOptions,
 } from 'fumadocs-core/mdx-plugins/remark-code-tab';
-import { rehypeCode, type RehypeCodeOptions } from 'fumadocs-core/mdx-plugins/rehype-code';
 import { rehypeToc, type RehypeTocOptions } from 'fumadocs-core/mdx-plugins/rehype-toc';
 import { remarkStructure, type StructureOptions } from 'fumadocs-core/mdx-plugins/remark-structure';
 import { Compatible, VFile } from 'vfile';
@@ -17,6 +14,7 @@ import type { PluggableList } from 'unified';
 import remarkRehype, { type Options as RemarkRehypeOptions } from 'remark-rehype';
 import type { Root as MdastRoot, RootContent, Parent } from 'mdast';
 import type { Data, Node } from 'unist';
+import type { Pluggable, Plugin } from 'unified';
 
 export interface MarkdownCompilerOptions {
   mdOptions?: MarkdownProcessorOptions;
@@ -31,8 +29,6 @@ export interface MarkdownProcessorOptions {
   remarkStructureOptions?: StructureOptions | false;
   remarkHeadingOptions?: RemarkHeadingOptions | false;
   remarkCodeTabOptions?: RemarkCodeTabOptions | false;
-  remarkNpmOptions?: RemarkNpmOptions | false;
-  rehypeCodeOptions?: RehypeCodeOptions | false;
   rehypeTocOptions?: RehypeTocOptions | false;
 }
 
@@ -41,8 +37,6 @@ export interface MDXProcessorOptions extends Mdx.ProcessorOptions {
   remarkStructureOptions?: StructureOptions | false;
   remarkHeadingOptions?: RemarkHeadingOptions | false;
   remarkCodeTabOptions?: RemarkCodeTabOptions | false;
-  remarkNpmOptions?: RemarkNpmOptions | false;
-  rehypeCodeOptions?: RehypeCodeOptions | false;
   rehypeTocOptions?: RehypeTocOptions | false;
 }
 
@@ -72,6 +66,18 @@ type MathNode = Node & {
 type ParentLike = {
   children?: RootContent[];
 };
+
+function plugin<
+  PluginParameters extends unknown[],
+  Input extends string | Node | undefined,
+  Output,
+>(plugin: Plugin<PluginParameters, Input, Output>, ...params: NoInfer<PluginParameters>) {
+  return [plugin, ...params] as Pluggable;
+}
+
+function plugins(...plugins: (Pluggable | false | null | undefined)[]): Pluggable[] {
+  return plugins.filter((v) => v !== false && v != null);
+}
 
 function remarkMathFence() {
   return function transformer(tree: MdastRoot) {
@@ -119,17 +125,15 @@ function visitParents(
 }
 
 export function createMarkdownCompiler(options?: MarkdownCompilerOptions): MarkdownCompiler {
-  let mdx: ReturnType<typeof createMdxCompiler> | undefined;
-  let md: ReturnType<typeof createMdCompiler> | undefined;
+  let mdx: Awaited<ReturnType<typeof createMdxCompiler>> | undefined;
+  let md: Awaited<ReturnType<typeof createMdCompiler>> | undefined;
 
-  function createMdCompiler() {
+  async function createMdCompiler() {
     const {
       remarkHeadingOptions,
-      rehypeCodeOptions,
       rehypePlugins,
       rehypeTocOptions,
       remarkCodeTabOptions,
-      remarkNpmOptions,
       remarkPlugins,
       remarkRehypeOptions,
       remarkStructureOptions,
@@ -142,7 +146,6 @@ export function createMarkdownCompiler(options?: MarkdownCompilerOptions): Markd
           remarkMathFence,
           remarkHeadingOptions !== false &&
             plugin(remarkHeading, { generateToc: false, ...remarkHeadingOptions }),
-          remarkNpmOptions !== false && plugin(remarkNpm, remarkNpmOptions),
           remarkCodeTabOptions !== false && plugin(remarkCodeTab, remarkCodeTabOptions),
           ...(remarkPlugins ?? []),
           remarkStructureOptions !== false && plugin(remarkStructure, remarkStructureOptions),
@@ -154,7 +157,6 @@ export function createMarkdownCompiler(options?: MarkdownCompilerOptions): Markd
       })
       .use(
         plugins(
-          rehypeCodeOptions !== false && plugin(rehypeCode, rehypeCodeOptions),
           ...(rehypePlugins ?? []),
           rehypeTocOptions !== false &&
             plugin(rehypeToc, { exportToc: true, ...rehypeTocOptions }),
@@ -162,13 +164,11 @@ export function createMarkdownCompiler(options?: MarkdownCompilerOptions): Markd
       );
   }
 
-  function createMdxCompiler() {
+  async function createMdxCompiler() {
     const {
       remarkCodeTabOptions,
       remarkHeadingOptions,
-      remarkNpmOptions,
       remarkStructureOptions,
-      rehypeCodeOptions,
       rehypeTocOptions,
       remarkPlugins,
       rehypePlugins,
@@ -184,13 +184,11 @@ export function createMarkdownCompiler(options?: MarkdownCompilerOptions): Markd
         remarkMathFence,
         remarkHeadingOptions !== false &&
           plugin(remarkHeading, { generateToc: false, ...remarkHeadingOptions }),
-        remarkNpmOptions !== false && plugin(remarkNpm, remarkNpmOptions),
         remarkCodeTabOptions !== false && plugin(remarkCodeTab, remarkCodeTabOptions),
         ...(remarkPlugins ?? []),
         remarkStructureOptions !== false && plugin(remarkStructure, remarkStructureOptions),
       ),
       rehypePlugins: plugins(
-        rehypeCodeOptions !== false && plugin(rehypeCode, rehypeCodeOptions),
         ...(rehypePlugins ?? []),
         rehypeTocOptions !== false &&
           plugin(rehypeToc, { exportToc: true, ...rehypeTocOptions }),
@@ -203,7 +201,7 @@ export function createMarkdownCompiler(options?: MarkdownCompilerOptions): Markd
       const file = new VFile(input);
 
       if (file.extname === '.mdx') {
-        mdx ??= createMdxCompiler();
+        mdx ??= await createMdxCompiler();
         const out = await mdx.process(file);
         return {
           type: 'js',
@@ -212,7 +210,7 @@ export function createMarkdownCompiler(options?: MarkdownCompilerOptions): Markd
         };
       }
 
-      md ??= createMdCompiler();
+      md ??= await createMdCompiler();
       const tree = await md.run(md.parse(file), file);
       return {
         type: 'ast',
