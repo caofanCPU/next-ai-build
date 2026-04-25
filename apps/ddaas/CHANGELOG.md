@@ -1,5 +1,21 @@
 # @windrun-huaiin/ddaas-website
 
+## 26.0.0
+
+### Major Changes
+
+- fix(mdx): uniform major version
+  - fix 404page style
+
+### Patch Changes
+
+- Updated dependencies
+  - @windrun-huaiin/lib@26.0.0
+  - @windrun-huaiin/contracts@26.0.0
+  - @windrun-huaiin/base-ui@26.0.0
+  - @windrun-huaiin/third-ui@26.0.0
+  - @windrun-huaiin/fumadocs-local-md@26.0.0
+
 ## 25.0.0
 
 ### Major Changes

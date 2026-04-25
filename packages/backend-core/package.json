@@ -133,7 +133,7 @@
     "typescript": "catalog:"
   },
   "peerDependencies": {
-    "@windrun-huaiin/contracts": ">=25.0.0",
+    "@windrun-huaiin/contracts": ">=26.0.0",
     "@clerk/nextjs": "catalog:",
     "@prisma/client": "catalog:",
     "next": "catalog:",
