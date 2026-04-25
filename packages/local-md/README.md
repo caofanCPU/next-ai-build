@@ -139,7 +139,10 @@ This final fallback is intentionally generic. It does not try to guess which fea
 
 ## Cache Behavior
 
-Source loading is cached by default.
+Source loading is cached by default. The cache covers the Fumadocs-compatible source
+object, including the scanned file list, parsed `meta.json` files, and page
+frontmatter needed by Fumadocs to build routing, locale mappings, page tree data,
+and `generateStaticParams()` output.
 
 Disable the runtime cache during development with:
 
@@ -147,7 +150,27 @@ Disable the runtime cache during development with:
 LOCAL_MD_CACHE_DISABLE=true
 ```
 
-When disabled, local content is read and compiled again on refresh. This avoids a separate watch server and keeps the development workflow refresh-based.
+When disabled, local content is read again on refresh. This avoids a separate
+watch server and keeps the development workflow refresh-based, so new files,
+deleted files, renamed files, `meta.json` changes, and frontmatter changes are
+visible without restarting the dev server.
+
+Compilation is intentionally lazy in both modes:
+
+1. Source loading may scan the content directory and read lightweight metadata
+   such as frontmatter and `meta.json`.
+2. Source loading must not compile every Markdown or MDX page.
+3. A page body is compiled only when that page's `load(components)` or
+   `body({ components })` function is called.
+4. With cache enabled, the source and per-page compiled renderer can be reused to
+   reduce production and development overhead.
+5. With `LOCAL_MD_CACHE_DISABLE=true`, the source is rebuilt on refresh for
+   real-time content updates, but only the visited page should be compiled.
+
+This boundary is important: visiting one page must never compile all pages in the
+source tree. Full-source compilation on a single page request causes slow dev
+page loads and can exhaust the JavaScript heap when MDX compilation includes
+heavy plugins such as code highlighting.
 
 ## Source Shape
 

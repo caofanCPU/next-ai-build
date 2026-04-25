@@ -1,5 +1,18 @@
 # @windrun-huaiin/ddaas-website
 
+## 23.1.1
+
+### Patch Changes
+
+- fix(mdx): local-md fix source build action, which can cause OOM
+  - support `portable-clerk`, `fumadocs-clerk`, `fumadocs-normal` 3 styles of TOC
+- Updated dependencies
+  - @windrun-huaiin/lib@23.1.0
+  - @windrun-huaiin/contracts@23.1.0
+  - @windrun-huaiin/base-ui@23.1.0
+  - @windrun-huaiin/third-ui@23.1.1
+  - @windrun-huaiin/fumadocs-local-md@23.2.0
+
 ## 23.1.0
 
 ### Minor Changes

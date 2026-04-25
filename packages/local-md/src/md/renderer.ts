@@ -56,6 +56,10 @@ export function createMarkdownRenderer(
       }
 
       const compiled = await promise;
+      let mdxModulePromise: Promise<{
+        toc?: TOCItemType[];
+        default: MDXContent;
+      }> | undefined;
 
       return {
         get structuredData() {
@@ -105,15 +109,23 @@ export function createMarkdownRenderer(
             };
           }
 
-          const _out = await executeMdx(
-            compiled.code,
-            pathToFileURL(page.absolutePath).href,
-            userContext,
-          );
-          const out = _out as {
-            toc?: TOCItemType[];
-            default: MDXContent;
-          };
+          const out =
+            userContext == null
+              ? await (mdxModulePromise ??= executeMdx(
+                  compiled.code,
+                  pathToFileURL(page.absolutePath).href,
+                ) as Promise<{
+                  toc?: TOCItemType[];
+                  default: MDXContent;
+                }>)
+              : await (executeMdx(
+                  compiled.code,
+                  pathToFileURL(page.absolutePath).href,
+                  userContext,
+                ) as Promise<{
+                  toc?: TOCItemType[];
+                  default: MDXContent;
+                }>);
 
           return {
             toc: out.toc ?? [],

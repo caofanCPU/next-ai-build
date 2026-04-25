@@ -1,9 +1,15 @@
 import { DocsBody, DocsDescription, DocsPage, DocsTitle } from 'fumadocs-ui/page';
-import { ReactNode, ReactElement, cloneElement } from 'react';
+import { ReactNode, ReactElement, cloneElement, type CSSProperties } from 'react';
 import { TocFooterWrapper } from '@third-ui/fuma/mdx/toc-footer-wrapper';
 import type { LLMCopyButtonProps, LLMCopyButton } from '@third-ui/fuma/mdx/toc-base';
 import { getAsNeededLocalizedUrl } from '@windrun-huaiin/lib';
-import { PortableClerkTOC } from '@third-ui/fuma/mdx/toc-clerk-portable';
+import { PortableClerkTOC, PortableClerkTOCTitle } from '@third-ui/fuma/mdx/toc-clerk-portable';
+import { themeSvgIconColor } from '@windrun-huaiin/base-ui/lib';
+
+export type FumaPageTocRenderMode =
+  | 'portable-clerk'
+  | 'fumadocs-clerk'
+  | 'fumadocs-normal';
 
 interface FumaPageParams {
   /* 
@@ -50,6 +56,17 @@ interface FumaPageParams {
   showTableOfContent?: boolean;
 
   /*
+   * Controls which TOC renderer is used.
+   *
+   * - portable-clerk: use @third-ui's custom Clerk-like TOC renderer.
+   * - fumadocs-clerk: use fumadocs-ui's built-in clerk slot renderer.
+   * - fumadocs-normal: use fumadocs-ui's built-in normal slot renderer.
+   *
+   * @defaultValue 'portable-clerk'
+   */
+  tocRenderMode?: FumaPageTocRenderMode;
+
+  /*
    * @deprecated Mobile TOC popover is no longer used.
    */
   showTableOfContentPopover?: boolean;
@@ -77,6 +94,7 @@ export function createFumaPage({
   supportedLocales = ['en'],
   showBreadcrumb = true,
   showTableOfContent = true,
+  tocRenderMode = 'portable-clerk',
   showTableOfContentPopover = false,
   localePrefixAsNeeded = true,
   defaultLocale = 'en',
@@ -123,18 +141,15 @@ export function createFumaPage({
     return (
       <DocsPage
         breadcrumb={{enabled: showBreadcrumb}}
-        tableOfContent={{
+        tableOfContent={resolveTableOfContentOptions({
           enabled: showTableOfContent,
-          single: false,
-          component: (
-            <PortableClerkTOC
-              toc={content.toc}
-              footer={tocFooterElement}
-            />
-          ),
-        }}
+          tocRenderMode,
+          toc: content.toc,
+          footer: tocFooterElement,
+        })}
         tableOfContentPopover={{
-          enabled: false,
+          enabled: showTableOfContentPopover && tocRenderMode !== 'portable-clerk',
+          style: tocRenderMode === 'fumadocs-clerk' ? 'clerk' : 'normal',
         }}
         toc={content.toc}
         className="max-sm:pb-16"
@@ -194,3 +209,56 @@ export function createFumaPage({
     generateMetadata,
   };
 } 
+
+function resolveTableOfContentOptions({
+  enabled,
+  tocRenderMode,
+  toc,
+  footer,
+}: {
+  enabled: boolean;
+  tocRenderMode: FumaPageTocRenderMode;
+  toc: any[];
+  footer: ReactNode;
+}) {
+  if (tocRenderMode === 'portable-clerk') {
+    return {
+      enabled,
+      single: false,
+      component: (
+        <PortableClerkTOC
+          toc={toc}
+          footer={footer}
+        />
+      ),
+    };
+  }
+
+  const themedTocProps = {
+    container: {
+      className: '[--color-fd-primary:var(--third-ui-toc-primary)] [--color-fd-primary-foreground:var(--third-ui-toc-primary-foreground)] [&_#toc-title]:hidden',
+      style: {
+        '--third-ui-toc-primary': themeSvgIconColor,
+        '--third-ui-toc-primary-foreground': '#ffffff',
+      } as CSSProperties,
+    },
+    header: <PortableClerkTOCTitle />,
+    footer,
+  };
+
+  if (tocRenderMode === 'fumadocs-clerk') {
+    return {
+      enabled,
+      single: false,
+      style: 'clerk',
+      ...themedTocProps,
+    } as const;
+  }
+
+  return {
+    enabled,
+    single: false,
+    style: 'normal',
+    ...themedTocProps,
+  } as const;
+}

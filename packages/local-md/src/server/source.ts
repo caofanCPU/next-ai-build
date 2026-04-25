@@ -94,7 +94,7 @@ async function createRuntimeSource<
       }
 
       const page = file.data;
-      const rendererPromise = page.load();
+      let rendererPromise: ReturnType<typeof page.load> | undefined;
       const frontmatter = toRecord(page.frontmatter);
 
       const data: LegacyDocData<Record<string, unknown>> = {
@@ -107,6 +107,7 @@ async function createRuntimeSource<
           return rendered.body;
         },
         load: async (components) => {
+          rendererPromise ??= page.load();
           const renderer = await rendererPromise;
           const rendered = await renderer.render(components);
 

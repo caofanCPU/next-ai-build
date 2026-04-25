@@ -18,7 +18,8 @@ const { Page, generateStaticParams, generateMetadata } = createFumaPage({
   FallbackPage: NotFoundPage,
   showBreadcrumb: false,
   showTableOfContent: true,
-  showTableOfContentPopover: false
+  showTableOfContentPopover: false,
+  tocRenderMode: 'fumadocs-clerk'
 });
 
 export default Page;

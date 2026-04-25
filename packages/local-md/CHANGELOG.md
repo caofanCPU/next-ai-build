@@ -1,5 +1,12 @@
 # @windrun-huaiin/fumadocs-local-md
 
+## 23.2.0
+
+### Minor Changes
+
+- fix(mdx): local-md fix source build action, which can cause OOM
+  - support `portable-clerk`, `fumadocs-clerk`, `fumadocs-normal` 3 styles of TOC
+
 ## 23.1.0
 
 ### Minor Changes

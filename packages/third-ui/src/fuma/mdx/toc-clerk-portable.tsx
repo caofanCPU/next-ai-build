@@ -5,12 +5,12 @@
  * https://github.com/fuma-nama/fumadocs/blob/dev/packages/radix-ui/src/components/toc/clerk.tsx
  */
 import * as Primitive from 'fumadocs-core/toc';
+import { I18nLabel } from 'fumadocs-ui/contexts/i18n';
 import {
-  TOC as PageTOC,
-  TOCPopover as PageTOCPopover,
-  type TOCProps as PageTOCProps,
-  type TOCPopoverProps as PageTOCPopoverProps,
-} from 'fumadocs-ui/layouts/docs/page/slots/toc';
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from 'fumadocs-ui/components/ui/collapsible';
 import {
   type ComponentProps,
   type ReactNode,
@@ -24,6 +24,7 @@ import {
   themeIconColor,
   themeSvgIconColor,
 } from '@windrun-huaiin/base-ui/lib';
+import { ChevronDownIcon, NotepadTextIcon } from '@windrun-huaiin/base-ui/icons';
 
 type TOCItemType = Primitive.TOCItemType;
 
@@ -84,20 +85,20 @@ export function PortableClerkTOC({
   className,
 }: PortableClerkTOCProps) {
   return (
-    <PageTOC
-      style="clerk"
-      container={{ className }}
-      header={
-        <>
-          {header}
-          {title ?? null}
-        </>
-      }
-      footer={footer}
-      list={{
-        children: <PortableClerkTOCItems toc={toc} emptyLabel={emptyLabel} />,
-      } as PageTOCProps['list']}
-    />
+    <div
+      id="nd-toc"
+      className={cn(
+        'sticky top-(--fd-docs-row-1) h-[calc(var(--fd-docs-height)-var(--fd-docs-row-1))] flex flex-col [grid-area:toc] w-(--fd-toc-width) pt-12 pe-4 pb-2 max-xl:hidden',
+        className,
+      )}
+    >
+      {header}
+      {title ?? <PortableClerkTOCTitle />}
+      <PortableClerkTOCScrollArea>
+        <PortableClerkTOCItems toc={toc} emptyLabel={emptyLabel} />
+      </PortableClerkTOCScrollArea>
+      {footer}
+    </div>
   );
 }
 
@@ -108,14 +109,51 @@ export function PortableClerkTOCPopover({
   emptyLabel = 'No headings',
 }: Omit<PortableClerkTOCProps, 'title' | 'className'>) {
   return (
-    <PageTOCPopover
-      style="clerk"
-      header={header}
-      footer={footer}
-      list={{
-        children: <PortableClerkTOCItems toc={toc} emptyLabel={emptyLabel} />,
-      } as PageTOCPopoverProps['list']}
-    />
+    <Collapsible
+      data-toc-popover=""
+      className="sticky top-(--fd-docs-row-2) z-10 [grid-area:toc-popover] h-(--fd-toc-popover-height) xl:hidden max-xl:layout:[--fd-toc-popover-height:--spacing(10)]"
+    >
+      <header className="border-b bg-fd-background/80 backdrop-blur-sm transition-colors">
+        <CollapsibleTrigger
+          data-toc-popover-trigger=""
+          className="flex w-full h-10 items-center text-sm text-fd-muted-foreground gap-2.5 px-4 py-2.5 text-start focus-visible:outline-none [&_svg]:size-4 md:px-6"
+        >
+          <NotepadTextIcon className="shrink-0" />
+          <span className="flex-1 truncate">
+            <I18nLabel label="toc" />
+          </span>
+          <ChevronDownIcon className="shrink-0 transition-transform mx-0.5" />
+        </CollapsibleTrigger>
+        <CollapsibleContent data-toc-popover-content="">
+          <div className="flex max-h-[50vh] flex-col px-4 md:px-6">
+            {header}
+            <PortableClerkTOCScrollArea>
+              <PortableClerkTOCItems toc={toc} emptyLabel={emptyLabel} />
+            </PortableClerkTOCScrollArea>
+            {footer}
+          </div>
+        </CollapsibleContent>
+      </header>
+    </Collapsible>
+  );
+}
+
+export function PortableClerkTOCTitle({
+  className,
+  ...props
+}: ComponentProps<'h3'>) {
+  return (
+    <h3
+      id="toc-title"
+      className={cn(
+        'inline-flex items-center gap-1.5 text-sm text-fd-muted-foreground',
+        className,
+      )}
+      {...props}
+    >
+      <NotepadTextIcon className={cn('size-4', themeIconColor)} />
+      <I18nLabel label="toc" />
+    </h3>
   );
 }
 

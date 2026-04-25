@@ -413,15 +413,15 @@
     "searchNoResult": "No results found",
     "toc": "On this page",
     "tocNoHeadings": "No Headings",
-    "lastUpdate": "Last updated on",
+    "lastUpdate": "Last updated",
     "emptyLastUpdate": "Ooops, Ages ago!",
     "chooseLanguage": "Choose a language",
     "nextPage": "Next Page",
     "previousPage": "Previous Page",
     "chooseTheme": "Theme",
-    "copyMarkdown": "Copy page as Markdown",
+    "copyMarkdown": "Copy as Markdown",
     "copyMarkdownDone": "Copied!",
-    "editOnGithub": "Edit this page on GitHub"
+    "editOnGithub": "Edit on GitHub"
   },
   "fingerprint": {
     "panel": {
