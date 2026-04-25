@@ -1,5 +1,11 @@
 # @windrun-huaiin/backend-core
 
+## 25.0.1
+
+### Patch Changes
+
+- fix(mdx): uniform major version
+
 ## 25.0.0
 
 ### Patch Changes
