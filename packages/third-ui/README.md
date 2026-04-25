@@ -1,222 +1,185 @@
 # @windrun-huaiin/third-ui
 
-Third-party integrated UI components library, including Clerk authentication, Fumadocs documentation, and main application components.
+This README currently documents only the Fuma/MDX component design in `third-ui`.
 
-## Installation
+Other modules in this package, such as Clerk, main application UI, AI UI, fingerprint, SEO helpers, and shared layout utilities, are intentionally not covered here.
 
-```bash
-pnpm add @windrun-huaiin/third-ui
+## MDX Component Layer
+
+The Fuma/MDX part of `third-ui` provides the rendering component map used by application MDX pages.
+
+It is not responsible for reading files or compiling MDX. That belongs to `@windrun-huaiin/fumadocs-local-md`.
+
+The split is:
+
+- `local-md`: content source, frontmatter/meta parsing, Markdown/MDX compilation, render execution safety.
+- `third-ui`: React components used when MDX is rendered.
+- application: chooses which compiler features and renderer features are imported.
+
+## Design Goals
+
+- Keep the base MDX component map useful but small.
+- Make heavyweight rendering features explicit imports.
+- Avoid old aggregate component entries that import every renderer feature at module load time.
+- Let application code be the capability declaration.
+- Preserve a safe fallback path when disabled or unknown MDX components appear in content.
+- Keep renderer-only capabilities separate from compiler-only capabilities.
+
+## Current Entry Model
+
+New applications should use the base site MDX entry:
+
+```ts
+@windrun-huaiin/third-ui/fuma/server/site-mdx/base
 ```
 
-## TailwindCSS 4.x Config
+Optional renderer features live behind physical subpath entries:
 
-- Assume you have a project structure like this:
-
-```txt
-Your-project/
-├── src/
-│   └── app/
-│       └── globals.css
-├── node_modules/
-│   ├── @windrun-huaiin/
-│   │   ├── third-ui/
-│   │   │   └── src/        # This is third-ui src
-│   │   └── base-ui/
-│   │       └── src/        # This is base-ui src
-└── package.json
+```ts
+@windrun-huaiin/third-ui/fuma/server/site-mdx/features/code
+@windrun-huaiin/third-ui/fuma/server/site-mdx/features/math
+@windrun-huaiin/third-ui/fuma/server/site-mdx/features/mermaid
+@windrun-huaiin/third-ui/fuma/server/site-mdx/features/type-table
 ```
 
-- Then, in your `globals.css` file, you have to configure Tailwind CSS 4.x like this:
+The old aggregate entries have been removed. There is no supported `site-mdx-components` entry and no `optional-features` aggregate entry.
 
-```css
-@import 'tailwindcss';
+## Base Components
 
-@source "../node_modules/@windrun-huaiin/third-ui/src/**/*.{js,ts,jsx,tsx}";
-@source "../node_modules/@windrun-huaiin/base-ui/src/**/*.{js,ts,jsx,tsx}";
-@source "./src/**/*.{js,ts,jsx,tsx}";
+The base entry is the minimum component set for normal documentation content.
 
-/* Import styles */
-@import '@windrun-huaiin/third-ui/styles/third-ui.css';
-```
+It includes:
 
+- Fuma UI basics: `Card`, `Cards`, `Callout`, `File`, `Folder`, `Files`, `Accordion`, `Accordions`, `Tab`, `Tabs`.
+- Markdown element renderers: headings, links, blockquote, lists, table, inline code, pre, image, and related primitive tags.
+- Site-level lightweight components: `SiteX`, `TrophyCard`, `ZiaCard`, `GradientButton`, `ZiaFile`, `ZiaFolder`, `SunoEmbed`.
+- Image rendering integration with image fallback and CDN-related options.
+- Feature-specific fallback components for disabled math, Mermaid, type table, and code-tab style components.
 
-## Usage Example
+It intentionally does not include heavyweight renderer implementations such as Mermaid, KaTeX rendering, Fuma codeblock rendering, or type-table rendering.
 
-Root entry import is not supported. Always import from an explicit subpath such as `@windrun-huaiin/third-ui/clerk` or `@windrun-huaiin/third-ui/main`.
+## Renderer Feature Matrix
 
-### Import components by module
-```tsx
-// Only import Clerk related components
-import { ClerkUser, ClerkOrganization } from '@windrun-huaiin/third-ui/clerk';
+| Capability | Renderer Entry | Compiler Entry Required | Notes |
+| --- | --- | --- | --- |
+| `base` | `site-mdx/base` | `local-md/presets/fuma-docs/base` | Required for normal MDX rendering |
+| `code` | `site-mdx/features/code` | `local-md/presets/fuma-docs/features/code` | Enables Fuma codeblock UI and built-in language icon mapping |
+| `math` | `site-mdx/features/math` | `local-md/presets/fuma-docs/features/math` | Enables `MathBlock` and `InlineMath` rendering |
+| `mermaid` | `site-mdx/features/mermaid` | Not required | Renderer-only component capability |
+| `type-table` | `site-mdx/features/type-table` | Not required | Renderer-only component capability |
+| `npm` | Not required | `local-md/presets/fuma-docs/features/npm` | Compiler-only content transform |
 
-// Only import main application components
-import { CTA, Features } from '@windrun-huaiin/third-ui/main';
+This table is the main rule for application integration.
 
-// Only import Fumadocs components  
-import { FumaPageGenerator, FumaBannerSuit } from '@windrun-huaiin/third-ui/fuma/server';
+`code` and `math` need both compiler and renderer support. `npm` is compiler-only. `mermaid` and `type-table` are renderer-only.
 
-// Shared MDX building blocks
-import { TocFooterWrapper, PortableClerkTOC } from '@windrun-huaiin/third-ui/fuma/mdx';
-```
+## Bundle Cropping Rule
 
-### Use components
-```tsx
-// Clerk user component (need to pass in translations and configuration)
-<ClerkUser 
-  locale="zh"
-  clerkAuthInModal={true}
-  t={{ signIn: "Sign in" }}
-  t2={{ terms: "Terms of Service", privacy: "Privacy Policy" }}
-/>
+Renderer pruning is based on import boundaries.
 
-// Clerk organization component
-<ClerkOrganization locale="zh" className="custom-class" />
+If an application does not import `site-mdx/features/mermaid`, Mermaid renderer code should not be pulled into the base renderer entry. The same rule applies to code, math, and type-table renderer features.
 
-// Main application components
-<CTA />
-<Features />
-```
+Do not reintroduce a file that imports all renderer features and then chooses one at runtime. That pattern defeats bundle cropping because static imports run before configuration checks.
 
-## Design Principles
+Correct model:
 
-1. **Modularization**: Grouped by functional domain, support import on demand
-2. **Parameterization**: Remove hard-coded dependencies, pass configuration through props
-3. **Type safety**: Full TypeScript support
-4. **Path alias**: Use `@/` alias internally, keep code clean
+- base entry imports only base renderers and lightweight fallback components.
+- each optional feature entry imports only its own renderer implementation.
+- application code imports the feature entries it wants.
 
-## Dependencies
+## Fallback Design
 
-- `@windrun-huaiin/base-ui`: Base UI components
-- `@windrun-huaiin/lib`: General utility library
-- `@clerk/nextjs`: Clerk authentication
-- `fumadocs-core`, `fumadocs-ui`: Fumadocs documentation
+There are two fallback layers.
 
-## Notes
+The first layer lives in `third-ui`.
 
-- Components have removed direct `appConfig` dependencies, and configuration is passed through props
-- Clerk components need to provide correct translations in the application layer
-- Some components may require specific CSS animation classes (e.g. `animate-cta-gradient-wave`) 
+It provides feature-aware fallbacks for known but disabled MDX capabilities:
 
-## Component List
+- `MathBlock`
+- `InlineMath`
+- `Mermaid`
+- `TypeTable`
+- `CodeBlockTab`
+- `CodeBlockTabs`
+- `CodeBlockTabsList`
+- `CodeBlockTabsTrigger`
 
-### Clerk module
-- `ClerkProviderClient` - Clerk authentication provider
-- `ClerkUser` - User button component  
-- `ClerkOrganization` - Organization switcher component
+These fallbacks render visible warning blocks instead of silently dropping content.
 
-### Main module
-- `CTA` - Call-to-Action component
-- `Features` - Feature showcase component
-- `Footer` - Footer component
-- `Gallery` - Image gallery component
-- `GoToTop` - Go to top button
-- `SEOContent` - SEO content component
-- `Tips` - Tip component
+The second layer lives in `local-md`.
 
-### Fuma module
-- `getMDXComponents` - MDX component configuration function
-- `createMDXComponents` - MDX component factory function
-- `TocFooter` - Table of contents footer component
-- `FumaBannerSuit` - Fumadocs banner component
-
-### Fuma MDX submodule
-- `Mermaid` - Flowchart component
-- `ImageZoom` - Image zoom component
-- `TrophyCard` - Trophy card component
-- `ImageGrid` - Image grid component
-- `ZiaCard` - Zia card component
-- `GradientButton` - Gradient button component 
-
-## Usage
-
-### Clerk components
-
-```tsx
-import { ClerkProviderClient, ClerkUser } from '@windrun-huaiin/third-ui/clerk';
-
-// Use in layout.tsx
-<ClerkProviderClient 
-  signInUrl="/sign-in"
-  signUpUrl="/sign-up"
-  waitlistUrl="/waitlist"
->
-  {children}
-</ClerkProviderClient>
-
-// Use in navigation bar
-<ClerkUser clerkAuthInModal={true} />
-```
-
-### Main components
-
-```tsx
-import { CTA, Features, Footer } from '@windrun-huaiin/third-ui/main';
-
-// Use various page components
-<Features />
-<CTA />
-<Footer />
-```
-
-### Fumadocs components
-
-```tsx
-import { createMDXComponents, TocFooter } from '@windrun-huaiin/third-ui/fuma';
-
-// Create pre-configured MDX components
-const getMDXComponents = createMDXComponents({
-  watermark: {
-    enabled: true,
-    text: "Your Watermark"
-  },
-  githubBaseUrl: "https://github.com/your-org/your-repo/edit/main/"
-});
-
-// Use in page
-const MDX = page.data.body;
-<MDX components={getMDXComponents()} />
-
-// Use TocFooter
-<TocFooter 
-  lastModified={page.data.date}
-  showCopy={true}
-  editPath="src/docs/your-file.mdx"
-  githubBaseUrl="https://github.com/your-org/your-repo/edit/main/"
-/>
-```
-
-#### MDX components global configuration
-
-In MDX file:
+It is the final safety net for arbitrary unknown PascalCase components, such as:
 
 ```mdx
-<!-- Mermaid chart, watermark automatically applied -->
-<Mermaid
-  chart="graph TD; A-->B"
-  title="My Diagram"
-/>
-
-<!-- Image grid, CDN URL automatically applied -->
-<ImageGrid
-  type="url"
-  images={["image1.webp", "image2.webp"]}
-  altPrefix="example"
-/>
-
-<!-- Image zoom, placeholder image automatically applied -->
-<ImageZoom src="/some-image.jpg" alt="Example" />
+<CalloutXXX />
 ```
 
-All configuration parameters will be automatically obtained from the global configuration, and no need to specify them in each use.
+`local-md` detects missing component references from the compiled MDX output and injects generic fallback components before rendering. This prevents unknown MDX components from crashing the page.
 
+The priority order is:
 
-## Showcase
+- application-provided MDX components
+- enabled `third-ui` renderer feature components
+- `third-ui` known disabled-feature fallbacks
+- `local-md` generic unknown-component fallback
 
-- [Free Trivia Game](https://freetrivia.info/)
-- [Music Poster](https://musicposter.org/en)
-- [Image Narration](https://imagenarration.com/en)
-- [Describe Yourself](https://describeyourself.org/en)
-- [Newspaper Template](https://newspaper-template.org/en)
-- [breathing exercise](https://breathingexercise.net/en)
-- [ai directory list](https://aidirectorylist.com/en)
-- [reve image directory](https://reveimage.directory/en)
+## Heavy Renderer Boundary
+
+Heavy renderers are isolated under dedicated feature paths or heavy modules.
+
+Examples:
+
+- Mermaid rendering is behind the Mermaid feature entry.
+- Math rendering uses the math feature entry and lazy heavy math renderer.
+- Type table rendering is behind the type-table feature entry.
+- Fuma codeblock rendering is behind the code feature entry.
+
+The code renderer owns its programming-language icon map internally. Applications should not pass a global icon map into `createCodeMdxComponents()`.
+
+This keeps `site-mdx/base` from becoming a hidden dependency sink.
+
+## Application Rules
+
+Applications should treat their MDX integration files as the capability declaration.
+
+For `apps/ddaas`, the important files are:
+
+- `src/lib/content-source.ts`: compiler/source capabilities.
+- `src/components/mdx-components.tsx`: renderer/component capabilities.
+
+When enabling a capability:
+
+- import the compiler feature only if the capability needs compiler support.
+- import the renderer feature only if the capability needs renderer support.
+- add the imported feature to the matching `features` list.
+- do not import unused feature entries “just in case”.
+
+If an application creates its own MDX component and that component imports a heavy package directly, the package can still enter the bundle. That is expected and belongs to the application layer.
+
+## Styling
+
+MDX components assume the application includes the package styles and Tailwind source scanning for `third-ui`.
+
+The exact global CSS setup is application-specific, but MDX pages need the same base styles used by the rest of the Fuma UI integration.
+
+## Export Map
+
+MDX-related exports currently relevant to this design:
+
+| Export | Purpose |
+| --- | --- |
+| `./fuma/server/site-mdx/base` | Recommended base MDX component factory |
+| `./fuma/server/site-mdx/features/code` | Optional code renderer components |
+| `./fuma/server/site-mdx/features/math` | Optional math renderer components |
+| `./fuma/server/site-mdx/features/mermaid` | Optional Mermaid renderer components |
+| `./fuma/server/site-mdx/features/type-table` | Optional type-table renderer components |
+| `./fuma/mdx` | Shared MDX building blocks used by pages and widgets |
+| `./fuma/heavy` | Heavy renderer exports; avoid importing from app base paths unless intentionally needed |
+| `./fuma/share` | Shared markdown component utilities |
+
+## Non-Goals
+
+- This README does not document Clerk, main UI, AI UI, fingerprint, or SEO helpers.
+- The base MDX entry should not become an all-features preset.
+- Runtime feature flags should not be used as the primary pruning mechanism.
+- Unknown MDX components should not crash the page.

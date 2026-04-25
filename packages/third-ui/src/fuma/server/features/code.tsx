@@ -78,17 +78,13 @@ function tryToMatchIcon(
   return undefined;
 }
 
-export function createCodeMdxComponents(
-  iconMap: Record<string, ReactNode> = {},
-): MDXComponents {
-  const mergedIconMap = {
-    ...defaultCodeLanguageIconMap,
-    ...iconMap,
-  };
-
+export function createCodeMdxComponents(): MDXComponents {
   return {
     pre: (props) => {
-      const customIcon = tryToMatchIcon(props as MDXProps & { 'data-language'?: string; title?: string }, mergedIconMap);
+      const customIcon = tryToMatchIcon(
+        props as MDXProps & { 'data-language'?: string; title?: string },
+        defaultCodeLanguageIconMap,
+      );
       return (
         <CodeBlock
           {...props}

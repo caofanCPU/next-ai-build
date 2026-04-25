@@ -1,6 +1,6 @@
 {
   "name": "@windrun-huaiin/third-ui",
-  "version": "23.0.0",
+  "version": "23.1.0",
   "description": "Third-party integrated UI components for windrun-huaiin projects",
   "exports": {
     "./clerk": {
@@ -48,11 +48,6 @@
       "import": "./dist/fuma/server.mjs",
       "require": "./dist/fuma/server.js"
     },
-    "./fuma/server/site-mdx-components": {
-      "types": "./dist/fuma/server/site-mdx-components.d.ts",
-      "import": "./dist/fuma/server/site-mdx-components.mjs",
-      "require": "./dist/fuma/server/site-mdx-components.js"
-    },
     "./fuma/server/site-mdx/base": {
       "types": "./dist/fuma/server/site-mdx-base.d.ts",
       "import": "./dist/fuma/server/site-mdx-base.mjs",
@@ -92,11 +87,6 @@
       "types": "./dist/fuma/mdx/index.d.ts",
       "import": "./dist/fuma/mdx/index.mjs",
       "require": "./dist/fuma/mdx/index.js"
-    },
-    "./fuma/server/optional-features": {
-      "types": "./dist/fuma/server/optional-features.d.ts",
-      "import": "./dist/fuma/server/optional-features.mjs",
-      "require": "./dist/fuma/server/optional-features.js"
     },
     "./fuma/base": {
       "types": "./dist/fuma/base/index.d.ts",

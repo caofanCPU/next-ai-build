@@ -1,11 +1,8 @@
 import { createConfiguredLocalMdSourceFactory } from '@windrun-huaiin/fumadocs-local-md/server/source';
 import { createFumaDocsBaseCompilerOptions } from '@windrun-huaiin/fumadocs-local-md/presets/fuma-docs/base';
-// code
-// import { createFumaDocsCodeFeature } from '@windrun-huaiin/fumadocs-local-md/presets/fuma-docs/features/code';
-// math
-// import { createFumaDocsMathFeature } from '@windrun-huaiin/fumadocs-local-md/presets/fuma-docs/features/math';
-// npm
-// import { createFumaDocsNpmFeature } from '@windrun-huaiin/fumadocs-local-md/presets/fuma-docs/features/npm';
+import { createFumaDocsCodeFeature } from '@windrun-huaiin/fumadocs-local-md/presets/fuma-docs/features/code';
+import { createFumaDocsMathFeature } from '@windrun-huaiin/fumadocs-local-md/presets/fuma-docs/features/math';
+import { createFumaDocsNpmFeature } from '@windrun-huaiin/fumadocs-local-md/presets/fuma-docs/features/npm';
 import { createCommonDocsSchema, createCommonMetaSchema } from '@third-ui/lib/server';
 import { getGlobalIcon } from '@base-ui/components/server';
 import { i18n } from '@/i18n';
@@ -22,13 +19,13 @@ export const mdxSourceFactory: MdxSourceFactory = createConfiguredLocalMdSourceF
   ...createFumaDocsBaseCompilerOptions({
     features: [
       // code
-      // createFumaDocsCodeFeature(),
+      createFumaDocsCodeFeature(),
 
       // math
-      // createFumaDocsMathFeature(),
+      createFumaDocsMathFeature(),
 
       // npm
-      // createFumaDocsNpmFeature(),
+      createFumaDocsNpmFeature(),
 
       // mermaid, no need source handler, just need components for render
 

@@ -1,11 +1,13 @@
 import { Tab, Tabs } from 'fumadocs-ui/components/tabs';
 import { Callout } from 'fumadocs-ui/components/callout';
+import { Card, Cards } from 'fumadocs-ui/components/card';
 import { File, Folder, Files } from 'fumadocs-ui/components/files';
 import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
 import type { MDXComponents } from 'mdx/types';
 import { SiteX } from '../site-x';
 import { createBaseMdxComponents } from './features/base';
 import { createWidgetMdxComponents } from './features/widgets';
+import { withMissingMdxComponentFallback } from './site-mdx-fallbacks';
 
 export type SiteMdxFeatureComponents = MDXComponents;
 
@@ -21,6 +23,8 @@ export interface CreateSiteMdxComponentsOptions {
 }
 
 const defaultFumaUiComponents: MDXComponents = {
+  Card,
+  Cards,
   Callout,
   File,
   Folder,
@@ -52,11 +56,11 @@ export function createSiteMdxComponents(
   } = options;
 
   return function getMDXComponents(components?: MDXComponents): MDXComponents {
-    return {
+    return withMissingMdxComponentFallback({
       ...createSiteMdxBaseComponents(baseOptions),
       ...features.reduce<MDXComponents>((acc, feature) => ({ ...acc, ...feature }), {}),
       ...additionalComponents,
       ...components,
-    };
+    });
   };
 }

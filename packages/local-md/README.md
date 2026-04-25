@@ -1,87 +1,184 @@
 # @windrun-huaiin/fumadocs-local-md
 
-A compatibility-focused local Markdown source package based on the open-source `@fumadocs/local-md` project.
-You can visit his [source code here](https://github.com/fuma-nama/fumadocs), and also read his [blog](https://www.fumadocs.dev/) is a good idea.
+Local Markdown/MDX source runtime for Fumadocs-style documentation sites.
 
-This package is maintained as a project-specific fork for environments that need a local Markdown source layer compatible with an older Fumadocs stack, especially `fumadocs-core@16.0.9` and `fumadocs-ui@16.0.9`.
+This package is responsible for reading local content files, parsing frontmatter and meta files, compiling Markdown/MDX, rendering page bodies, and exposing a source loader that application projects can use from server-side routes or page generators.
 
-## Why This Fork Exists
+## Design Goals
 
-The upstream `@fumadocs/local-md` package is designed for the modern Fumadocs ecosystem. In practice, adopting it inside an existing production codebase can be difficult when:
+- Keep local Markdown and MDX loading in one server-side package.
+- Provide a small base compiler preset that is safe for minimal documentation sites.
+- Make heavyweight MDX capabilities opt-in through physical import boundaries.
+- Avoid feature flags that run after static imports, because those cannot reliably reduce bundle output.
+- Support Fumadocs-style source data, TOC, structured data, frontmatter schemas, and meta schemas.
+- Keep application integration explicit enough that bundle ownership is clear.
 
-- the project cannot upgrade the full Fumadocs stack together
-- custom UI extensions depend on older `fumadocs-ui` types and behaviors
-- the existing documentation layer already relies on project-specific rendering, icons, and MDX integrations
+## Recommended Entry Points
 
-This fork exists to close that compatibility gap without requiring a full upstream upgrade.
+Use these entries for new integrations:
 
-## Goals
+```ts
+import { createConfiguredLocalMdSourceFactory } from '@windrun-huaiin/fumadocs-local-md/server/source';
+import { createFumaDocsBaseCompilerOptions } from '@windrun-huaiin/fumadocs-local-md/presets/fuma-docs/base';
+```
 
-- Keep a local Markdown source workflow for Fumadocs-based projects
-- Preserve compatibility with `fumadocs-core@16.0.9`
-- Avoid forcing `fumadocs-ui` upgrades in projects with heavy custom UI extensions
-- Support project-specific integration requirements such as:
-  - custom themed icon resolution
-  - custom MDX rendering behavior
-  - compatibility-focused loader adaptation
+Optional compiler features are exposed as separate entries:
 
-## Key Differences From Upstream
+```ts
+import { createFumaDocsCodeFeature } from '@windrun-huaiin/fumadocs-local-md/presets/fuma-docs/features/code';
+import { createFumaDocsMathFeature } from '@windrun-huaiin/fumadocs-local-md/presets/fuma-docs/features/math';
+import { createFumaDocsNpmFeature } from '@windrun-huaiin/fumadocs-local-md/presets/fuma-docs/features/npm';
+```
 
-Compared with upstream `@fumadocs/local-md`, this fork includes compatibility and integration changes for older Fumadocs environments and real-world monorepo usage.
+The legacy aggregate preset is still exported:
 
-Notable adaptation areas include:
+```ts
+import { createFumaDocsCompilerOptions } from '@windrun-huaiin/fumadocs-local-md/presets/fuma-docs';
+```
 
-- compatibility fixes for `fumadocs-core@16.0.9`
-- workspace-friendly packaging and exports
-- frontmatter/schema handling aligned with this project's runtime expectations
-- custom loader integration to preserve icon and page-tree behavior
-- local integration adjustments for project-specific MDX rendering flows
+Prefer the base-plus-feature entry model when bundle pruning matters.
 
-This package should be treated as a maintained compatibility fork, not as a drop-in mirror of the upstream release.
+## Basic Usage
 
-## Scope
+```ts
+import { createConfiguredLocalMdSourceFactory } from '@windrun-huaiin/fumadocs-local-md/server/source';
+import { createFumaDocsBaseCompilerOptions } from '@windrun-huaiin/fumadocs-local-md/presets/fuma-docs/base';
 
-This fork is primarily intended for:
+export const mdxSourceFactory = createConfiguredLocalMdSourceFactory({
+  frontmatterSchema,
+  metaSchema,
+  i18n,
+  icon(icon) {
+    return getIcon(icon);
+  },
+  ...createFumaDocsBaseCompilerOptions(),
+});
 
-- projects already built on an older Fumadocs stack
-- teams that need a local Markdown source solution without upgrading all Fumadocs packages together
-- monorepos with project-specific MDX, icon, and layout integration requirements
+export async function getContentSource(sourceKey: 'docs' | 'blog' | 'legal') {
+  return mdxSourceFactory.getCachedSource(sourceKey);
+}
+```
 
-If you are starting from scratch on the latest Fumadocs stack, the upstream package is still the first thing to evaluate.
+The source factory returns a cached source loader. Each source key maps to local content under the configured source root, for example `src/mdx/docs`, `src/mdx/blog`, or `src/mdx/legal`.
 
-## Runtime Cache Strategy
+## Compiler Capabilities
 
-This fork no longer keeps the upstream-style development watch server.
+The base preset includes the common Markdown/MDX pipeline and lightweight Fumadocs structure plugins. Heavy features are opt-in.
 
-Instead, cache behavior is controlled with a server-side environment variable:
+```ts
+import { createFumaDocsBaseCompilerOptions } from '@windrun-huaiin/fumadocs-local-md/presets/fuma-docs/base';
+import { createFumaDocsCodeFeature } from '@windrun-huaiin/fumadocs-local-md/presets/fuma-docs/features/code';
+import { createFumaDocsMathFeature } from '@windrun-huaiin/fumadocs-local-md/presets/fuma-docs/features/math';
+import { createFumaDocsNpmFeature } from '@windrun-huaiin/fumadocs-local-md/presets/fuma-docs/features/npm';
 
-- `LOCAL_MD_CACHE_DISABLE=true`
+const compilerOptions = createFumaDocsBaseCompilerOptions({
+  features: [
+    createFumaDocsCodeFeature(),
+    createFumaDocsMathFeature(),
+    createFumaDocsNpmFeature(),
+  ],
+});
+```
 
-When this value is set to `true`, local markdown and MDX content are read and parsed again on refresh instead of reusing cached results.
+| Capability | Compiler Feature | Main Effect |
+| --- | --- | --- |
+| `base` | `createFumaDocsBaseCompilerOptions()` | Markdown/MDX parsing, TOC, structure, heading handling, code tabs, steps |
+| `code` | `createFumaDocsCodeFeature()` | Rehype code highlighting and Shiki-related compiler chain |
+| `math` | `createFumaDocsMathFeature()` | `remark-math` and `rehype-katex` |
+| `npm` | `createFumaDocsNpmFeature()` | Install command transformation through Fumadocs npm remark plugin |
 
-This keeps the development model simple:
+Renderer-only capabilities such as Mermaid diagrams and type tables are not compiler features. They belong in the MDX component layer of the application or UI package.
 
-- no extra local dev server
-- no runtime watch connection setup
-- normal refresh-based content verification during development
+## Bundle Pruning Model
 
-In production, you can leave this variable unset so the package keeps its normal cache behavior.
+Bundle pruning is based on imports, not runtime configuration.
+
+If an application only imports the base preset, code/math/npm compiler implementations are not statically imported by the base entry. To enable a feature, the application must import the feature entry and pass the feature object into `createFumaDocsBaseCompilerOptions()`.
+
+This is intentional. A config array such as `features: ['code']` is not enough if the module that interprets it has already imported every implementation at the top level.
+
+## Runtime Rendering Safety
+
+MDX files can reference components that were not registered by the application. By default, MDX throws an error such as:
+
+```txt
+Expected component `Example` to be defined
+```
+
+This package treats that as a content authoring problem, not a reason to take the whole page down.
+
+The fallback is applied in the `local-md` render stage:
+
+1. MDX is compiled to function-body JavaScript.
+2. The compiled output is scanned for `_missingMdxReference("ComponentName", true)`.
+3. Before rendering the MDX component, `local-md` adds fallback React components for missing PascalCase component names.
+4. The MDX runtime receives a real component, so the page renders a visible warning block instead of throwing.
+
+This protects the site from accidental authoring errors such as:
+
+```mdx
+<NotRegistered title="Example">
+  Content
+</NotRegistered>
+```
+
+The fallback block shows:
+
+- the missing component name
+- primitive props such as strings, numbers, and booleans
+- children content when available
+
+Fallback priority is:
+
+1. Application-provided MDX components.
+2. UI package feature components, such as code, math, Mermaid, or type-table renderers.
+3. UI package feature-specific fallbacks, such as disabled `MathBlock` or `Mermaid`.
+4. `local-md` unknown component fallback as the final safety net.
+
+This final fallback is intentionally generic. It does not try to guess which feature should be enabled; it only prevents unknown MDX components from making the route unavailable.
+
+## Cache Behavior
+
+Source loading is cached by default.
+
+Disable the runtime cache during development with:
+
+```bash
+LOCAL_MD_CACHE_DISABLE=true
+```
+
+When disabled, local content is read and compiled again on refresh. This avoids a separate watch server and keeps the development workflow refresh-based.
+
+## Source Shape
+
+The configured source exposes page data in a Fumadocs-compatible shape:
+
+- `title`
+- `description`
+- `icon`
+- `toc`
+- `body`
+- `load()`
+- frontmatter fields from the configured schema
+
+`load(components)` renders the page body with the supplied MDX component map and returns the rendered body, TOC, structured data, and module exports.
+
+## Export Map
+
+Important package exports:
+
+| Export | Purpose |
+| --- | --- |
+| `.` | Core local-md API and shared types |
+| `./core` | Minimal core API without server source helpers |
+| `./server/source` | Configured source factory for applications |
+| `./presets/fuma-docs/base` | Recommended base compiler preset |
+| `./presets/fuma-docs/features/code` | Optional code compiler feature |
+| `./presets/fuma-docs/features/math` | Optional math compiler feature |
+| `./presets/fuma-docs/features/npm` | Optional npm compiler feature |
+| `./js/executor-virtual` | Virtual JS executor for Markdown AST rendering |
+| `./js/executor-native` | Native JS executor |
 
 ## Attribution
 
-This package is based on the open-source `@fumadocs/local-md` project from Fumadocs.
-
-The original architecture and upstream implementation come from the Fumadocs project and its author(s). This fork adds substantial compatibility and integration adaptations for the Windrun-Huaiin monorepo and other projects with similar version-lock and migration constraints.
-
-## Naming
-
-This package is published under a separate name because it is not the official upstream package:
-
-- upstream: `@fumadocs/local-md`
-- this fork: `@windrun-huaiin/fumadocs-local-md`
-
-The separate package name is intentional and helps avoid confusion between upstream releases and this compatibility-focused fork.
-
-## License
-
-This package keeps the upstream license model. See the repository license information before external reuse or redistribution.
+This package is based on `@fumadocs/local-md`, with substantial modifications and enhancements.

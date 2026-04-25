@@ -1,5 +1,18 @@
 # @windrun-huaiin/backend-core
 
+## 24.0.0
+
+### Minor Changes
+
+- fix(mdx): support cut packages by adjust mdx config
+
+### Patch Changes
+
+- Updated dependencies
+  - @windrun-huaiin/lib@23.1.0
+  - @windrun-huaiin/contracts@23.1.0
+  - @windrun-huaiin/third-ui@23.1.0
+
 ## 23.0.0
 
 ### Major Changes

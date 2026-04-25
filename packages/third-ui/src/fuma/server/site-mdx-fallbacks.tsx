@@ -1,4 +1,5 @@
 import type { ComponentPropsWithoutRef, ReactNode } from 'react';
+import type { MDXComponents } from 'mdx/types';
 
 type MissingFeatureBlockProps = ComponentPropsWithoutRef<'div'> & {
   feature: string;
@@ -118,5 +119,54 @@ export function createMissingMdxFeatureComponents() {
     TypeTable: (props: ComponentPropsWithoutRef<'div'>) => (
       <MissingMdxFeatureBlock {...props} feature="API table renderer" component="TypeTable" />
     ),
+    CodeBlockTab: (props: ComponentPropsWithoutRef<'div'>) => (
+      <MissingMdxFeatureBlock {...props} feature="code" component="CodeBlockTab" />
+    ),
+    CodeBlockTabs: (props: ComponentPropsWithoutRef<'div'>) => (
+      <MissingMdxFeatureBlock {...props} feature="code" component="CodeBlockTabs" />
+    ),
+    CodeBlockTabsList: (props: ComponentPropsWithoutRef<'div'>) => (
+      <MissingMdxFeatureBlock {...props} feature="code" component="CodeBlockTabsList" />
+    ),
+    CodeBlockTabsTrigger: (props: ComponentPropsWithoutRef<'div'>) => (
+      <MissingMdxFeatureBlock {...props} feature="code" component="CodeBlockTabsTrigger" />
+    ),
   };
+}
+
+export function createMissingMdxComponentFallback(component: string) {
+  return function MissingMdxComponent(props: ComponentPropsWithoutRef<'div'>) {
+    return (
+      <MissingMdxFeatureBlock
+        {...props}
+        feature="unknown MDX component"
+        component={component}
+      />
+    );
+  };
+}
+
+export function withMissingMdxComponentFallback(
+  components: MDXComponents,
+): MDXComponents {
+  return new Proxy(components, {
+    has(target, prop) {
+      if (typeof prop === 'string' && /^[A-Z]/.test(prop)) {
+        return true;
+      }
+
+      return prop in target;
+    },
+    get(target, prop, receiver) {
+      if (typeof prop !== 'string' || prop in target) {
+        return Reflect.get(target, prop, receiver);
+      }
+
+      if (/^[A-Z]/.test(prop)) {
+        return createMissingMdxComponentFallback(prop);
+      }
+
+      return Reflect.get(target, prop, receiver);
+    },
+  });
 }

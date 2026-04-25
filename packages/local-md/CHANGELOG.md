@@ -1,5 +1,11 @@
 # @windrun-huaiin/fumadocs-local-md
 
+## 23.1.0
+
+### Minor Changes
+
+- fix(mdx): support cut packages by adjust mdx config
+
 ## 23.0.0
 
 ### Major Changes
