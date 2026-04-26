@@ -6,7 +6,7 @@ import type { StandardSchemaV1 } from '@standard-schema/spec';
 import type { PageData } from 'fumadocs-core/source';
 import { parseFrontmatter } from './frontmatter';
 import * as defaultSchemas from './schema';
-import { logLocalMdDebug } from './debug';
+import { getLocalMdDurationMs, getLocalMdNow, logLocalMdDebug } from './debug';
 
 export interface RawPage<Frontmatter = Record<string, unknown>> {
   path: string;
@@ -127,6 +127,7 @@ export function createStorage<
       filesCache.delete(absolutePath);
     },
     async getPages() {
+      const startedAt = getLocalMdNow();
       const files = await glob(include, {
         cwd: dir,
       });
@@ -165,6 +166,7 @@ export function createStorage<
         processCwd: process.cwd(),
         pageFileCount: pages.length,
         metaFileCount: metas.length,
+        durationMs: getLocalMdDurationMs(startedAt),
       });
 
       return { pages, metas };

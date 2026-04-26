@@ -15,6 +15,7 @@ import remarkRehype, { type Options as RemarkRehypeOptions } from 'remark-rehype
 import type { Root as MdastRoot, RootContent, Parent } from 'mdast';
 import type { Data, Node } from 'unist';
 import type { Pluggable, Plugin } from 'unified';
+import { getLocalMdDurationMs, getLocalMdNow, logLocalMdDebug } from '../debug';
 
 export interface MarkdownCompilerOptions {
   mdOptions?: MarkdownProcessorOptions;
@@ -198,11 +199,16 @@ export function createMarkdownCompiler(options?: MarkdownCompilerOptions): Markd
 
   return {
     async compile(input) {
+      const startedAt = getLocalMdNow();
       const file = new VFile(input);
 
       if (file.extname === '.mdx') {
         mdx ??= await createMdxCompiler();
         const out = await mdx.process(file);
+        logLocalMdDebug('compiler:compile:mdx', {
+          filePath: file.path,
+          durationMs: getLocalMdDurationMs(startedAt),
+        });
         return {
           type: 'js',
           file,
@@ -212,6 +218,10 @@ export function createMarkdownCompiler(options?: MarkdownCompilerOptions): Markd
 
       md ??= await createMdCompiler();
       const tree = await md.run(md.parse(file), file);
+      logLocalMdDebug('compiler:compile:md', {
+        filePath: file.path,
+        durationMs: getLocalMdDurationMs(startedAt),
+      });
       return {
         type: 'ast',
         tree,

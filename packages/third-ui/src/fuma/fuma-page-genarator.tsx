@@ -99,6 +99,14 @@ export function createFumaPage({
   localePrefixAsNeeded = true,
   defaultLocale = 'en',
 }: FumaPageParams) {
+  const isLocalMdDebugEnabled = process.env.LOCAL_MD_DEBUG?.toLowerCase() === 'true';
+  const now = () => (typeof performance !== 'undefined' ? performance.now() : Date.now());
+  const durationMs = (startedAt: number) => Number((now() - startedAt).toFixed(1));
+  const logFumaPageDebug = (message: string, details?: Record<string, unknown>) => {
+    if (!isLocalMdDebugEnabled) return;
+    console.log(`[fuma-page] ${message}`, details ?? {});
+  };
+
   const getSource = async () => {
     if (typeof mdxContentSource === 'function') {
       return await mdxContentSource();
@@ -108,9 +116,27 @@ export function createFumaPage({
   };
 
   const Page = async function Page({ params }: { params: Promise<{ locale: string; slug?: string[] }> }) {
+    const pageStartedAt = now();
     const { slug, locale } = await params;
+    const sourceStartedAt = now();
     const source = await getSource();
+    logFumaPageDebug('page:source-ready', {
+      sourceKey,
+      locale,
+      slug,
+      durationMs: durationMs(sourceStartedAt),
+    });
+
+    const getPageStartedAt = now();
     const page = source.getPage(slug, locale);
+    logFumaPageDebug('page:get-page', {
+      sourceKey,
+      locale,
+      slug,
+      found: Boolean(page),
+      durationMs: durationMs(getPageStartedAt),
+      totalElapsedMs: durationMs(pageStartedAt),
+    });
     if (!page) {
       console.log('[FumaPage] missing page', { slug, locale, available: source.pageTree?.[locale]?.children?.map((c: any) => c.url) });
       return (
@@ -143,7 +169,19 @@ export function createFumaPage({
 
     const content =
       typeof page.data.load === 'function'
-        ? await page.data.load(getMDXComponents())
+        ? await (async () => {
+            const loadStartedAt = now();
+            const result = await page.data.load(getMDXComponents());
+            logFumaPageDebug('page:load', {
+              sourceKey,
+              locale,
+              slug,
+              pagePath: page.path,
+              durationMs: durationMs(loadStartedAt),
+              totalElapsedMs: durationMs(pageStartedAt),
+            });
+            return result;
+          })()
         : {
             body: await page.data.body({ components: getMDXComponents() }),
             toc: page.data.toc ?? [],
@@ -175,14 +213,29 @@ export function createFumaPage({
   };
 
   async function generateStaticParams() {
+    const startedAt = now();
     const source = await getSource();
-    return source.generateParams('slug', 'locale');
+    const params = source.generateParams('slug', 'locale');
+    logFumaPageDebug('generateStaticParams', {
+      sourceKey,
+      count: Array.isArray(params) ? params.length : undefined,
+      durationMs: durationMs(startedAt),
+    });
+    return params;
   }
 
   async function generateMetadata(props: { params: Promise<{ slug?: string[]; locale?: string }> }) {
+    const startedAt = now();
     const { slug, locale } = await props.params;
     const source = await getSource();
     const page = source.getPage(slug, locale);
+    logFumaPageDebug('generateMetadata:get-page', {
+      sourceKey,
+      locale,
+      slug,
+      found: Boolean(page),
+      durationMs: durationMs(startedAt),
+    });
     if (!page) {
       return {
         title: '404 - Page Not Found',

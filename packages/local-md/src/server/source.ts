@@ -4,7 +4,7 @@ import type { I18nConfig } from 'fumadocs-core/i18n';
 import type { MDXComponents } from 'mdx/types';
 import type { ReactNode } from 'react';
 import { localMd, type LocalMarkdownConfig } from '../core';
-import { logLocalMdDebug, logLocalMdWarn } from '../debug';
+import { getLocalMdDurationMs, getLocalMdNow, logLocalMdDebug, logLocalMdWarn } from '../debug';
 
 type BodyComponent = (props: { components?: MDXComponents }) => Promise<ReactNode>;
 
@@ -144,6 +144,7 @@ async function createRuntimeSource<
   dir: string,
   config: Omit<CreateLocalMdSourceLoaderOptions<FrontmatterSchema, MetaSchema>, 'sourceKey' | 'dir' | 'baseUrl' | 'sourceRootDir' | 'i18n' | 'icon'>,
 ): Promise<StaticSource<{ pageData: LegacyDocData<Record<string, unknown>>; metaData: MetaData }>> {
+  const startedAt = getLocalMdNow();
   logLocalMdDebug('createRuntimeSource:start', {
     sourceKey,
     resolvedDir: dir,
@@ -161,6 +162,7 @@ async function createRuntimeSource<
     resolvedDir: dir,
     processCwd: process.cwd(),
     ...countSourceFiles(source),
+    durationMs: getLocalMdDurationMs(startedAt),
   });
 
   type SourceFile = (typeof source.files)[number];
@@ -215,6 +217,7 @@ export async function createLocalMdSourceLoader<
 >(
   options: CreateLocalMdSourceLoaderOptions<FrontmatterSchema, MetaSchema>,
 ) {
+  const startedAt = getLocalMdNow();
   const {
     sourceKey = 'docs',
     dir,
@@ -261,6 +264,7 @@ export async function createLocalMdSourceLoader<
     ...sourceCounts,
     localePageCounts,
     pageTreeLocaleCounts,
+    durationMs: getLocalMdDurationMs(startedAt),
   });
 
   if (sourceCounts.pageFileCount === 0 || isLoaderResultEmpty(result)) {
@@ -316,6 +320,7 @@ export function createConfiguredLocalMdSourceFactory<
   options: ConfiguredLocalMdSourceFactoryOptions<FrontmatterSchema, MetaSchema>,
 ) {
   const cache = new Map<string, LocalMdLoaderPromise>();
+  const inFlight = new Map<string, LocalMdLoaderPromise>();
 
   return {
     async getSource(
@@ -337,6 +342,18 @@ export function createConfiguredLocalMdSourceFactory<
       const cacheKey = `${sourceKey}:${resolvedDir}:${resolvedBaseUrl}`;
 
       if (isLocalMdCacheDisabled()) {
+        const existingInFlight = inFlight.get(cacheKey);
+        if (existingInFlight) {
+          logLocalMdDebug('getCachedSource:inflight-hit', {
+            sourceKey,
+            cacheKey,
+            resolvedDir,
+            baseUrl: resolvedBaseUrl,
+            processCwd: process.cwd(),
+          });
+          return existingInFlight;
+        }
+
         logLocalMdDebug('getCachedSource:cache-disabled', {
           sourceKey,
           cacheKey,
@@ -344,11 +361,21 @@ export function createConfiguredLocalMdSourceFactory<
           baseUrl: resolvedBaseUrl,
           processCwd: process.cwd(),
         });
-        return createLocalMdSourceLoader({
+
+        const created = createLocalMdSourceLoader({
           ...options,
           ...overrides,
           sourceKey,
         });
+
+        inFlight.set(cacheKey, created);
+        created.finally(() => {
+          if (inFlight.get(cacheKey) === created) {
+            inFlight.delete(cacheKey);
+          }
+        });
+
+        return created;
       }
 
       const existing = cache.get(cacheKey);

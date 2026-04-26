@@ -25,6 +25,7 @@ export interface SiteNavLinkItemConfig extends SiteNavSharedFields {
   text: ReactNode;
   url: string;
   external?: boolean;
+  prefetch?: boolean;
   icon?: ReactNode;
   description?: ReactNode;
   menu?: SiteMenuConfig;
@@ -37,6 +38,7 @@ export interface SiteNavMenuItemConfig extends SiteNavSharedFields {
   text: ReactNode;
   url?: string;
   external?: boolean;
+  prefetch?: boolean;
   icon?: ReactNode;
   description?: ReactNode;
   items: SiteNavItemConfig[];
@@ -92,11 +94,13 @@ export interface SiteMenuLeafConfig {
   icon?: ReactNode;
   className?: string;
   external?: boolean;
+  prefetch?: boolean;
 }
 
 export interface SiteMenuGroupConfig {
   text: ReactNode;
   path?: string;
+  prefetch?: boolean;
   landing?: SiteMenuLeafConfig;
   items: SiteMenuLeafConfig[];
 }
@@ -147,6 +151,7 @@ export function createSiteNavLink(
     ...(item.description ? { description: item.description } : {}),
     url: context.resolveUrl(item.path),
     ...(item.external ? { external: item.external } : {}),
+    ...(item.prefetch !== undefined ? { prefetch: item.prefetch } : {}),
     ...(item.icon || item.className
       ? {
           menu: {
@@ -167,6 +172,7 @@ export function createSiteNavGroup(
     type: 'menu',
     text: item.text,
     ...(item.path ? { url: context.resolveUrl(item.path) } : {}),
+    ...(item.prefetch !== undefined ? { prefetch: item.prefetch } : {}),
     items: [
       ...(item.landing
         ? [

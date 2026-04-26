@@ -4,6 +4,14 @@ const localMdRuntimeInstanceId = [
   Math.random().toString(36).slice(2, 8),
 ].join(':');
 
+export function getLocalMdNow() {
+  return typeof performance !== 'undefined' ? performance.now() : Date.now();
+}
+
+export function getLocalMdDurationMs(startTime: number) {
+  return Number((getLocalMdNow() - startTime).toFixed(1));
+}
+
 export function isLocalMdDebugEnabled() {
   return process.env.LOCAL_MD_DEBUG?.toLowerCase() === 'true';
 }

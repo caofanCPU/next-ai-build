@@ -4,7 +4,7 @@ import { createStorage } from './storage';
 import * as defaultSchemas from './schema';
 import { createMarkdownRenderer, type MarkdownRendererOptions, type PageRenderer } from './md/renderer';
 import { createMarkdownCompiler, type MarkdownCompilerOptions } from './md/compiler';
-import { logLocalMdDebug } from './debug';
+import { getLocalMdDurationMs, getLocalMdNow, logLocalMdDebug } from './debug';
 
 export interface LocalMarkdownConfig<
   FrontmatterSchema extends StandardSchemaV1,
@@ -114,6 +114,7 @@ export function localMd<
   }
 
   async function createSource() {
+    const startedAt = getLocalMdNow();
     const files = await createFiles();
     logLocalMdDebug('localMd:createSource', {
       dir: config.dir,
@@ -121,6 +122,7 @@ export function localMd<
       sourceFileCount: files.length,
       pageFileCount: files.filter((file) => file.type === 'page').length,
       metaFileCount: files.filter((file) => file.type === 'meta').length,
+      durationMs: getLocalMdDurationMs(startedAt),
     });
     return { files };
   }

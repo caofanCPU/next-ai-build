@@ -16,7 +16,6 @@ import Link from 'fumadocs-core/link';
 import { HomeLayoutProps } from 'fumadocs-ui/layouts/home';
 import {
   LinkItem,
-  type LinkItemType,
   resolveLinkItems,
 } from 'fumadocs-ui/layouts/shared';
 import {
@@ -36,6 +35,7 @@ import { Popover, PopoverContent, PopoverTrigger } from 'fumadocs-ui/components/
 import { buttonVariants } from 'fumadocs-ui/components/ui/button';
 import { useI18n } from 'fumadocs-ui/contexts/i18n';
 import { HeaderThemeSwitch } from './header-theme-switch';
+import type { ExtendedLinkItem } from './custom-home-layout';
 
 export type NavbarCSSVars = CSSProperties & {
   '--fd-banner-height'?: string;
@@ -316,6 +316,7 @@ export function CustomHomeHeader({
     >
       <Link
         href={nav.url ?? '/'}
+        prefetch={false}
         className="inline-flex items-center gap-2.5 font-semibold"
       >
         {renderNavTitle(nav.title)}
@@ -454,7 +455,7 @@ function NavbarLinkItem({
   item,
   ...props
 }: {
-  item: LinkItemType;
+  item: ExtendedLinkItem;
   className?: string;
 }) {
   if (item.type === 'custom') return <div {...props}>{item.children}</div>;
@@ -464,6 +465,8 @@ function NavbarLinkItem({
       if (child.type === 'custom') {
         return <Fragment key={j}>{child.children}</Fragment>;
       }
+
+      const extendedChild = child as ExtendedLinkItem;
 
       const {
         banner = child.icon ? (
@@ -478,6 +481,7 @@ function NavbarLinkItem({
         <NavigationMenuLink key={`${j}-${child.url}`} asChild>
           <Link
             href={child.url}
+            prefetch={extendedChild.prefetch ?? false}
             external={child.external}
             {...rest}
             className={cn(
@@ -506,7 +510,7 @@ function NavbarLinkItem({
           className={cn(navItemVariants(), 'rounded-md', props.className)}
         >
           {item.url ? (
-            <Link href={item.url} external={item.external}>
+            <Link href={item.url} prefetch={item.prefetch ?? false} external={item.external}>
               {item.text}
             </Link>
           ) : (
@@ -545,7 +549,7 @@ function MenuLinkItem({
   item,
   ...props
 }: {
-  item: LinkItemType;
+  item: ExtendedLinkItem;
   className?: string;
 }) {
   if (item.type === 'custom')
@@ -564,7 +568,7 @@ function MenuLinkItem({
         <p className="mb-1 text-sm text-fd-muted-foreground">
           {item.url ? (
             <NavigationMenuLink asChild>
-              <Link href={item.url} external={item.external}>
+              <Link href={item.url} prefetch={item.prefetch ?? false} external={item.external}>
                 {header}
               </Link>
             </NavigationMenuLink>
@@ -692,19 +696,19 @@ function CompactLanguageToggle({
   );
 }
 
-function isGithubItem(item: LinkItemType, githubUrl?: string): boolean {
+function isGithubItem(item: ExtendedLinkItem, githubUrl?: string): boolean {
   return Boolean(
     githubUrl && item.type === 'icon' && item.url === githubUrl,
   );
 }
 
-function isSecondary(item: LinkItemType): boolean {
+function isSecondary(item: ExtendedLinkItem): boolean {
   if ('secondary' in item && item.secondary != null) return item.secondary;
 
   return item.type === 'icon';
 }
 
-function isMobilePinned(item: LinkItemType): boolean {
+function isMobilePinned(item: ExtendedLinkItem): boolean {
   return Boolean((item as { mobilePinned?: boolean }).mobilePinned);
 }
 

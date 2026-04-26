@@ -4,8 +4,6 @@ import { levelNavLinks, primaryNavLinks } from '@/app/[locale]/layout.nav';
 import { showBanner, localePrefixAsNeeded, defaultLocale } from '@/lib/appConfig';
 import { getContentSource } from '@/lib/content-source';
 import { SiteDocsLayout, SiteHomeLayout, type SiteHomeLayoutConfig } from '@third-ui/fuma/base';
-import { fingerprintConfig } from '@windrun-huaiin/backend-core/lib';
-import { FingerprintProvider } from '@third-ui/clerk/fingerprint';
 import { appConfig } from '@/lib/appConfig';
 
 async function contentOptions(locale: string): Promise<SiteHomeLayoutConfig> {
@@ -26,8 +24,7 @@ export default async function Layout({
   children: ReactNode;
 }) {
   const { locale } = await params;
-  console.log('[blog layout] entered', { locale });
-  const blogSource = await getContentSource('blog');
+  const legalSource = await getContentSource('legal');
   const contentLayoutOptions = await contentOptions(locale);
   const homeLayoutOptions: SiteHomeLayoutConfig = {
     ...contentLayoutOptions,
@@ -42,33 +39,31 @@ export default async function Layout({
   };
 
   return (
-    <FingerprintProvider config={fingerprintConfig}>
-      <SiteHomeLayout
-        locale={locale}
+    <SiteHomeLayout
+      locale={locale}
+      config={{
+        ...homeLayoutOptions,
+        localePrefixAsNeeded,
+        defaultLocale,
+        showBanner,
+        showFooter: false,
+        floatingNav: true,
+        actionOrders: {
+          desktop: ['search', 'theme', 'github', 'i18n', 'secondary'],
+          mobileBar: ['search', 'pinned', 'menu'],
+          mobileMenu: ['theme', 'i18n', 'separator', 'secondary', 'github'],
+        },
+      }}
+    >
+      <SiteDocsLayout
         config={{
-          ...homeLayoutOptions,
-          localePrefixAsNeeded,
-          defaultLocale,
-          showBanner,
-          showFooter: false,
-          floatingNav: true,
-          actionOrders: {
-            desktop: ['search', 'theme', 'github', 'i18n', 'secondary'],
-            mobileBar: ['search', 'pinned', 'menu'],
-            mobileMenu: ['theme', 'i18n', 'separator', 'secondary', 'github'],
-          },
+          tree: legalSource.getPageTree(locale),
+          sidebar: { enabled: false },
+          searchToggle: { enabled: false },
         }}
       >
-        <SiteDocsLayout
-          config={{
-            tree: blogSource.getPageTree(locale),
-            sidebar: { enabled: false },
-            searchToggle: { enabled: false },
-          }}
-        >
-          {children}
-        </SiteDocsLayout>
-      </SiteHomeLayout>
-    </FingerprintProvider>
+        {children}
+      </SiteDocsLayout>
+    </SiteHomeLayout>
   );
 }

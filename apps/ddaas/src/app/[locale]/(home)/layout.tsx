@@ -1,4 +1,6 @@
-import { baseOptions, homeNavLinks, levelNavLinks } from '@/app/[locale]/layout.config';
+import { baseOptions } from '@/app/[locale]/layout.config';
+import { levelNavLinks, primaryNavLinks } from '@/app/[locale]/layout.nav';
+import { homeHeavyItems } from './layout.heavy';
 import { showBanner, localePrefixAsNeeded, defaultLocale } from '@/lib/appConfig';
 import { i18n } from '@/i18n';
 import { fingerprintConfig } from '@windrun-huaiin/backend-core/lib';
@@ -8,11 +10,12 @@ import type { ReactNode } from 'react';
 
 async function homeOptions(locale: string): Promise<SiteHomeLayoutConfig> {
   return {
-    ...(await baseOptions(locale)),
-    links: [
-      ...(await homeNavLinks(locale)),
-      ...(await levelNavLinks(locale)),
-    ]
+      ...(await baseOptions(locale)),
+      links: [
+        ...(await primaryNavLinks(locale)),
+        ...(await levelNavLinks(locale)),
+        ...(await homeHeavyItems(locale)),
+      ]
   };
 }
 

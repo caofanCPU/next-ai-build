@@ -12,7 +12,10 @@ import {
   type MobileMenuAction,
 } from './custom-header';
 
-export type ExtendedLinkItem = LinkItemType & { mobilePinned?: boolean };
+export type ExtendedLinkItem = LinkItemType & {
+  mobilePinned?: boolean;
+  prefetch?: boolean;
+};
 
 // - bannerHeight/headerHeight 换成你项目期望的 rem 值即可（如果没有 Banner 就把 bannerHeight 设成 0）。
 // - layoutStyle 同时把变量传给 HomeLayout 的 main 元素，这样内容整体会往下错开，不需要 has-banner/no-banner class。

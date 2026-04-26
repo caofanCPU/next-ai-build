@@ -23,3 +23,4 @@ const { Page, generateStaticParams, generateMetadata } = createFumaPage({
 
 export default Page;
 export { generateMetadata, generateStaticParams };
+
