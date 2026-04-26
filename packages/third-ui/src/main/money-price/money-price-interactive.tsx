@@ -47,6 +47,7 @@ export function MoneyPriceInteractive({
   initialBillingType,
   disableAutoDetectBilling = false,
   initUserContext,
+  isInitLoading = false,
 }: MoneyPriceInteractiveProps) {
   const { redirectToSignIn, redirectToSignUp, user: clerkUser, openSignUp } = useClerk();
   const router = useRouter();
@@ -568,7 +569,7 @@ export function MoneyPriceInteractive({
                   processingTarget?.billing === billingType
                 }
                 isAnyProcessing={!!processingTarget}
-                isInitLoading={false}
+                isInitLoading={isInitLoading}
                 enableSubscriptionUpgrade={enableSubscriptionUpgrade}
               />
             </div>

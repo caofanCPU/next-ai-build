@@ -32,6 +32,7 @@ export function PricingClient({
     xSubscription: null,
     isClerkAuthenticated: false,
   });
+  const [isPricingContextLoading, setIsPricingContextLoading] = useState(true);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -55,6 +56,10 @@ export function PricingClient({
         if (!controller.signal.aborted) {
           console.warn('[Pricing] Failed to load user pricing context', error);
         }
+      } finally {
+        if (!controller.signal.aborted) {
+          setIsPricingContextLoading(false);
+        }
       }
     }
 
@@ -76,6 +81,7 @@ export function PricingClient({
       enableSubscriptionUpgrade={enableSubscriptionUpgrade}
       initialBillingType={initialBillingType}
       initUserContext={initUserContext}
+      isInitLoading={isPricingContextLoading}
     />
   );
 }

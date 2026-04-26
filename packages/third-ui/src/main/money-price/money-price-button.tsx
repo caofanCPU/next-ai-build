@@ -18,11 +18,12 @@ export function MoneyPriceButton({
   isInitLoading = false,
   enableSubscriptionUpgrade = true
 }: MoneyPriceButtonProps) {
+  const [isLoading, setIsLoading] = useState(false);
 
   if (isInitLoading) {
     return (
       <div
-        className="w-full h-11 md:h-12 mt-4 md:mt-auto rounded-full bg-transparent"
+        className="w-full h-11 md:h-12 mt-4 md:mt-auto rounded-full bg-gray-200/80 dark:bg-gray-700/50 animate-pulse"
         aria-hidden="true"
         data-plan-button-placeholder={planKey}
       />
@@ -30,7 +31,6 @@ export function MoneyPriceButton({
   }
 
   const { isAuthenticated, subscriptionStatus } = userContext;
-  const [isLoading, setIsLoading] = useState(false);
   const subscriptionBilling = userContext.subscriptionType;
   const planTier = planKey;
   const planBilling = billingType;

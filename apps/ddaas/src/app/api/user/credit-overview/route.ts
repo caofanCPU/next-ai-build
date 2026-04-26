@@ -1,3 +1,8 @@
+// Fix BigInt serialization issue
+(BigInt.prototype as any).toJSON = function () {
+  return this.toString();
+};
+
 import { defaultLocale, localePrefixAsNeeded } from '@/lib/appConfig';
 import { viewLocalTime } from '@lib/utils';
 import { getOptionalServerAuthUser } from '@core/auth/auth-utils';

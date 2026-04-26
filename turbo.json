@@ -18,6 +18,7 @@
       "outputs": [".next/**", "!.next/cache/**", "dist/**"],
       "env": [
         "NODE_ENV",
+        "LOCAL_MD_*",
         "NEXT_PUBLIC_*",
         "CLERK_SECRET_KEY",
         "CLERK_DEBUG",
@@ -40,6 +41,7 @@
       "outputs": [".next/**", "!.next/cache/**", "dist/**"],
       "env": [
         "NODE_ENV",
+        "LOCAL_MD_*",
         "NEXT_PUBLIC_*",
         "CLERK_SECRET_KEY",
         "CLERK_DEBUG",
@@ -96,7 +98,7 @@
     "@windrun-huaiin/fumadocs-local-md#build": {
       "dependsOn": ["@windrun-huaiin/contracts#build"],
       "outputs": ["dist/**"],
-      "env": ["NODE_ENV", "LOCAL_MD_CACHE_DISABLE"]
+      "env": ["NODE_ENV", "LOCAL_MD_*"]
     },
     "@windrun-huaiin/contracts#build": {
       "outputs": ["dist/**"],
@@ -169,7 +171,7 @@
     "@windrun-huaiin/fumadocs-local-md#build:prod": {
       "dependsOn": ["@windrun-huaiin/contracts#build:prod"],
       "outputs": ["dist/**"],
-      "env": ["NODE_ENV", "LOCAL_MD_CACHE_DISABLE"]
+      "env": ["NODE_ENV", "LOCAL_MD_*"]
     },
     "@windrun-huaiin/contracts#build:prod": {
       "outputs": ["dist/**"],

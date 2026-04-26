@@ -119,6 +119,7 @@ export interface MoneyPriceInteractiveProps {
   initialBillingType?: string;
   disableAutoDetectBilling?: boolean;
   initUserContext?: InitUserContext;
+  isInitLoading?: boolean;
 }
 
 // 按钮组件属性
