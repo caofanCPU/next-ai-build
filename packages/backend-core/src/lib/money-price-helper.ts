@@ -5,6 +5,7 @@ import {
 import type { InitUserContext } from '@windrun-huaiin/third-ui/main/server';
 import { getOptionalServerAuthIdentity } from '../auth/auth-utils';
 import {
+  applyMoneyPriceMockUserDelay,
   buildInitUserContextFromEntities,
   fetchUserContextByClerkUserId,
   finalizeUserContext,
@@ -21,6 +22,8 @@ async function readFingerprintIdFromRequest(): Promise<string | null> {
 }
 
 export async function getMoneyPriceInitUserContext(): Promise<InitUserContext> {
+  await applyMoneyPriceMockUserDelay();
+
   const authIdentity = await getOptionalServerAuthIdentity();
   const clerkUserId = authIdentity?.providerUserId ?? null;
 

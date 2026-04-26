@@ -2,6 +2,7 @@
 
 import { cn } from '@windrun-huaiin/lib/utils';
 import { GemIcon, XIcon } from '@windrun-huaiin/base-ui/icons';
+import { themeMainBgColor } from '@windrun-huaiin/base-ui/lib';
 import {
   AlertDialog,
   AlertDialogContent,
@@ -21,7 +22,9 @@ import {
   useState,
 } from 'react';
 import { MoneyPriceInteractive } from '../money-price/money-price-interactive';
-import type { MoneyPriceData } from '../money-price/money-price-types';
+import { getActiveProviderConfigUtil } from '../money-price/money-price-config-util';
+import type { MoneyPriceData, SubscriptionProductConfig } from '../money-price/money-price-types';
+import { dialogThemedOverlayClass } from '../alert-dialog/dialog-styles';
 import type { CreditPricingContext, PricingModalMode } from './types';
 
 interface CreditNavButtonProps {
@@ -172,6 +175,30 @@ export function CreditNavButton({
   );
 
   const isOnetimeModal = pricingModal.mode === 'onetime';
+  const modalInitialBillingType = useMemo(() => {
+    if (isOnetimeModal) {
+      return 'onetime';
+    }
+
+    const pricingContext = pricingModal.pricingContext;
+    const priceId = pricingContext?.initUserContext?.xSubscription?.priceId;
+    if (!pricingContext || !priceId) {
+      return undefined;
+    }
+
+    const providerConfig = getActiveProviderConfigUtil(pricingContext.moneyPriceConfig);
+    const products: Record<string, SubscriptionProductConfig> =
+      providerConfig.subscriptionProducts || providerConfig.products || {};
+    for (const product of Object.values(products)) {
+      for (const [billingType, plan] of Object.entries(product.plans)) {
+        if (plan.priceId === priceId) {
+          return billingType;
+        }
+      }
+    }
+
+    return undefined;
+  }, [isOnetimeModal, pricingModal.pricingContext]);
 
   return (
     <CreditNavPopoverContext.Provider value={contextValue}>
@@ -225,7 +252,13 @@ export function CreditNavButton({
             }))
           }
         >
-          <AlertDialogContent className="mt-5 sm:mt-6 md:mt-10 lg:mt-15 w-[95vw] max-w-[1200px] overflow-hidden border border-slate-200 bg-white p-0 shadow-[0_32px_90px_rgba(15,23,42,0.25)] ring-1 ring-black/5 dark:border-white/12 dark:bg-[#0f1222] dark:shadow-[0_40px_120px_rgba(0,0,0,0.6)] dark:ring-white/10">
+          <AlertDialogContent
+            className={cn(
+              'mt-5 sm:mt-6 md:mt-10 lg:mt-15 w-[95vw] max-w-[1200px] overflow-hidden border border-slate-200 p-0 shadow-[0_32px_90px_rgba(15,23,42,0.25)] ring-1 ring-black/5 dark:border-white/12 dark:shadow-[0_40px_120px_rgba(0,0,0,0.6)] dark:ring-white/10',
+              themeMainBgColor,
+            )}
+            overlayClassName={dialogThemedOverlayClass}
+          >
             <AlertDialogHeader className="flex flex-row items-center justify-between border-b border-slate-200 px-6 pt-4 pb-1 dark:border-slate-800">
               <AlertDialogTitle asChild>
                 <div className="flex flex-wrap items-baseline gap-3 text-slate-900 dark:text-white">
@@ -256,7 +289,7 @@ export function CreditNavButton({
                   checkoutApiEndpoint={pricingModal.pricingContext.checkoutApiEndpoint}
                   customerPortalApiEndpoint={pricingModal.pricingContext.customerPortalApiEndpoint}
                   enableSubscriptionUpgrade={pricingModal.pricingContext.enableSubscriptionUpgrade}
-                  initialBillingType={isOnetimeModal ? 'onetime' : undefined}
+                  initialBillingType={modalInitialBillingType}
                   disableAutoDetectBilling={isOnetimeModal}
                   initUserContext={pricingModal.pricingContext.initUserContext}
                 />

@@ -23,10 +23,12 @@ export function MoneyPriceButton({
   if (isInitLoading) {
     return (
       <div
-        className="w-full h-11 md:h-12 mt-4 md:mt-auto rounded-full bg-gray-200/80 dark:bg-gray-700/50 animate-pulse"
+        className="relative w-full h-11 md:h-12 mt-4 md:mt-auto overflow-hidden rounded-full bg-gray-100/70 dark:bg-gray-800/40 animate-pulse transition-opacity duration-300 ease-out"
         aria-hidden="true"
         data-plan-button-placeholder={planKey}
-      />
+      >
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 to-transparent dark:via-white/10" />
+      </div>
     );
   }
 

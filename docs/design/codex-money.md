@@ -324,3 +324,91 @@ sequenceDiagram
 - 未登录场景仅传递指纹 ID 和 auth 状态，避免同一 `fp_id` 渲染出其它账号的数据。
 - 客户端只负责交互（计费切换、按钮点击、Clerk 弹窗），去掉 fingerprint context 依赖，彻底消除闪烁。
 - `redirectToCustomerPortal` helper 已抽离，点击“管理订阅”时页面与弹窗都会走同一套 Portal 逻辑。
+
+## 7. Troubleshooting：价格按钮首帧抖动排查案例
+
+### 7.1 现象：已登录用户先看到匿名/Free 按钮，再变成订阅态按钮
+
+在为了控制页面路由函数体积后，页面不再在 RSC 首屏直接查 DB，而是在客户端请求 `/api/user/pricing-context` 获取 `initUserContext`。如果组件初始把 `initUserContext` 设为空对象，就会出现：
+
+1. 首帧 `isClerkAuthenticated=false`、`xSubscription=null`。
+2. `MoneyPriceInteractive` 将用户视为 Anonymous 或 Free。
+3. 按钮先渲染 `Get Started` / `Upgrade` 等匿名或未订阅态。
+4. pricing context 接口返回后，按钮再变为 `Current Plan`、隐藏或真实升级态。
+
+这类问题的根因是“用户态未知”被误当成“匿名/Free”。修复方式是显式建模中间态：
+
+- 页面层维护 `isPricingContextLoading`。
+- context 请求成功或失败后再关闭 loading。
+- `MoneyPriceInteractive` 透传 `isInitLoading` 到 `MoneyPriceButton`。
+- 按钮区在 loading 期间渲染固定高度占位或轻量 skeleton，不渲染匿名按钮。
+- 注意 `MoneyPriceButton` 中 hook 必须在条件返回前声明，避免 loading 状态切换造成 React Hooks 顺序问题。
+
+### 7.2 现象：loading 结束后，当前订阅卡片先显示 Upgrade，再变成 Current Plan
+
+该问题通常不是后端把“登录态”和“订阅态”分两次返回，而是 billing type 状态同步造成的一帧错态。
+
+旧逻辑中 `billingType` 使用 `useState(initialBillingCandidate)` 保存，并通过 `useEffect` 在 `detectedBillingType` 变化后再同步：
+
+```tsx
+const [billingType, setBillingType] = useState(initialBillingCandidate);
+
+useEffect(() => {
+  setBillingType(initialBillingCandidate);
+}, [initialBillingCandidate]);
+```
+
+当订阅数据返回时，`detectedBillingType` 已经可以同步算出当前订阅周期，但 `billingType` state 仍保留上一帧默认值。组件会先用默认周期渲染按钮，下一帧 effect 才把它改成真实订阅周期，于是当前套餐卡片可能短暂显示 `Upgrade`。
+
+修复方式是不要用 effect 事后修正 billing，而是把当前 billing 改为同步派生值：
+
+```tsx
+const billingType =
+  userSelectedBillingType ??
+  explicitInitialBilling ??
+  detectedBillingType ??
+  resolvedInitialBilling;
+```
+
+优先级语义：
+
+- `userSelectedBillingType`：用户本次页面生命周期内手动切换，优先级最高。
+- `explicitInitialBilling`：调用方显式传入的初始模式，如积分弹窗的 `onetime`。
+- `detectedBillingType`：从 DB 订阅 `priceId` 反推出的当前订阅周期。
+- `resolvedInitialBilling`：翻译/配置中的默认 billing key，或第一个可用选项。
+
+刷新页面后不会保留 `userSelectedBillingType`，因此登录订阅用户会重新回到 DB 当前计划对应的 billing，而不是停留在刷新前最后一次手动切换的 billing。
+
+### 7.3 现象：价格弹窗中的当前订阅卡片仍有一帧错态
+
+价格弹窗通常使用服务端随积分弹窗预置的 `pricingContext`，不一定经过页面 pricing API 的 loading 流程。如果弹窗打开时仍出现当前订阅卡片短暂显示 `Upgrade`，优先检查：
+
+- 弹窗是否传入了完整的 `initUserContext`。
+- `initUserContext.xSubscription.priceId` 是否可以匹配到价格配置中的订阅产品。
+- 弹窗是否显式传了 `initialBillingType`，导致覆盖订阅自动检测。
+- `disableAutoDetectBilling` 是否只在 `onetime` 弹窗启用。
+
+实际修复可以在弹窗打开时直接从 `initUserContext.xSubscription.priceId` 和 `moneyPriceConfig` 反推出当前订阅 billing，并作为 subscription 弹窗的 `initialBillingType` 传给 `MoneyPriceInteractive`。这样弹窗首帧就落在当前订阅周期，避免先用默认周期渲染。
+
+### 7.4 现象：按钮从亮色 CTA 变灰色 Current Plan，看起来仍像“闪了一下”
+
+这属于视觉状态变化，不一定是逻辑错态。`Upgrade` 和 `Current Plan` 的差异包括：
+
+- 文案变化。
+- enabled/disabled 状态变化。
+- 渐变 CTA 与灰色禁用态的颜色变化。
+- hover、shadow、cursor 等交互状态变化。
+
+如果首帧已经直接渲染 `Current Plan`，就不属于逻辑 bug。若仍感觉明显，可以弱化 `Current Plan` 的视觉差异，例如改为浅主题色选中态或 badge 风格，而不是强灰色禁用按钮。但这会改变“当前套餐”的视觉语义，需按产品设计取舍。
+
+### 7.5 Mock 慢响应验证
+
+为了稳定复现中间态，可在 mock 用户态下给 pricing context API 增加延迟：
+
+```bash
+MONEY_PRICE_MOCK_USER_ENABLED=true
+MONEY_PRICE_MOCK_USER_TYPE=1
+MONEY_PRICE_MOCK_USER_DELAY_SECONDS=1.5
+```
+
+`MONEY_PRICE_MOCK_USER_DELAY_SECONDS` 只在 `MONEY_PRICE_MOCK_USER_ENABLED=true` 时生效，单位为秒，并应设置合理上限，避免误配影响调试效率。

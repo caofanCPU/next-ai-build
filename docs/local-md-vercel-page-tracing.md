@@ -197,3 +197,38 @@ pageTreeLocaleCounts: { en: 3 }
 - 如果不想继续依赖 Vercel page function 对原始 `src/mdx/**/*` 的 tracing 稳定性
 - 可以考虑在 build 阶段生成 manifest/json
 - runtime 侧读 manifest，而不是直接依赖整棵 `src/mdx` 目录
+
+
+
+不奇怪，本质是 Next/Vercel 的 tracing 不是“按源码路由文件精确等价推导”的稳定规则，它会受项目形态影响。
+
+  ddaas 能用较窄配置，不代表 diaomao 也一定命中。几个差异会影响最终 serverless function 怎么切、trace key 怎么匹配：
+
+  - monorepo 根不同
+    ddaas 运行时日志是类似 /var/task/apps/ddaas，diaomao 是 /var/task。process.cwd() 和文件相对布局不同，trace include 的落点也不同。
+  - Vercel 对 monorepo app root 有特殊处理
+    monorepo 项目通常设置 Root Directory，比如 apps/ddaas。Vercel/Next 会以这个 app root 打包函数。单工程直接是 repo root，输出结构不一样。
+  - 页面函数拆分可能不同
+    App Router、dynamic route、optional catch-all、locale segment、route group，在不同项目下可能被切成不同的 server function。outputFileTracingIncludes 的 key 要命中那个函数路径，命不中就不会带文件。
+  - 依赖解析路径不同
+    monorepo 里 @windrun-huaiin/fumadocs-local-md 可能是 workspace 源码包，单工程里是 node_modules 包。Next trace 对 workspace package 和 node_modules package 的分析路径不完全一样。
+  - 缓存/构建顺序只是表象
+    Turbo 已经生成 .source，说明构建顺序没问题。真正差异是 .source 是否进入最终函数包。
+
+  所以 ddaas 的配置：
+
+  '/[locale]/blog/[[...slug]]': ['./.source/**/*']
+
+  能工作，说明它那边这个 key 正好命中了 page function。diaomao 不行，说明它线上实际 page function 可能没有被这个单 key 覆盖，需要加：
+
+  '/blog'
+  '/blog/[[...slug]]'
+  '/[locale]/blog'
+  '/[locale]/blog/[[...slug]]'
+
+  这就是你昨天文档里总结的“不要只依赖理论上最优雅的一个 key，要以线上实际命中稳定为准”。
+
+  短结论：
+  ddaas 能跑是因为 monorepo + Vercel root + function tracing key 切分刚好命中；diaomao 是单工程，最终函数布局不同，窄 key 没稳定命中。不是 Turbo 问题，也不是 local-md 生成失败。
+
+  确实是这样的！ 2次问题排查都是如此！

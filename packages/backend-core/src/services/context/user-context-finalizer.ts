@@ -6,6 +6,22 @@ type FinalizableUserContext = {
   xSubscription: XSubscription | null;
 };
 
+const MAX_MONEY_PRICE_MOCK_DELAY_MS = 10000;
+
+export async function applyMoneyPriceMockUserDelay(): Promise<void> {
+  if (process.env.MONEY_PRICE_MOCK_USER_ENABLED !== 'true') {
+    return;
+  }
+
+  const delaySeconds = Number(process.env.MONEY_PRICE_MOCK_USER_DELAY_SECONDS ?? 0);
+  if (!Number.isFinite(delaySeconds) || delaySeconds <= 0) {
+    return;
+  }
+
+  const delayMs = Math.min(Math.floor(delaySeconds * 1000), MAX_MONEY_PRICE_MOCK_DELAY_MS);
+  await new Promise((resolve) => setTimeout(resolve, delayMs));
+}
+
 /**
  * Output finalizer for user-context payloads.
  * Real data assembly should stay in user-context-service; any optional test-only

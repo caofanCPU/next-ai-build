@@ -149,22 +149,19 @@ export function MoneyPriceInteractive({
     priceIdsByCycle,
   ]);
 
-  const initialBillingCandidate = useMemo(() => {
-    if (initialBillingType) {
-      return resolvedInitialBilling;
+  const explicitInitialBilling = useMemo<BillingType | null>(() => {
+    if (
+      initialBillingType &&
+      billingOptions.some(option => option.key === initialBillingType)
+    ) {
+      return initialBillingType;
     }
-    if (detectedBillingType) {
-      return detectedBillingType;
-    }
-    return resolvedInitialBilling;
-  }, [initialBillingType, resolvedInitialBilling, detectedBillingType]);
+    return null;
+  }, [initialBillingType, billingOptions]);
 
-  const [billingType, setBillingType] = useState<BillingType>(initialBillingCandidate);
+  const [userSelectedBillingType, setUserSelectedBillingType] = useState<BillingType | null>(null);
+  const billingType = userSelectedBillingType ?? explicitInitialBilling ?? detectedBillingType ?? resolvedInitialBilling;
   const navigationLockRef = useRef(false);
-
-  useEffect(() => {
-    setBillingType(prev => (prev === initialBillingCandidate ? prev : initialBillingCandidate));
-  }, [initialBillingCandidate]);
 
   const [processingTarget, setProcessingTarget] = useState<ProcessingTarget>(null);
   const [isTouchDevice, setIsTouchDevice] = useState(false);
@@ -423,7 +420,7 @@ export function MoneyPriceInteractive({
                   )}
                   type="button"
                   data-billing-button={option.key}
-                  onClick={() => setBillingType(option.key as BillingType)}
+                  onClick={() => setUserSelectedBillingType(option.key)}
                 >
                   {option.name}
                 </button>
