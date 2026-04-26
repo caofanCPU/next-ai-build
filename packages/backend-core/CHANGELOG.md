@@ -1,5 +1,21 @@
 # @windrun-huaiin/backend-core
 
+## 27.0.0
+
+### Major Changes
+
+- refactor(mdx): support local-md and build-md, build-md is first on production env
+  - optimize pack size and function size, which pack `prisma` in no need page 'cause barral import
+  - refactor components export path, for solving barral issues
+  - fix money price card issues
+
+### Patch Changes
+
+- Updated dependencies
+  - @windrun-huaiin/lib@27.0.0
+  - @windrun-huaiin/contracts@27.0.0
+  - @windrun-huaiin/third-ui@27.0.0
+
 ## 26.0.2
 
 ### Patch Changes
