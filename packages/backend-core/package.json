@@ -42,10 +42,35 @@
       "import": "./dist/services/ai/index.mjs",
       "require": "./dist/services/ai/index.js"
     },
-    "./lib": {
-      "types": "./dist/lib/index.d.ts",
-      "import": "./dist/lib/index.mjs",
-      "require": "./dist/lib/index.js"
+    "./config/fingerprint": {
+      "types": "./dist/config/fingerprint.d.ts",
+      "import": "./dist/config/fingerprint.mjs",
+      "require": "./dist/config/fingerprint.js"
+    },
+    "./config/money-price": {
+      "types": "./dist/config/money-price.d.ts",
+      "import": "./dist/config/money-price.mjs",
+      "require": "./dist/config/money-price.js"
+    },
+    "./credit/server": {
+      "types": "./dist/credit/server.d.ts",
+      "import": "./dist/credit/server.mjs",
+      "require": "./dist/credit/server.js"
+    },
+    "./pricing/server": {
+      "types": "./dist/pricing/server.d.ts",
+      "import": "./dist/pricing/server.mjs",
+      "require": "./dist/pricing/server.js"
+    },
+    "./stripe/server": {
+      "types": "./dist/lib/stripe-config.d.ts",
+      "import": "./dist/lib/stripe-config.mjs",
+      "require": "./dist/lib/stripe-config.js"
+    },
+    "./upstash/server": {
+      "types": "./dist/upstash/server.d.ts",
+      "import": "./dist/upstash/server.mjs",
+      "require": "./dist/upstash/server.js"
     },
     "./auth/server": {
       "types": "./dist/auth/auth-utils.d.ts",

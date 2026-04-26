@@ -1,4 +1,4 @@
-import { CreditPopover } from '@/components/credit-popover';
+import { CreditPopoverClient } from '@/components/credit-popover-client';
 import { appConfig } from '@/lib/appConfig';
 import { ClerkUser } from '@third-ui/clerk/server';
 import type { SiteNavItemConfig } from '@third-ui/fuma/base';
@@ -9,7 +9,7 @@ export async function homeHeavyItems(locale: string): Promise<SiteNavItemConfig[
       type: 'custom',
       secondary: true,
       mobilePinned: true,
-      children: <CreditPopover locale={locale} />,
+      children: <CreditPopoverClient locale={locale} />,
     },
     {
       type: 'custom',

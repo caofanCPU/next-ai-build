@@ -21,6 +21,13 @@ export { MoneyPriceButton } from './money-price/money-price-button';
 
 export { CreditOverviewClient } from './credit/credit-overview-client';
 export { CreditNavButton } from './credit/credit-nav-button';
+export type { CreditOverviewTranslations } from './credit/credit-overview-client';
+export type {
+  CreditOverviewData,
+  CreditBucket,
+  CreditBucketStatus,
+  SubscriptionInfo,
+} from './credit/types';
 
 export { HeroMedia } from './hero-media';
 export { HeroSection } from './hero-section';

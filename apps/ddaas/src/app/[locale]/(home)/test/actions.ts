@@ -17,7 +17,7 @@ import {
   setString,
   withLock,
   withRedis,
-} from '@windrun-huaiin/backend-core/lib';
+} from '@windrun-huaiin/backend-core/upstash/server';
 
 const TEST_TTL_SECONDS = 60 * 60;
 const RUNTIME_ENV = process.env.NODE_ENV ?? 'development';

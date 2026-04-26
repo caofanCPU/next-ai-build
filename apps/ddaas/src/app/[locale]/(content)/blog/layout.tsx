@@ -4,7 +4,7 @@ import { levelNavLinks, primaryNavLinks } from '@/app/[locale]/layout.nav';
 import { showBanner, localePrefixAsNeeded, defaultLocale } from '@/lib/appConfig';
 import { siteDocs } from '@/lib/site-docs';
 import { SiteDocsLayout, SiteHomeLayout, type SiteHomeLayoutConfig } from '@third-ui/fuma/base';
-import { fingerprintConfig } from '@windrun-huaiin/backend-core/lib';
+import { fingerprintConfig } from '@windrun-huaiin/backend-core/config/fingerprint';
 import { FingerprintProvider } from '@third-ui/clerk/fingerprint';
 import { appConfig } from '@/lib/appConfig';
 
