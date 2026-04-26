@@ -5,8 +5,8 @@
   return this.toString();
 };
 
-import { anonymousAggregateService } from '@/aggregate/anonymous.aggregate.service';
-import { getOptionalServerAuthIdentity } from '@/auth/auth-utils';
+import { anonymousAggregateService } from '@core/aggregate/anonymous.aggregate.service';
+import { getOptionalServerAuthIdentity } from '@core/auth/auth-utils';
 import type { XCredit, XSubscription, XUser } from '@windrun-huaiin/third-ui/fingerprint';
 import { extractFingerprintFromNextRequest } from '@windrun-huaiin/third-ui/fingerprint/server';
 import { NextRequest, NextResponse } from 'next/server';
@@ -17,10 +17,10 @@ import {
   mapSubscriptionToXSubscription,
   mapUserToXUser,
   type UserContextEntities,
-} from '@/context/user-context-service';
-import { finalizeUserContext } from '@/context/user-context-finalizer';
+} from '@core/context/user-context-service';
+import { finalizeUserContext } from '@core/context/user-context-finalizer';
 
-import type { Prisma } from '@/db/prisma-model-type';
+import type { Prisma } from '@core/db/prisma-model-type';
 
 
 // ==================== 类型定义 ====================

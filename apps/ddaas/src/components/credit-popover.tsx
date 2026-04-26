@@ -1,13 +1,14 @@
-import { creditService, subscriptionService } from '@windrun-huaiin/backend-core/database';
-import { getOptionalServerAuthUser } from '@windrun-huaiin/backend-core/auth/server';
+import { creditService, subscriptionService } from '@core/services/database';
+import { getOptionalServerAuthUser } from '@core/auth/auth-utils';
 import { viewLocalTime } from '@lib/utils';
-import { CreditNavButton } from '@third-ui/main';
-import type { CreditOverviewData } from '@third-ui/main/server';
-import { CreditOverview, buildMoneyPriceData } from '@third-ui/main/server';
-import { moneyPriceConfig } from '@windrun-huaiin/backend-core/config/money-price';
-import { buildInitUserContextFromEntities } from '@windrun-huaiin/backend-core/context'
+import { CreditNavButton } from '@third-ui/main/credit';
+import type { CreditOverviewData } from '@third-ui/main/credit/server';
+import { CreditOverview } from '@third-ui/main/credit/server';
+import { buildMoneyPriceData } from '@third-ui/main/money-price/server';
+import { moneyPriceConfig } from '@core/config/money-price';
+import { buildInitUserContextFromEntities } from '@core/services/context'
 import { getTranslations } from 'next-intl/server';
-import { getAsNeededLocalizedUrl } from '@windrun-huaiin/lib/utils';
+import { getAsNeededLocalizedUrl } from '@lib/utils';
 import { localePrefixAsNeeded, defaultLocale } from '@/lib/appConfig';
 
 interface CreditPopoverProps {
@@ -116,7 +117,7 @@ export async function CreditPopover({ locale }: CreditPopoverProps) {
 
   if (subscription) {
     data.subscription = {
-      planName: subscription.priceName,
+      planName: subscription.priceName ?? '',
       periodStart: viewLocalTime(subscription.subPeriodStart),
       periodEnd: viewLocalTime(subscription.subPeriodEnd),
     };

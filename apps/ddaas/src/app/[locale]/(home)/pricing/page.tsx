@@ -1,9 +1,9 @@
 
 import { appConfig } from '@/lib/appConfig';
-import { moneyPriceConfig } from '@windrun-huaiin/backend-core/config/money-price';
+import { moneyPriceConfig } from '@core/config/money-price';
 import { FingerprintStatus } from "@third-ui/clerk/fingerprint";
-import { buildMoneyPriceData } from "@third-ui/main/server";
-import { cn } from '@windrun-huaiin/lib/utils';
+import { buildMoneyPriceData } from "@third-ui/main/money-price/server";
+import { cn } from '@lib/utils';
 import { PricingClient } from './pricing-client';
 
 export default async function Pricing({

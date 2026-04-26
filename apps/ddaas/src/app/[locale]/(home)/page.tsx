@@ -1,8 +1,8 @@
 
 import { Hero } from "@/components/hero";
 import { FingerprintStatus } from "@third-ui/clerk/fingerprint";
-import { GradientButton } from "@third-ui/fuma/mdx/gradient-button";
-import { CTA, FAQ, Features, Gallery, SeoContent, Tips, Usage } from "@third-ui/main/server";
+import { GradientButton } from "@third-ui/main/buttons";
+import { CTA, FAQ, Features, Gallery, SeoContent, Tips, Usage } from "@third-ui/main/home/server";
 import { getTranslations } from "next-intl/server";
 
 export default async function Home({ params }: { params: Promise<{ locale: string }> }) {

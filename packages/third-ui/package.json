@@ -28,6 +28,56 @@
       "import": "./dist/main/index.mjs",
       "require": "./dist/main/index.js"
     },
+    "./main/alert-dialog": {
+      "types": "./dist/main/alert-dialog/index.d.ts",
+      "import": "./dist/main/alert-dialog/index.mjs",
+      "require": "./dist/main/alert-dialog/index.js"
+    },
+    "./main/buttons": {
+      "types": "./dist/main/buttons/index.d.ts",
+      "import": "./dist/main/buttons/index.mjs",
+      "require": "./dist/main/buttons/index.js"
+    },
+    "./main/credit": {
+      "types": "./dist/main/credit/index.d.ts",
+      "import": "./dist/main/credit/index.mjs",
+      "require": "./dist/main/credit/index.js"
+    },
+    "./main/credit/server": {
+      "types": "./dist/main/credit/server.d.ts",
+      "import": "./dist/main/credit/server.mjs",
+      "require": "./dist/main/credit/server.js"
+    },
+    "./main/hero": {
+      "types": "./dist/main/hero/index.d.ts",
+      "import": "./dist/main/hero/index.mjs",
+      "require": "./dist/main/hero/index.js"
+    },
+    "./main/home/server": {
+      "types": "./dist/main/home/server.d.ts",
+      "import": "./dist/main/home/server.mjs",
+      "require": "./dist/main/home/server.js"
+    },
+    "./main/loading": {
+      "types": "./dist/main/loading/index.d.ts",
+      "import": "./dist/main/loading/index.mjs",
+      "require": "./dist/main/loading/index.js"
+    },
+    "./main/loading-frame": {
+      "types": "./dist/main/loading-frame/index.d.ts",
+      "import": "./dist/main/loading-frame/index.mjs",
+      "require": "./dist/main/loading-frame/index.js"
+    },
+    "./main/money-price": {
+      "types": "./dist/main/money-price/index.d.ts",
+      "import": "./dist/main/money-price/index.mjs",
+      "require": "./dist/main/money-price/index.js"
+    },
+    "./main/money-price/server": {
+      "types": "./dist/main/money-price/server.d.ts",
+      "import": "./dist/main/money-price/server.mjs",
+      "require": "./dist/main/money-price/server.js"
+    },
     "./main/pill-select": {
       "types": "./dist/main/pill-select/index.d.ts",
       "import": "./dist/main/pill-select/index.mjs",

@@ -1,40 +1,9 @@
 'use client';
 
-// Main application Client components
+// Lightweight common client components.
 export * from './go-to-top';
 export * from './loading';
 export * from './nprogress-bar';
-export * from './alert-dialog';
-export * from './x-button'
-export * from './x-toggle-button'
-export * from './ai-prompt-textarea'
 export * from './rich-text-expert'
 export * from './faq-interactive'
-export * from './price-plan-interactive'
-export * from './gallery/gallery-interactive'
-export * from './delayed-img'
-export * from './snake-loading-frame'
-export * from './pill-select'
-// Money Price Client Components
-export { MoneyPriceInteractive } from './money-price/money-price-interactive';
-export { MoneyPriceButton } from './money-price/money-price-button';
-
-export { CreditOverviewClient } from './credit/credit-overview-client';
-export { CreditNavButton } from './credit/credit-nav-button';
-export type { CreditOverviewTranslations } from './credit/credit-overview-client';
-export type {
-  CreditOverviewData,
-  CreditBucket,
-  CreditBucketStatus,
-  SubscriptionInfo,
-} from './credit/types';
-export type {
-  MoneyPriceConfig,
-  MoneyPriceData,
-  InitUserContext,
-} from './money-price/money-price-types';
-
-export { HeroMedia } from './hero-media';
-export { HeroSection } from './hero-section';
-
 export { InfoTooltip } from './info-tooltip';

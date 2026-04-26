@@ -18,7 +18,7 @@ import {
   type SiteMenuLeafConfig,
   type SiteNavItemConfig,
 } from '@third-ui/fuma/base';
-import { getAsNeededLocalizedUrl } from '@windrun-huaiin/lib';
+import { getAsNeededLocalizedUrl } from '@lib/utils';
 import { defaultLocale, localePrefixAsNeeded } from '@/lib/appConfig';
 
 function renderMenuBanner() {
@@ -183,4 +183,3 @@ export async function levelNavLinks(locale: string): Promise<SiteNavItemConfig[]
     ),
   );
 }
-

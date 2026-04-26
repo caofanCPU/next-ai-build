@@ -11,3 +11,4 @@ export * from './ai-message-content';
 export * from './ai-message-meta';
 export * from './ai-message-actions';
 export * from './ai-status-indicator';
+export * from './ai-prompt-textarea';

@@ -60,14 +60,14 @@ const createConfig = (format) => ({
   plugins: [
     alias({
       entries: [
-        { find: '@/db', replacement: resolveFromRoot('src/services/database') },
-        { find: '@/aggregate', replacement: resolveFromRoot('src/services/aggregate') },
-        { find: '@/context', replacement: resolveFromRoot('src/services/context') },
-        { find: '@/stripe', replacement: resolveFromRoot('src/services/stripe') },
-        { find: '@/lib', replacement: resolveFromRoot('src/lib') },
-        { find: '@/auth', replacement: resolveFromRoot('src/auth') },
-        { find: '@/prisma', replacement: resolveFromRoot('src/prisma') },
-        { find: '@/', replacement: resolveFromRoot('src') },
+        { find: '@core/db', replacement: resolveFromRoot('src/services/database') },
+        { find: '@core/aggregate', replacement: resolveFromRoot('src/services/aggregate') },
+        { find: '@core/context', replacement: resolveFromRoot('src/services/context') },
+        { find: '@core/stripe', replacement: resolveFromRoot('src/services/stripe') },
+        { find: '@core/lib', replacement: resolveFromRoot('src/lib') },
+        { find: '@core/auth', replacement: resolveFromRoot('src/auth') },
+        { find: '@core/prisma', replacement: resolveFromRoot('src/prisma') },
+        { find: '@core', replacement: resolveFromRoot('src') },
       ],
     }),
     peerDepsExternal(),

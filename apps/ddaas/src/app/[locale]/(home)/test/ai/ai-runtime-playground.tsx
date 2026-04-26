@@ -38,8 +38,8 @@ import {
   type ConversationMessage,
   useAIConversation,
 } from '@windrun-huaiin/third-ui/ai';
-import { InfoTooltip } from '@windrun-huaiin/third-ui/main';
-import { cn } from '@windrun-huaiin/lib/utils';
+import { InfoTooltip } from '@third-ui/main';
+import { cn } from '@lib/utils';
 import { XPillSelect, type XPillOption } from '@third-ui/main/pill-select';
 import { startTransition, useEffect, useMemo, useRef, useState } from 'react';
 

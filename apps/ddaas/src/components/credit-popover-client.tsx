@@ -1,7 +1,7 @@
 'use client';
 
-import { CreditNavButton, CreditOverviewClient } from '@third-ui/main';
-import type { CreditOverviewData, CreditOverviewTranslations } from '@third-ui/main';
+import { CreditNavButton, CreditOverviewClient } from '@third-ui/main/credit';
+import type { CreditOverviewData, CreditOverviewTranslations } from '@third-ui/main/credit';
 import { useEffect, useState } from 'react';
 
 interface CreditPopoverClientProps {

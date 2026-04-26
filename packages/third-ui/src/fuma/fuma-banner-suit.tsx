@@ -1,5 +1,5 @@
 import { getTranslations } from 'next-intl/server';
-import { Banner } from '@third-ui/fuma/mdx/banner';
+import { Banner } from './mdx/banner';
 
 export async function FumaBannerSuit({
   locale,

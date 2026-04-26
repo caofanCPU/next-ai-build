@@ -1,11 +1,11 @@
 import { getGlobalIcon, globalLucideIcons } from '@base-ui/components/server';
-import { createConfiguredLocalMdSourceFactory } from '@windrun-huaiin/fumadocs-local-md/server/source';
+import { createConfiguredLocalMdSourceFactory } from '@local-md/server/source';
 import {
   createFumaDocsBaseCompilerOptions,
-} from '@windrun-huaiin/fumadocs-local-md/presets/fuma-docs/base';
-import { createFumaDocsCodeFeature } from '@windrun-huaiin/fumadocs-local-md/presets/fuma-docs/features/code';
-import { createFumaDocsMathFeature } from '@windrun-huaiin/fumadocs-local-md/presets/fuma-docs/features/math';
-import { createFumaDocsNpmFeature } from '@windrun-huaiin/fumadocs-local-md/presets/fuma-docs/features/npm';
+} from '@local-md/presets/fuma-docs-base';
+import { createFumaDocsCodeFeature } from '@local-md/presets/fuma-docs-features/code';
+import { createFumaDocsMathFeature } from '@local-md/presets/fuma-docs-features/math';
+import { createFumaDocsNpmFeature } from '@local-md/presets/fuma-docs-features/npm';
 import {
   createCommonDocsSchema,
   createCommonMetaSchema,

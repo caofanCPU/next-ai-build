@@ -1,10 +1,10 @@
-import { creditService, subscriptionService, userService } from '@/db';
-import { UserStatus } from '@/db/constants';
-import type { Credit, Subscription, User } from '@/db/prisma-model-type';
-import { freeAmount } from '@/lib/credit-init';
-import { runInTransaction } from '@/prisma/prisma-transaction-util';
-import { CreditType, OperationType } from '@/db/constants';
-import { Prisma } from '@/db/prisma-model-type';
+import { creditService, subscriptionService, userService } from '@core/db';
+import { UserStatus } from '@core/db/constants';
+import type { Credit, Subscription, User } from '@core/db/prisma-model-type';
+import { freeAmount } from '@core/lib/credit-init';
+import { runInTransaction } from '@core/prisma/prisma-transaction-util';
+import { CreditType, OperationType } from '@core/db/constants';
+import { Prisma } from '@core/db/prisma-model-type';
 
 const ANONYMOUS_INIT_LOCK_NAMESPACE = 92831;
 

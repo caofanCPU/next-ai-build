@@ -3,7 +3,7 @@ import { levelNavLinks, primaryNavLinks } from '@/app/[locale]/layout.nav';
 import { homeHeavyItems } from './layout.heavy';
 import { showBanner, localePrefixAsNeeded, defaultLocale } from '@/lib/appConfig';
 import { i18n } from '@/lib/i18n-base';
-import { fingerprintConfig } from '@windrun-huaiin/backend-core/config/fingerprint';
+import { fingerprintConfig } from '@core/config/fingerprint';
 import { FingerprintProvider } from '@third-ui/clerk/fingerprint';
 import { SiteHomeLayout, type SiteHomeLayoutConfig } from '@third-ui/fuma/base';
 import type { ReactNode } from 'react';

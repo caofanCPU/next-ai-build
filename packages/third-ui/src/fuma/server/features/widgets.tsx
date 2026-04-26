@@ -2,7 +2,7 @@ import type { MDXComponents } from 'mdx/types';
 import { lazy } from 'react';
 import { TrophyCard } from '../../mdx/trophy-card';
 import { ZiaCard } from '../../mdx/zia-card';
-import { GradientButton } from '../../mdx/gradient-button';
+import { GradientButton } from '../../../main/buttons';
 import { ZiaFile, ZiaFolder } from '../../mdx/zia-file';
 import { SunoEmbed } from '../../mdx/suno-embed';
 

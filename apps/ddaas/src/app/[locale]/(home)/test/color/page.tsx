@@ -15,7 +15,7 @@ import {
 } from '@base-ui/lib/theme-util';
 import { cn } from '@lib/utils';
 import { getLoadingCycleDurationMs, Loading } from '@third-ui/main/loading';
-import { SnakeLoadingFrame, SnakeLoadingPreview } from '@third-ui/main';
+import { SnakeLoadingFrame, SnakeLoadingPreview } from '@third-ui/main/loading-frame';
 
 const themeNames = Object.keys(THEME_COLOR_NAME_TO_CLASS_MAP) as Array<keyof typeof THEME_COLOR_NAME_TO_CLASS_MAP>;
 

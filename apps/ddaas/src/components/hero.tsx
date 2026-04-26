@@ -1,8 +1,8 @@
 import { getTranslations } from 'next-intl/server'
 import { ZapIcon } from '@base-ui/icons'
 import { themeHeroEyesOnClass } from '@base-ui/lib'
-import { GradientButton } from "@third-ui/fuma/mdx"
-import { HeroMedia, HeroSection } from "@third-ui/main"
+import { GradientButton } from "@third-ui/main/buttons"
+import { HeroMedia, HeroSection } from "@third-ui/main/hero"
 import { cn } from '@lib/utils';
 
 export async function Hero({ locale }: { locale: string }) {

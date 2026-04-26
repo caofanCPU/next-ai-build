@@ -33,8 +33,41 @@
       "@base-ui/*": [
         "../../packages/base-ui/src/*"
       ],
+      "@core/db": [
+        "../../packages/backend-core/src/services/database"
+      ],
+      "@core/db/*": [
+        "../../packages/backend-core/src/services/database/*"
+      ],
+      "@core/aggregate/*": [
+        "../../packages/backend-core/src/services/aggregate/*"
+      ],
+      "@core/context/*": [
+        "../../packages/backend-core/src/services/context/*"
+      ],
+      "@core/stripe/*": [
+        "../../packages/backend-core/src/services/stripe/*"
+      ],
+      "@core/lib/*": [
+        "../../packages/backend-core/src/lib/*"
+      ],
+      "@core/auth/*": [
+        "../../packages/backend-core/src/auth/*"
+      ],
+      "@core/prisma/*": [
+        "../../packages/backend-core/src/prisma/*"
+      ],
+      "@core/*": [
+        "../../packages/backend-core/src/*"
+      ],
       "@lib/*": [
         "../../packages/lib/src/*"
+      ],
+      "@local-md/*": [
+        "../../packages/local-md/src/*"
+      ],
+      "@rule/*": [
+        "../../packages/contracts/src/*"
       ]
     }
   },

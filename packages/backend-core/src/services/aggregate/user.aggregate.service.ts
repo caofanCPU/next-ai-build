@@ -1,8 +1,8 @@
-import { CreditType, OperationType, UserStatus } from '@/db/constants';
-import { creditService, subscriptionService, userService } from '@/db/index';
-import type { Credit, Prisma, User } from '@/db/prisma-model-type';
-import { freeAmount, freeRegisterAmount } from '@/lib/credit-init';
-import { runInTransaction } from '@/prisma/prisma-transaction-util';
+import { CreditType, OperationType, UserStatus } from '@core/db/constants';
+import { creditService, subscriptionService, userService } from '@core/db/index';
+import type { Credit, Prisma, User } from '@core/db/prisma-model-type';
+import { freeAmount, freeRegisterAmount } from '@core/lib/credit-init';
+import { runInTransaction } from '@core/prisma/prisma-transaction-util';
 
 
 export class UserAggregateService {

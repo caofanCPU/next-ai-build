@@ -1,9 +1,9 @@
 import { DocsBody, DocsDescription, DocsPage, DocsTitle } from 'fumadocs-ui/page';
 import { ReactNode, ReactElement, cloneElement, type CSSProperties } from 'react';
-import { TocFooterWrapper } from '@third-ui/fuma/mdx/toc-footer-wrapper';
-import type { LLMCopyButtonProps, LLMCopyButton } from '@third-ui/fuma/mdx/toc-base';
+import { TocFooterWrapper } from './mdx/toc-footer-wrapper';
+import type { LLMCopyButtonProps, LLMCopyButton } from './mdx/toc-base';
 import { getAsNeededLocalizedUrl } from '@windrun-huaiin/lib';
-import { PortableClerkTOC, PortableClerkTOCTitle } from '@third-ui/fuma/mdx/toc-clerk-portable';
+import { PortableClerkTOC, PortableClerkTOCTitle } from './mdx/toc-clerk-portable';
 import { themeSvgIconColor } from '@windrun-huaiin/base-ui/lib';
 
 export type FumaPageTocRenderMode =

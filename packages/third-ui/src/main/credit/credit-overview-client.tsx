@@ -1,7 +1,7 @@
 'use client';
 
 import { useClerk } from '@clerk/nextjs';
-import { GradientButton } from '@third-ui/fuma/mdx/gradient-button';
+import { GradientButton } from '../buttons';
 import {
   BellIcon,
   ChevronDownIcon,

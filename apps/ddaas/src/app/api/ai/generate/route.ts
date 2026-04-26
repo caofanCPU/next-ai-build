@@ -1,4 +1,4 @@
-import { createOpenRouterRoute } from '@windrun-huaiin/backend-core/ai';
+import { createOpenRouterRoute } from '@core/services/ai';
 
 export const POST = createOpenRouterRoute({});
 

@@ -1,5 +1,5 @@
 import { getTranslations } from 'next-intl/server';
-import { GradientButton } from "@third-ui/fuma/mdx/gradient-button";
+import { GradientButton } from "./buttons";
 import { cn } from '@windrun-huaiin/lib/utils';
 import { themeIconColor } from '@windrun-huaiin/base-ui/lib';
 import { richText } from './rich-text-expert';

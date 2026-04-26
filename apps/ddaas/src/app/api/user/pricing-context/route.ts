@@ -1,4 +1,4 @@
-import { getMoneyPriceInitUserContext } from '@windrun-huaiin/backend-core/pricing/server';
+import { getMoneyPriceInitUserContext } from '@core/pricing/server';
 import { NextResponse } from 'next/server';
 
 export async function GET() {

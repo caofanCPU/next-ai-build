@@ -7,7 +7,7 @@ import { ClerkProviderClient } from '@third-ui/clerk';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, setRequestLocale } from 'next-intl/server';
 import { montserrat } from "@/lib/fonts";
-import { cn } from '@windrun-huaiin/lib/utils';
+import { cn } from '@lib/utils';
 import './globals.css';
 import React from 'react';
 

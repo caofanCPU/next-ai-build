@@ -4,9 +4,9 @@
   return this.toString();
 };
 
-import { userAggregateService } from '@/aggregate/user.aggregate.service';
-import { UserStatus } from '@/db/constants';
-import { Apilogger, userService } from '@/db/index';
+import { userAggregateService } from '@core/aggregate/user.aggregate.service';
+import { UserStatus } from '@core/db/constants';
+import { Apilogger, userService } from '@core/db/index';
 import { headers } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 import { Webhook } from 'svix';

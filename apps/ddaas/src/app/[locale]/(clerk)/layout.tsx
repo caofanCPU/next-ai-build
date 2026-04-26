@@ -1,5 +1,5 @@
 import { baseOptions } from '@/app/[locale]/layout.config';
-import { fingerprintConfig } from '@windrun-huaiin/backend-core/config/fingerprint';
+import { fingerprintConfig } from '@core/config/fingerprint';
 import { FingerprintProvider } from '@third-ui/clerk/fingerprint';
 import { SiteHomeLayout, type SiteHomeLayoutConfig } from '@third-ui/fuma/base';
 import { ReactNode } from 'react';

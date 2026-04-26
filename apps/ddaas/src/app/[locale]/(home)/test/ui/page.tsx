@@ -35,20 +35,20 @@ import {
 import * as exportedIcons from '@base-ui/icons';
 import { themeIconColor } from '@windrun-huaiin/base-ui/lib';
 import { cn } from '@lib/utils';
-import { GradientButton } from '@third-ui/fuma/mdx/gradient-button';
+import { GradientButton, XButton, XToggleButton } from '@third-ui/main/buttons';
 import {
   AdsAlertDialog,
   ConfirmDialog,
   HighPriorityConfirmDialog,
   InfoDialog,
-  XButton,
+} from '@third-ui/main/alert-dialog';
+import {
   XFilterPills,
   XFormPills,
   XPillSelect,
   XTokenInput,
-  XToggleButton,
   type XPillOption,
-} from '@third-ui/main';
+} from '@third-ui/main/pill-select';
 
 type StaticIconComponent = ComponentType<LucideProps>;
 

@@ -1,12 +1,12 @@
 import { defaultLocale, localePrefixAsNeeded } from '@/lib/appConfig';
 import { viewLocalTime } from '@lib/utils';
-import { getOptionalServerAuthUser } from '@windrun-huaiin/backend-core/auth/server';
-import { buildInitUserContextFromEntities } from '@windrun-huaiin/backend-core/context';
-import { creditService, subscriptionService } from '@windrun-huaiin/backend-core/database';
-import { moneyPriceConfig } from '@windrun-huaiin/backend-core/config/money-price';
-import { getAsNeededLocalizedUrl } from '@windrun-huaiin/lib/utils';
-import { buildMoneyPriceData } from '@third-ui/main/server';
-import type { CreditOverviewData, CreditOverviewTranslations } from '@third-ui/main';
+import { getOptionalServerAuthUser } from '@core/auth/auth-utils';
+import { buildInitUserContextFromEntities } from '@core/services/context';
+import { creditService, subscriptionService } from '@core/services/database';
+import { moneyPriceConfig } from '@core/config/money-price';
+import { getAsNeededLocalizedUrl } from '@lib/utils';
+import { buildMoneyPriceData } from '@third-ui/main/money-price/server';
+import type { CreditOverviewData, CreditOverviewTranslations } from '@third-ui/main/credit';
 import { getTranslations } from 'next-intl/server';
 import { NextResponse } from 'next/server';
 
@@ -117,7 +117,7 @@ export async function GET(request: Request) {
 
   if (subscription) {
     data.subscription = {
-      planName: subscription.priceName,
+      planName: subscription.priceName ?? '',
       periodStart: viewLocalTime(subscription.subPeriodStart),
       periodEnd: viewLocalTime(subscription.subPeriodEnd),
     };

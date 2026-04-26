@@ -1,7 +1,7 @@
 'use client';
 
-import { MoneyPriceInteractive } from '@third-ui/main';
-import type { InitUserContext, MoneyPriceConfig, MoneyPriceData } from '@third-ui/main';
+import { MoneyPriceInteractive } from '@third-ui/main/money-price';
+import type { InitUserContext, MoneyPriceConfig, MoneyPriceData } from '@third-ui/main/money-price';
 import { useEffect, useState } from 'react';
 
 interface PricingClientProps {

@@ -4,16 +4,16 @@ import {
   createCheckoutSession,
   createOrGetCustomer,
   ActiveSubscriptionExistsError,
-} from '@/lib/stripe-config';
+} from '@core/lib/stripe-config';
 import {
   transactionService,
   TransactionType,
   OrderStatus,
   PaySupplier,
   PaymentStatus
-} from '@/db/index';
-import { ApiAuthUtils } from '@/auth/auth-utils';
-import { getPriceConfig } from '@/lib/money-price-config';
+} from '@core/db/index';
+import { ApiAuthUtils } from '@core/auth/auth-utils';
+import { getPriceConfig } from '@core/lib/money-price-config';
 
 // Request validation schema
 const createCheckoutSchema = z.object({

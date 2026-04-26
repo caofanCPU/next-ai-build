@@ -1,6 +1,6 @@
 'use client';
 
-import { EditOnGitHub, LastUpdatedDate } from '@third-ui/fuma/mdx/toc-base';
+import { EditOnGitHub, LastUpdatedDate } from './toc-base';
 import React from 'react';
 
 interface TocFooterProps {

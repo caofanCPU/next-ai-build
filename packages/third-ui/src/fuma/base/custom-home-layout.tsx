@@ -1,9 +1,9 @@
 import type { CSSProperties, ReactNode } from 'react';
 import { HomeLayout, type HomeLayoutProps } from 'fumadocs-ui/layouts/home';
 import { type LinkItemType } from 'fumadocs-ui/layouts/shared';
-import { FumaBannerSuit } from '@third-ui/fuma/fuma-banner-suit';
-import { Footer } from '@third-ui/main/footer';
-import { GoToTop } from '@third-ui/main/go-to-top';
+import { FumaBannerSuit } from '../fuma-banner-suit';
+import { Footer } from '../../main/footer';
+import { GoToTop } from '../../main/go-to-top';
 import {
   NavbarCSSVars,
   CustomHomeHeader,

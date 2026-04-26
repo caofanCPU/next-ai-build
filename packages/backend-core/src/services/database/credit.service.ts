@@ -1,9 +1,9 @@
-import { Prisma } from '@/db/prisma-model-type';
-import type { Credit, CreditAuditLog } from '@/db/prisma-model-type';
-import { CreditType, OperationType } from '@/db/constants';
-import { freeExpiredDays } from '@/lib/credit-init';
-import { checkAndFallbackWithNonTCClient } from '@/prisma/index';
-import { creditAuditLogService } from '@/db/creditAuditLog.service';
+import { Prisma } from '@core/db/prisma-model-type';
+import type { Credit, CreditAuditLog } from '@core/db/prisma-model-type';
+import { CreditType, OperationType } from '@core/db/constants';
+import { freeExpiredDays } from '@core/lib/credit-init';
+import { checkAndFallbackWithNonTCClient } from '@core/prisma/index';
+import { creditAuditLogService } from '@core/db/creditAuditLog.service';
 
 type CreditAmounts = {
   free?: number;

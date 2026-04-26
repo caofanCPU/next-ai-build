@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { cn } from '@windrun-huaiin/lib/utils';
 import { themeBgColor, themeSvgIconColor } from '@windrun-huaiin/base-ui/lib';
 import { SnakeLoadingFrame } from '../../main/snake-loading-frame';
-import { GradientButton } from './gradient-button';
+import { GradientButton } from '../../main/buttons';
 
 interface SunoEmbedProps {
   src: string;

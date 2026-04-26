@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { headers } from 'next/headers';
-import { validateStripeWebhook } from '@/lib/stripe-config';
+import { validateStripeWebhook } from '@core/lib/stripe-config';
 import Stripe from 'stripe';
-import { Apilogger } from '@/db/apilog.service';
-import { handleStripeEvent } from '@/stripe/webhook-handler';
+import { Apilogger } from '@core/db/apilog.service';
+import { handleStripeEvent } from '@core/stripe/webhook-handler';
 
 // Disable body parsing, need raw body for signature verification
 export const runtime = 'nodejs';

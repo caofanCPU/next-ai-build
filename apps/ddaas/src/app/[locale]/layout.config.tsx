@@ -6,7 +6,7 @@ import {
   createSiteBaseLayoutConfig,
   type SiteBaseLayoutConfig,
 } from '@third-ui/fuma/base';
-import { getAsNeededLocalizedUrl } from '@windrun-huaiin/lib';
+import { getAsNeededLocalizedUrl } from '@lib/utils';
 
 export async function baseOptions(locale: string): Promise<SiteBaseLayoutConfig> {
   const t = await getTranslations({ locale: locale, namespace: 'home' });

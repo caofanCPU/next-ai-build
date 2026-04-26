@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import type { Prisma } from '@/db/prisma-model-type';
-import type { Apilog } from '@/db/prisma-model-type';
-import { checkAndFallbackWithNonTCClient } from '@/prisma/index';
+import type { Prisma } from '@core/db/prisma-model-type';
+import type { Apilog } from '@core/db/prisma-model-type';
+import { checkAndFallbackWithNonTCClient } from '@core/prisma/index';
 
 export type ApiType = 'from_clerk_in' | 'to_clerk_out' | 'from_stripe_in' | 'to_stripe_out';
 

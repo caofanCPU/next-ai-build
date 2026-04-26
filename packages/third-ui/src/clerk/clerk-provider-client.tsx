@@ -1,6 +1,6 @@
 'use client';
 
-import { clerkIntl } from '@third-ui/lib/clerk-intl';
+import { clerkIntl } from '../lib/clerk-intl';
 import { ClerkProvider } from '@clerk/nextjs';
 import React from 'react';
 

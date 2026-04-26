@@ -1,4 +1,4 @@
-import type { I18nConfig } from '@windrun-huaiin/fumadocs-local-md/server';
+import type { I18nConfig } from '@local-md/server';
 import { appConfig } from '@/lib/appConfig';
 
 export const i18n: I18nConfig = {

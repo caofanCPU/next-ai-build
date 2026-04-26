@@ -2,7 +2,6 @@
 
 export * from './trophy-card';
 export * from './zia-card';
-export * from './gradient-button';
 export * from './toc-base';
 export * from './fuma-github-info';
 export * from './zia-file';

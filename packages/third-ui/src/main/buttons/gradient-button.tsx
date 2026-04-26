@@ -23,12 +23,9 @@ export interface GradientButtonProps {
   disabled?: boolean;
   className?: string;
   iconClassName?: string;
-  // for Link
   href?: string;
   openInNewTab?: boolean;
   preserveReferrer?: boolean;
-  
-  // for click
   onClick?: () => void | Promise<void>;
   loadingText?: React.ReactNode;
   preventDoubleClick?: boolean;
@@ -52,7 +49,7 @@ export function GradientButton({
   variant = 'default',
 }: GradientButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
-  const actualLoadingText = loadingText || title?.toString().trim() || 'Loading...'
+  const actualLoadingText = loadingText || title?.toString().trim() || 'Loading...';
 
   const defaultIconClass = "h-4 w-4";
   const finalIconClass = cn(
@@ -60,14 +57,13 @@ export function GradientButton({
     iconClassName || defaultIconClass
   );
 
-  // set justify class according to alignment
   const getAlignmentClass = () => {
     switch (align) {
       case 'center':
         return 'justify-center';
       case 'right':
         return 'justify-end';
-      default: // 'left'
+      default:
         return 'justify-start';
     }
   };
@@ -80,11 +76,11 @@ export function GradientButton({
 
     if (onClick) {
       e.preventDefault();
-      
+
       if (preventDoubleClick) {
         setIsLoading(true);
       }
-      
+
       try {
         await onClick();
       } catch (error) {
@@ -98,10 +94,7 @@ export function GradientButton({
   };
 
   const isDisabled = disabled || isLoading;
-
   const displayTitle = isLoading ? actualLoadingText : title;
-
-  // icon
   const iconProvided = icon !== undefined;
 
   const iconNode = (() => {
@@ -147,8 +140,6 @@ export function GradientButton({
       ? 'justify-center'
       : 'justify-start';
 
-  // Base styles extracted from Button component + size="lg" (h-11 px-8)
-  // Removed [&_svg] constraints
   const baseButtonStyles = "inline-flex items-center gap-2 whitespace-nowrap h-11 px-8 ring-offset-background focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50";
   const variantClassName = variant === 'soft'
     ? cn(
@@ -163,11 +154,11 @@ export function GradientButton({
           themeIconColor,
           'border border-neutral-200 shadow-sm hover:shadow-md hover:bg-neutral-50 dark:border-neutral-800 dark:hover:bg-neutral-800'
         )
-    : cn(
-        themeButtonGradientClass,
-        themeButtonGradientHoverClass,
-        'text-white shadow-lg hover:shadow-xl'
-      );
+      : cn(
+          themeButtonGradientClass,
+          themeButtonGradientHoverClass,
+          'text-white shadow-lg hover:shadow-xl'
+        );
 
   const buttonClassName = cn(
     baseButtonStyles,
@@ -181,7 +172,6 @@ export function GradientButton({
   return (
     <div className={`flex flex-row gap-3 ${getAlignmentClass()}`}>
       {onClick ? (
-        // for click
         <button
           type="button"
           className={buttonClassName}
@@ -191,7 +181,6 @@ export function GradientButton({
           {buttonContent}
         </button>
       ) : (
-        // for Link
         <Link
           href={href || "#"}
           className={cn(buttonClassName, "no-underline hover:no-underline")}
@@ -204,4 +193,4 @@ export function GradientButton({
       )}
     </div>
   );
-} 
+}
