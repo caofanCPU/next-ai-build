@@ -1,207 +1,203 @@
-# @windrun-huaiin/fumadocs-local-md
+# `@windrun-huaiin/fumadocs-local-md`
 
-Local Markdown/MDX source runtime for Fumadocs-style documentation sites.
+`local-md` 现在的定位很明确:
 
-This package is responsible for reading local content files, parsing frontmatter and meta files, compiling Markdown/MDX, rendering page bodies, and exposing a source loader that application projects can use from server-side routes or page generators.
+- 对接 `fumadocs-core` 的内容源能力
+- 支持两种内容源模式: `runtime` 和 `build`
+- 以 `.source` 作为构建产物目录
+- 对应用层暴露统一的取数接口与一个官方 CLI
 
-## Design Goals
+它不再要求应用自己维护一套 MDX 构建脚本，也不要求应用直接感知内部的 MDX 构建实现。
 
-- Keep local Markdown and MDX loading in one server-side package.
-- Provide a small base compiler preset that is safe for minimal documentation sites.
-- Make heavyweight MDX capabilities opt-in through physical import boundaries.
-- Avoid feature flags that run after static imports, because those cannot reliably reduce bundle output.
-- Support Fumadocs-style source data, TOC, structured data, frontmatter schemas, and meta schemas.
-- Keep application integration explicit enough that bundle ownership is clear.
+## 设计目标
 
-## Recommended Entry Points
+- 生产环境默认使用构建后的静态内容源，避免请求期重新解析 MD/MDX
+- 开发环境默认也走构建产物，保证本地与线上行为一致
+- 只有在开发期显式开启时，才回退到 `runtime` 模式，以减少频繁 build 的等待时间
+- 保持组件注入发生在渲染期，由上层应用自行决定启用哪些组件能力
+- `local-md` 负责“内容源处理”，`third-ui` 或应用层负责“组件渲染”
 
-Use these entries for new integrations:
+## 新架构
 
-```ts
-import { createConfiguredLocalMdSourceFactory } from '@windrun-huaiin/fumadocs-local-md/server/source';
-import { createFumaDocsBaseCompilerOptions } from '@windrun-huaiin/fumadocs-local-md/presets/fuma-docs/base';
+### 1. `runtime` 模式
+
+`runtime` 模式会直接读取 `src/mdx` 下的源文件，并在运行期完成:
+
+- 文件扫描
+- frontmatter 解析
+- remark / rehype 处理
+- MDX 编译
+- 页面树与页面数据组装
+
+这个模式适合本地快速开发，但不适合线上长期承载文档访问流量。
+
+### 2. `build` 模式
+
+`build` 模式会先执行一次构建，把文档内容处理为 `.source` 产物。
+
+请求期只负责:
+
+- 读取 `.source`
+- 组装 `fumadocs-core` 需要的 source 结构
+- 在真正渲染页面时按需注入组件
+
+也就是说，MDX 的重解析、remark/rehype/shiki 等重活已经前置到了构建阶段。
+
+### 3. `.source` 目录
+
+应用根目录下会生成:
+
+```text
+.source/
+  index.ts
+  blog.source.config.mjs
+  docs.source.config.mjs
+  legal.source.config.mjs
 ```
 
-Optional compiler features are exposed as separate entries:
+约定说明:
 
-```ts
-import { createFumaDocsCodeFeature } from '@windrun-huaiin/fumadocs-local-md/presets/fuma-docs/features/code';
-import { createFumaDocsMathFeature } from '@windrun-huaiin/fumadocs-local-md/presets/fuma-docs/features/math';
-import { createFumaDocsNpmFeature } from '@windrun-huaiin/fumadocs-local-md/presets/fuma-docs/features/npm';
+- `.source/index.ts` 是总索引
+- 每个一级内容源目录对应一个 `.source/<sourceKey>.source.config.mjs`
+- `sourceKey` 来自 `src/mdx/*` 的一级子目录名
+
+例如:
+
+```text
+src/mdx/
+  docs/
+  blog/
+  legal/
 ```
 
-The legacy aggregate preset is still exported:
+那么 CLI 会自动识别出 `docs`、`blog`、`legal` 三个内容源。
 
-```ts
-import { createFumaDocsCompilerOptions } from '@windrun-huaiin/fumadocs-local-md/presets/fuma-docs';
+## CLI
+
+对应用层，推荐的唯一构建入口就是:
+
+```bash
+pnpm exec local-md build
 ```
 
-Prefer the base-plus-feature entry model when bundle pruning matters.
+CLI 约定:
 
-## Basic Usage
+- 当前工作目录视为应用根目录
+- 内容根目录固定为 `src/mdx`
+- 自动扫描 `src/mdx` 下的一级子目录作为 source keys
+- 输出固定写入应用根目录的 `.source`
 
-```ts
-import { createConfiguredLocalMdSourceFactory } from '@windrun-huaiin/fumadocs-local-md/server/source';
-import { createFumaDocsBaseCompilerOptions } from '@windrun-huaiin/fumadocs-local-md/presets/fuma-docs/base';
+这意味着应用层不需要再自己写一套“扫描目录并生成 source”的脚本。
 
-export const mdxSourceFactory = createConfiguredLocalMdSourceFactory({
-  frontmatterSchema,
-  metaSchema,
-  i18n,
-  icon(icon) {
-    return getIcon(icon);
-  },
-  ...createFumaDocsBaseCompilerOptions(),
-});
+## 应用层如何接入
 
-export async function getContentSource(sourceKey: 'docs' | 'blog' | 'legal') {
-  return mdxSourceFactory.getCachedSource(sourceKey);
-}
-```
+应用层通常只需要两部分:
 
-The source factory returns a cached source loader. Each source key maps to local content under the configured source root, for example `src/mdx/docs`, `src/mdx/blog`, or `src/mdx/legal`.
+- 定义一份统一的 `local-md` source 配置
+- 在取内容源时决定当前使用 `build` 还是 `runtime`
 
-## Compiler Capabilities
+推荐策略:
 
-The base preset includes the common Markdown/MDX pipeline and lightweight Fumadocs structure plugins. Heavy features are opt-in.
+- 生产环境始终使用 `build`
+- 开发环境默认也使用 `build`
+- 仅当显式打开开发期开关时，才使用 `runtime`
 
-```ts
-import { createFumaDocsBaseCompilerOptions } from '@windrun-huaiin/fumadocs-local-md/presets/fuma-docs/base';
-import { createFumaDocsCodeFeature } from '@windrun-huaiin/fumadocs-local-md/presets/fuma-docs/features/code';
-import { createFumaDocsMathFeature } from '@windrun-huaiin/fumadocs-local-md/presets/fuma-docs/features/math';
-import { createFumaDocsNpmFeature } from '@windrun-huaiin/fumadocs-local-md/presets/fuma-docs/features/npm';
+例如 `ddaas` 当前采用的是:
 
-const compilerOptions = createFumaDocsBaseCompilerOptions({
-  features: [
-    createFumaDocsCodeFeature(),
-    createFumaDocsMathFeature(),
-    createFumaDocsNpmFeature(),
-  ],
-});
-```
+- `LOCAL_MD_DEV_RUNTIME=true` 且非生产环境时走 `runtime`
+- 其他情况全部走 `build`
 
-| Capability | Compiler Feature | Main Effect |
-| --- | --- | --- |
-| `base` | `createFumaDocsBaseCompilerOptions()` | Markdown/MDX parsing, TOC, structure, heading handling, code tabs, steps |
-| `code` | `createFumaDocsCodeFeature()` | Rehype code highlighting and Shiki-related compiler chain |
-| `math` | `createFumaDocsMathFeature()` | `remark-math` and `rehype-katex` |
-| `npm` | `createFumaDocsNpmFeature()` | Install command transformation through Fumadocs npm remark plugin |
+这样可以保证:
 
-Renderer-only capabilities such as Mermaid diagrams and type tables are not compiler features. They belong in the MDX component layer of the application or UI package.
+- 线上一定是静态内容源
+- 本地默认与线上一致
+- 需要快速改文档时，再显式切换到运行时模式
 
-## Bundle Pruning Model
+## 组件与依赖边界
 
-Bundle pruning is based on imports, not runtime configuration.
+这套设计里要区分两件事:
 
-If an application only imports the base preset, code/math/npm compiler implementations are not statically imported by the base entry. To enable a feature, the application must import the feature entry and pass the feature object into `createFumaDocsBaseCompilerOptions()`.
+- 文档内容的“解析与编译”
+- 文档页面的“组件注入与渲染”
 
-This is intentional. A config array such as `features: ['code']` is not enough if the module that interprets it has already imported every implementation at the top level.
+`local-md` 负责前者，应用层或 `third-ui` 负责后者。
 
-## Runtime Rendering Safety
+因此:
 
-MDX files can reference components that were not registered by the application. By default, MDX throws an error such as:
+- `.source` 保存的是已经处理好的内容结果
+- 组件注入仍然发生在页面渲染阶段
+- 应用没有启用的组件能力，不需要在渲染层被强制使用
 
-```txt
-Expected component `Example` to be defined
-```
+但需要注意:
 
-This package treats that as a content authoring problem, not a reason to take the whole page down.
+- `local-md` 包本身为了完整识别和处理 MDX，内部仍会依赖相应的 MDX 编译链
+- 这和“页面最终是否真的渲染某个组件”是两件不同的事
 
-The fallback is applied in the `local-md` render stage:
+换句话说，`build` 解决的是请求期性能与稳定性问题，组件能力是否启用仍由上层控制。
 
-1. MDX is compiled to function-body JavaScript.
-2. The compiled output is scanned for `_missingMdxReference("ComponentName", true)`.
-3. Before rendering the MDX component, `local-md` adds fallback React components for missing PascalCase component names.
-4. The MDX runtime receives a real component, so the page renders a visible warning block instead of throwing.
+## 缓存说明
 
-This protects the site from accidental authoring errors such as:
+即使走 `build` 模式，运行期仍然保留一层缓存。
 
-```mdx
-<NotRegistered title="Example">
-  Content
-</NotRegistered>
-```
+缓存的对象不是“重新编译后的 MDX”，而是:
 
-The fallback block shows:
+- `.source` 文件读取结果
+- `fumadocs-core` loader 组装后的 source 结果
+- 部分页面的 renderer 实例
 
-- the missing component name
-- primitive props such as strings, numbers, and booleans
-- children content when available
+目的很简单:
 
-Fallback priority is:
+- 避免每次请求都重复读磁盘
+- 避免每次请求都重复组装同一份 source 数据
 
-1. Application-provided MDX components.
-2. UI package feature components, such as code, math, Mermaid, or type-table renderers.
-3. UI package feature-specific fallbacks, such as disabled `MathBlock` or `Mermaid`.
-4. `local-md` unknown component fallback as the final safety net.
-
-This final fallback is intentionally generic. It does not try to guess which feature should be enabled; it only prevents unknown MDX components from making the route unavailable.
-
-## Cache Behavior
-
-Source loading is cached by default. The cache covers the Fumadocs-compatible source
-object, including the scanned file list, parsed `meta.json` files, and page
-frontmatter needed by Fumadocs to build routing, locale mappings, page tree data,
-and `generateStaticParams()` output.
-
-Disable the runtime cache during development with:
+如果设置:
 
 ```bash
 LOCAL_MD_CACHE_DISABLE=true
 ```
 
-When disabled, local content is read again on refresh. This avoids a separate
-watch server and keeps the development workflow refresh-based, so new files,
-deleted files, renamed files, `meta.json` changes, and frontmatter changes are
-visible without restarting the dev server.
+则每次都会重新读取并重建这些运行时对象。
 
-Compilation is intentionally lazy in both modes:
+## 对外边界
 
-1. Source loading may scan the content directory and read lightweight metadata
-   such as frontmatter and `meta.json`.
-2. Source loading must not compile every Markdown or MDX page.
-3. A page body is compiled only when that page's `load(components)` or
-   `body({ components })` function is called.
-4. With cache enabled, the source and per-page compiled renderer can be reused to
-   reduce production and development overhead.
-5. With `LOCAL_MD_CACHE_DISABLE=true`, the source is rebuilt on refresh for
-   real-time content updates, but only the visited page should be compiled.
+当前对外推荐使用的能力只有两类:
 
-This boundary is important: visiting one page must never compile all pages in the
-source tree. Full-source compilation on a single page request causes slow dev
-page loads and can exhaust the JavaScript heap when MDX compilation includes
-heavy plugins such as code highlighting.
+- 包运行时接口
+- `local-md build` CLI
 
-## Source Shape
+内部的 `src/md-build/*` 是 `local-md` 自己使用的实现细节，不应该由应用层直接导入。
 
-The configured source exposes page data in a Fumadocs-compatible shape:
+也就是说:
 
-- `title`
-- `description`
-- `icon`
-- `toc`
-- `body`
-- `load()`
-- frontmatter fields from the configured schema
+- 应用层不应该依赖 `./md-build`
+- 应用层不应该直接调用内部 build API
+- 应用层只需要执行 CLI，并在运行期读取 `.source`
 
-`load(components)` renders the page body with the supplied MDX component map and returns the rendered body, TOC, structured data, and module exports.
+## 推荐工作流
 
-## Export Map
+开发期:
 
-Important package exports:
+```bash
+pnpm exec local-md build
+pnpm dev
+```
 
-| Export | Purpose |
-| --- | --- |
-| `.` | Core local-md API and shared types |
-| `./core` | Minimal core API without server source helpers |
-| `./server/source` | Configured source factory for applications |
-| `./presets/fuma-docs/base` | Recommended base compiler preset |
-| `./presets/fuma-docs/features/code` | Optional code compiler feature |
-| `./presets/fuma-docs/features/math` | Optional math compiler feature |
-| `./presets/fuma-docs/features/npm` | Optional npm compiler feature |
-| `./js/executor-virtual` | Virtual JS executor for Markdown AST rendering |
-| `./js/executor-native` | Native JS executor |
+如果只想快速改文档、临时跳过 build:
 
-## Attribution
+```bash
+LOCAL_MD_DEV_RUNTIME=true pnpm dev
+```
 
-This package is based on `@fumadocs/local-md`, with substantial modifications and enhancements.
+上线前:
+
+```bash
+pnpm exec local-md build
+pnpm build
+```
+
+部署时可以选择两种方式:
+
+- 将 `.source` 作为仓库/构建输入的一部分提交或带入构建
+- 在应用正式打包前先执行一次 `local-md build`
+
+无论哪种方式，生产环境都应读取 `.source`，不应回退到 `runtime`。

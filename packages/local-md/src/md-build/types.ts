@@ -20,10 +20,8 @@ export interface BuiltSourceMetaEntry {
 }
 
 export interface BuiltSourceModuleArtifact {
-  version: 1;
   sourceKey: string;
   dir: string;
-  generatedAt: string;
   pages: BuiltSourcePageEntry[];
   metas: BuiltSourceMetaEntry[];
 }

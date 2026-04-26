@@ -86,10 +86,8 @@ export async function buildLocalMdSource<
   }
 
   const moduleArtifact: BuiltSourceModuleArtifact = {
-    version: 1,
     sourceKey,
     dir: resolvedDir,
-    generatedAt: new Date().toISOString(),
     pages: pageEntries,
     metas: metaEntries,
   };

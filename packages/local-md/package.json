@@ -15,10 +15,11 @@
     "directory": "packages/local-md"
   },
   "files": [
-    "dist"
+    "dist",
+    "bin"
   ],
   "bin": {
-    "local-md": "./dist/cli.js"
+    "local-md": "./bin/local-md.mjs"
   },
   "type": "module",
   "types": "./dist/index.d.ts",

@@ -21,14 +21,14 @@
     "ddaas:dev": "turbo dev --filter=@windrun-huaiin/ddaas-website",
     "ddaas:build": "turbo build --filter=@windrun-huaiin/ddaas-website",
     "ddaas:build:prod": "turbo build:prod --filter=@windrun-huaiin/ddaas-website",
-    "lib:build": "turbo build --filter=@windrun-huaiin/lib build",
-    "rule:build": "turbo build --filter=@windrun-huaiin/contracts build",
-    "base:build": "turbo build --filter=@windrun-huaiin/base-ui build",
-    "third:build": "turbo build --filter=@windrun-huaiin/third-ui build",
-    "core:build": "turbo build --filter=@windrun-huaiin/backend-core build",
-    "cli:build": "turbo build --filter=@windrun-huaiin/dev-scripts build",
-    "source:build": "turbo build --filter=@windrun-huaiin/shared-assets build",
-    "md:build": "turbo build --filter=@windrun-huaiin/fumadocs-local-md build"
+    "lib:build": "turbo build --filter=@windrun-huaiin/lib",
+    "rule:build": "turbo build --filter=@windrun-huaiin/contracts",
+    "base:build": "turbo build --filter=@windrun-huaiin/base-ui",
+    "third:build": "turbo build --filter=@windrun-huaiin/third-ui",
+    "core:build": "turbo build --filter=@windrun-huaiin/backend-core",
+    "cli:build": "turbo build --filter=@windrun-huaiin/dev-scripts",
+    "source:build": "turbo build --filter=@windrun-huaiin/shared-assets",
+    "md:build": "turbo build --filter=@windrun-huaiin/fumadocs-local-md"
   },
   "devDependencies": {
     "@changesets/cli": "catalog:",
