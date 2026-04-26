@@ -8,4 +8,5 @@ export const siteDocs = createSiteDocs({
     mermaid: false,
     typeTable: false,
   },
+  additionalComponents: {},
 });

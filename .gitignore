@@ -2,7 +2,9 @@
 .zprofile
 .gemini*
 .claude*
+.codex*
 .cursor*
+.gitNexus*
 
 # Logs
 logs
@@ -92,6 +94,7 @@ web_modules/
 .parcel-cache
 
 # Build outputs (anywhere in project)
+**/next-env.d.ts
 **/.next/
 **/out/
 **/dist/
@@ -167,9 +170,8 @@ temp/
 ehthumbs.db
 Thumbs.db
 
-# Legacy source files (from fumadocs)
-.source/index.ts
-.source/source.config.mjs
+# Generated local-md source artifacts
+.source/
 
 # Backup files
 *.bak

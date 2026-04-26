@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "prisma generate && next dev",
     "build-local-md": "pnpm --filter @windrun-huaiin/fumadocs-local-md build && pnpm exec local-md build",
-    "build": "pnpm generate-blog-index && pnpm build-local-md && prisma generate && next build",
-    "build:dev": "pnpm generate-blog-index && pnpm build-local-md && prisma generate && next build",
+    "build": "pnpm generate-blog-index && prisma generate && next build",
+    "build:dev": "pnpm generate-blog-index && prisma generate && next build",
     "build:prod": "pnpm build-local-md && prisma generate && next build",
     "start": "next start",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",

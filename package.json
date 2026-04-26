@@ -19,6 +19,7 @@
     "djvp": "pnpm changeset publish",
     "copy-shared-assets": "turbo copy-shared-assets",
     "ddaas:dev": "turbo dev --filter=@windrun-huaiin/ddaas-website",
+    "ddaas:md-build": "pnpm --filter @windrun-huaiin/ddaas-website run build-local-md",
     "ddaas:build": "turbo build --filter=@windrun-huaiin/ddaas-website",
     "ddaas:build:prod": "turbo build:prod --filter=@windrun-huaiin/ddaas-website",
     "lib:build": "turbo build --filter=@windrun-huaiin/lib",
