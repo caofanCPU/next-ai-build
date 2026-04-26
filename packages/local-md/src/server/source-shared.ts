@@ -126,6 +126,17 @@ export function resolveBaseUrl(sourceKey: string, baseUrl: string | undefined) {
   return baseUrl ?? `/${sourceKey}`;
 }
 
+export function resolveLocalMdMode(mode: CreateLocalMdSourceLoaderOptions['mode']) {
+  if (mode && mode !== 'auto') return mode;
+
+  const enableDevRuntime = process.env.LOCAL_MD_DEV_RUNTIME?.toLowerCase() === 'true';
+  if (process.env.NODE_ENV !== 'production' && enableDevRuntime) {
+    return 'runtime' as const;
+  }
+
+  return 'build' as const;
+}
+
 export function toRecord(value: unknown): Record<string, unknown> {
   if (value && typeof value === 'object' && !Array.isArray(value)) {
     return value as Record<string, unknown>;

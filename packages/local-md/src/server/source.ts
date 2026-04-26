@@ -11,6 +11,7 @@ import {
   countSourceFiles,
   isLoaderResultEmpty,
   isLocalMdCacheDisabled,
+  resolveLocalMdMode,
   resolveBaseUrl,
   resolveSourceDir,
   shouldCacheEmptySource,
@@ -18,11 +19,6 @@ import {
 
 type LocalMdLoaderResult = Awaited<ReturnType<typeof createLocalMdSourceLoader>>;
 type LocalMdLoaderPromise = Promise<LocalMdLoaderResult>;
-
-function resolveSourceMode(mode: CreateLocalMdSourceLoaderOptions['mode']) {
-  if (mode && mode !== 'auto') return mode;
-  return process.env.NODE_ENV === 'production' ? 'build' : 'runtime';
-}
 
 export async function createLocalMdSourceLoader<
   FrontmatterSchema extends StandardSchemaV1 = StandardSchemaV1,
@@ -45,7 +41,7 @@ export async function createLocalMdSourceLoader<
 
   const resolvedDir = resolveSourceDir(sourceKey, dir, sourceRootDir);
   const resolvedBaseUrl = resolveBaseUrl(sourceKey, baseUrl);
-  const resolvedMode = resolveSourceMode(mode);
+  const resolvedMode = resolveLocalMdMode(mode);
 
   logLocalMdDebug('createLocalMdSourceLoader:start', {
     sourceKey,
