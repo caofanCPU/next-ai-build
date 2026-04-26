@@ -28,6 +28,11 @@ export type {
   CreditBucketStatus,
   SubscriptionInfo,
 } from './credit/types';
+export type {
+  MoneyPriceConfig,
+  MoneyPriceData,
+  InitUserContext,
+} from './money-price/money-price-types';
 
 export { HeroMedia } from './hero-media';
 export { HeroSection } from './hero-section';

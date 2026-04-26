@@ -21,6 +21,10 @@ import { redirectToCustomerPortal } from './customer-portal';
 import { themeButtonGradientClass, themeButtonGradientHoverClass, themeIconColor } from '@windrun-huaiin/base-ui/lib';
 
 type BillingType = string;
+type ProcessingTarget = {
+  plan: string;
+  billing: string;
+} | null;
 
 interface BillingOption {
   key: string;
@@ -161,7 +165,7 @@ export function MoneyPriceInteractive({
     setBillingType(prev => (prev === initialBillingCandidate ? prev : initialBillingCandidate));
   }, [initialBillingCandidate]);
 
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [processingTarget, setProcessingTarget] = useState<ProcessingTarget>(null);
   const [isTouchDevice, setIsTouchDevice] = useState(false);
 
   useEffect(() => {
@@ -231,23 +235,22 @@ export function MoneyPriceInteractive({
 
   const handleAction = useCallback(async (plan: string, billing: string) => {
     const isSubscriptionFlow = billing !== 'onetime';
+    const hasActiveSubscription =
+      userContext.isAuthenticated &&
+      (userContext.subscriptionStatus === UserState.ProUser ||
+        userContext.subscriptionStatus === UserState.UltraUser);
 
-    if (isSubscriptionFlow && !enableSubscriptionUpgrade) {
+    if (isSubscriptionFlow && hasActiveSubscription && !enableSubscriptionUpgrade) {
       return;
     }
 
     navigationLockRef.current = false;
-    setIsProcessing(true);
+    setProcessingTarget({ plan, billing });
     const markNavigating = () => {
       navigationLockRef.current = true;
     };
 
     try {
-      const hasActiveSubscription =
-        userContext.isAuthenticated &&
-        (userContext.subscriptionStatus === UserState.ProUser ||
-          userContext.subscriptionStatus === UserState.UltraUser);
-
       const shouldUsePortal = isSubscriptionFlow && hasActiveSubscription;
 
       if (shouldUsePortal) {
@@ -327,7 +330,7 @@ export function MoneyPriceInteractive({
       console.error('Error during upgrade:', error);
     } finally {
       if (!navigationLockRef.current) {
-        setIsProcessing(false);
+        setProcessingTarget(null);
       }
     }
   }, [
@@ -560,7 +563,11 @@ export function MoneyPriceInteractive({
                 onAuth={handleAuth}
                 onAction={handleAction}
                 texts={data.buttonTexts}
-                isProcessing={isProcessing}
+                isProcessing={
+                  processingTarget?.plan === planKey &&
+                  processingTarget?.billing === billingType
+                }
+                isAnyProcessing={!!processingTarget}
                 isInitLoading={false}
                 enableSubscriptionUpgrade={enableSubscriptionUpgrade}
               />

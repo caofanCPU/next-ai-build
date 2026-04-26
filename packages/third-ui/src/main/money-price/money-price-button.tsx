@@ -14,6 +14,7 @@ export function MoneyPriceButton({
   onAction,
   texts,
   isProcessing = false,
+  isAnyProcessing = false,
   isInitLoading = false,
   enableSubscriptionUpgrade = true
 }: MoneyPriceButtonProps) {
@@ -224,19 +225,24 @@ export function MoneyPriceButton({
   
   if (config.hidden) return null;
 
+  const hasActiveSubscription =
+    subscriptionStatus === UserState.ProUser ||
+    subscriptionStatus === UserState.UltraUser;
+
   if (
     !enableSubscriptionUpgrade &&
     billingType !== 'onetime' &&
+    hasActiveSubscription &&
     config.text === texts.upgrade &&
     typeof config.onClick === 'function'
   ) {
     return null;
   }
 
-  const isBusy = isLoading || isProcessing;
-  const isDisabled = config.disabled || isBusy;
-  const displayText = isBusy ? 'Processing...' : config.text;
-  const isDisabledByConfigOnly = config.disabled && !isBusy;
+  const isCurrentButtonBusy = isLoading || isProcessing;
+  const isDisabled = config.disabled || isCurrentButtonBusy || isAnyProcessing;
+  const displayText = isCurrentButtonBusy ? 'Processing...' : config.text;
+  const isDisabledByConfigOnly = config.disabled && !isCurrentButtonBusy && !isAnyProcessing;
 
   const handleClick = async (e: React.MouseEvent) => {
     if (isDisabled) {
@@ -265,9 +271,9 @@ export function MoneyPriceButton({
     isDisabledByConfigOnly
       ? 'bg-gray-400 cursor-not-allowed'
       : themeButtonGradientClass,
-    !isDisabledByConfigOnly && !isBusy &&
+    !isDisabledByConfigOnly && !isCurrentButtonBusy && !isAnyProcessing &&
       themeButtonGradientHoverClass,
-    isBusy && !isDisabledByConfigOnly && 'opacity-70 cursor-not-allowed'
+    (isCurrentButtonBusy || isAnyProcessing) && !isDisabledByConfigOnly && 'opacity-70 cursor-not-allowed'
   );
 
   return (

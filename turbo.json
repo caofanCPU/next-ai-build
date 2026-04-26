@@ -57,6 +57,23 @@
         "QSTASH_*"
       ]
     },
+    "build-local-md": {
+      "dependsOn": ["@windrun-huaiin/fumadocs-local-md#build"],
+      "inputs": [
+        "src/mdx/**",
+        "messages/**",
+        "src/lib/site-docs*.ts",
+        "src/lib/i18n-base.ts",
+        "dev-scripts.config.json",
+        "package.json"
+      ],
+      "outputs": [".source/**"],
+      "env": [
+        "NODE_ENV",
+        "LOCAL_MD_*",
+        "NEXT_PUBLIC_*"
+      ]
+    },
     "@windrun-huaiin/shared-assets#build": {
       "cache": false,
       "outputs": [],

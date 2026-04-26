@@ -1,9 +1,10 @@
 
 import { appConfig } from '@/lib/appConfig';
 import { moneyPriceConfig } from '@windrun-huaiin/backend-core/config/money-price';
-import { getMoneyPriceInitUserContext } from '@windrun-huaiin/backend-core/pricing/server';
 import { FingerprintStatus } from "@third-ui/clerk/fingerprint";
-import { MoneyPrice } from "@third-ui/main/server";
+import { buildMoneyPriceData } from "@third-ui/main/server";
+import { cn } from '@windrun-huaiin/lib/utils';
+import { PricingClient } from './pricing-client';
 
 export default async function Pricing({
   params,
@@ -19,22 +20,34 @@ export default async function Pricing({
   const resolvedSearchParams = searchParams ? await searchParams : {};
   const { initialBillingType } = resolvedSearchParams;
   console.log(initialBillingType);
-  const initUserContext = await getMoneyPriceInitUserContext();
+  const enabledBillingTypes = ['monthly', 'yearly', 'onetime'];
+  const data = await buildMoneyPriceData({
+    locale,
+    currency: moneyPriceConfig.display.currency,
+    enabledBillingTypes,
+  });
+
   return (
     <>
       { (forceShow || isDev) && <FingerprintStatus />}
-      <MoneyPrice
-        locale={locale}
-        config={moneyPriceConfig}
-        checkoutApiEndpoint="/api/stripe/checkout"
-        customerPortalApiEndpoint="/api/stripe/customer-portal"
-        enableClerkModal={appConfig.style.clerkAuthInModal}
-        enabledBillingTypes={['monthly', 'yearly', 'onetime']}
-        enableSubscriptionUpgrade={enableSubscriptionUpgrade}
-        initUserContext={initUserContext}
-        sectionClassName='mt-12'
-        initialBillingType={initialBillingType}
-      />
+      <section id="money-pricing" className={cn("px-4 py-4 md:px-16 md:py-8 mx-auto max-w-7xl scroll-mt-10", 'mt-12')}>
+        <h2 className="text-3xl md:text-4xl font-bold text-center mb-3">
+          {data.title}
+        </h2>
+        <p className="text-center text-gray-600 dark:text-gray-400 mb-4 text-base md:text-lg mx-auto">
+          {data.subtitle}
+        </p>
+        <PricingClient
+          data={data}
+          config={moneyPriceConfig}
+          checkoutApiEndpoint="/api/stripe/checkout"
+          customerPortalApiEndpoint="/api/stripe/customer-portal"
+          enableClerkModal={appConfig.style.clerkAuthInModal}
+          enabledBillingTypes={enabledBillingTypes}
+          enableSubscriptionUpgrade={enableSubscriptionUpgrade}
+          initialBillingType={initialBillingType}
+        />
+      </section>
     </>
   );
 }
