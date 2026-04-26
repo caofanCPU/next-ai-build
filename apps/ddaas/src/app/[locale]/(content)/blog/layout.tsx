@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { baseOptions } from '@/app/[locale]/layout.config';
 import { levelNavLinks, primaryNavLinks } from '@/app/[locale]/layout.nav';
 import { showBanner, localePrefixAsNeeded, defaultLocale } from '@/lib/appConfig';
-import { getContentSource } from '@/lib/content-source';
+import { siteDocs } from '@/lib/site-docs';
 import { SiteDocsLayout, SiteHomeLayout, type SiteHomeLayoutConfig } from '@third-ui/fuma/base';
 import { fingerprintConfig } from '@windrun-huaiin/backend-core/lib';
 import { FingerprintProvider } from '@third-ui/clerk/fingerprint';
@@ -27,7 +27,7 @@ export default async function Layout({
 }) {
   const { locale } = await params;
   console.log('[blog layout] entered', { locale });
-  const blogSource = await getContentSource('blog');
+  const blogSource = await siteDocs.getContentSource('blog');
   const contentLayoutOptions = await contentOptions(locale);
   const homeLayoutOptions: SiteHomeLayoutConfig = {
     ...contentLayoutOptions,

@@ -7,7 +7,7 @@ import { CreditOverview, buildMoneyPriceData } from '@third-ui/main/server';
 import { moneyPriceConfig } from '@windrun-huaiin/backend-core/lib';
 import { buildInitUserContextFromEntities } from '@windrun-huaiin/backend-core/context'
 import { getTranslations } from 'next-intl/server';
-import { getAsNeededLocalizedUrl } from '@windrun-huaiin/lib';
+import { getAsNeededLocalizedUrl } from '@windrun-huaiin/lib/utils';
 import { localePrefixAsNeeded, defaultLocale } from '@/lib/appConfig';
 
 interface CreditPopoverProps {

@@ -2,10 +2,7 @@ import { getRequestConfig } from 'next-intl/server';
 import path from 'path';
 import { appConfig } from "@/lib/appConfig";
 import { loadMergedLocaleMessages, type RuntimeMessageSource } from '@windrun-huaiin/lib/i18n-server';
-import { createContentSourceI18nConfig } from '@/lib/content-source-i18n-base';
  
-export const i18n = createContentSourceI18nConfig();
-
 // Can be imported from a shared config
 const locales = appConfig.i18n.locales;
 const messagesRoot = path.join(process.cwd(), 'messages');

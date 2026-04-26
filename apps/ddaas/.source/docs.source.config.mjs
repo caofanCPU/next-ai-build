@@ -534,976 +534,6 @@ const source = {
       }
     },
     {
-      "path": "introduction/(3p-integration)/clerk-customization.mdx",
-      "absolutePath": "/Users/funeye/IdeaProjects/next-ai-build/apps/ddaas/src/mdx/docs/introduction/(3p-integration)/clerk-customization.mdx",
-      "title": "整合Cleck用户系统",
-      "description": "小白开箱即用的用户管理系统, 涵盖登录、权限、组织管理, 提供了丰富的前后端组件",
-      "frontmatter": {
-        "title": "整合Cleck用户系统",
-        "description": "小白开箱即用的用户管理系统, 涵盖登录、权限、组织管理, 提供了丰富的前后端组件",
-        "date": "2025-06-23"
-      },
-      "structuredData": {
-        "contents": [
-          {
-            "heading": "核心要点",
-            "content": "Clerk的官网已经很详细地介绍了如何接入, 目前对于国际化的支持还不够, 但官网正在跟进中"
-          },
-          {
-            "heading": "核心要点",
-            "content": "登录、注册全家桶, 第三方账号登录|邮件|手机号|密码"
-          },
-          {
-            "heading": "核心要点",
-            "content": "`邀请式注册`"
-          },
-          {
-            "heading": "核心要点",
-            "content": "用户角色权限系统管理"
-          },
-          {
-            "heading": "核心要点",
-            "content": "组织管理"
-          },
-          {
-            "heading": "核心要点",
-            "content": "Dashboard后台管理"
-          },
-          {
-            "heading": "核心要点",
-            "content": "订阅计划托管`Beta`"
-          },
-          {
-            "heading": "clerkprovider",
-            "content": "`ClerkProvider`本质上是为后续所有用到的Clerk组件提供全局一致的Context信息, 因而我们可以按照需要来放置`ClerkProvider`的布局层次。\n例如, 有一个更重要的**YourRootProvider**, 它在更外层提供更基础的Context信息, 那么就可以如下代码来处理"
-          },
-          {
-            "heading": "config-url",
-            "content": "`ClerkProvider`支持url参数配置, 配置方式也有如下3种, 官方推荐使用环境变量, 其次是代码级配置, 不建议使用Clerk Dashboard的远程配置"
-          },
-          {
-            "heading": "config-url",
-            "content": "截至Clerk版本`^6.19.4`, 多语言项目, 配置了NextJS \\[locale]路由段的项目, 不要使用自定义登录页面, 而是使用模态框弹出登录框的方式\n详细原因参见issue"
-          },
-          {
-            "heading": "config-url",
-            "content": "Clerk Dashboard -> Configure -> Paths"
-          },
-          {
-            "heading": "登录注册",
-            "content": "建议使用一个登录按钮, 点击登录按钮后, 弹框或者跳转到登录页面, 出现的Clerk `SignIn`卡片组件能自动携带未登录就去注册的指引"
-          },
-          {
-            "heading": "登录注册",
-            "content": "如下是一个简单包装过的Clerk用户组件:"
-          },
-          {
-            "heading": "国际化",
-            "content": "目前经过官方和用户的共同努力, Clerk目前支持40+种语言, 例如中文简体、中文繁体、英法德日韩, 参考Clerk官网说明\n如果某些字段未处理, 参考英语标准字段自行覆盖, 但推荐给官方提pr融合你的贡献!"
-          }
-        ],
-        "headings": [
-          {
-            "id": "核心要点",
-            "content": "核心要点"
-          },
-          {
-            "id": "clerk自定义处理",
-            "content": "CLerk自定义处理"
-          },
-          {
-            "id": "clerkprovider",
-            "content": "ClerkProvider"
-          },
-          {
-            "id": "config-url",
-            "content": "Config URL"
-          },
-          {
-            "id": "登录注册",
-            "content": "登录注册"
-          },
-          {
-            "id": "国际化",
-            "content": "国际化"
-          }
-        ]
-      },
-      "compiled": {
-        "type": "js",
-        "code": "\"use strict\";\nconst {Fragment: _Fragment, jsx: _jsx, jsxs: _jsxs} = arguments[0];\nlet toc = [{\n  depth: 2,\n  url: \"#核心要点\",\n  title: _jsx(_Fragment, {\n    children: \"核心要点\"\n  })\n}, {\n  depth: 2,\n  url: \"#clerk自定义处理\",\n  title: _jsx(_Fragment, {\n    children: \"CLerk自定义处理\"\n  })\n}, {\n  depth: 3,\n  url: \"#clerkprovider\",\n  title: _jsx(_Fragment, {\n    children: \"ClerkProvider\"\n  })\n}, {\n  depth: 3,\n  url: \"#config-url\",\n  title: _jsx(_Fragment, {\n    children: \"Config URL\"\n  })\n}, {\n  depth: 3,\n  url: \"#登录注册\",\n  title: _jsx(_Fragment, {\n    children: \"登录注册\"\n  })\n}, {\n  depth: 3,\n  url: \"#国际化\",\n  title: _jsx(_Fragment, {\n    children: \"国际化\"\n  })\n}];\nfunction _createMdxContent(props) {\n  const _components = {\n    a: \"a\",\n    code: \"code\",\n    h2: \"h2\",\n    h3: \"h3\",\n    li: \"li\",\n    p: \"p\",\n    pre: \"pre\",\n    span: \"span\",\n    strong: \"strong\",\n    ul: \"ul\",\n    ...props.components\n  }, {Callout, Tab, Tabs} = _components;\n  if (!Callout) _missingMdxReference(\"Callout\", true);\n  if (!Tab) _missingMdxReference(\"Tab\", true);\n  if (!Tabs) _missingMdxReference(\"Tabs\", true);\n  return _jsxs(_Fragment, {\n    children: [_jsx(_components.h2, {\n      id: \"核心要点\",\n      children: \"核心要点\"\n    }), \"\\n\", _jsx(Callout, {\n      title: \"阅读官网说明书\",\n      type: \"warn\",\n      children: _jsx(_components.p, {\n        children: \"Clerk的官网已经很详细地介绍了如何接入, 目前对于国际化的支持还不够, 但官网正在跟进中\"\n      })\n    }), \"\\n\", _jsxs(_components.ul, {\n      children: [\"\\n\", _jsx(_components.li, {\n        children: \"登录、注册全家桶, 第三方账号登录|邮件|手机号|密码\"\n      }), \"\\n\", _jsx(_components.li, {\n        children: _jsx(_components.code, {\n          children: \"邀请式注册\"\n        })\n      }), \"\\n\", _jsx(_components.li, {\n        children: \"用户角色权限系统管理\"\n      }), \"\\n\", _jsx(_components.li, {\n        children: \"组织管理\"\n      }), \"\\n\", _jsx(_components.li, {\n        children: \"Dashboard后台管理\"\n      }), \"\\n\", _jsxs(_components.li, {\n        children: [\"订阅计划托管\", _jsx(_components.code, {\n          children: \"Beta\"\n        })]\n      }), \"\\n\"]\n    }), \"\\n\", _jsx(_components.h2, {\n      id: \"clerk自定义处理\",\n      children: \"CLerk自定义处理\"\n    }), \"\\n\", _jsx(_components.h3, {\n      id: \"clerkprovider\",\n      children: \"ClerkProvider\"\n    }), \"\\n\", _jsxs(_components.p, {\n      children: [_jsx(_components.code, {\n        children: \"ClerkProvider\"\n      }), \"本质上是为后续所有用到的Clerk组件提供全局一致的Context信息, 因而我们可以按照需要来放置\", _jsx(_components.code, {\n        children: \"ClerkProvider\"\n      }), \"的布局层次。\\n例如, 有一个更重要的\", _jsx(_components.strong, {\n        children: \"YourRootProvider\"\n      }), \", 它在更外层提供更基础的Context信息, 那么就可以如下代码来处理\"]\n    }), \"\\n\", _jsx(_components.h3, {\n      id: \"config-url\",\n      children: \"Config URL\"\n    }), \"\\n\", _jsxs(_components.p, {\n      children: [_jsx(_components.code, {\n        children: \"ClerkProvider\"\n      }), \"支持url参数配置, 配置方式也有如下3种, 官方推荐使用环境变量, 其次是代码级配置, 不建议使用Clerk Dashboard的远程配置\"]\n    }), \"\\n\", _jsx(Callout, {\n      title: \"Clerk动态Locale问题\",\n      type: \"error\",\n      children: _jsxs(_components.p, {\n        children: [\"截至Clerk版本\", _jsx(_components.code, {\n          children: \"^6.19.4\"\n        }), \", 多语言项目, 配置了NextJS [locale]路由段的项目, 不要使用自定义登录页面, 而是使用模态框弹出登录框的方式\\n详细原因参见\", _jsx(_components.a, {\n          href: \"https://github.com/clerk/javascript/issues/5935\",\n          children: \"issue\"\n        })]\n      })\n    }), \"\\n\", _jsxs(Tabs, {\n      groupId: \"clerk-config\",\n      items: [\"env\", \"props\", \"dashboard\"],\n      children: [_jsx(Tab, {\n        value: \"env\",\n        children: _jsx(_Fragment, {\n          children: _jsx(_components.pre, {\n            className: \"shiki shiki-themes catppuccin-latte catppuccin-mocha\",\n            style: {\n              \"--shiki-light\": \"#4c4f69\",\n              \"--shiki-dark\": \"#cdd6f4\",\n              \"--shiki-light-bg\": \"#eff1f5\",\n              \"--shiki-dark-bg\": \"#1e1e2e\"\n            },\n            tabIndex: \"0\",\n            title: \".env.local\",\n            \"data-language\": \"txt\",\n            icon: \"<svg viewBox=\\\"0 0 24 24\\\"><path d=\\\"M 6,1 C 4.354992,1 3,2.354992 3,4 v 16 c 0,1.645008 1.354992,3 3,3 h 12 c 1.645008,0 3,-1.354992 3,-3 V 8 7 A 1.0001,1.0001 0 0 0 20.707031,6.2929687 l -5,-5 A 1.0001,1.0001 0 0 0 15,1 h -1 z m 0,2 h 7 v 3 c 0,1.645008 1.354992,3 3,3 h 3 v 11 c 0,0.564129 -0.435871,1 -1,1 H 6 C 5.4358712,21 5,20.564129 5,20 V 4 C 5,3.4358712 5.4358712,3 6,3 Z M 15,3.4140625 18.585937,7 H 16 C 15.435871,7 15,6.5641288 15,6 Z\\\" fill=\\\"currentColor\\\" /></svg>\",\n            children: _jsxs(_components.code, {\n              children: [_jsx(_components.span, {\n                className: \"line\",\n                children: _jsx(_components.span, {\n                  children: \"  # 配置登录url\"\n                })\n              }), \"\\n\", _jsx(_components.span, {\n                className: \"line\",\n                children: _jsx(_components.span, {\n                  children: \"  NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in\"\n                })\n              }), \"\\n\", _jsx(_components.span, {\n                className: \"line\",\n                children: _jsx(_components.span, {\n                  children: \"  NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL=/\"\n                })\n              }), \"\\n\", _jsx(_components.span, {\n                className: \"line\",\n                children: _jsx(_components.span, {\n                  children: \"  # 配置注册url\"\n                })\n              }), \"\\n\", _jsx(_components.span, {\n                className: \"line\",\n                children: _jsx(_components.span, {\n                  children: \"  NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up\"\n                })\n              }), \"\\n\", _jsx(_components.span, {\n                className: \"line\",\n                children: _jsx(_components.span, {\n                  children: \"  NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL=/\"\n                })\n              })]\n            })\n          })\n        })\n      }), _jsx(Tab, {\n        value: \"props\",\n        children: _jsx(_Fragment, {\n          children: _jsx(_components.pre, {\n            className: \"shiki shiki-themes catppuccin-latte catppuccin-mocha\",\n            style: {\n              \"--shiki-light\": \"#4c4f69\",\n              \"--shiki-dark\": \"#cdd6f4\",\n              \"--shiki-light-bg\": \"#eff1f5\",\n              \"--shiki-dark-bg\": \"#1e1e2e\"\n            },\n            tabIndex: \"0\",\n            title: \"ClerkProvider.props\",\n            \"data-language\": \"tsx\",\n            icon: \"<svg viewBox=\\\"0 0 24 24\\\"><path d=\\\"M14.23 12.004a2.236 2.236 0 0 1-2.235 2.236 2.236 2.236 0 0 1-2.236-2.236 2.236 2.236 0 0 1 2.235-2.236 2.236 2.236 0 0 1 2.236 2.236zm2.648-10.69c-1.346 0-3.107.96-4.888 2.622-1.78-1.653-3.542-2.602-4.887-2.602-.41 0-.783.093-1.106.278-1.375.793-1.683 3.264-.973 6.365C1.98 8.917 0 10.42 0 12.004c0 1.59 1.99 3.097 5.043 4.03-.704 3.113-.39 5.588.988 6.38.32.187.69.275 1.102.275 1.345 0 3.107-.96 4.888-2.624 1.78 1.654 3.542 2.603 4.887 2.603.41 0 .783-.09 1.106-.275 1.374-.792 1.683-3.263.973-6.365C22.02 15.096 24 13.59 24 12.004c0-1.59-1.99-3.097-5.043-4.032.704-3.11.39-5.587-.988-6.38-.318-.184-.688-.277-1.092-.278zm-.005 1.09v.006c.225 0 .406.044.558.127.666.382.955 1.835.73 3.704-.054.46-.142.945-.25 1.44-.96-.236-2.006-.417-3.107-.534-.66-.905-1.345-1.727-2.035-2.447 1.592-1.48 3.087-2.292 4.105-2.295zm-9.77.02c1.012 0 2.514.808 4.11 2.28-.686.72-1.37 1.537-2.02 2.442-1.107.117-2.154.298-3.113.538-.112-.49-.195-.964-.254-1.42-.23-1.868.054-3.32.714-3.707.19-.09.4-.127.563-.132zm4.882 3.05c.455.468.91.992 1.36 1.564-.44-.02-.89-.034-1.345-.034-.46 0-.915.01-1.36.034.44-.572.895-1.096 1.345-1.565zM12 8.1c.74 0 1.477.034 2.202.093.406.582.802 1.203 1.183 1.86.372.64.71 1.29 1.018 1.946-.308.655-.646 1.31-1.013 1.95-.38.66-.773 1.288-1.18 1.87-.728.063-1.466.098-2.21.098-.74 0-1.477-.035-2.202-.093-.406-.582-.802-1.204-1.183-1.86-.372-.64-.71-1.29-1.018-1.946.303-.657.646-1.313 1.013-1.954.38-.66.773-1.286 1.18-1.868.728-.064 1.466-.098 2.21-.098zm-3.635.254c-.24.377-.48.763-.704 1.16-.225.39-.435.782-.635 1.174-.265-.656-.49-1.31-.676-1.947.64-.15 1.315-.283 2.015-.386zm7.26 0c.695.103 1.365.23 2.006.387-.18.632-.405 1.282-.66 1.933-.2-.39-.41-.783-.64-1.174-.225-.392-.465-.774-.705-1.146zm3.063.675c.484.15.944.317 1.375.498 1.732.74 2.852 1.708 2.852 2.476-.005.768-1.125 1.74-2.857 2.475-.42.18-.88.342-1.355.493-.28-.958-.646-1.956-1.1-2.98.45-1.017.81-2.01 1.085-2.964zm-13.395.004c.278.96.645 1.957 1.1 2.98-.45 1.017-.812 2.01-1.086 2.964-.484-.15-.944-.318-1.37-.5-1.732-.737-2.852-1.706-2.852-2.474 0-.768 1.12-1.742 2.852-2.476.42-.18.88-.342 1.356-.494zm11.678 4.28c.265.657.49 1.312.676 1.948-.64.157-1.316.29-2.016.39.24-.375.48-.762.705-1.158.225-.39.435-.788.636-1.18zm-9.945.02c.2.392.41.783.64 1.175.23.39.465.772.705 1.143-.695-.102-1.365-.23-2.006-.386.18-.63.406-1.282.66-1.933zM17.92 16.32c.112.493.2.968.254 1.423.23 1.868-.054 3.32-.714 3.708-.147.09-.338.128-.563.128-1.012 0-2.514-.807-4.11-2.28.686-.72 1.37-1.536 2.02-2.44 1.107-.118 2.154-.3 3.113-.54zm-11.83.01c.96.234 2.006.415 3.107.532.66.905 1.345 1.727 2.035 2.446-1.595 1.483-3.092 2.295-4.11 2.295-.22-.005-.406-.05-.553-.132-.666-.38-.955-1.834-.73-3.703.054-.46.142-.944.25-1.438zm4.56.64c.44.02.89.034 1.345.034.46 0 .915-.01 1.36-.034-.44.572-.895 1.095-1.345 1.565-.455-.47-.91-.993-1.36-1.565z\\\" fill=\\\"currentColor\\\" /></svg>\",\n            children: _jsxs(_components.code, {\n              children: [_jsxs(_components.span, {\n                className: \"line\",\n                children: [_jsx(_components.span, {\n                  style: {\n                    \"--shiki-light\": \"#179299\",\n                    \"--shiki-dark\": \"#94E2D5\"\n                  },\n                  children: \"  <\"\n                }), _jsx(_components.span, {\n                  style: {\n                    \"--shiki-light\": \"#EA76CB\",\n                    \"--shiki-dark\": \"#F5C2E7\"\n                  },\n                  children: \"ClerkProvider\"\n                })]\n              }), \"\\n\", _jsxs(_components.span, {\n                className: \"line\",\n                children: [_jsx(_components.span, {\n                  style: {\n                    \"--shiki-light\": \"#DF8E1D\",\n                    \"--shiki-dark\": \"#F9E2AF\"\n                  },\n                  children: \"    signInUrl\"\n                }), _jsx(_components.span, {\n                  style: {\n                    \"--shiki-light\": \"#179299\",\n                    \"--shiki-dark\": \"#94E2D5\"\n                  },\n                  children: \"=\"\n                }), _jsx(_components.span, {\n                  style: {\n                    \"--shiki-light\": \"#40A02B\",\n                    \"--shiki-dark\": \"#A6E3A1\"\n                  },\n                  children: \"\\\"XXX\\\"\"\n                })]\n              }), \"\\n\", _jsxs(_components.span, {\n                className: \"line\",\n                children: [_jsx(_components.span, {\n                  style: {\n                    \"--shiki-light\": \"#DF8E1D\",\n                    \"--shiki-dark\": \"#F9E2AF\"\n                  },\n                  children: \"    signUpUrl\"\n                }), _jsx(_components.span, {\n                  style: {\n                    \"--shiki-light\": \"#179299\",\n                    \"--shiki-dark\": \"#94E2D5\"\n                  },\n                  children: \"=\"\n                }), _jsx(_components.span, {\n                  style: {\n                    \"--shiki-light\": \"#40A02B\",\n                    \"--shiki-dark\": \"#A6E3A1\"\n                  },\n                  children: \"\\\"XXX\\\"\"\n                })]\n              }), \"\\n\", _jsxs(_components.span, {\n                className: \"line\",\n                children: [_jsx(_components.span, {\n                  style: {\n                    \"--shiki-light\": \"#DF8E1D\",\n                    \"--shiki-dark\": \"#F9E2AF\"\n                  },\n                  children: \"    signInFallbackRedirectUrl\"\n                }), _jsx(_components.span, {\n                  style: {\n                    \"--shiki-light\": \"#179299\",\n                    \"--shiki-dark\": \"#94E2D5\"\n                  },\n                  children: \"=\"\n                }), _jsx(_components.span, {\n                  style: {\n                    \"--shiki-light\": \"#40A02B\",\n                    \"--shiki-dark\": \"#A6E3A1\"\n                  },\n                  children: \"\\\"XXX\\\"\"\n                })]\n              }), \"\\n\", _jsxs(_components.span, {\n                className: \"line\",\n                children: [_jsx(_components.span, {\n                  style: {\n                    \"--shiki-light\": \"#DF8E1D\",\n                    \"--shiki-dark\": \"#F9E2AF\"\n                  },\n                  children: \"    signUpFallbackRedirectUrl\"\n                }), _jsx(_components.span, {\n                  style: {\n                    \"--shiki-light\": \"#179299\",\n                    \"--shiki-dark\": \"#94E2D5\"\n                  },\n                  children: \"=\"\n                }), _jsx(_components.span, {\n                  style: {\n                    \"--shiki-light\": \"#40A02B\",\n                    \"--shiki-dark\": \"#A6E3A1\"\n                  },\n                  children: \"\\\"XXX\\\"\"\n                })]\n              }), \"\\n\", _jsxs(_components.span, {\n                className: \"line\",\n                children: [_jsx(_components.span, {\n                  style: {\n                    \"--shiki-light\": \"#DF8E1D\",\n                    \"--shiki-dark\": \"#F9E2AF\"\n                  },\n                  children: \"    waitlistUrl\"\n                }), _jsx(_components.span, {\n                  style: {\n                    \"--shiki-light\": \"#179299\",\n                    \"--shiki-dark\": \"#94E2D5\"\n                  },\n                  children: \"=\"\n                }), _jsx(_components.span, {\n                  style: {\n                    \"--shiki-light\": \"#40A02B\",\n                    \"--shiki-dark\": \"#A6E3A1\"\n                  },\n                  children: \"\\\"XXX\\\"\"\n                })]\n              }), \"\\n\", _jsxs(_components.span, {\n                className: \"line\",\n                children: [_jsx(_components.span, {\n                  style: {\n                    \"--shiki-light\": \"#DF8E1D\",\n                    \"--shiki-dark\": \"#F9E2AF\"\n                  },\n                  children: \"    localization\"\n                }), _jsx(_components.span, {\n                  style: {\n                    \"--shiki-light\": \"#179299\",\n                    \"--shiki-dark\": \"#94E2D5\"\n                  },\n                  children: \"=\"\n                }), _jsx(_components.span, {\n                  style: {\n                    \"--shiki-light\": \"#40A02B\",\n                    \"--shiki-dark\": \"#A6E3A1\"\n                  },\n                  children: \"\\\"XXXLocalization\\\"\"\n                })]\n              }), \"\\n\", _jsx(_components.span, {\n                className: \"line\",\n                children: _jsx(_components.span, {\n                  style: {\n                    \"--shiki-light\": \"#179299\",\n                    \"--shiki-dark\": \"#94E2D5\"\n                  },\n                  children: \"  >\"\n                })\n              }), \"\\n\", _jsxs(_components.span, {\n                className: \"line\",\n                children: [_jsx(_components.span, {\n                  style: {\n                    \"--shiki-light\": \"#7C7F93\",\n                    \"--shiki-dark\": \"#9399B2\"\n                  },\n                  children: \"    {\"\n                }), _jsx(_components.span, {\n                  style: {\n                    \"--shiki-light\": \"#4C4F69\",\n                    \"--shiki-dark\": \"#CDD6F4\"\n                  },\n                  children: \"children\"\n                }), _jsx(_components.span, {\n                  style: {\n                    \"--shiki-light\": \"#7C7F93\",\n                    \"--shiki-dark\": \"#9399B2\"\n                  },\n                  children: \"}\"\n                })]\n              }), \"\\n\", _jsxs(_components.span, {\n                className: \"line\",\n                children: [_jsx(_components.span, {\n                  style: {\n                    \"--shiki-light\": \"#179299\",\n                    \"--shiki-dark\": \"#94E2D5\"\n                  },\n                  children: \"  </\"\n                }), _jsx(_components.span, {\n                  style: {\n                    \"--shiki-light\": \"#EA76CB\",\n                    \"--shiki-dark\": \"#F5C2E7\"\n                  },\n                  children: \"ClerkProvider\"\n                }), _jsx(_components.span, {\n                  style: {\n                    \"--shiki-light\": \"#179299\",\n                    \"--shiki-dark\": \"#94E2D5\"\n                  },\n                  children: \">\"\n                })]\n              })]\n            })\n          })\n        })\n      }), _jsx(Tab, {\n        value: \"dashboard\",\n        children: _jsx(_components.p, {\n          children: \"Clerk Dashboard -> Configure -> Paths\"\n        })\n      })]\n    }), \"\\n\", _jsx(_components.h3, {\n      id: \"登录注册\",\n      children: \"登录注册\"\n    }), \"\\n\", _jsxs(_components.p, {\n      children: [\"建议使用一个登录按钮, 点击登录按钮后, 弹框或者跳转到登录页面, 出现的Clerk \", _jsx(_components.code, {\n        children: \"SignIn\"\n      }), \"卡片组件能自动携带未登录就去注册的指引\"]\n    }), \"\\n\", _jsx(_components.p, {\n      children: \"如下是一个简单包装过的Clerk用户组件:\"\n    }), \"\\n\", _jsx(_components.h3, {\n      id: \"国际化\",\n      children: \"国际化\"\n    }), \"\\n\", _jsxs(_components.p, {\n      children: [\"目前经过官方和用户的共同努力, Clerk目前支持40+种语言, 例如中文简体、中文繁体、英法德日韩, 参考\", _jsx(_components.a, {\n        href: \"https://clerk.com/docs/customization/localization\",\n        children: \"Clerk官网说明\"\n      }), \"\\n如果某些字段未处理, 参考\", _jsx(_components.a, {\n        href: \"https://github.com/clerk/javascript/blob/main/packages/localizations/src/en-US.ts#L492\",\n        children: \"英语标准字段\"\n      }), \"自行覆盖, 但推荐给官方提pr融合你的贡献!\"]\n    })]\n  });\n}\nfunction MDXContent(props = {}) {\n  const {wrapper: MDXLayout} = props.components || ({});\n  return MDXLayout ? _jsx(MDXLayout, {\n    ...props,\n    children: _jsx(_createMdxContent, {\n      ...props\n    })\n  }) : _createMdxContent(props);\n}\nreturn {\n  toc,\n  default: MDXContent\n};\nfunction _missingMdxReference(id, component) {\n  throw new Error(\"Expected \" + (component ? \"component\" : \"object\") + \" `\" + id + \"` to be defined: you likely forgot to import, pass, or provide it.\");\n}\n",
-        "fileData": {
-          "structuredData": {
-            "contents": [
-              {
-                "heading": "核心要点",
-                "content": "Clerk的官网已经很详细地介绍了如何接入, 目前对于国际化的支持还不够, 但官网正在跟进中"
-              },
-              {
-                "heading": "核心要点",
-                "content": "登录、注册全家桶, 第三方账号登录|邮件|手机号|密码"
-              },
-              {
-                "heading": "核心要点",
-                "content": "`邀请式注册`"
-              },
-              {
-                "heading": "核心要点",
-                "content": "用户角色权限系统管理"
-              },
-              {
-                "heading": "核心要点",
-                "content": "组织管理"
-              },
-              {
-                "heading": "核心要点",
-                "content": "Dashboard后台管理"
-              },
-              {
-                "heading": "核心要点",
-                "content": "订阅计划托管`Beta`"
-              },
-              {
-                "heading": "clerkprovider",
-                "content": "`ClerkProvider`本质上是为后续所有用到的Clerk组件提供全局一致的Context信息, 因而我们可以按照需要来放置`ClerkProvider`的布局层次。\n例如, 有一个更重要的**YourRootProvider**, 它在更外层提供更基础的Context信息, 那么就可以如下代码来处理"
-              },
-              {
-                "heading": "config-url",
-                "content": "`ClerkProvider`支持url参数配置, 配置方式也有如下3种, 官方推荐使用环境变量, 其次是代码级配置, 不建议使用Clerk Dashboard的远程配置"
-              },
-              {
-                "heading": "config-url",
-                "content": "截至Clerk版本`^6.19.4`, 多语言项目, 配置了NextJS \\[locale]路由段的项目, 不要使用自定义登录页面, 而是使用模态框弹出登录框的方式\n详细原因参见issue"
-              },
-              {
-                "heading": "config-url",
-                "content": "Clerk Dashboard -> Configure -> Paths"
-              },
-              {
-                "heading": "登录注册",
-                "content": "建议使用一个登录按钮, 点击登录按钮后, 弹框或者跳转到登录页面, 出现的Clerk `SignIn`卡片组件能自动携带未登录就去注册的指引"
-              },
-              {
-                "heading": "登录注册",
-                "content": "如下是一个简单包装过的Clerk用户组件:"
-              },
-              {
-                "heading": "国际化",
-                "content": "目前经过官方和用户的共同努力, Clerk目前支持40+种语言, 例如中文简体、中文繁体、英法德日韩, 参考Clerk官网说明\n如果某些字段未处理, 参考英语标准字段自行覆盖, 但推荐给官方提pr融合你的贡献!"
-              }
-            ],
-            "headings": [
-              {
-                "id": "核心要点",
-                "content": "核心要点"
-              },
-              {
-                "id": "clerk自定义处理",
-                "content": "CLerk自定义处理"
-              },
-              {
-                "id": "clerkprovider",
-                "content": "ClerkProvider"
-              },
-              {
-                "id": "config-url",
-                "content": "Config URL"
-              },
-              {
-                "id": "登录注册",
-                "content": "登录注册"
-              },
-              {
-                "id": "国际化",
-                "content": "国际化"
-              }
-            ]
-          }
-        }
-      }
-    },
-    {
-      "path": "introduction/(3p-integration)/fuma-customization.mdx",
-      "absolutePath": "/Users/funeye/IdeaProjects/next-ai-build/apps/ddaas/src/mdx/docs/introduction/(3p-integration)/fuma-customization.mdx",
-      "title": "FumaDocs接入指北",
-      "description": "熟悉FumaDocs组件原理, 组件自定义经验分享",
-      "frontmatter": {
-        "title": "FumaDocs接入指北",
-        "description": "熟悉FumaDocs组件原理, 组件自定义经验分享",
-        "date": "2025-06-23"
-      },
-      "structuredData": {
-        "contents": [
-          {
-            "heading": "基础接入",
-            "content": "参照官网文档, 完成基础环境配置"
-          },
-          {
-            "heading": "自定义流程处理",
-            "content": "`src/lib/source-legal.ts` 路由+数据源+元数据处理, **内容如何被加载和路由**, 侧重于HTML的主干结构"
-          },
-          {
-            "heading": "自定义流程处理",
-            "content": "`source.config.ts`插件链的配置扩展, **原始mdx内容如何被解析为React组件**, 侧重于基础内容"
-          },
-          {
-            "heading": "自定义流程处理",
-            "content": "`src/components/mdx-components.tsx` React组件扩展, **组件如何被渲染**, 侧重于样式和交互"
-          },
-          {
-            "heading": "网站布局调整",
-            "content": "FumaDocs提供了几种基础布局, 这里补充一下导航菜单和按钮的排序规则"
-          },
-          {
-            "heading": "网站布局调整",
-            "content": "整个导航是由`nav`组件(选择器ID为`#nd-nav`)定义的, FumaDocs的默认Header整体分为左右两部分:"
-          },
-          {
-            "heading": "网站布局调整",
-            "content": "左侧为网站Logo+标题, 以及可以自定义的菜单栏"
-          },
-          {
-            "heading": "网站布局调整",
-            "content": "右侧为可选搜索框, 然后是主题切换按钮, 然后是语言切换按钮, 然后是用户自定义的按钮, 最后是Github按钮链接"
-          },
-          {
-            "heading": "网站布局调整",
-            "content": "`LinkItemType`类型, 有关键字段`secondary`, 决定按钮是否在导航栏右侧"
-          },
-          {
-            "heading": "网站布局调整",
-            "content": "`LinkItemType`类型, 关键字段`type`, 定义为`custom`时, `children`就可以使用我们自己的组件了, 不过适配默认的样式风格会花点时间"
-          },
-          {
-            "heading": "自定义headeralpha",
-            "content": "当前自定义Header的方案处于Alpha阶段, 在flex多端适配上还存在问题, 请谨慎鉴用!"
-          },
-          {
-            "heading": "自定义headeralpha",
-            "content": "长期方案是基于FumaDocs的`nav`组件重写, 实现完全自定义的需求"
-          },
-          {
-            "heading": "自定义headeralpha",
-            "content": "更改Header右侧的按钮顺序, 使用自定义的搜索框、主题切换、语言切换、Github按钮组件, 然后全部定义为`type=custom secondary=true`的LinkItemType"
-          },
-          {
-            "heading": "自定义headeralpha",
-            "content": "默认Header的样式是写死的, 总是悬浮并且和顶部有缝隙, 在滚动页面时会在缝隙处留下网页内容残影, 使用CSS样式强制覆盖"
-          },
-          {
-            "heading": "自定义headeralpha",
-            "content": "默认Banner的样式也是写死的, 对于动态配置Banner支持不够, 也可使用CSS样式强制覆盖, 参见下文的css文本部分"
-          },
-          {
-            "heading": "自定义组件",
-            "content": "前面已经详细分析过FumaDocs对于整个mdx处理的完整流程, 整体分为mdx解析、mdx组件生成、mdx组件渲染三个阶段"
-          },
-          {
-            "heading": "自定义组件",
-            "content": "这三个阶段我们都可以自定义, 只不过FumaDocs有一些默认顺序是固定的, 完全复写成本代价比较高"
-          },
-          {
-            "heading": "自定义组件",
-            "content": "因此, 我们优先使用FumaDocs提供的扩展口, 如果实在不够用, 再考虑自定义组件"
-          },
-          {
-            "heading": "自定义样式组件",
-            "content": "当需要特殊展示某些内容, 或者更本质一点, 包装mdx里的html代码块: 提效或者美颜, 此时自定义组件就很方便了"
-          },
-          {
-            "heading": "自定义样式组件",
-            "content": "Fuma通过`mdx-components.tsx`提供了易用的组件扩展, 我们只需要关注自定义组件的入参和html代码转换逻辑即可"
-          },
-          {
-            "heading": "自定义流程处理插件",
-            "content": "当涉及到mdx原始数据解析时, 我们就需要自定义流程处理插件, 例如在`source.config.ts`中配置FumaDocs提供的remark/rehype插件"
-          },
-          {
-            "heading": "自定义流程处理插件",
-            "content": "FomaDocs提供了比较丰富的remark/rehype插件, 我们可以仿照它的处理方式自己写一个插件, 然后配置到`source.config.ts`中"
-          },
-          {
-            "heading": "自定义流程处理插件",
-            "content": "但现在我们要做一个稍微难一点事情, 就是魔改FumaDocs的插件默认行为:"
-          },
-          {
-            "heading": "自定义流程处理插件",
-            "content": "现在FumaDocs的目录标题解析参考了Clerk的样式处理, 但属于阉割版本的: 步骤组件的标题只在正文中处理, 没有在目录上渲染出步骤的⭕️"
-          },
-          {
-            "heading": "自定义流程处理插件",
-            "content": "通过源码分析, FumaDocs的`remark-mdx-steps`插件就是用来处理正文步骤渲染的, 而`remark-heading`插件是在之后默认执行的, 它生成slug数据为魔改目录提供了可能"
-          },
-          {
-            "heading": "自定义流程处理插件",
-            "content": "然后`toc-clerk.tsx`组件会根据`remark-heading`生成的slug数据, 渲染生成最终的目录效果"
-          },
-          {
-            "heading": "自定义流程处理插件",
-            "content": "魔改后的`toc-clerk.tsx`组件, 会根据`remark-heading`插件生成的标题数据, 渲染生成最终的步骤⭕️效果"
-          },
-          {
-            "heading": "自定义流程处理插件",
-            "content": "魔改的流程如下:"
-          },
-          {
-            "heading": "4-准备补丁文件",
-            "content": "一般会有3个文件: `XXX.js`, `XXX.d.ts`, `XXX.d.tsx`"
-          },
-          {
-            "heading": "4-准备补丁文件",
-            "content": "文件: `node_modules/fumadocs/dist/src/components/toc-clerk.js`"
-          },
-          {
-            "heading": "4-准备补丁文件",
-            "content": "文件: `node_modules/fumadocs/dist/src/components/toc-clerk.d.ts`"
-          },
-          {
-            "heading": "4-准备补丁文件",
-            "content": "文件: `node_modules/fumadocs/dist/src/components/toc-clerk.d.tsx`"
-          },
-          {
-            "heading": "4-准备补丁文件",
-            "content": "拷贝到单独的文件夹中, 方便后续替换"
-          },
-          {
-            "heading": "1-清理项目环境",
-            "content": "清理项目环境, 删除node\\_modules、pnpm-lock.yaml"
-          },
-          {
-            "heading": "4-补丁替换",
-            "content": "补丁文件覆盖替换`node_modules/fumadocs/dist/src/components/toc-clerk.js`"
-          },
-          {
-            "heading": "4-补丁替换",
-            "content": "补丁文件覆盖替换`node_modules/fumadocs/dist/src/components/toc-clerk.d.ts`"
-          },
-          {
-            "heading": "4-补丁替换",
-            "content": "补丁文件覆盖替换`node_modules/fumadocs/dist/src/components/toc-clerk.d.tsx`"
-          },
-          {
-            "heading": "5-提交补丁",
-            "content": "提交补丁后, 会生成一个补丁文件, 文件名类似`fumadocs-ui-15.3.3-patch-1.patch`"
-          },
-          {
-            "heading": "5-提交补丁",
-            "content": "同时`package.json`中也会有`pnpm.patchedDependencies`字段, 记录了补丁文件的路径信息"
-          },
-          {
-            "heading": "6-验证补丁",
-            "content": "再一次清理项目环境, 删除node\\_modules、pnpm-lock.yaml"
-          },
-          {
-            "heading": "6-验证补丁",
-            "content": "再次重装依赖"
-          },
-          {
-            "heading": "6-验证补丁",
-            "content": "启动项目, 验证补丁效果: 但你查看本文档时, 就能看到正文和目录上都有对应的步骤⭕️效果"
-          },
-          {
-            "heading": "7-done",
-            "content": "在不升级FumaDocs版本的前提下, 该补丁会一直生效, 重装环境时会自动应用, 无需再管了"
-          },
-          {
-            "heading": "7-done",
-            "content": "魔改源码打补丁的方案, 在FumaDocs升级时会失效, 需要重新魔改"
-          },
-          {
-            "heading": "7-done",
-            "content": "**因此, 强烈推荐给FumaDocs官方咨询、讨论、提PR**, 让FumaDocs也越发好用!"
-          },
-          {
-            "heading": "问题描述",
-            "content": "在将包含 Fumadocs 的 Next.js 应用部署到 Vercel 后, 一个用于提取 MDX 页面内容的 API 路由 (`/api/*/llm-content`), 在本地开发时工作正常"
-          },
-          {
-            "heading": "问题描述",
-            "content": "但在 Vercel 的 Serverless Function 环境中持续抛出 `ENOENT: no such file or directory` 错误"
-          },
-          {
-            "heading": "问题描述",
-            "content": "错误日志指示, 系统尝试打开类似 `/vercel/path0/src/mdx/docs/...` 的路径, 这是一个构建时的绝对路径, 在运行时无效"
-          },
-          {
-            "heading": "分析过程",
-            "content": "初步怀疑 `remark` 插件: 最初认为问题出在 `getLLMText` 函数中使用的 `remark` 插件链（如 `remark-include`, `remark-docgen` 等）在运行时试图访问文件系统"
-          },
-          {
-            "heading": "分析过程",
-            "content": "简化 `remark` 插件: 逐步移除了这些可能导致问题的插件, 但错误依旧"
-          },
-          {
-            "heading": "分析过程",
-            "content": "日志诊断 `page` 对象: 通过在 API 路由中添加详细日志, 发现在尝试访问 `page.data.content` 属性（由 `docsSource.getPage()` 返回）时, 错误就会发生。这表明 Fumadocs 在运行时延迟加载此属性, 并错误地使用了构建时的文件路径"
-          },
-          {
-            "heading": "分析过程",
-            "content": "确认元数据可访问: 测试表明, 访问 `page.data.title` 等其他元数据是安全的, 不会触发文件读取错误"
-          },
-          {
-            "heading": "解决方案",
-            "content": "核心解决方案是避免在 API 路由运行时让 Fumadocs 的内部机制去加载文件内容, 而是由我们主动、正确地读取文件"
-          },
-          {
-            "heading": "1-nextconfigts配置",
-            "content": "确保 MDX 文件被打包到 Vercel Serverless Function:"
-          },
-          {
-            "heading": "1-nextconfigts配置",
-            "content": "修改 `next.config.ts`, 在顶层配置中添加 `outputFileTracingIncludes`, 明确指定将 `src/mdx/docs/**/*` 目录下的所有文件包含在 `/api/*/llm-content` 路由的部署包中"
-          },
-          {
-            "heading": "2-getllmtext函数",
-            "content": "修改 `getLLMText` 函数 (`src/lib/get-llm-text.ts`):"
-          },
-          {
-            "heading": "2-getllmtext函数",
-            "content": "更改函数签名, 使其接受 MDX 内容字符串、标题和描述作为参数: `async function getLLMText(mdxContent: string, title?: string, description?: string)`"
-          },
-          {
-            "heading": "2-getllmtext函数",
-            "content": "内部 `remark` 处理器使用简化的插件集 (`remark-frontmatter`, `remark-remove-frontmatter`, `remark-mdx`, `remark-gfm`), 仅处理传入的字符串内容"
-          },
-          {
-            "heading": "3-api-路由",
-            "content": "修改 API 路由 (`src/app/api/legal/llm-content/route.ts`):"
-          },
-          {
-            "heading": "3-api-路由",
-            "content": "调用 `docsSource.getPage(slug, locale)` 获取 `page` 对象, 并从中安全地提取 `title` 和 `description`"
-          },
-          {
-            "heading": "3-api-路由",
-            "content": "从 `page.data._file.path` 获取 MDX 文件的相对路径"
-          },
-          {
-            "heading": "3-api-路由",
-            "content": "使用 Node.js 的 `path.join(process.cwd(), 'src', 'mdx', 'docs', relativeMdxFilePath)` 构造在 Vercel 运行时环境中的正确绝对路径（`process.cwd()` 在 Vercel Serverless Function 中通常是 `/var/task`）"
-          },
-          {
-            "heading": "3-api-路由",
-            "content": "使用 `fs.readFileSync(absoluteFilePath, 'utf-8')` 同步读取文件内容"
-          },
-          {
-            "heading": "3-api-路由",
-            "content": "将手动读取到的 `mdxContent` 字符串以及 `title` 和 `description` 传递给更新后的 `getLLMText` 函数"
-          },
-          {
-            "heading": "3-api-路由",
-            "content": "包含详细的错误处理和日志记录, 特别是在文件读取失败时, 会尝试列出相关目录内容以辅助调试"
-          }
-        ],
-        "headings": [
-          {
-            "id": "fumadocs接入",
-            "content": "FumaDocs接入"
-          },
-          {
-            "id": "基础接入",
-            "content": "基础接入"
-          },
-          {
-            "id": "核心流程处理",
-            "content": "核心流程处理"
-          },
-          {
-            "id": "自定义流程处理",
-            "content": "自定义流程处理"
-          },
-          {
-            "id": "网站布局调整",
-            "content": "网站布局调整"
-          },
-          {
-            "id": "自定义headeralpha",
-            "content": "自定义Header(Alpha)"
-          },
-          {
-            "id": "自定义组件",
-            "content": "自定义组件"
-          },
-          {
-            "id": "自定义样式组件",
-            "content": "自定义样式组件"
-          },
-          {
-            "id": "自定义流程处理插件",
-            "content": "自定义流程处理插件"
-          },
-          {
-            "id": "源码魔改",
-            "content": "源码魔改"
-          },
-          {
-            "id": "1-fork源码",
-            "content": "Fork源码"
-          },
-          {
-            "id": "2-修改组件源码",
-            "content": "修改组件源码"
-          },
-          {
-            "id": "3-再次构建-生成js文件",
-            "content": "再次构建, 生成js文件"
-          },
-          {
-            "id": "4-准备补丁文件",
-            "content": "准备补丁文件"
-          },
-          {
-            "id": "应用补丁",
-            "content": "应用补丁"
-          },
-          {
-            "id": "1-清理项目环境",
-            "content": "清理项目环境"
-          },
-          {
-            "id": "2-重装依赖",
-            "content": "重装依赖"
-          },
-          {
-            "id": "3-开始pnpm-patch会话",
-            "content": "开始pnpm patch会话"
-          },
-          {
-            "id": "4-补丁替换",
-            "content": "补丁替换"
-          },
-          {
-            "id": "5-提交补丁",
-            "content": "提交补丁"
-          },
-          {
-            "id": "6-验证补丁",
-            "content": "验证补丁"
-          },
-          {
-            "id": "7-done",
-            "content": "Done"
-          },
-          {
-            "id": "vercel中文件读取报错问题",
-            "content": "Vercel中文件读取报错问题"
-          },
-          {
-            "id": "问题描述",
-            "content": "问题描述"
-          },
-          {
-            "id": "分析过程",
-            "content": "分析过程"
-          },
-          {
-            "id": "解决方案",
-            "content": "解决方案"
-          },
-          {
-            "id": "1-nextconfigts配置",
-            "content": "Next.config.ts配置"
-          },
-          {
-            "id": "2-getllmtext函数",
-            "content": "getLLMText函数"
-          },
-          {
-            "id": "3-api-路由",
-            "content": "API 路由"
-          }
-        ]
-      },
-      "compiled": {
-        "type": "js",
-        "code": "\"use strict\";\nconst {Fragment: _Fragment, jsx: _jsx, jsxs: _jsxs} = arguments[0];\nlet toc = [{\n  depth: 2,\n  url: \"#fumadocs接入\",\n  title: _jsx(_Fragment, {\n    children: \"FumaDocs接入\"\n  })\n}, {\n  depth: 3,\n  url: \"#基础接入\",\n  title: _jsx(_Fragment, {\n    children: \"基础接入\"\n  })\n}, {\n  depth: 3,\n  url: \"#核心流程处理\",\n  title: _jsx(_Fragment, {\n    children: \"核心流程处理\"\n  })\n}, {\n  depth: 3,\n  url: \"#自定义流程处理\",\n  title: _jsx(_Fragment, {\n    children: \"自定义流程处理\"\n  })\n}, {\n  depth: 2,\n  url: \"#网站布局调整\",\n  title: _jsx(_Fragment, {\n    children: \"网站布局调整\"\n  })\n}, {\n  depth: 3,\n  url: \"#自定义headeralpha\",\n  title: _jsx(_Fragment, {\n    children: \"自定义Header(Alpha)\"\n  })\n}, {\n  depth: 2,\n  url: \"#自定义组件\",\n  title: _jsx(_Fragment, {\n    children: \"自定义组件\"\n  })\n}, {\n  depth: 3,\n  url: \"#自定义样式组件\",\n  title: _jsx(_Fragment, {\n    children: \"自定义样式组件\"\n  })\n}, {\n  depth: 3,\n  url: \"#自定义流程处理插件\",\n  title: _jsx(_Fragment, {\n    children: \"自定义流程处理插件\"\n  })\n}, {\n  depth: 3,\n  url: \"#源码魔改\",\n  title: _jsx(_Fragment, {\n    children: \"源码魔改\"\n  })\n}, {\n  depth: 3,\n  url: \"#1-fork源码\",\n  title: _jsx(_Fragment, {\n    children: \"Fork源码\"\n  }),\n  _step: 1\n}, {\n  depth: 3,\n  url: \"#2-修改组件源码\",\n  title: _jsx(_Fragment, {\n    children: \"修改组件源码\"\n  }),\n  _step: 2\n}, {\n  depth: 3,\n  url: \"#3-再次构建-生成js文件\",\n  title: _jsx(_Fragment, {\n    children: \"再次构建, 生成js文件\"\n  }),\n  _step: 3\n}, {\n  depth: 3,\n  url: \"#4-准备补丁文件\",\n  title: _jsx(_Fragment, {\n    children: \"准备补丁文件\"\n  }),\n  _step: 4\n}, {\n  depth: 3,\n  url: \"#应用补丁\",\n  title: _jsx(_Fragment, {\n    children: \"应用补丁\"\n  })\n}, {\n  depth: 3,\n  url: \"#1-清理项目环境\",\n  title: _jsx(_Fragment, {\n    children: \"清理项目环境\"\n  }),\n  _step: 1\n}, {\n  depth: 3,\n  url: \"#2-重装依赖\",\n  title: _jsx(_Fragment, {\n    children: \"重装依赖\"\n  }),\n  _step: 2\n}, {\n  depth: 3,\n  url: \"#3-开始pnpm-patch会话\",\n  title: _jsx(_Fragment, {\n    children: \"开始pnpm patch会话\"\n  }),\n  _step: 3\n}, {\n  depth: 3,\n  url: \"#4-补丁替换\",\n  title: _jsx(_Fragment, {\n    children: \"补丁替换\"\n  }),\n  _step: 4\n}, {\n  depth: 3,\n  url: \"#5-提交补丁\",\n  title: _jsx(_Fragment, {\n    children: \"提交补丁\"\n  }),\n  _step: 5\n}, {\n  depth: 3,\n  url: \"#6-验证补丁\",\n  title: _jsx(_Fragment, {\n    children: \"验证补丁\"\n  }),\n  _step: 6\n}, {\n  depth: 3,\n  url: \"#7-done\",\n  title: _jsx(_Fragment, {\n    children: \"Done\"\n  }),\n  _step: 7\n}, {\n  depth: 2,\n  url: \"#vercel中文件读取报错问题\",\n  title: _jsx(_Fragment, {\n    children: \"Vercel中文件读取报错问题\"\n  })\n}, {\n  depth: 3,\n  url: \"#问题描述\",\n  title: _jsx(_Fragment, {\n    children: \"问题描述\"\n  })\n}, {\n  depth: 3,\n  url: \"#分析过程\",\n  title: _jsx(_Fragment, {\n    children: \"分析过程\"\n  })\n}, {\n  depth: 3,\n  url: \"#解决方案\",\n  title: _jsx(_Fragment, {\n    children: \"解决方案\"\n  })\n}, {\n  depth: 3,\n  url: \"#1-nextconfigts配置\",\n  title: _jsx(_Fragment, {\n    children: \"Next.config.ts配置\"\n  }),\n  _step: 1\n}, {\n  depth: 3,\n  url: \"#2-getllmtext函数\",\n  title: _jsx(_Fragment, {\n    children: \"getLLMText函数\"\n  }),\n  _step: 2\n}, {\n  depth: 3,\n  url: \"#3-api-路由\",\n  title: _jsx(_Fragment, {\n    children: \"API 路由\"\n  }),\n  _step: 3\n}];\nfunction _createMdxContent(props) {\n  const _components = {\n    a: \"a\",\n    code: \"code\",\n    div: \"div\",\n    h2: \"h2\",\n    h3: \"h3\",\n    li: \"li\",\n    ol: \"ol\",\n    p: \"p\",\n    pre: \"pre\",\n    span: \"span\",\n    strong: \"strong\",\n    ul: \"ul\",\n    ...props.components\n  }, {Callout, Fingerprint, Mermaid, Tab, Tabs, TrophyCard} = _components;\n  if (!Callout) _missingMdxReference(\"Callout\", true);\n  if (!Fingerprint) _missingMdxReference(\"Fingerprint\", true);\n  if (!Mermaid) _missingMdxReference(\"Mermaid\", true);\n  if (!Tab) _missingMdxReference(\"Tab\", true);\n  if (!Tabs) _missingMdxReference(\"Tabs\", true);\n  if (!TrophyCard) _missingMdxReference(\"TrophyCard\", true);\n  return _jsxs(_Fragment, {\n    children: [_jsx(_components.h2, {\n      id: \"fumadocs接入\",\n      children: \"FumaDocs接入\"\n    }), \"\\n\", _jsx(_components.h3, {\n      id: \"基础接入\",\n      children: \"基础接入\"\n    }), \"\\n\", _jsx(Callout, {\n      children: _jsxs(_components.p, {\n        children: [\"参照\", _jsx(_components.a, {\n          href: \"https://fumadocs.dev/docs/ui/manual-installation\",\n          children: \"官网文档\"\n        }), \", 完成基础环境配置\"]\n      })\n    }), \"\\n\", _jsx(_components.h3, {\n      id: \"核心流程处理\",\n      children: \"核心流程处理\"\n    }), \"\\n\", _jsx(Mermaid, {\n      title: \"FumaDocs处理流程\",\n      chart: \"\\nflowchart TD\\n%% 主流程\\nA[MDX] --> B[配置 source.config.ts]\\nB --> C[MDX解析/插件链]\\nC --> C1[Remark阶段 \\\\n MDAST]\\nC1 --> C2[Rehype阶段 \\\\n HAST]\\nC2 --> D[生成React组件]\\nD --> E[注册数据源 \\\\n source.ts]\\nE --> F[集成自定义渲染 \\\\n mdx-components.tsx]\\nF --> G[打包进前端应用]\\nG --> H[React组件渲染为HTML]\\nH --> I[最终网页展示]\\n\\n%% Remark 阶段细化\\nsubgraph R1[Remark插件链 \\\\n 操作MDAST]\\ndirection TB\\nR1a[remark-steps \\\\n 步骤识别/属性注入]\\nR1b[remark-heading \\\\n 提取标题/生成TOC]\\nR1c[其他remark插件 \\\\n 如gfm、math等]\\nend\\nC1 -- 依次执行 --> R1a\\nR1a --> R1b\\nR1b --> R1c\\nR1c --> C2\\n\\n%% Rehype 阶段细化\\nsubgraph R2[Rehype插件链 \\\\n 操作HAST]\\ndirection TB\\nR2a[rehype-slug \\\\n 标题id]\\nR2b[rehype-autolink-headings \\\\n 锚点]\\nR2c[rehype-toc \\\\n TOC生成/覆盖]\\nR2d[rehype-katex/其他HTML增强]\\nR2e[rehype-code \\\\n 代码高亮/代码块Transformer]\\nend\\nC2 -- 依次执行 --> R2a\\nR2a --> R2b\\nR2b --> R2c\\nR2c --> R2d\\nR2d --> R2e\\nR2e --> D\\n\\n%% 横向扩展（分组, 靠近主流程）\\nsubgraph S1[配置扩展]\\nB1[自定义schema/元数据]\\nend\\nsubgraph S2[解析扩展]\\nS2b[remark/rehype插件]\\nend\\nsubgraph S3[数据源扩展]\\nE1[生成index.ts]\\nend\\n\\nB -- 配置扩展 --> B1\\nC -- 语法扩展 --> S2b\\nE -- 索引扩展 --> E1\\n\\n%% 阶段分区\\nsubgraph 静态/编译阶段\\nB\\nC\\nC1\\nC2\\nD\\nE\\nF\\nG\\nend\\nsubgraph 运行时/SSR/SSG\\nH\\nI\\nend\\n\"\n    }), \"\\n\", _jsx(_components.h3, {\n      id: \"自定义流程处理\",\n      children: \"自定义流程处理\"\n    }), \"\\n\", _jsx(TrophyCard, {\n      title: \"结合上述流程, 从用户视角看, FumaDocs的扩展口\",\n      icon: _jsx(Fingerprint, {}),\n      children: _jsxs(_components.ul, {\n        children: [\"\\n\", _jsxs(_components.li, {\n          children: [_jsx(_components.code, {\n            children: \"src/lib/source-legal.ts\"\n          }), \" 路由+数据源+元数据处理, \", _jsx(_components.strong, {\n            children: \"内容如何被加载和路由\"\n          }), \", 侧重于HTML的主干结构\"]\n        }), \"\\n\", _jsxs(_components.li, {\n          children: [_jsx(_components.code, {\n            children: \"source.config.ts\"\n          }), \"插件链的配置扩展, \", _jsx(_components.strong, {\n            children: \"原始mdx内容如何被解析为React组件\"\n          }), \", 侧重于基础内容\"]\n        }), \"\\n\", _jsxs(_components.li, {\n          children: [_jsx(_components.code, {\n            children: \"src/components/mdx-components.tsx\"\n          }), \" React组件扩展, \", _jsx(_components.strong, {\n            children: \"组件如何被渲染\"\n          }), \", 侧重于样式和交互\"]\n        }), \"\\n\"]\n      })\n    }), \"\\n\", _jsx(_components.h2, {\n      id: \"网站布局调整\",\n      children: \"网站布局调整\"\n    }), \"\\n\", _jsx(_components.p, {\n      children: \"FumaDocs提供了几种基础布局, 这里补充一下导航菜单和按钮的排序规则\"\n    }), \"\\n\", _jsxs(_components.ul, {\n      children: [\"\\n\", _jsxs(_components.li, {\n        children: [\"整个导航是由\", _jsx(_components.code, {\n          children: \"nav\"\n        }), \"组件(选择器ID为\", _jsx(_components.code, {\n          children: \"#nd-nav\"\n        }), \")定义的, FumaDocs的默认Header整体分为左右两部分:\", \"\\n\", _jsxs(_components.ul, {\n          children: [\"\\n\", _jsx(_components.li, {\n            children: \"左侧为网站Logo+标题, 以及可以自定义的菜单栏\"\n          }), \"\\n\", _jsx(_components.li, {\n            children: \"右侧为可选搜索框, 然后是主题切换按钮, 然后是语言切换按钮, 然后是用户自定义的按钮, 最后是Github按钮链接\"\n          }), \"\\n\"]\n        }), \"\\n\"]\n      }), \"\\n\", _jsxs(_components.li, {\n        children: [_jsx(_components.code, {\n          children: \"LinkItemType\"\n        }), \"类型, 有关键字段\", _jsx(_components.code, {\n          children: \"secondary\"\n        }), \", 决定按钮是否在导航栏右侧\"]\n      }), \"\\n\", _jsxs(_components.li, {\n        children: [_jsx(_components.code, {\n          children: \"LinkItemType\"\n        }), \"类型, 关键字段\", _jsx(_components.code, {\n          children: \"type\"\n        }), \", 定义为\", _jsx(_components.code, {\n          children: \"custom\"\n        }), \"时, \", _jsx(_components.code, {\n          children: \"children\"\n        }), \"就可以使用我们自己的组件了, 不过适配默认的样式风格会花点时间\"]\n      }), \"\\n\"]\n    }), \"\\n\", _jsx(_components.h3, {\n      id: \"自定义headeralpha\",\n      children: \"自定义Header(Alpha)\"\n    }), \"\\n\", _jsxs(Callout, {\n      title: \"Alpha\",\n      type: \"warn\",\n      children: [_jsx(_components.p, {\n        children: \"当前自定义Header的方案处于Alpha阶段, 在flex多端适配上还存在问题, 请谨慎鉴用!\"\n      }), _jsxs(_components.p, {\n        children: [\"长期方案是基于FumaDocs的\", _jsx(_components.code, {\n          children: \"nav\"\n        }), \"组件重写, 实现完全自定义的需求\"]\n      })]\n    }), \"\\n\", _jsxs(_components.ul, {\n      children: [\"\\n\", _jsxs(_components.li, {\n        children: [\"更改Header右侧的按钮顺序, 使用自定义的搜索框、主题切换、语言切换、Github按钮组件, 然后全部定义为\", _jsx(_components.code, {\n          children: \"type=custom secondary=true\"\n        }), \"的LinkItemType\"]\n      }), \"\\n\", _jsx(_components.li, {\n        children: \"默认Header的样式是写死的, 总是悬浮并且和顶部有缝隙, 在滚动页面时会在缝隙处留下网页内容残影, 使用CSS样式强制覆盖\"\n      }), \"\\n\", _jsx(_components.li, {\n        children: \"默认Banner的样式也是写死的, 对于动态配置Banner支持不够, 也可使用CSS样式强制覆盖, 参见下文的css文本部分\"\n      }), \"\\n\"]\n    }), \"\\n\", _jsx(_components.h2, {\n      id: \"自定义组件\",\n      children: \"自定义组件\"\n    }), \"\\n\", _jsxs(_components.ul, {\n      children: [\"\\n\", _jsx(_components.li, {\n        children: \"前面已经详细分析过FumaDocs对于整个mdx处理的完整流程, 整体分为mdx解析、mdx组件生成、mdx组件渲染三个阶段\"\n      }), \"\\n\", _jsx(_components.li, {\n        children: \"这三个阶段我们都可以自定义, 只不过FumaDocs有一些默认顺序是固定的, 完全复写成本代价比较高\"\n      }), \"\\n\", _jsx(_components.li, {\n        children: \"因此, 我们优先使用FumaDocs提供的扩展口, 如果实在不够用, 再考虑自定义组件\"\n      }), \"\\n\"]\n    }), \"\\n\", _jsx(_components.h3, {\n      id: \"自定义样式组件\",\n      children: \"自定义样式组件\"\n    }), \"\\n\", _jsxs(_components.ul, {\n      children: [\"\\n\", _jsx(_components.li, {\n        children: \"当需要特殊展示某些内容, 或者更本质一点, 包装mdx里的html代码块: 提效或者美颜, 此时自定义组件就很方便了\"\n      }), \"\\n\", _jsxs(_components.li, {\n        children: [\"Fuma通过\", _jsx(_components.code, {\n          children: \"mdx-components.tsx\"\n        }), \"提供了易用的组件扩展, 我们只需要关注自定义组件的入参和html代码转换逻辑即可\"]\n      }), \"\\n\"]\n    }), \"\\n\", _jsx(_components.h3, {\n      id: \"自定义流程处理插件\",\n      children: \"自定义流程处理插件\"\n    }), \"\\n\", _jsxs(_components.ul, {\n      children: [\"\\n\", _jsxs(_components.li, {\n        children: [\"当涉及到mdx原始数据解析时, 我们就需要自定义流程处理插件, 例如在\", _jsx(_components.code, {\n          children: \"source.config.ts\"\n        }), \"中配置FumaDocs提供的remark/rehype插件\"]\n      }), \"\\n\", _jsxs(_components.li, {\n        children: [\"FomaDocs提供了比较丰富的remark/rehype插件, 我们可以仿照它的处理方式自己写一个插件, 然后配置到\", _jsx(_components.code, {\n          children: \"source.config.ts\"\n        }), \"中\"]\n      }), \"\\n\", _jsxs(_components.li, {\n        children: [\"但现在我们要做一个稍微难一点事情, 就是魔改FumaDocs的插件默认行为:\", \"\\n\", _jsxs(_components.ul, {\n          children: [\"\\n\", _jsx(_components.li, {\n            children: \"现在FumaDocs的目录标题解析参考了Clerk的样式处理, 但属于阉割版本的: 步骤组件的标题只在正文中处理, 没有在目录上渲染出步骤的⭕️\"\n          }), \"\\n\", _jsxs(_components.li, {\n            children: [\"通过源码分析, FumaDocs的\", _jsx(_components.code, {\n              children: \"remark-mdx-steps\"\n            }), \"插件就是用来处理正文步骤渲染的, 而\", _jsx(_components.code, {\n              children: \"remark-heading\"\n            }), \"插件是在之后默认执行的, 它生成slug数据为魔改目录提供了可能\"]\n          }), \"\\n\", _jsxs(_components.li, {\n            children: [\"然后\", _jsx(_components.code, {\n              children: \"toc-clerk.tsx\"\n            }), \"组件会根据\", _jsx(_components.code, {\n              children: \"remark-heading\"\n            }), \"生成的slug数据, 渲染生成最终的目录效果\"]\n          }), \"\\n\", _jsxs(_components.li, {\n            children: [\"魔改后的\", _jsx(_components.code, {\n              children: \"toc-clerk.tsx\"\n            }), \"组件, 会根据\", _jsx(_components.code, {\n              children: \"remark-heading\"\n            }), \"插件生成的标题数据, 渲染生成最终的步骤⭕️效果\"]\n          }), \"\\n\"]\n        }), \"\\n\"]\n      }), \"\\n\", _jsx(_components.li, {\n        children: \"魔改的流程如下:\"\n      }), \"\\n\"]\n    }), \"\\n\", _jsxs(Tabs, {\n      items: [\"源码魔改\", \"应用补丁\"],\n      children: [_jsxs(Tab, {\n        value: \"源码魔改\",\n        children: [_jsx(_components.h3, {\n          id: \"源码魔改\",\n          children: \"源码魔改\"\n        }), _jsxs(_components.div, {\n          className: \"fd-steps\",\n          children: [_jsxs(_components.div, {\n            className: \"fd-step\",\n            children: [_jsx(_components.h3, {\n              id: \"1-fork源码\",\n              \"data-fd-step\": \"1\",\n              children: \"Fork源码\"\n            }), _jsx(_Fragment, {\n              children: _jsx(_components.pre, {\n                className: \"shiki shiki-themes catppuccin-latte catppuccin-mocha\",\n                style: {\n                  \"--shiki-light\": \"#4c4f69\",\n                  \"--shiki-dark\": \"#cdd6f4\",\n                  \"--shiki-light-bg\": \"#eff1f5\",\n                  \"--shiki-dark-bg\": \"#1e1e2e\"\n                },\n                tabIndex: \"0\",\n                title: \"环境准备\",\n                \"data-language\": \"zsh\",\n                icon: \"<svg viewBox=\\\"0 0 24 24\\\"><path d=\\\"m 4,4 a 1,1 0 0 0 -0.7070312,0.2929687 1,1 0 0 0 0,1.4140625 L 8.5859375,11 3.2929688,16.292969 a 1,1 0 0 0 0,1.414062 1,1 0 0 0 1.4140624,0 l 5.9999998,-6 a 1.0001,1.0001 0 0 0 0,-1.414062 L 4.7070312,4.2929687 A 1,1 0 0 0 4,4 Z m 8,14 a 1,1 0 0 0 -1,1 1,1 0 0 0 1,1 h 8 a 1,1 0 0 0 1,-1 1,1 0 0 0 -1,-1 z\\\" fill=\\\"currentColor\\\" /></svg>\",\n                children: _jsxs(_components.code, {\n                  children: [_jsxs(_components.span, {\n                    className: \"line\",\n                    children: [_jsx(_components.span, {\n                      style: {\n                        \"--shiki-light\": \"#1E66F5\",\n                        \"--shiki-light-font-style\": \"italic\",\n                        \"--shiki-dark\": \"#89B4FA\",\n                        \"--shiki-dark-font-style\": \"italic\"\n                      },\n                      children: \"git\"\n                    }), _jsx(_components.span, {\n                      style: {\n                        \"--shiki-light\": \"#40A02B\",\n                        \"--shiki-dark\": \"#A6E3A1\"\n                      },\n                      children: \" clone\"\n                    }), _jsx(_components.span, {\n                      style: {\n                        \"--shiki-light\": \"#40A02B\",\n                        \"--shiki-dark\": \"#A6E3A1\"\n                      },\n                      children: \" https://github.com/fumadocs/fumadocs.git\"\n                    })]\n                  }), \"\\n\", _jsx(_components.span, {\n                    className: \"line\",\n                    children: _jsx(_components.span, {\n                      style: {\n                        \"--shiki-light\": \"#7C7F93\",\n                        \"--shiki-light-font-style\": \"italic\",\n                        \"--shiki-dark\": \"#9399B2\",\n                        \"--shiki-dark-font-style\": \"italic\"\n                      },\n                      children: \"# 进入根目录\"\n                    })\n                  }), \"\\n\", _jsxs(_components.span, {\n                    className: \"line\",\n                    children: [_jsx(_components.span, {\n                      style: {\n                        \"--shiki-light\": \"#D20F39\",\n                        \"--shiki-light-font-style\": \"italic\",\n                        \"--shiki-dark\": \"#F38BA8\",\n                        \"--shiki-dark-font-style\": \"italic\"\n                      },\n                      children: \"cd\"\n                    }), _jsx(_components.span, {\n                      style: {\n                        \"--shiki-light\": \"#40A02B\",\n                        \"--shiki-dark\": \"#A6E3A1\"\n                      },\n                      children: \" fumadocs\"\n                    })]\n                  }), \"\\n\", _jsx(_components.span, {\n                    className: \"line\",\n                    children: _jsx(_components.span, {\n                      style: {\n                        \"--shiki-light\": \"#7C7F93\",\n                        \"--shiki-light-font-style\": \"italic\",\n                        \"--shiki-dark\": \"#9399B2\",\n                        \"--shiki-dark-font-style\": \"italic\"\n                      },\n                      children: \"# 安装依赖\"\n                    })\n                  }), \"\\n\", _jsxs(_components.span, {\n                    className: \"line\",\n                    children: [_jsx(_components.span, {\n                      style: {\n                        \"--shiki-light\": \"#1E66F5\",\n                        \"--shiki-light-font-style\": \"italic\",\n                        \"--shiki-dark\": \"#89B4FA\",\n                        \"--shiki-dark-font-style\": \"italic\"\n                      },\n                      children: \"pnpm\"\n                    }), _jsx(_components.span, {\n                      style: {\n                        \"--shiki-light\": \"#40A02B\",\n                        \"--shiki-dark\": \"#A6E3A1\"\n                      },\n                      children: \" install\"\n                    })]\n                  }), \"\\n\", _jsx(_components.span, {\n                    className: \"line\",\n                    children: _jsx(_components.span, {\n                      style: {\n                        \"--shiki-light\": \"#7C7F93\",\n                        \"--shiki-light-font-style\": \"italic\",\n                        \"--shiki-dark\": \"#9399B2\",\n                        \"--shiki-dark-font-style\": \"italic\"\n                      },\n                      children: \"# 构建\"\n                    })\n                  }), \"\\n\", _jsxs(_components.span, {\n                    className: \"line\",\n                    children: [_jsx(_components.span, {\n                      style: {\n                        \"--shiki-light\": \"#1E66F5\",\n                        \"--shiki-light-font-style\": \"italic\",\n                        \"--shiki-dark\": \"#89B4FA\",\n                        \"--shiki-dark-font-style\": \"italic\"\n                      },\n                      children: \"pnpm\"\n                    }), _jsx(_components.span, {\n                      style: {\n                        \"--shiki-light\": \"#40A02B\",\n                        \"--shiki-dark\": \"#A6E3A1\"\n                      },\n                      children: \" build\"\n                    })]\n                  }), \"\\n\", _jsx(_components.span, {\n                    className: \"line\",\n                    children: _jsx(_components.span, {\n                      style: {\n                        \"--shiki-light\": \"#7C7F93\",\n                        \"--shiki-light-font-style\": \"italic\",\n                        \"--shiki-dark\": \"#9399B2\",\n                        \"--shiki-dark-font-style\": \"italic\"\n                      },\n                      children: \"# 启动项目\"\n                    })\n                  }), \"\\n\", _jsxs(_components.span, {\n                    className: \"line\",\n                    children: [_jsx(_components.span, {\n                      style: {\n                        \"--shiki-light\": \"#1E66F5\",\n                        \"--shiki-light-font-style\": \"italic\",\n                        \"--shiki-dark\": \"#89B4FA\",\n                        \"--shiki-dark-font-style\": \"italic\"\n                      },\n                      children: \"pnpm\"\n                    }), _jsx(_components.span, {\n                      style: {\n                        \"--shiki-light\": \"#40A02B\",\n                        \"--shiki-dark\": \"#A6E3A1\"\n                      },\n                      children: \" --filter=docs\"\n                    }), _jsx(_components.span, {\n                      style: {\n                        \"--shiki-light\": \"#40A02B\",\n                        \"--shiki-dark\": \"#A6E3A1\"\n                      },\n                      children: \" dev\"\n                    })]\n                  })]\n                })\n              })\n            })]\n          }), _jsx(_components.div, {\n            className: \"fd-step\",\n            children: _jsx(_components.h3, {\n              id: \"2-修改组件源码\",\n              \"data-fd-step\": \"2\",\n              children: \"修改组件源码\"\n            })\n          }), _jsxs(_components.div, {\n            className: \"fd-step\",\n            children: [_jsx(_components.h3, {\n              id: \"3-再次构建-生成js文件\",\n              \"data-fd-step\": \"3\",\n              children: \"再次构建, 生成js文件\"\n            }), _jsx(_Fragment, {\n              children: _jsx(_components.pre, {\n                className: \"shiki shiki-themes catppuccin-latte catppuccin-mocha\",\n                style: {\n                  \"--shiki-light\": \"#4c4f69\",\n                  \"--shiki-dark\": \"#cdd6f4\",\n                  \"--shiki-light-bg\": \"#eff1f5\",\n                  \"--shiki-dark-bg\": \"#1e1e2e\"\n                },\n                tabIndex: \"0\",\n                title: \"打包构建\",\n                \"data-language\": \"zsh\",\n                icon: \"<svg viewBox=\\\"0 0 24 24\\\"><path d=\\\"m 4,4 a 1,1 0 0 0 -0.7070312,0.2929687 1,1 0 0 0 0,1.4140625 L 8.5859375,11 3.2929688,16.292969 a 1,1 0 0 0 0,1.414062 1,1 0 0 0 1.4140624,0 l 5.9999998,-6 a 1.0001,1.0001 0 0 0 0,-1.414062 L 4.7070312,4.2929687 A 1,1 0 0 0 4,4 Z m 8,14 a 1,1 0 0 0 -1,1 1,1 0 0 0 1,1 h 8 a 1,1 0 0 0 1,-1 1,1 0 0 0 -1,-1 z\\\" fill=\\\"currentColor\\\" /></svg>\",\n                children: _jsx(_components.code, {\n                  children: _jsxs(_components.span, {\n                    className: \"line\",\n                    children: [_jsx(_components.span, {\n                      style: {\n                        \"--shiki-light\": \"#1E66F5\",\n                        \"--shiki-light-font-style\": \"italic\",\n                        \"--shiki-dark\": \"#89B4FA\",\n                        \"--shiki-dark-font-style\": \"italic\"\n                      },\n                      children: \"pnpm\"\n                    }), _jsx(_components.span, {\n                      style: {\n                        \"--shiki-light\": \"#40A02B\",\n                        \"--shiki-dark\": \"#A6E3A1\"\n                      },\n                      children: \" build\"\n                    })]\n                  })\n                })\n              })\n            })]\n          }), _jsxs(_components.div, {\n            className: \"fd-step\",\n            children: [_jsx(_components.h3, {\n              id: \"4-准备补丁文件\",\n              \"data-fd-step\": \"4\",\n              children: \"准备补丁文件\"\n            }), _jsxs(_components.ul, {\n              children: [\"\\n\", _jsxs(_components.li, {\n                children: [\"一般会有3个文件: \", _jsx(_components.code, {\n                  children: \"XXX.js\"\n                }), \", \", _jsx(_components.code, {\n                  children: \"XXX.d.ts\"\n                }), \", \", _jsx(_components.code, {\n                  children: \"XXX.d.tsx\"\n                })]\n              }), \"\\n\", _jsxs(_components.li, {\n                children: [\"文件: \", _jsx(_components.code, {\n                  children: \"node_modules/fumadocs/dist/src/components/toc-clerk.js\"\n                })]\n              }), \"\\n\", _jsxs(_components.li, {\n                children: [\"文件: \", _jsx(_components.code, {\n                  children: \"node_modules/fumadocs/dist/src/components/toc-clerk.d.ts\"\n                })]\n              }), \"\\n\", _jsxs(_components.li, {\n                children: [\"文件: \", _jsx(_components.code, {\n                  children: \"node_modules/fumadocs/dist/src/components/toc-clerk.d.tsx\"\n                })]\n              }), \"\\n\", _jsx(_components.li, {\n                children: \"拷贝到单独的文件夹中, 方便后续替换\"\n              }), \"\\n\"]\n            })]\n          })]\n        })]\n      }), _jsxs(Tab, {\n        value: \"应用补丁\",\n        children: [_jsx(_components.h3, {\n          id: \"应用补丁\",\n          children: \"应用补丁\"\n        }), _jsxs(_components.div, {\n          className: \"fd-steps\",\n          children: [_jsxs(_components.div, {\n            className: \"fd-step\",\n            children: [_jsx(_components.h3, {\n              id: \"1-清理项目环境\",\n              \"data-fd-step\": \"1\",\n              children: \"清理项目环境\"\n            }), _jsxs(_components.ul, {\n              children: [\"\\n\", _jsx(_components.li, {\n                children: \"清理项目环境, 删除node_modules、pnpm-lock.yaml\"\n              }), \"\\n\"]\n            })]\n          }), _jsxs(_components.div, {\n            className: \"fd-step\",\n            children: [_jsx(_components.h3, {\n              id: \"2-重装依赖\",\n              \"data-fd-step\": \"2\",\n              children: \"重装依赖\"\n            }), _jsx(_Fragment, {\n              children: _jsx(_components.pre, {\n                className: \"shiki shiki-themes catppuccin-latte catppuccin-mocha\",\n                style: {\n                  \"--shiki-light\": \"#4c4f69\",\n                  \"--shiki-dark\": \"#cdd6f4\",\n                  \"--shiki-light-bg\": \"#eff1f5\",\n                  \"--shiki-dark-bg\": \"#1e1e2e\"\n                },\n                tabIndex: \"0\",\n                title: \"重装依赖\",\n                \"data-language\": \"zsh\",\n                icon: \"<svg viewBox=\\\"0 0 24 24\\\"><path d=\\\"m 4,4 a 1,1 0 0 0 -0.7070312,0.2929687 1,1 0 0 0 0,1.4140625 L 8.5859375,11 3.2929688,16.292969 a 1,1 0 0 0 0,1.414062 1,1 0 0 0 1.4140624,0 l 5.9999998,-6 a 1.0001,1.0001 0 0 0 0,-1.414062 L 4.7070312,4.2929687 A 1,1 0 0 0 4,4 Z m 8,14 a 1,1 0 0 0 -1,1 1,1 0 0 0 1,1 h 8 a 1,1 0 0 0 1,-1 1,1 0 0 0 -1,-1 z\\\" fill=\\\"currentColor\\\" /></svg>\",\n                children: _jsx(_components.code, {\n                  children: _jsxs(_components.span, {\n                    className: \"line\",\n                    children: [_jsx(_components.span, {\n                      style: {\n                        \"--shiki-light\": \"#1E66F5\",\n                        \"--shiki-light-font-style\": \"italic\",\n                        \"--shiki-dark\": \"#89B4FA\",\n                        \"--shiki-dark-font-style\": \"italic\"\n                      },\n                      children: \"pnpm\"\n                    }), _jsx(_components.span, {\n                      style: {\n                        \"--shiki-light\": \"#40A02B\",\n                        \"--shiki-dark\": \"#A6E3A1\"\n                      },\n                      children: \" install\"\n                    })]\n                  })\n                })\n              })\n            })]\n          }), _jsxs(_components.div, {\n            className: \"fd-step\",\n            children: [_jsx(_components.h3, {\n              id: \"3-开始pnpm-patch会话\",\n              \"data-fd-step\": \"3\",\n              children: \"开始pnpm patch会话\"\n            }), _jsx(_Fragment, {\n              children: _jsx(_components.pre, {\n                className: \"shiki shiki-themes catppuccin-latte catppuccin-mocha\",\n                style: {\n                  \"--shiki-light\": \"#4c4f69\",\n                  \"--shiki-dark\": \"#cdd6f4\",\n                  \"--shiki-light-bg\": \"#eff1f5\",\n                  \"--shiki-dark-bg\": \"#1e1e2e\"\n                },\n                tabIndex: \"0\",\n                title: \"pnpm patch\",\n                \"data-language\": \"zsh\",\n                icon: \"<svg viewBox=\\\"0 0 24 24\\\"><path d=\\\"m 4,4 a 1,1 0 0 0 -0.7070312,0.2929687 1,1 0 0 0 0,1.4140625 L 8.5859375,11 3.2929688,16.292969 a 1,1 0 0 0 0,1.414062 1,1 0 0 0 1.4140624,0 l 5.9999998,-6 a 1.0001,1.0001 0 0 0 0,-1.414062 L 4.7070312,4.2929687 A 1,1 0 0 0 4,4 Z m 8,14 a 1,1 0 0 0 -1,1 1,1 0 0 0 1,1 h 8 a 1,1 0 0 0 1,-1 1,1 0 0 0 -1,-1 z\\\" fill=\\\"currentColor\\\" /></svg>\",\n                children: _jsx(_components.code, {\n                  children: _jsxs(_components.span, {\n                    className: \"line\",\n                    children: [_jsx(_components.span, {\n                      style: {\n                        \"--shiki-light\": \"#1E66F5\",\n                        \"--shiki-light-font-style\": \"italic\",\n                        \"--shiki-dark\": \"#89B4FA\",\n                        \"--shiki-dark-font-style\": \"italic\"\n                      },\n                      children: \"pnpm\"\n                    }), _jsx(_components.span, {\n                      style: {\n                        \"--shiki-light\": \"#40A02B\",\n                        \"--shiki-dark\": \"#A6E3A1\"\n                      },\n                      children: \" patch\"\n                    }), _jsx(_components.span, {\n                      style: {\n                        \"--shiki-light\": \"#40A02B\",\n                        \"--shiki-dark\": \"#A6E3A1\"\n                      },\n                      children: \" fumadocs-ui@15.3.3\"\n                    }), _jsx(_components.span, {\n                      style: {\n                        \"--shiki-light\": \"#40A02B\",\n                        \"--shiki-dark\": \"#A6E3A1\"\n                      },\n                      children: \" --edit-dir\"\n                    })]\n                  })\n                })\n              })\n            })]\n          }), _jsxs(_components.div, {\n            className: \"fd-step\",\n            children: [_jsx(_components.h3, {\n              id: \"4-补丁替换\",\n              \"data-fd-step\": \"4\",\n              children: \"补丁替换\"\n            }), _jsxs(_components.ul, {\n              children: [\"\\n\", _jsxs(_components.li, {\n                children: [\"补丁文件覆盖替换\", _jsx(_components.code, {\n                  children: \"node_modules/fumadocs/dist/src/components/toc-clerk.js\"\n                })]\n              }), \"\\n\", _jsxs(_components.li, {\n                children: [\"补丁文件覆盖替换\", _jsx(_components.code, {\n                  children: \"node_modules/fumadocs/dist/src/components/toc-clerk.d.ts\"\n                })]\n              }), \"\\n\", _jsxs(_components.li, {\n                children: [\"补丁文件覆盖替换\", _jsx(_components.code, {\n                  children: \"node_modules/fumadocs/dist/src/components/toc-clerk.d.tsx\"\n                })]\n              }), \"\\n\"]\n            })]\n          }), _jsxs(_components.div, {\n            className: \"fd-step\",\n            children: [_jsx(_components.h3, {\n              id: \"5-提交补丁\",\n              \"data-fd-step\": \"5\",\n              children: \"提交补丁\"\n            }), _jsx(_Fragment, {\n              children: _jsx(_components.pre, {\n                className: \"shiki shiki-themes catppuccin-latte catppuccin-mocha\",\n                style: {\n                  \"--shiki-light\": \"#4c4f69\",\n                  \"--shiki-dark\": \"#cdd6f4\",\n                  \"--shiki-light-bg\": \"#eff1f5\",\n                  \"--shiki-dark-bg\": \"#1e1e2e\"\n                },\n                tabIndex: \"0\",\n                title: \"提交补丁\",\n                \"data-language\": \"zsh\",\n                icon: \"<svg viewBox=\\\"0 0 24 24\\\"><path d=\\\"m 4,4 a 1,1 0 0 0 -0.7070312,0.2929687 1,1 0 0 0 0,1.4140625 L 8.5859375,11 3.2929688,16.292969 a 1,1 0 0 0 0,1.414062 1,1 0 0 0 1.4140624,0 l 5.9999998,-6 a 1.0001,1.0001 0 0 0 0,-1.414062 L 4.7070312,4.2929687 A 1,1 0 0 0 4,4 Z m 8,14 a 1,1 0 0 0 -1,1 1,1 0 0 0 1,1 h 8 a 1,1 0 0 0 1,-1 1,1 0 0 0 -1,-1 z\\\" fill=\\\"currentColor\\\" /></svg>\",\n                children: _jsx(_components.code, {\n                  children: _jsxs(_components.span, {\n                    className: \"line\",\n                    children: [_jsx(_components.span, {\n                      style: {\n                        \"--shiki-light\": \"#1E66F5\",\n                        \"--shiki-light-font-style\": \"italic\",\n                        \"--shiki-dark\": \"#89B4FA\",\n                        \"--shiki-dark-font-style\": \"italic\"\n                      },\n                      children: \"pnpm\"\n                    }), _jsx(_components.span, {\n                      style: {\n                        \"--shiki-light\": \"#40A02B\",\n                        \"--shiki-dark\": \"#A6E3A1\"\n                      },\n                      children: \" patch-commit\"\n                    }), _jsx(_components.span, {\n                      style: {\n                        \"--shiki-light\": \"#179299\",\n                        \"--shiki-dark\": \"#94E2D5\"\n                      },\n                      children: \" <\"\n                    }), _jsx(_components.span, {\n                      style: {\n                        \"--shiki-light\": \"#40A02B\",\n                        \"--shiki-dark\": \"#A6E3A1\"\n                      },\n                      children: \"之前的临时目录路\"\n                    }), _jsx(_components.span, {\n                      style: {\n                        \"--shiki-light\": \"#4C4F69\",\n                        \"--shiki-dark\": \"#CDD6F4\"\n                      },\n                      children: \"径\"\n                    }), _jsx(_components.span, {\n                      style: {\n                        \"--shiki-light\": \"#179299\",\n                        \"--shiki-dark\": \"#94E2D5\"\n                      },\n                      children: \">\"\n                    })]\n                  })\n                })\n              })\n            }), _jsxs(_components.ul, {\n              children: [\"\\n\", _jsxs(_components.li, {\n                children: [\"提交补丁后, 会生成一个补丁文件, 文件名类似\", _jsx(_components.code, {\n                  children: \"fumadocs-ui-15.3.3-patch-1.patch\"\n                })]\n              }), \"\\n\", _jsxs(_components.li, {\n                children: [\"同时\", _jsx(_components.code, {\n                  children: \"package.json\"\n                }), \"中也会有\", _jsx(_components.code, {\n                  children: \"pnpm.patchedDependencies\"\n                }), \"字段, 记录了补丁文件的路径信息\"]\n              }), \"\\n\"]\n            })]\n          }), _jsxs(_components.div, {\n            className: \"fd-step\",\n            children: [_jsx(_components.h3, {\n              id: \"6-验证补丁\",\n              \"data-fd-step\": \"6\",\n              children: \"验证补丁\"\n            }), _jsxs(_components.ul, {\n              children: [\"\\n\", _jsx(_components.li, {\n                children: \"再一次清理项目环境, 删除node_modules、pnpm-lock.yaml\"\n              }), \"\\n\", _jsx(_components.li, {\n                children: \"再次重装依赖\"\n              }), \"\\n\", _jsx(_components.li, {\n                children: \"启动项目, 验证补丁效果: 但你查看本文档时, 就能看到正文和目录上都有对应的步骤⭕️效果\"\n              }), \"\\n\"]\n            })]\n          }), _jsxs(_components.div, {\n            className: \"fd-step\",\n            children: [_jsx(_components.h3, {\n              id: \"7-done\",\n              \"data-fd-step\": \"7\",\n              children: \"Done\"\n            }), _jsxs(_components.ul, {\n              children: [\"\\n\", _jsx(_components.li, {\n                children: \"在不升级FumaDocs版本的前提下, 该补丁会一直生效, 重装环境时会自动应用, 无需再管了\"\n              }), \"\\n\"]\n            })]\n          })]\n        })]\n      })]\n    }), \"\\n\", _jsx(Callout, {\n      title: \"风险提醒\",\n      type: \"error\",\n      children: _jsxs(_components.ul, {\n        children: [\"\\n\", _jsx(_components.li, {\n          children: \"魔改源码打补丁的方案, 在FumaDocs升级时会失效, 需要重新魔改\"\n        }), \"\\n\", _jsxs(_components.li, {\n          children: [_jsx(_components.strong, {\n            children: \"因此, 强烈推荐给FumaDocs官方咨询、讨论、提PR\"\n          }), \", 让FumaDocs也越发好用!\"]\n        }), \"\\n\"]\n      })\n    }), \"\\n\", _jsx(_components.h2, {\n      id: \"vercel中文件读取报错问题\",\n      children: \"Vercel中文件读取报错问题\"\n    }), \"\\n\", _jsx(_components.h3, {\n      id: \"问题描述\",\n      children: \"问题描述\"\n    }), \"\\n\", _jsxs(_components.ul, {\n      children: [\"\\n\", _jsxs(_components.li, {\n        children: [\"在将包含 Fumadocs 的 Next.js 应用部署到 Vercel 后, 一个用于提取 MDX 页面内容的 API 路由 (\", _jsx(_components.code, {\n          children: \"/api/*/llm-content\"\n        }), \"), 在本地开发时工作正常\"]\n      }), \"\\n\", _jsxs(_components.li, {\n        children: [\"但在 Vercel 的 Serverless Function 环境中持续抛出 \", _jsx(_components.code, {\n          children: \"ENOENT: no such file or directory\"\n        }), \" 错误\"]\n      }), \"\\n\", _jsxs(_components.li, {\n        children: [\"错误日志指示, 系统尝试打开类似 \", _jsx(_components.code, {\n          children: \"/vercel/path0/src/mdx/docs/...\"\n        }), \" 的路径, 这是一个构建时的绝对路径, 在运行时无效\"]\n      }), \"\\n\"]\n    }), \"\\n\", _jsx(_components.h3, {\n      id: \"分析过程\",\n      children: \"分析过程\"\n    }), \"\\n\", _jsxs(_components.ol, {\n      children: [\"\\n\", _jsxs(_components.li, {\n        children: [\"初步怀疑 \", _jsx(_components.code, {\n          children: \"remark\"\n        }), \" 插件: 最初认为问题出在 \", _jsx(_components.code, {\n          children: \"getLLMText\"\n        }), \" 函数中使用的 \", _jsx(_components.code, {\n          children: \"remark\"\n        }), \" 插件链（如 \", _jsx(_components.code, {\n          children: \"remark-include\"\n        }), \", \", _jsx(_components.code, {\n          children: \"remark-docgen\"\n        }), \" 等）在运行时试图访问文件系统\"]\n      }), \"\\n\", _jsxs(_components.li, {\n        children: [\"简化 \", _jsx(_components.code, {\n          children: \"remark\"\n        }), \" 插件: 逐步移除了这些可能导致问题的插件, 但错误依旧\"]\n      }), \"\\n\", _jsxs(_components.li, {\n        children: [\"日志诊断 \", _jsx(_components.code, {\n          children: \"page\"\n        }), \" 对象: 通过在 API 路由中添加详细日志, 发现在尝试访问 \", _jsx(_components.code, {\n          children: \"page.data.content\"\n        }), \" 属性（由 \", _jsx(_components.code, {\n          children: \"docsSource.getPage()\"\n        }), \" 返回）时, 错误就会发生。这表明 Fumadocs 在运行时延迟加载此属性, 并错误地使用了构建时的文件路径\"]\n      }), \"\\n\", _jsxs(_components.li, {\n        children: [\"确认元数据可访问: 测试表明, 访问 \", _jsx(_components.code, {\n          children: \"page.data.title\"\n        }), \" 等其他元数据是安全的, 不会触发文件读取错误\"]\n      }), \"\\n\"]\n    }), \"\\n\", _jsx(_components.h3, {\n      id: \"解决方案\",\n      children: \"解决方案\"\n    }), \"\\n\", _jsxs(_components.ul, {\n      children: [\"\\n\", _jsx(_components.li, {\n        children: \"核心解决方案是避免在 API 路由运行时让 Fumadocs 的内部机制去加载文件内容, 而是由我们主动、正确地读取文件\"\n      }), \"\\n\"]\n    }), \"\\n\", _jsxs(_components.div, {\n      className: \"fd-steps\",\n      children: [_jsxs(_components.div, {\n        className: \"fd-step\",\n        children: [_jsx(_components.h3, {\n          id: \"1-nextconfigts配置\",\n          \"data-fd-step\": \"1\",\n          children: \"Next.config.ts配置\"\n        }), _jsxs(_components.ul, {\n          children: [\"\\n\", _jsxs(_components.li, {\n            children: [\"确保 MDX 文件被打包到 Vercel Serverless Function:\", \"\\n\", _jsxs(_components.ul, {\n              children: [\"\\n\", _jsxs(_components.li, {\n                children: [\"修改 \", _jsx(_components.code, {\n                  children: \"next.config.ts\"\n                }), \", 在顶层配置中添加 \", _jsx(_components.code, {\n                  children: \"outputFileTracingIncludes\"\n                }), \", 明确指定将 \", _jsx(_components.code, {\n                  children: \"src/mdx/docs/**/*\"\n                }), \" 目录下的所有文件包含在 \", _jsx(_components.code, {\n                  children: \"/api/*/llm-content\"\n                }), \" 路由的部署包中\"]\n              }), \"\\n\"]\n            }), \"\\n\"]\n          }), \"\\n\"]\n        })]\n      }), _jsxs(_components.div, {\n        className: \"fd-step\",\n        children: [_jsx(_components.h3, {\n          id: \"2-getllmtext函数\",\n          \"data-fd-step\": \"2\",\n          children: \"getLLMText函数\"\n        }), _jsxs(_components.ul, {\n          children: [\"\\n\", _jsxs(_components.li, {\n            children: [\"修改 \", _jsx(_components.code, {\n              children: \"getLLMText\"\n            }), \" 函数 (\", _jsx(_components.code, {\n              children: \"src/lib/get-llm-text.ts\"\n            }), \"):\", \"\\n\", _jsxs(_components.ul, {\n              children: [\"\\n\", _jsxs(_components.li, {\n                children: [\"更改函数签名, 使其接受 MDX 内容字符串、标题和描述作为参数: \", _jsx(_components.code, {\n                  children: \"async function getLLMText(mdxContent: string, title?: string, description?: string)\"\n                })]\n              }), \"\\n\", _jsxs(_components.li, {\n                children: [\"内部 \", _jsx(_components.code, {\n                  children: \"remark\"\n                }), \" 处理器使用简化的插件集 (\", _jsx(_components.code, {\n                  children: \"remark-frontmatter\"\n                }), \", \", _jsx(_components.code, {\n                  children: \"remark-remove-frontmatter\"\n                }), \", \", _jsx(_components.code, {\n                  children: \"remark-mdx\"\n                }), \", \", _jsx(_components.code, {\n                  children: \"remark-gfm\"\n                }), \"), 仅处理传入的字符串内容\"]\n              }), \"\\n\"]\n            }), \"\\n\"]\n          }), \"\\n\"]\n        })]\n      }), _jsxs(_components.div, {\n        className: \"fd-step\",\n        children: [_jsx(_components.h3, {\n          id: \"3-api-路由\",\n          \"data-fd-step\": \"3\",\n          children: \"API 路由\"\n        }), _jsxs(_components.ul, {\n          children: [\"\\n\", _jsxs(_components.li, {\n            children: [\"修改 API 路由 (\", _jsx(_components.code, {\n              children: \"src/app/api/legal/llm-content/route.ts\"\n            }), \"):\", \"\\n\", _jsxs(_components.ul, {\n              children: [\"\\n\", _jsxs(_components.li, {\n                children: [\"调用 \", _jsx(_components.code, {\n                  children: \"docsSource.getPage(slug, locale)\"\n                }), \" 获取 \", _jsx(_components.code, {\n                  children: \"page\"\n                }), \" 对象, 并从中安全地提取 \", _jsx(_components.code, {\n                  children: \"title\"\n                }), \" 和 \", _jsx(_components.code, {\n                  children: \"description\"\n                })]\n              }), \"\\n\", _jsxs(_components.li, {\n                children: [\"从 \", _jsx(_components.code, {\n                  children: \"page.data._file.path\"\n                }), \" 获取 MDX 文件的相对路径\"]\n              }), \"\\n\", _jsxs(_components.li, {\n                children: [\"使用 Node.js 的 \", _jsx(_components.code, {\n                  children: \"path.join(process.cwd(), 'src', 'mdx', 'docs', relativeMdxFilePath)\"\n                }), \" 构造在 Vercel 运行时环境中的正确绝对路径（\", _jsx(_components.code, {\n                  children: \"process.cwd()\"\n                }), \" 在 Vercel Serverless Function 中通常是 \", _jsx(_components.code, {\n                  children: \"/var/task\"\n                }), \"）\"]\n              }), \"\\n\", _jsxs(_components.li, {\n                children: [\"使用 \", _jsx(_components.code, {\n                  children: \"fs.readFileSync(absoluteFilePath, 'utf-8')\"\n                }), \" 同步读取文件内容\"]\n              }), \"\\n\", _jsxs(_components.li, {\n                children: [\"将手动读取到的 \", _jsx(_components.code, {\n                  children: \"mdxContent\"\n                }), \" 字符串以及 \", _jsx(_components.code, {\n                  children: \"title\"\n                }), \" 和 \", _jsx(_components.code, {\n                  children: \"description\"\n                }), \" 传递给更新后的 \", _jsx(_components.code, {\n                  children: \"getLLMText\"\n                }), \" 函数\"]\n              }), \"\\n\", _jsx(_components.li, {\n                children: \"包含详细的错误处理和日志记录, 特别是在文件读取失败时, 会尝试列出相关目录内容以辅助调试\"\n              }), \"\\n\"]\n            }), \"\\n\"]\n          }), \"\\n\"]\n        })]\n      })]\n    })]\n  });\n}\nfunction MDXContent(props = {}) {\n  const {wrapper: MDXLayout} = props.components || ({});\n  return MDXLayout ? _jsx(MDXLayout, {\n    ...props,\n    children: _jsx(_createMdxContent, {\n      ...props\n    })\n  }) : _createMdxContent(props);\n}\nreturn {\n  toc,\n  default: MDXContent\n};\nfunction _missingMdxReference(id, component) {\n  throw new Error(\"Expected \" + (component ? \"component\" : \"object\") + \" `\" + id + \"` to be defined: you likely forgot to import, pass, or provide it.\");\n}\n",
-        "fileData": {
-          "structuredData": {
-            "contents": [
-              {
-                "heading": "基础接入",
-                "content": "参照官网文档, 完成基础环境配置"
-              },
-              {
-                "heading": "自定义流程处理",
-                "content": "`src/lib/source-legal.ts` 路由+数据源+元数据处理, **内容如何被加载和路由**, 侧重于HTML的主干结构"
-              },
-              {
-                "heading": "自定义流程处理",
-                "content": "`source.config.ts`插件链的配置扩展, **原始mdx内容如何被解析为React组件**, 侧重于基础内容"
-              },
-              {
-                "heading": "自定义流程处理",
-                "content": "`src/components/mdx-components.tsx` React组件扩展, **组件如何被渲染**, 侧重于样式和交互"
-              },
-              {
-                "heading": "网站布局调整",
-                "content": "FumaDocs提供了几种基础布局, 这里补充一下导航菜单和按钮的排序规则"
-              },
-              {
-                "heading": "网站布局调整",
-                "content": "整个导航是由`nav`组件(选择器ID为`#nd-nav`)定义的, FumaDocs的默认Header整体分为左右两部分:"
-              },
-              {
-                "heading": "网站布局调整",
-                "content": "左侧为网站Logo+标题, 以及可以自定义的菜单栏"
-              },
-              {
-                "heading": "网站布局调整",
-                "content": "右侧为可选搜索框, 然后是主题切换按钮, 然后是语言切换按钮, 然后是用户自定义的按钮, 最后是Github按钮链接"
-              },
-              {
-                "heading": "网站布局调整",
-                "content": "`LinkItemType`类型, 有关键字段`secondary`, 决定按钮是否在导航栏右侧"
-              },
-              {
-                "heading": "网站布局调整",
-                "content": "`LinkItemType`类型, 关键字段`type`, 定义为`custom`时, `children`就可以使用我们自己的组件了, 不过适配默认的样式风格会花点时间"
-              },
-              {
-                "heading": "自定义headeralpha",
-                "content": "当前自定义Header的方案处于Alpha阶段, 在flex多端适配上还存在问题, 请谨慎鉴用!"
-              },
-              {
-                "heading": "自定义headeralpha",
-                "content": "长期方案是基于FumaDocs的`nav`组件重写, 实现完全自定义的需求"
-              },
-              {
-                "heading": "自定义headeralpha",
-                "content": "更改Header右侧的按钮顺序, 使用自定义的搜索框、主题切换、语言切换、Github按钮组件, 然后全部定义为`type=custom secondary=true`的LinkItemType"
-              },
-              {
-                "heading": "自定义headeralpha",
-                "content": "默认Header的样式是写死的, 总是悬浮并且和顶部有缝隙, 在滚动页面时会在缝隙处留下网页内容残影, 使用CSS样式强制覆盖"
-              },
-              {
-                "heading": "自定义headeralpha",
-                "content": "默认Banner的样式也是写死的, 对于动态配置Banner支持不够, 也可使用CSS样式强制覆盖, 参见下文的css文本部分"
-              },
-              {
-                "heading": "自定义组件",
-                "content": "前面已经详细分析过FumaDocs对于整个mdx处理的完整流程, 整体分为mdx解析、mdx组件生成、mdx组件渲染三个阶段"
-              },
-              {
-                "heading": "自定义组件",
-                "content": "这三个阶段我们都可以自定义, 只不过FumaDocs有一些默认顺序是固定的, 完全复写成本代价比较高"
-              },
-              {
-                "heading": "自定义组件",
-                "content": "因此, 我们优先使用FumaDocs提供的扩展口, 如果实在不够用, 再考虑自定义组件"
-              },
-              {
-                "heading": "自定义样式组件",
-                "content": "当需要特殊展示某些内容, 或者更本质一点, 包装mdx里的html代码块: 提效或者美颜, 此时自定义组件就很方便了"
-              },
-              {
-                "heading": "自定义样式组件",
-                "content": "Fuma通过`mdx-components.tsx`提供了易用的组件扩展, 我们只需要关注自定义组件的入参和html代码转换逻辑即可"
-              },
-              {
-                "heading": "自定义流程处理插件",
-                "content": "当涉及到mdx原始数据解析时, 我们就需要自定义流程处理插件, 例如在`source.config.ts`中配置FumaDocs提供的remark/rehype插件"
-              },
-              {
-                "heading": "自定义流程处理插件",
-                "content": "FomaDocs提供了比较丰富的remark/rehype插件, 我们可以仿照它的处理方式自己写一个插件, 然后配置到`source.config.ts`中"
-              },
-              {
-                "heading": "自定义流程处理插件",
-                "content": "但现在我们要做一个稍微难一点事情, 就是魔改FumaDocs的插件默认行为:"
-              },
-              {
-                "heading": "自定义流程处理插件",
-                "content": "现在FumaDocs的目录标题解析参考了Clerk的样式处理, 但属于阉割版本的: 步骤组件的标题只在正文中处理, 没有在目录上渲染出步骤的⭕️"
-              },
-              {
-                "heading": "自定义流程处理插件",
-                "content": "通过源码分析, FumaDocs的`remark-mdx-steps`插件就是用来处理正文步骤渲染的, 而`remark-heading`插件是在之后默认执行的, 它生成slug数据为魔改目录提供了可能"
-              },
-              {
-                "heading": "自定义流程处理插件",
-                "content": "然后`toc-clerk.tsx`组件会根据`remark-heading`生成的slug数据, 渲染生成最终的目录效果"
-              },
-              {
-                "heading": "自定义流程处理插件",
-                "content": "魔改后的`toc-clerk.tsx`组件, 会根据`remark-heading`插件生成的标题数据, 渲染生成最终的步骤⭕️效果"
-              },
-              {
-                "heading": "自定义流程处理插件",
-                "content": "魔改的流程如下:"
-              },
-              {
-                "heading": "4-准备补丁文件",
-                "content": "一般会有3个文件: `XXX.js`, `XXX.d.ts`, `XXX.d.tsx`"
-              },
-              {
-                "heading": "4-准备补丁文件",
-                "content": "文件: `node_modules/fumadocs/dist/src/components/toc-clerk.js`"
-              },
-              {
-                "heading": "4-准备补丁文件",
-                "content": "文件: `node_modules/fumadocs/dist/src/components/toc-clerk.d.ts`"
-              },
-              {
-                "heading": "4-准备补丁文件",
-                "content": "文件: `node_modules/fumadocs/dist/src/components/toc-clerk.d.tsx`"
-              },
-              {
-                "heading": "4-准备补丁文件",
-                "content": "拷贝到单独的文件夹中, 方便后续替换"
-              },
-              {
-                "heading": "1-清理项目环境",
-                "content": "清理项目环境, 删除node\\_modules、pnpm-lock.yaml"
-              },
-              {
-                "heading": "4-补丁替换",
-                "content": "补丁文件覆盖替换`node_modules/fumadocs/dist/src/components/toc-clerk.js`"
-              },
-              {
-                "heading": "4-补丁替换",
-                "content": "补丁文件覆盖替换`node_modules/fumadocs/dist/src/components/toc-clerk.d.ts`"
-              },
-              {
-                "heading": "4-补丁替换",
-                "content": "补丁文件覆盖替换`node_modules/fumadocs/dist/src/components/toc-clerk.d.tsx`"
-              },
-              {
-                "heading": "5-提交补丁",
-                "content": "提交补丁后, 会生成一个补丁文件, 文件名类似`fumadocs-ui-15.3.3-patch-1.patch`"
-              },
-              {
-                "heading": "5-提交补丁",
-                "content": "同时`package.json`中也会有`pnpm.patchedDependencies`字段, 记录了补丁文件的路径信息"
-              },
-              {
-                "heading": "6-验证补丁",
-                "content": "再一次清理项目环境, 删除node\\_modules、pnpm-lock.yaml"
-              },
-              {
-                "heading": "6-验证补丁",
-                "content": "再次重装依赖"
-              },
-              {
-                "heading": "6-验证补丁",
-                "content": "启动项目, 验证补丁效果: 但你查看本文档时, 就能看到正文和目录上都有对应的步骤⭕️效果"
-              },
-              {
-                "heading": "7-done",
-                "content": "在不升级FumaDocs版本的前提下, 该补丁会一直生效, 重装环境时会自动应用, 无需再管了"
-              },
-              {
-                "heading": "7-done",
-                "content": "魔改源码打补丁的方案, 在FumaDocs升级时会失效, 需要重新魔改"
-              },
-              {
-                "heading": "7-done",
-                "content": "**因此, 强烈推荐给FumaDocs官方咨询、讨论、提PR**, 让FumaDocs也越发好用!"
-              },
-              {
-                "heading": "问题描述",
-                "content": "在将包含 Fumadocs 的 Next.js 应用部署到 Vercel 后, 一个用于提取 MDX 页面内容的 API 路由 (`/api/*/llm-content`), 在本地开发时工作正常"
-              },
-              {
-                "heading": "问题描述",
-                "content": "但在 Vercel 的 Serverless Function 环境中持续抛出 `ENOENT: no such file or directory` 错误"
-              },
-              {
-                "heading": "问题描述",
-                "content": "错误日志指示, 系统尝试打开类似 `/vercel/path0/src/mdx/docs/...` 的路径, 这是一个构建时的绝对路径, 在运行时无效"
-              },
-              {
-                "heading": "分析过程",
-                "content": "初步怀疑 `remark` 插件: 最初认为问题出在 `getLLMText` 函数中使用的 `remark` 插件链（如 `remark-include`, `remark-docgen` 等）在运行时试图访问文件系统"
-              },
-              {
-                "heading": "分析过程",
-                "content": "简化 `remark` 插件: 逐步移除了这些可能导致问题的插件, 但错误依旧"
-              },
-              {
-                "heading": "分析过程",
-                "content": "日志诊断 `page` 对象: 通过在 API 路由中添加详细日志, 发现在尝试访问 `page.data.content` 属性（由 `docsSource.getPage()` 返回）时, 错误就会发生。这表明 Fumadocs 在运行时延迟加载此属性, 并错误地使用了构建时的文件路径"
-              },
-              {
-                "heading": "分析过程",
-                "content": "确认元数据可访问: 测试表明, 访问 `page.data.title` 等其他元数据是安全的, 不会触发文件读取错误"
-              },
-              {
-                "heading": "解决方案",
-                "content": "核心解决方案是避免在 API 路由运行时让 Fumadocs 的内部机制去加载文件内容, 而是由我们主动、正确地读取文件"
-              },
-              {
-                "heading": "1-nextconfigts配置",
-                "content": "确保 MDX 文件被打包到 Vercel Serverless Function:"
-              },
-              {
-                "heading": "1-nextconfigts配置",
-                "content": "修改 `next.config.ts`, 在顶层配置中添加 `outputFileTracingIncludes`, 明确指定将 `src/mdx/docs/**/*` 目录下的所有文件包含在 `/api/*/llm-content` 路由的部署包中"
-              },
-              {
-                "heading": "2-getllmtext函数",
-                "content": "修改 `getLLMText` 函数 (`src/lib/get-llm-text.ts`):"
-              },
-              {
-                "heading": "2-getllmtext函数",
-                "content": "更改函数签名, 使其接受 MDX 内容字符串、标题和描述作为参数: `async function getLLMText(mdxContent: string, title?: string, description?: string)`"
-              },
-              {
-                "heading": "2-getllmtext函数",
-                "content": "内部 `remark` 处理器使用简化的插件集 (`remark-frontmatter`, `remark-remove-frontmatter`, `remark-mdx`, `remark-gfm`), 仅处理传入的字符串内容"
-              },
-              {
-                "heading": "3-api-路由",
-                "content": "修改 API 路由 (`src/app/api/legal/llm-content/route.ts`):"
-              },
-              {
-                "heading": "3-api-路由",
-                "content": "调用 `docsSource.getPage(slug, locale)` 获取 `page` 对象, 并从中安全地提取 `title` 和 `description`"
-              },
-              {
-                "heading": "3-api-路由",
-                "content": "从 `page.data._file.path` 获取 MDX 文件的相对路径"
-              },
-              {
-                "heading": "3-api-路由",
-                "content": "使用 Node.js 的 `path.join(process.cwd(), 'src', 'mdx', 'docs', relativeMdxFilePath)` 构造在 Vercel 运行时环境中的正确绝对路径（`process.cwd()` 在 Vercel Serverless Function 中通常是 `/var/task`）"
-              },
-              {
-                "heading": "3-api-路由",
-                "content": "使用 `fs.readFileSync(absoluteFilePath, 'utf-8')` 同步读取文件内容"
-              },
-              {
-                "heading": "3-api-路由",
-                "content": "将手动读取到的 `mdxContent` 字符串以及 `title` 和 `description` 传递给更新后的 `getLLMText` 函数"
-              },
-              {
-                "heading": "3-api-路由",
-                "content": "包含详细的错误处理和日志记录, 特别是在文件读取失败时, 会尝试列出相关目录内容以辅助调试"
-              }
-            ],
-            "headings": [
-              {
-                "id": "fumadocs接入",
-                "content": "FumaDocs接入"
-              },
-              {
-                "id": "基础接入",
-                "content": "基础接入"
-              },
-              {
-                "id": "核心流程处理",
-                "content": "核心流程处理"
-              },
-              {
-                "id": "自定义流程处理",
-                "content": "自定义流程处理"
-              },
-              {
-                "id": "网站布局调整",
-                "content": "网站布局调整"
-              },
-              {
-                "id": "自定义headeralpha",
-                "content": "自定义Header(Alpha)"
-              },
-              {
-                "id": "自定义组件",
-                "content": "自定义组件"
-              },
-              {
-                "id": "自定义样式组件",
-                "content": "自定义样式组件"
-              },
-              {
-                "id": "自定义流程处理插件",
-                "content": "自定义流程处理插件"
-              },
-              {
-                "id": "源码魔改",
-                "content": "源码魔改"
-              },
-              {
-                "id": "1-fork源码",
-                "content": "Fork源码"
-              },
-              {
-                "id": "2-修改组件源码",
-                "content": "修改组件源码"
-              },
-              {
-                "id": "3-再次构建-生成js文件",
-                "content": "再次构建, 生成js文件"
-              },
-              {
-                "id": "4-准备补丁文件",
-                "content": "准备补丁文件"
-              },
-              {
-                "id": "应用补丁",
-                "content": "应用补丁"
-              },
-              {
-                "id": "1-清理项目环境",
-                "content": "清理项目环境"
-              },
-              {
-                "id": "2-重装依赖",
-                "content": "重装依赖"
-              },
-              {
-                "id": "3-开始pnpm-patch会话",
-                "content": "开始pnpm patch会话"
-              },
-              {
-                "id": "4-补丁替换",
-                "content": "补丁替换"
-              },
-              {
-                "id": "5-提交补丁",
-                "content": "提交补丁"
-              },
-              {
-                "id": "6-验证补丁",
-                "content": "验证补丁"
-              },
-              {
-                "id": "7-done",
-                "content": "Done"
-              },
-              {
-                "id": "vercel中文件读取报错问题",
-                "content": "Vercel中文件读取报错问题"
-              },
-              {
-                "id": "问题描述",
-                "content": "问题描述"
-              },
-              {
-                "id": "分析过程",
-                "content": "分析过程"
-              },
-              {
-                "id": "解决方案",
-                "content": "解决方案"
-              },
-              {
-                "id": "1-nextconfigts配置",
-                "content": "Next.config.ts配置"
-              },
-              {
-                "id": "2-getllmtext函数",
-                "content": "getLLMText函数"
-              },
-              {
-                "id": "3-api-路由",
-                "content": "API 路由"
-              }
-            ]
-          }
-        }
-      }
-    },
-    {
       "path": "introduction/(mdx)/fuma-mdx.mdx",
       "absolutePath": "/Users/funeye/IdeaProjects/next-ai-build/apps/ddaas/src/mdx/docs/introduction/(mdx)/fuma-mdx.mdx",
       "title": "Fuma·MDX",
@@ -3486,6 +2516,976 @@ const source = {
               {
                 "id": "svg-09",
                 "content": "SVG 09"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "path": "introduction/(3p-integration)/clerk-customization.mdx",
+      "absolutePath": "/Users/funeye/IdeaProjects/next-ai-build/apps/ddaas/src/mdx/docs/introduction/(3p-integration)/clerk-customization.mdx",
+      "title": "整合Cleck用户系统",
+      "description": "小白开箱即用的用户管理系统, 涵盖登录、权限、组织管理, 提供了丰富的前后端组件",
+      "frontmatter": {
+        "title": "整合Cleck用户系统",
+        "description": "小白开箱即用的用户管理系统, 涵盖登录、权限、组织管理, 提供了丰富的前后端组件",
+        "date": "2025-06-23"
+      },
+      "structuredData": {
+        "contents": [
+          {
+            "heading": "核心要点",
+            "content": "Clerk的官网已经很详细地介绍了如何接入, 目前对于国际化的支持还不够, 但官网正在跟进中"
+          },
+          {
+            "heading": "核心要点",
+            "content": "登录、注册全家桶, 第三方账号登录|邮件|手机号|密码"
+          },
+          {
+            "heading": "核心要点",
+            "content": "`邀请式注册`"
+          },
+          {
+            "heading": "核心要点",
+            "content": "用户角色权限系统管理"
+          },
+          {
+            "heading": "核心要点",
+            "content": "组织管理"
+          },
+          {
+            "heading": "核心要点",
+            "content": "Dashboard后台管理"
+          },
+          {
+            "heading": "核心要点",
+            "content": "订阅计划托管`Beta`"
+          },
+          {
+            "heading": "clerkprovider",
+            "content": "`ClerkProvider`本质上是为后续所有用到的Clerk组件提供全局一致的Context信息, 因而我们可以按照需要来放置`ClerkProvider`的布局层次。\n例如, 有一个更重要的**YourRootProvider**, 它在更外层提供更基础的Context信息, 那么就可以如下代码来处理"
+          },
+          {
+            "heading": "config-url",
+            "content": "`ClerkProvider`支持url参数配置, 配置方式也有如下3种, 官方推荐使用环境变量, 其次是代码级配置, 不建议使用Clerk Dashboard的远程配置"
+          },
+          {
+            "heading": "config-url",
+            "content": "截至Clerk版本`^6.19.4`, 多语言项目, 配置了NextJS \\[locale]路由段的项目, 不要使用自定义登录页面, 而是使用模态框弹出登录框的方式\n详细原因参见issue"
+          },
+          {
+            "heading": "config-url",
+            "content": "Clerk Dashboard -> Configure -> Paths"
+          },
+          {
+            "heading": "登录注册",
+            "content": "建议使用一个登录按钮, 点击登录按钮后, 弹框或者跳转到登录页面, 出现的Clerk `SignIn`卡片组件能自动携带未登录就去注册的指引"
+          },
+          {
+            "heading": "登录注册",
+            "content": "如下是一个简单包装过的Clerk用户组件:"
+          },
+          {
+            "heading": "国际化",
+            "content": "目前经过官方和用户的共同努力, Clerk目前支持40+种语言, 例如中文简体、中文繁体、英法德日韩, 参考Clerk官网说明\n如果某些字段未处理, 参考英语标准字段自行覆盖, 但推荐给官方提pr融合你的贡献!"
+          }
+        ],
+        "headings": [
+          {
+            "id": "核心要点",
+            "content": "核心要点"
+          },
+          {
+            "id": "clerk自定义处理",
+            "content": "CLerk自定义处理"
+          },
+          {
+            "id": "clerkprovider",
+            "content": "ClerkProvider"
+          },
+          {
+            "id": "config-url",
+            "content": "Config URL"
+          },
+          {
+            "id": "登录注册",
+            "content": "登录注册"
+          },
+          {
+            "id": "国际化",
+            "content": "国际化"
+          }
+        ]
+      },
+      "compiled": {
+        "type": "js",
+        "code": "\"use strict\";\nconst {Fragment: _Fragment, jsx: _jsx, jsxs: _jsxs} = arguments[0];\nlet toc = [{\n  depth: 2,\n  url: \"#核心要点\",\n  title: _jsx(_Fragment, {\n    children: \"核心要点\"\n  })\n}, {\n  depth: 2,\n  url: \"#clerk自定义处理\",\n  title: _jsx(_Fragment, {\n    children: \"CLerk自定义处理\"\n  })\n}, {\n  depth: 3,\n  url: \"#clerkprovider\",\n  title: _jsx(_Fragment, {\n    children: \"ClerkProvider\"\n  })\n}, {\n  depth: 3,\n  url: \"#config-url\",\n  title: _jsx(_Fragment, {\n    children: \"Config URL\"\n  })\n}, {\n  depth: 3,\n  url: \"#登录注册\",\n  title: _jsx(_Fragment, {\n    children: \"登录注册\"\n  })\n}, {\n  depth: 3,\n  url: \"#国际化\",\n  title: _jsx(_Fragment, {\n    children: \"国际化\"\n  })\n}];\nfunction _createMdxContent(props) {\n  const _components = {\n    a: \"a\",\n    code: \"code\",\n    h2: \"h2\",\n    h3: \"h3\",\n    li: \"li\",\n    p: \"p\",\n    pre: \"pre\",\n    span: \"span\",\n    strong: \"strong\",\n    ul: \"ul\",\n    ...props.components\n  }, {Callout, Tab, Tabs} = _components;\n  if (!Callout) _missingMdxReference(\"Callout\", true);\n  if (!Tab) _missingMdxReference(\"Tab\", true);\n  if (!Tabs) _missingMdxReference(\"Tabs\", true);\n  return _jsxs(_Fragment, {\n    children: [_jsx(_components.h2, {\n      id: \"核心要点\",\n      children: \"核心要点\"\n    }), \"\\n\", _jsx(Callout, {\n      title: \"阅读官网说明书\",\n      type: \"warn\",\n      children: _jsx(_components.p, {\n        children: \"Clerk的官网已经很详细地介绍了如何接入, 目前对于国际化的支持还不够, 但官网正在跟进中\"\n      })\n    }), \"\\n\", _jsxs(_components.ul, {\n      children: [\"\\n\", _jsx(_components.li, {\n        children: \"登录、注册全家桶, 第三方账号登录|邮件|手机号|密码\"\n      }), \"\\n\", _jsx(_components.li, {\n        children: _jsx(_components.code, {\n          children: \"邀请式注册\"\n        })\n      }), \"\\n\", _jsx(_components.li, {\n        children: \"用户角色权限系统管理\"\n      }), \"\\n\", _jsx(_components.li, {\n        children: \"组织管理\"\n      }), \"\\n\", _jsx(_components.li, {\n        children: \"Dashboard后台管理\"\n      }), \"\\n\", _jsxs(_components.li, {\n        children: [\"订阅计划托管\", _jsx(_components.code, {\n          children: \"Beta\"\n        })]\n      }), \"\\n\"]\n    }), \"\\n\", _jsx(_components.h2, {\n      id: \"clerk自定义处理\",\n      children: \"CLerk自定义处理\"\n    }), \"\\n\", _jsx(_components.h3, {\n      id: \"clerkprovider\",\n      children: \"ClerkProvider\"\n    }), \"\\n\", _jsxs(_components.p, {\n      children: [_jsx(_components.code, {\n        children: \"ClerkProvider\"\n      }), \"本质上是为后续所有用到的Clerk组件提供全局一致的Context信息, 因而我们可以按照需要来放置\", _jsx(_components.code, {\n        children: \"ClerkProvider\"\n      }), \"的布局层次。\\n例如, 有一个更重要的\", _jsx(_components.strong, {\n        children: \"YourRootProvider\"\n      }), \", 它在更外层提供更基础的Context信息, 那么就可以如下代码来处理\"]\n    }), \"\\n\", _jsx(_components.h3, {\n      id: \"config-url\",\n      children: \"Config URL\"\n    }), \"\\n\", _jsxs(_components.p, {\n      children: [_jsx(_components.code, {\n        children: \"ClerkProvider\"\n      }), \"支持url参数配置, 配置方式也有如下3种, 官方推荐使用环境变量, 其次是代码级配置, 不建议使用Clerk Dashboard的远程配置\"]\n    }), \"\\n\", _jsx(Callout, {\n      title: \"Clerk动态Locale问题\",\n      type: \"error\",\n      children: _jsxs(_components.p, {\n        children: [\"截至Clerk版本\", _jsx(_components.code, {\n          children: \"^6.19.4\"\n        }), \", 多语言项目, 配置了NextJS [locale]路由段的项目, 不要使用自定义登录页面, 而是使用模态框弹出登录框的方式\\n详细原因参见\", _jsx(_components.a, {\n          href: \"https://github.com/clerk/javascript/issues/5935\",\n          children: \"issue\"\n        })]\n      })\n    }), \"\\n\", _jsxs(Tabs, {\n      groupId: \"clerk-config\",\n      items: [\"env\", \"props\", \"dashboard\"],\n      children: [_jsx(Tab, {\n        value: \"env\",\n        children: _jsx(_Fragment, {\n          children: _jsx(_components.pre, {\n            className: \"shiki shiki-themes catppuccin-latte catppuccin-mocha\",\n            style: {\n              \"--shiki-light\": \"#4c4f69\",\n              \"--shiki-dark\": \"#cdd6f4\",\n              \"--shiki-light-bg\": \"#eff1f5\",\n              \"--shiki-dark-bg\": \"#1e1e2e\"\n            },\n            tabIndex: \"0\",\n            title: \".env.local\",\n            \"data-language\": \"txt\",\n            icon: \"<svg viewBox=\\\"0 0 24 24\\\"><path d=\\\"M 6,1 C 4.354992,1 3,2.354992 3,4 v 16 c 0,1.645008 1.354992,3 3,3 h 12 c 1.645008,0 3,-1.354992 3,-3 V 8 7 A 1.0001,1.0001 0 0 0 20.707031,6.2929687 l -5,-5 A 1.0001,1.0001 0 0 0 15,1 h -1 z m 0,2 h 7 v 3 c 0,1.645008 1.354992,3 3,3 h 3 v 11 c 0,0.564129 -0.435871,1 -1,1 H 6 C 5.4358712,21 5,20.564129 5,20 V 4 C 5,3.4358712 5.4358712,3 6,3 Z M 15,3.4140625 18.585937,7 H 16 C 15.435871,7 15,6.5641288 15,6 Z\\\" fill=\\\"currentColor\\\" /></svg>\",\n            children: _jsxs(_components.code, {\n              children: [_jsx(_components.span, {\n                className: \"line\",\n                children: _jsx(_components.span, {\n                  children: \"  # 配置登录url\"\n                })\n              }), \"\\n\", _jsx(_components.span, {\n                className: \"line\",\n                children: _jsx(_components.span, {\n                  children: \"  NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in\"\n                })\n              }), \"\\n\", _jsx(_components.span, {\n                className: \"line\",\n                children: _jsx(_components.span, {\n                  children: \"  NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL=/\"\n                })\n              }), \"\\n\", _jsx(_components.span, {\n                className: \"line\",\n                children: _jsx(_components.span, {\n                  children: \"  # 配置注册url\"\n                })\n              }), \"\\n\", _jsx(_components.span, {\n                className: \"line\",\n                children: _jsx(_components.span, {\n                  children: \"  NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up\"\n                })\n              }), \"\\n\", _jsx(_components.span, {\n                className: \"line\",\n                children: _jsx(_components.span, {\n                  children: \"  NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL=/\"\n                })\n              })]\n            })\n          })\n        })\n      }), _jsx(Tab, {\n        value: \"props\",\n        children: _jsx(_Fragment, {\n          children: _jsx(_components.pre, {\n            className: \"shiki shiki-themes catppuccin-latte catppuccin-mocha\",\n            style: {\n              \"--shiki-light\": \"#4c4f69\",\n              \"--shiki-dark\": \"#cdd6f4\",\n              \"--shiki-light-bg\": \"#eff1f5\",\n              \"--shiki-dark-bg\": \"#1e1e2e\"\n            },\n            tabIndex: \"0\",\n            title: \"ClerkProvider.props\",\n            \"data-language\": \"tsx\",\n            icon: \"<svg viewBox=\\\"0 0 24 24\\\"><path d=\\\"M14.23 12.004a2.236 2.236 0 0 1-2.235 2.236 2.236 2.236 0 0 1-2.236-2.236 2.236 2.236 0 0 1 2.235-2.236 2.236 2.236 0 0 1 2.236 2.236zm2.648-10.69c-1.346 0-3.107.96-4.888 2.622-1.78-1.653-3.542-2.602-4.887-2.602-.41 0-.783.093-1.106.278-1.375.793-1.683 3.264-.973 6.365C1.98 8.917 0 10.42 0 12.004c0 1.59 1.99 3.097 5.043 4.03-.704 3.113-.39 5.588.988 6.38.32.187.69.275 1.102.275 1.345 0 3.107-.96 4.888-2.624 1.78 1.654 3.542 2.603 4.887 2.603.41 0 .783-.09 1.106-.275 1.374-.792 1.683-3.263.973-6.365C22.02 15.096 24 13.59 24 12.004c0-1.59-1.99-3.097-5.043-4.032.704-3.11.39-5.587-.988-6.38-.318-.184-.688-.277-1.092-.278zm-.005 1.09v.006c.225 0 .406.044.558.127.666.382.955 1.835.73 3.704-.054.46-.142.945-.25 1.44-.96-.236-2.006-.417-3.107-.534-.66-.905-1.345-1.727-2.035-2.447 1.592-1.48 3.087-2.292 4.105-2.295zm-9.77.02c1.012 0 2.514.808 4.11 2.28-.686.72-1.37 1.537-2.02 2.442-1.107.117-2.154.298-3.113.538-.112-.49-.195-.964-.254-1.42-.23-1.868.054-3.32.714-3.707.19-.09.4-.127.563-.132zm4.882 3.05c.455.468.91.992 1.36 1.564-.44-.02-.89-.034-1.345-.034-.46 0-.915.01-1.36.034.44-.572.895-1.096 1.345-1.565zM12 8.1c.74 0 1.477.034 2.202.093.406.582.802 1.203 1.183 1.86.372.64.71 1.29 1.018 1.946-.308.655-.646 1.31-1.013 1.95-.38.66-.773 1.288-1.18 1.87-.728.063-1.466.098-2.21.098-.74 0-1.477-.035-2.202-.093-.406-.582-.802-1.204-1.183-1.86-.372-.64-.71-1.29-1.018-1.946.303-.657.646-1.313 1.013-1.954.38-.66.773-1.286 1.18-1.868.728-.064 1.466-.098 2.21-.098zm-3.635.254c-.24.377-.48.763-.704 1.16-.225.39-.435.782-.635 1.174-.265-.656-.49-1.31-.676-1.947.64-.15 1.315-.283 2.015-.386zm7.26 0c.695.103 1.365.23 2.006.387-.18.632-.405 1.282-.66 1.933-.2-.39-.41-.783-.64-1.174-.225-.392-.465-.774-.705-1.146zm3.063.675c.484.15.944.317 1.375.498 1.732.74 2.852 1.708 2.852 2.476-.005.768-1.125 1.74-2.857 2.475-.42.18-.88.342-1.355.493-.28-.958-.646-1.956-1.1-2.98.45-1.017.81-2.01 1.085-2.964zm-13.395.004c.278.96.645 1.957 1.1 2.98-.45 1.017-.812 2.01-1.086 2.964-.484-.15-.944-.318-1.37-.5-1.732-.737-2.852-1.706-2.852-2.474 0-.768 1.12-1.742 2.852-2.476.42-.18.88-.342 1.356-.494zm11.678 4.28c.265.657.49 1.312.676 1.948-.64.157-1.316.29-2.016.39.24-.375.48-.762.705-1.158.225-.39.435-.788.636-1.18zm-9.945.02c.2.392.41.783.64 1.175.23.39.465.772.705 1.143-.695-.102-1.365-.23-2.006-.386.18-.63.406-1.282.66-1.933zM17.92 16.32c.112.493.2.968.254 1.423.23 1.868-.054 3.32-.714 3.708-.147.09-.338.128-.563.128-1.012 0-2.514-.807-4.11-2.28.686-.72 1.37-1.536 2.02-2.44 1.107-.118 2.154-.3 3.113-.54zm-11.83.01c.96.234 2.006.415 3.107.532.66.905 1.345 1.727 2.035 2.446-1.595 1.483-3.092 2.295-4.11 2.295-.22-.005-.406-.05-.553-.132-.666-.38-.955-1.834-.73-3.703.054-.46.142-.944.25-1.438zm4.56.64c.44.02.89.034 1.345.034.46 0 .915-.01 1.36-.034-.44.572-.895 1.095-1.345 1.565-.455-.47-.91-.993-1.36-1.565z\\\" fill=\\\"currentColor\\\" /></svg>\",\n            children: _jsxs(_components.code, {\n              children: [_jsxs(_components.span, {\n                className: \"line\",\n                children: [_jsx(_components.span, {\n                  style: {\n                    \"--shiki-light\": \"#179299\",\n                    \"--shiki-dark\": \"#94E2D5\"\n                  },\n                  children: \"  <\"\n                }), _jsx(_components.span, {\n                  style: {\n                    \"--shiki-light\": \"#EA76CB\",\n                    \"--shiki-dark\": \"#F5C2E7\"\n                  },\n                  children: \"ClerkProvider\"\n                })]\n              }), \"\\n\", _jsxs(_components.span, {\n                className: \"line\",\n                children: [_jsx(_components.span, {\n                  style: {\n                    \"--shiki-light\": \"#DF8E1D\",\n                    \"--shiki-dark\": \"#F9E2AF\"\n                  },\n                  children: \"    signInUrl\"\n                }), _jsx(_components.span, {\n                  style: {\n                    \"--shiki-light\": \"#179299\",\n                    \"--shiki-dark\": \"#94E2D5\"\n                  },\n                  children: \"=\"\n                }), _jsx(_components.span, {\n                  style: {\n                    \"--shiki-light\": \"#40A02B\",\n                    \"--shiki-dark\": \"#A6E3A1\"\n                  },\n                  children: \"\\\"XXX\\\"\"\n                })]\n              }), \"\\n\", _jsxs(_components.span, {\n                className: \"line\",\n                children: [_jsx(_components.span, {\n                  style: {\n                    \"--shiki-light\": \"#DF8E1D\",\n                    \"--shiki-dark\": \"#F9E2AF\"\n                  },\n                  children: \"    signUpUrl\"\n                }), _jsx(_components.span, {\n                  style: {\n                    \"--shiki-light\": \"#179299\",\n                    \"--shiki-dark\": \"#94E2D5\"\n                  },\n                  children: \"=\"\n                }), _jsx(_components.span, {\n                  style: {\n                    \"--shiki-light\": \"#40A02B\",\n                    \"--shiki-dark\": \"#A6E3A1\"\n                  },\n                  children: \"\\\"XXX\\\"\"\n                })]\n              }), \"\\n\", _jsxs(_components.span, {\n                className: \"line\",\n                children: [_jsx(_components.span, {\n                  style: {\n                    \"--shiki-light\": \"#DF8E1D\",\n                    \"--shiki-dark\": \"#F9E2AF\"\n                  },\n                  children: \"    signInFallbackRedirectUrl\"\n                }), _jsx(_components.span, {\n                  style: {\n                    \"--shiki-light\": \"#179299\",\n                    \"--shiki-dark\": \"#94E2D5\"\n                  },\n                  children: \"=\"\n                }), _jsx(_components.span, {\n                  style: {\n                    \"--shiki-light\": \"#40A02B\",\n                    \"--shiki-dark\": \"#A6E3A1\"\n                  },\n                  children: \"\\\"XXX\\\"\"\n                })]\n              }), \"\\n\", _jsxs(_components.span, {\n                className: \"line\",\n                children: [_jsx(_components.span, {\n                  style: {\n                    \"--shiki-light\": \"#DF8E1D\",\n                    \"--shiki-dark\": \"#F9E2AF\"\n                  },\n                  children: \"    signUpFallbackRedirectUrl\"\n                }), _jsx(_components.span, {\n                  style: {\n                    \"--shiki-light\": \"#179299\",\n                    \"--shiki-dark\": \"#94E2D5\"\n                  },\n                  children: \"=\"\n                }), _jsx(_components.span, {\n                  style: {\n                    \"--shiki-light\": \"#40A02B\",\n                    \"--shiki-dark\": \"#A6E3A1\"\n                  },\n                  children: \"\\\"XXX\\\"\"\n                })]\n              }), \"\\n\", _jsxs(_components.span, {\n                className: \"line\",\n                children: [_jsx(_components.span, {\n                  style: {\n                    \"--shiki-light\": \"#DF8E1D\",\n                    \"--shiki-dark\": \"#F9E2AF\"\n                  },\n                  children: \"    waitlistUrl\"\n                }), _jsx(_components.span, {\n                  style: {\n                    \"--shiki-light\": \"#179299\",\n                    \"--shiki-dark\": \"#94E2D5\"\n                  },\n                  children: \"=\"\n                }), _jsx(_components.span, {\n                  style: {\n                    \"--shiki-light\": \"#40A02B\",\n                    \"--shiki-dark\": \"#A6E3A1\"\n                  },\n                  children: \"\\\"XXX\\\"\"\n                })]\n              }), \"\\n\", _jsxs(_components.span, {\n                className: \"line\",\n                children: [_jsx(_components.span, {\n                  style: {\n                    \"--shiki-light\": \"#DF8E1D\",\n                    \"--shiki-dark\": \"#F9E2AF\"\n                  },\n                  children: \"    localization\"\n                }), _jsx(_components.span, {\n                  style: {\n                    \"--shiki-light\": \"#179299\",\n                    \"--shiki-dark\": \"#94E2D5\"\n                  },\n                  children: \"=\"\n                }), _jsx(_components.span, {\n                  style: {\n                    \"--shiki-light\": \"#40A02B\",\n                    \"--shiki-dark\": \"#A6E3A1\"\n                  },\n                  children: \"\\\"XXXLocalization\\\"\"\n                })]\n              }), \"\\n\", _jsx(_components.span, {\n                className: \"line\",\n                children: _jsx(_components.span, {\n                  style: {\n                    \"--shiki-light\": \"#179299\",\n                    \"--shiki-dark\": \"#94E2D5\"\n                  },\n                  children: \"  >\"\n                })\n              }), \"\\n\", _jsxs(_components.span, {\n                className: \"line\",\n                children: [_jsx(_components.span, {\n                  style: {\n                    \"--shiki-light\": \"#7C7F93\",\n                    \"--shiki-dark\": \"#9399B2\"\n                  },\n                  children: \"    {\"\n                }), _jsx(_components.span, {\n                  style: {\n                    \"--shiki-light\": \"#4C4F69\",\n                    \"--shiki-dark\": \"#CDD6F4\"\n                  },\n                  children: \"children\"\n                }), _jsx(_components.span, {\n                  style: {\n                    \"--shiki-light\": \"#7C7F93\",\n                    \"--shiki-dark\": \"#9399B2\"\n                  },\n                  children: \"}\"\n                })]\n              }), \"\\n\", _jsxs(_components.span, {\n                className: \"line\",\n                children: [_jsx(_components.span, {\n                  style: {\n                    \"--shiki-light\": \"#179299\",\n                    \"--shiki-dark\": \"#94E2D5\"\n                  },\n                  children: \"  </\"\n                }), _jsx(_components.span, {\n                  style: {\n                    \"--shiki-light\": \"#EA76CB\",\n                    \"--shiki-dark\": \"#F5C2E7\"\n                  },\n                  children: \"ClerkProvider\"\n                }), _jsx(_components.span, {\n                  style: {\n                    \"--shiki-light\": \"#179299\",\n                    \"--shiki-dark\": \"#94E2D5\"\n                  },\n                  children: \">\"\n                })]\n              })]\n            })\n          })\n        })\n      }), _jsx(Tab, {\n        value: \"dashboard\",\n        children: _jsx(_components.p, {\n          children: \"Clerk Dashboard -> Configure -> Paths\"\n        })\n      })]\n    }), \"\\n\", _jsx(_components.h3, {\n      id: \"登录注册\",\n      children: \"登录注册\"\n    }), \"\\n\", _jsxs(_components.p, {\n      children: [\"建议使用一个登录按钮, 点击登录按钮后, 弹框或者跳转到登录页面, 出现的Clerk \", _jsx(_components.code, {\n        children: \"SignIn\"\n      }), \"卡片组件能自动携带未登录就去注册的指引\"]\n    }), \"\\n\", _jsx(_components.p, {\n      children: \"如下是一个简单包装过的Clerk用户组件:\"\n    }), \"\\n\", _jsx(_components.h3, {\n      id: \"国际化\",\n      children: \"国际化\"\n    }), \"\\n\", _jsxs(_components.p, {\n      children: [\"目前经过官方和用户的共同努力, Clerk目前支持40+种语言, 例如中文简体、中文繁体、英法德日韩, 参考\", _jsx(_components.a, {\n        href: \"https://clerk.com/docs/customization/localization\",\n        children: \"Clerk官网说明\"\n      }), \"\\n如果某些字段未处理, 参考\", _jsx(_components.a, {\n        href: \"https://github.com/clerk/javascript/blob/main/packages/localizations/src/en-US.ts#L492\",\n        children: \"英语标准字段\"\n      }), \"自行覆盖, 但推荐给官方提pr融合你的贡献!\"]\n    })]\n  });\n}\nfunction MDXContent(props = {}) {\n  const {wrapper: MDXLayout} = props.components || ({});\n  return MDXLayout ? _jsx(MDXLayout, {\n    ...props,\n    children: _jsx(_createMdxContent, {\n      ...props\n    })\n  }) : _createMdxContent(props);\n}\nreturn {\n  toc,\n  default: MDXContent\n};\nfunction _missingMdxReference(id, component) {\n  throw new Error(\"Expected \" + (component ? \"component\" : \"object\") + \" `\" + id + \"` to be defined: you likely forgot to import, pass, or provide it.\");\n}\n",
+        "fileData": {
+          "structuredData": {
+            "contents": [
+              {
+                "heading": "核心要点",
+                "content": "Clerk的官网已经很详细地介绍了如何接入, 目前对于国际化的支持还不够, 但官网正在跟进中"
+              },
+              {
+                "heading": "核心要点",
+                "content": "登录、注册全家桶, 第三方账号登录|邮件|手机号|密码"
+              },
+              {
+                "heading": "核心要点",
+                "content": "`邀请式注册`"
+              },
+              {
+                "heading": "核心要点",
+                "content": "用户角色权限系统管理"
+              },
+              {
+                "heading": "核心要点",
+                "content": "组织管理"
+              },
+              {
+                "heading": "核心要点",
+                "content": "Dashboard后台管理"
+              },
+              {
+                "heading": "核心要点",
+                "content": "订阅计划托管`Beta`"
+              },
+              {
+                "heading": "clerkprovider",
+                "content": "`ClerkProvider`本质上是为后续所有用到的Clerk组件提供全局一致的Context信息, 因而我们可以按照需要来放置`ClerkProvider`的布局层次。\n例如, 有一个更重要的**YourRootProvider**, 它在更外层提供更基础的Context信息, 那么就可以如下代码来处理"
+              },
+              {
+                "heading": "config-url",
+                "content": "`ClerkProvider`支持url参数配置, 配置方式也有如下3种, 官方推荐使用环境变量, 其次是代码级配置, 不建议使用Clerk Dashboard的远程配置"
+              },
+              {
+                "heading": "config-url",
+                "content": "截至Clerk版本`^6.19.4`, 多语言项目, 配置了NextJS \\[locale]路由段的项目, 不要使用自定义登录页面, 而是使用模态框弹出登录框的方式\n详细原因参见issue"
+              },
+              {
+                "heading": "config-url",
+                "content": "Clerk Dashboard -> Configure -> Paths"
+              },
+              {
+                "heading": "登录注册",
+                "content": "建议使用一个登录按钮, 点击登录按钮后, 弹框或者跳转到登录页面, 出现的Clerk `SignIn`卡片组件能自动携带未登录就去注册的指引"
+              },
+              {
+                "heading": "登录注册",
+                "content": "如下是一个简单包装过的Clerk用户组件:"
+              },
+              {
+                "heading": "国际化",
+                "content": "目前经过官方和用户的共同努力, Clerk目前支持40+种语言, 例如中文简体、中文繁体、英法德日韩, 参考Clerk官网说明\n如果某些字段未处理, 参考英语标准字段自行覆盖, 但推荐给官方提pr融合你的贡献!"
+              }
+            ],
+            "headings": [
+              {
+                "id": "核心要点",
+                "content": "核心要点"
+              },
+              {
+                "id": "clerk自定义处理",
+                "content": "CLerk自定义处理"
+              },
+              {
+                "id": "clerkprovider",
+                "content": "ClerkProvider"
+              },
+              {
+                "id": "config-url",
+                "content": "Config URL"
+              },
+              {
+                "id": "登录注册",
+                "content": "登录注册"
+              },
+              {
+                "id": "国际化",
+                "content": "国际化"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "path": "introduction/(3p-integration)/fuma-customization.mdx",
+      "absolutePath": "/Users/funeye/IdeaProjects/next-ai-build/apps/ddaas/src/mdx/docs/introduction/(3p-integration)/fuma-customization.mdx",
+      "title": "FumaDocs接入指北",
+      "description": "熟悉FumaDocs组件原理, 组件自定义经验分享",
+      "frontmatter": {
+        "title": "FumaDocs接入指北",
+        "description": "熟悉FumaDocs组件原理, 组件自定义经验分享",
+        "date": "2025-06-23"
+      },
+      "structuredData": {
+        "contents": [
+          {
+            "heading": "基础接入",
+            "content": "参照官网文档, 完成基础环境配置"
+          },
+          {
+            "heading": "自定义流程处理",
+            "content": "`src/lib/source-legal.ts` 路由+数据源+元数据处理, **内容如何被加载和路由**, 侧重于HTML的主干结构"
+          },
+          {
+            "heading": "自定义流程处理",
+            "content": "`source.config.ts`插件链的配置扩展, **原始mdx内容如何被解析为React组件**, 侧重于基础内容"
+          },
+          {
+            "heading": "自定义流程处理",
+            "content": "`src/components/mdx-components.tsx` React组件扩展, **组件如何被渲染**, 侧重于样式和交互"
+          },
+          {
+            "heading": "网站布局调整",
+            "content": "FumaDocs提供了几种基础布局, 这里补充一下导航菜单和按钮的排序规则"
+          },
+          {
+            "heading": "网站布局调整",
+            "content": "整个导航是由`nav`组件(选择器ID为`#nd-nav`)定义的, FumaDocs的默认Header整体分为左右两部分:"
+          },
+          {
+            "heading": "网站布局调整",
+            "content": "左侧为网站Logo+标题, 以及可以自定义的菜单栏"
+          },
+          {
+            "heading": "网站布局调整",
+            "content": "右侧为可选搜索框, 然后是主题切换按钮, 然后是语言切换按钮, 然后是用户自定义的按钮, 最后是Github按钮链接"
+          },
+          {
+            "heading": "网站布局调整",
+            "content": "`LinkItemType`类型, 有关键字段`secondary`, 决定按钮是否在导航栏右侧"
+          },
+          {
+            "heading": "网站布局调整",
+            "content": "`LinkItemType`类型, 关键字段`type`, 定义为`custom`时, `children`就可以使用我们自己的组件了, 不过适配默认的样式风格会花点时间"
+          },
+          {
+            "heading": "自定义headeralpha",
+            "content": "当前自定义Header的方案处于Alpha阶段, 在flex多端适配上还存在问题, 请谨慎鉴用!"
+          },
+          {
+            "heading": "自定义headeralpha",
+            "content": "长期方案是基于FumaDocs的`nav`组件重写, 实现完全自定义的需求"
+          },
+          {
+            "heading": "自定义headeralpha",
+            "content": "更改Header右侧的按钮顺序, 使用自定义的搜索框、主题切换、语言切换、Github按钮组件, 然后全部定义为`type=custom secondary=true`的LinkItemType"
+          },
+          {
+            "heading": "自定义headeralpha",
+            "content": "默认Header的样式是写死的, 总是悬浮并且和顶部有缝隙, 在滚动页面时会在缝隙处留下网页内容残影, 使用CSS样式强制覆盖"
+          },
+          {
+            "heading": "自定义headeralpha",
+            "content": "默认Banner的样式也是写死的, 对于动态配置Banner支持不够, 也可使用CSS样式强制覆盖, 参见下文的css文本部分"
+          },
+          {
+            "heading": "自定义组件",
+            "content": "前面已经详细分析过FumaDocs对于整个mdx处理的完整流程, 整体分为mdx解析、mdx组件生成、mdx组件渲染三个阶段"
+          },
+          {
+            "heading": "自定义组件",
+            "content": "这三个阶段我们都可以自定义, 只不过FumaDocs有一些默认顺序是固定的, 完全复写成本代价比较高"
+          },
+          {
+            "heading": "自定义组件",
+            "content": "因此, 我们优先使用FumaDocs提供的扩展口, 如果实在不够用, 再考虑自定义组件"
+          },
+          {
+            "heading": "自定义样式组件",
+            "content": "当需要特殊展示某些内容, 或者更本质一点, 包装mdx里的html代码块: 提效或者美颜, 此时自定义组件就很方便了"
+          },
+          {
+            "heading": "自定义样式组件",
+            "content": "Fuma通过`mdx-components.tsx`提供了易用的组件扩展, 我们只需要关注自定义组件的入参和html代码转换逻辑即可"
+          },
+          {
+            "heading": "自定义流程处理插件",
+            "content": "当涉及到mdx原始数据解析时, 我们就需要自定义流程处理插件, 例如在`source.config.ts`中配置FumaDocs提供的remark/rehype插件"
+          },
+          {
+            "heading": "自定义流程处理插件",
+            "content": "FomaDocs提供了比较丰富的remark/rehype插件, 我们可以仿照它的处理方式自己写一个插件, 然后配置到`source.config.ts`中"
+          },
+          {
+            "heading": "自定义流程处理插件",
+            "content": "但现在我们要做一个稍微难一点事情, 就是魔改FumaDocs的插件默认行为:"
+          },
+          {
+            "heading": "自定义流程处理插件",
+            "content": "现在FumaDocs的目录标题解析参考了Clerk的样式处理, 但属于阉割版本的: 步骤组件的标题只在正文中处理, 没有在目录上渲染出步骤的⭕️"
+          },
+          {
+            "heading": "自定义流程处理插件",
+            "content": "通过源码分析, FumaDocs的`remark-mdx-steps`插件就是用来处理正文步骤渲染的, 而`remark-heading`插件是在之后默认执行的, 它生成slug数据为魔改目录提供了可能"
+          },
+          {
+            "heading": "自定义流程处理插件",
+            "content": "然后`toc-clerk.tsx`组件会根据`remark-heading`生成的slug数据, 渲染生成最终的目录效果"
+          },
+          {
+            "heading": "自定义流程处理插件",
+            "content": "魔改后的`toc-clerk.tsx`组件, 会根据`remark-heading`插件生成的标题数据, 渲染生成最终的步骤⭕️效果"
+          },
+          {
+            "heading": "自定义流程处理插件",
+            "content": "魔改的流程如下:"
+          },
+          {
+            "heading": "4-准备补丁文件",
+            "content": "一般会有3个文件: `XXX.js`, `XXX.d.ts`, `XXX.d.tsx`"
+          },
+          {
+            "heading": "4-准备补丁文件",
+            "content": "文件: `node_modules/fumadocs/dist/src/components/toc-clerk.js`"
+          },
+          {
+            "heading": "4-准备补丁文件",
+            "content": "文件: `node_modules/fumadocs/dist/src/components/toc-clerk.d.ts`"
+          },
+          {
+            "heading": "4-准备补丁文件",
+            "content": "文件: `node_modules/fumadocs/dist/src/components/toc-clerk.d.tsx`"
+          },
+          {
+            "heading": "4-准备补丁文件",
+            "content": "拷贝到单独的文件夹中, 方便后续替换"
+          },
+          {
+            "heading": "1-清理项目环境",
+            "content": "清理项目环境, 删除node\\_modules、pnpm-lock.yaml"
+          },
+          {
+            "heading": "4-补丁替换",
+            "content": "补丁文件覆盖替换`node_modules/fumadocs/dist/src/components/toc-clerk.js`"
+          },
+          {
+            "heading": "4-补丁替换",
+            "content": "补丁文件覆盖替换`node_modules/fumadocs/dist/src/components/toc-clerk.d.ts`"
+          },
+          {
+            "heading": "4-补丁替换",
+            "content": "补丁文件覆盖替换`node_modules/fumadocs/dist/src/components/toc-clerk.d.tsx`"
+          },
+          {
+            "heading": "5-提交补丁",
+            "content": "提交补丁后, 会生成一个补丁文件, 文件名类似`fumadocs-ui-15.3.3-patch-1.patch`"
+          },
+          {
+            "heading": "5-提交补丁",
+            "content": "同时`package.json`中也会有`pnpm.patchedDependencies`字段, 记录了补丁文件的路径信息"
+          },
+          {
+            "heading": "6-验证补丁",
+            "content": "再一次清理项目环境, 删除node\\_modules、pnpm-lock.yaml"
+          },
+          {
+            "heading": "6-验证补丁",
+            "content": "再次重装依赖"
+          },
+          {
+            "heading": "6-验证补丁",
+            "content": "启动项目, 验证补丁效果: 但你查看本文档时, 就能看到正文和目录上都有对应的步骤⭕️效果"
+          },
+          {
+            "heading": "7-done",
+            "content": "在不升级FumaDocs版本的前提下, 该补丁会一直生效, 重装环境时会自动应用, 无需再管了"
+          },
+          {
+            "heading": "7-done",
+            "content": "魔改源码打补丁的方案, 在FumaDocs升级时会失效, 需要重新魔改"
+          },
+          {
+            "heading": "7-done",
+            "content": "**因此, 强烈推荐给FumaDocs官方咨询、讨论、提PR**, 让FumaDocs也越发好用!"
+          },
+          {
+            "heading": "问题描述",
+            "content": "在将包含 Fumadocs 的 Next.js 应用部署到 Vercel 后, 一个用于提取 MDX 页面内容的 API 路由 (`/api/*/llm-content`), 在本地开发时工作正常"
+          },
+          {
+            "heading": "问题描述",
+            "content": "但在 Vercel 的 Serverless Function 环境中持续抛出 `ENOENT: no such file or directory` 错误"
+          },
+          {
+            "heading": "问题描述",
+            "content": "错误日志指示, 系统尝试打开类似 `/vercel/path0/src/mdx/docs/...` 的路径, 这是一个构建时的绝对路径, 在运行时无效"
+          },
+          {
+            "heading": "分析过程",
+            "content": "初步怀疑 `remark` 插件: 最初认为问题出在 `getLLMText` 函数中使用的 `remark` 插件链（如 `remark-include`, `remark-docgen` 等）在运行时试图访问文件系统"
+          },
+          {
+            "heading": "分析过程",
+            "content": "简化 `remark` 插件: 逐步移除了这些可能导致问题的插件, 但错误依旧"
+          },
+          {
+            "heading": "分析过程",
+            "content": "日志诊断 `page` 对象: 通过在 API 路由中添加详细日志, 发现在尝试访问 `page.data.content` 属性（由 `docsSource.getPage()` 返回）时, 错误就会发生。这表明 Fumadocs 在运行时延迟加载此属性, 并错误地使用了构建时的文件路径"
+          },
+          {
+            "heading": "分析过程",
+            "content": "确认元数据可访问: 测试表明, 访问 `page.data.title` 等其他元数据是安全的, 不会触发文件读取错误"
+          },
+          {
+            "heading": "解决方案",
+            "content": "核心解决方案是避免在 API 路由运行时让 Fumadocs 的内部机制去加载文件内容, 而是由我们主动、正确地读取文件"
+          },
+          {
+            "heading": "1-nextconfigts配置",
+            "content": "确保 MDX 文件被打包到 Vercel Serverless Function:"
+          },
+          {
+            "heading": "1-nextconfigts配置",
+            "content": "修改 `next.config.ts`, 在顶层配置中添加 `outputFileTracingIncludes`, 明确指定将 `src/mdx/docs/**/*` 目录下的所有文件包含在 `/api/*/llm-content` 路由的部署包中"
+          },
+          {
+            "heading": "2-getllmtext函数",
+            "content": "修改 `getLLMText` 函数 (`src/lib/get-llm-text.ts`):"
+          },
+          {
+            "heading": "2-getllmtext函数",
+            "content": "更改函数签名, 使其接受 MDX 内容字符串、标题和描述作为参数: `async function getLLMText(mdxContent: string, title?: string, description?: string)`"
+          },
+          {
+            "heading": "2-getllmtext函数",
+            "content": "内部 `remark` 处理器使用简化的插件集 (`remark-frontmatter`, `remark-remove-frontmatter`, `remark-mdx`, `remark-gfm`), 仅处理传入的字符串内容"
+          },
+          {
+            "heading": "3-api-路由",
+            "content": "修改 API 路由 (`src/app/api/legal/llm-content/route.ts`):"
+          },
+          {
+            "heading": "3-api-路由",
+            "content": "调用 `docsSource.getPage(slug, locale)` 获取 `page` 对象, 并从中安全地提取 `title` 和 `description`"
+          },
+          {
+            "heading": "3-api-路由",
+            "content": "从 `page.data._file.path` 获取 MDX 文件的相对路径"
+          },
+          {
+            "heading": "3-api-路由",
+            "content": "使用 Node.js 的 `path.join(process.cwd(), 'src', 'mdx', 'docs', relativeMdxFilePath)` 构造在 Vercel 运行时环境中的正确绝对路径（`process.cwd()` 在 Vercel Serverless Function 中通常是 `/var/task`）"
+          },
+          {
+            "heading": "3-api-路由",
+            "content": "使用 `fs.readFileSync(absoluteFilePath, 'utf-8')` 同步读取文件内容"
+          },
+          {
+            "heading": "3-api-路由",
+            "content": "将手动读取到的 `mdxContent` 字符串以及 `title` 和 `description` 传递给更新后的 `getLLMText` 函数"
+          },
+          {
+            "heading": "3-api-路由",
+            "content": "包含详细的错误处理和日志记录, 特别是在文件读取失败时, 会尝试列出相关目录内容以辅助调试"
+          }
+        ],
+        "headings": [
+          {
+            "id": "fumadocs接入",
+            "content": "FumaDocs接入"
+          },
+          {
+            "id": "基础接入",
+            "content": "基础接入"
+          },
+          {
+            "id": "核心流程处理",
+            "content": "核心流程处理"
+          },
+          {
+            "id": "自定义流程处理",
+            "content": "自定义流程处理"
+          },
+          {
+            "id": "网站布局调整",
+            "content": "网站布局调整"
+          },
+          {
+            "id": "自定义headeralpha",
+            "content": "自定义Header(Alpha)"
+          },
+          {
+            "id": "自定义组件",
+            "content": "自定义组件"
+          },
+          {
+            "id": "自定义样式组件",
+            "content": "自定义样式组件"
+          },
+          {
+            "id": "自定义流程处理插件",
+            "content": "自定义流程处理插件"
+          },
+          {
+            "id": "源码魔改",
+            "content": "源码魔改"
+          },
+          {
+            "id": "1-fork源码",
+            "content": "Fork源码"
+          },
+          {
+            "id": "2-修改组件源码",
+            "content": "修改组件源码"
+          },
+          {
+            "id": "3-再次构建-生成js文件",
+            "content": "再次构建, 生成js文件"
+          },
+          {
+            "id": "4-准备补丁文件",
+            "content": "准备补丁文件"
+          },
+          {
+            "id": "应用补丁",
+            "content": "应用补丁"
+          },
+          {
+            "id": "1-清理项目环境",
+            "content": "清理项目环境"
+          },
+          {
+            "id": "2-重装依赖",
+            "content": "重装依赖"
+          },
+          {
+            "id": "3-开始pnpm-patch会话",
+            "content": "开始pnpm patch会话"
+          },
+          {
+            "id": "4-补丁替换",
+            "content": "补丁替换"
+          },
+          {
+            "id": "5-提交补丁",
+            "content": "提交补丁"
+          },
+          {
+            "id": "6-验证补丁",
+            "content": "验证补丁"
+          },
+          {
+            "id": "7-done",
+            "content": "Done"
+          },
+          {
+            "id": "vercel中文件读取报错问题",
+            "content": "Vercel中文件读取报错问题"
+          },
+          {
+            "id": "问题描述",
+            "content": "问题描述"
+          },
+          {
+            "id": "分析过程",
+            "content": "分析过程"
+          },
+          {
+            "id": "解决方案",
+            "content": "解决方案"
+          },
+          {
+            "id": "1-nextconfigts配置",
+            "content": "Next.config.ts配置"
+          },
+          {
+            "id": "2-getllmtext函数",
+            "content": "getLLMText函数"
+          },
+          {
+            "id": "3-api-路由",
+            "content": "API 路由"
+          }
+        ]
+      },
+      "compiled": {
+        "type": "js",
+        "code": "\"use strict\";\nconst {Fragment: _Fragment, jsx: _jsx, jsxs: _jsxs} = arguments[0];\nlet toc = [{\n  depth: 2,\n  url: \"#fumadocs接入\",\n  title: _jsx(_Fragment, {\n    children: \"FumaDocs接入\"\n  })\n}, {\n  depth: 3,\n  url: \"#基础接入\",\n  title: _jsx(_Fragment, {\n    children: \"基础接入\"\n  })\n}, {\n  depth: 3,\n  url: \"#核心流程处理\",\n  title: _jsx(_Fragment, {\n    children: \"核心流程处理\"\n  })\n}, {\n  depth: 3,\n  url: \"#自定义流程处理\",\n  title: _jsx(_Fragment, {\n    children: \"自定义流程处理\"\n  })\n}, {\n  depth: 2,\n  url: \"#网站布局调整\",\n  title: _jsx(_Fragment, {\n    children: \"网站布局调整\"\n  })\n}, {\n  depth: 3,\n  url: \"#自定义headeralpha\",\n  title: _jsx(_Fragment, {\n    children: \"自定义Header(Alpha)\"\n  })\n}, {\n  depth: 2,\n  url: \"#自定义组件\",\n  title: _jsx(_Fragment, {\n    children: \"自定义组件\"\n  })\n}, {\n  depth: 3,\n  url: \"#自定义样式组件\",\n  title: _jsx(_Fragment, {\n    children: \"自定义样式组件\"\n  })\n}, {\n  depth: 3,\n  url: \"#自定义流程处理插件\",\n  title: _jsx(_Fragment, {\n    children: \"自定义流程处理插件\"\n  })\n}, {\n  depth: 3,\n  url: \"#源码魔改\",\n  title: _jsx(_Fragment, {\n    children: \"源码魔改\"\n  })\n}, {\n  depth: 3,\n  url: \"#1-fork源码\",\n  title: _jsx(_Fragment, {\n    children: \"Fork源码\"\n  }),\n  _step: 1\n}, {\n  depth: 3,\n  url: \"#2-修改组件源码\",\n  title: _jsx(_Fragment, {\n    children: \"修改组件源码\"\n  }),\n  _step: 2\n}, {\n  depth: 3,\n  url: \"#3-再次构建-生成js文件\",\n  title: _jsx(_Fragment, {\n    children: \"再次构建, 生成js文件\"\n  }),\n  _step: 3\n}, {\n  depth: 3,\n  url: \"#4-准备补丁文件\",\n  title: _jsx(_Fragment, {\n    children: \"准备补丁文件\"\n  }),\n  _step: 4\n}, {\n  depth: 3,\n  url: \"#应用补丁\",\n  title: _jsx(_Fragment, {\n    children: \"应用补丁\"\n  })\n}, {\n  depth: 3,\n  url: \"#1-清理项目环境\",\n  title: _jsx(_Fragment, {\n    children: \"清理项目环境\"\n  }),\n  _step: 1\n}, {\n  depth: 3,\n  url: \"#2-重装依赖\",\n  title: _jsx(_Fragment, {\n    children: \"重装依赖\"\n  }),\n  _step: 2\n}, {\n  depth: 3,\n  url: \"#3-开始pnpm-patch会话\",\n  title: _jsx(_Fragment, {\n    children: \"开始pnpm patch会话\"\n  }),\n  _step: 3\n}, {\n  depth: 3,\n  url: \"#4-补丁替换\",\n  title: _jsx(_Fragment, {\n    children: \"补丁替换\"\n  }),\n  _step: 4\n}, {\n  depth: 3,\n  url: \"#5-提交补丁\",\n  title: _jsx(_Fragment, {\n    children: \"提交补丁\"\n  }),\n  _step: 5\n}, {\n  depth: 3,\n  url: \"#6-验证补丁\",\n  title: _jsx(_Fragment, {\n    children: \"验证补丁\"\n  }),\n  _step: 6\n}, {\n  depth: 3,\n  url: \"#7-done\",\n  title: _jsx(_Fragment, {\n    children: \"Done\"\n  }),\n  _step: 7\n}, {\n  depth: 2,\n  url: \"#vercel中文件读取报错问题\",\n  title: _jsx(_Fragment, {\n    children: \"Vercel中文件读取报错问题\"\n  })\n}, {\n  depth: 3,\n  url: \"#问题描述\",\n  title: _jsx(_Fragment, {\n    children: \"问题描述\"\n  })\n}, {\n  depth: 3,\n  url: \"#分析过程\",\n  title: _jsx(_Fragment, {\n    children: \"分析过程\"\n  })\n}, {\n  depth: 3,\n  url: \"#解决方案\",\n  title: _jsx(_Fragment, {\n    children: \"解决方案\"\n  })\n}, {\n  depth: 3,\n  url: \"#1-nextconfigts配置\",\n  title: _jsx(_Fragment, {\n    children: \"Next.config.ts配置\"\n  }),\n  _step: 1\n}, {\n  depth: 3,\n  url: \"#2-getllmtext函数\",\n  title: _jsx(_Fragment, {\n    children: \"getLLMText函数\"\n  }),\n  _step: 2\n}, {\n  depth: 3,\n  url: \"#3-api-路由\",\n  title: _jsx(_Fragment, {\n    children: \"API 路由\"\n  }),\n  _step: 3\n}];\nfunction _createMdxContent(props) {\n  const _components = {\n    a: \"a\",\n    code: \"code\",\n    div: \"div\",\n    h2: \"h2\",\n    h3: \"h3\",\n    li: \"li\",\n    ol: \"ol\",\n    p: \"p\",\n    pre: \"pre\",\n    span: \"span\",\n    strong: \"strong\",\n    ul: \"ul\",\n    ...props.components\n  }, {Callout, Fingerprint, Mermaid, Tab, Tabs, TrophyCard} = _components;\n  if (!Callout) _missingMdxReference(\"Callout\", true);\n  if (!Fingerprint) _missingMdxReference(\"Fingerprint\", true);\n  if (!Mermaid) _missingMdxReference(\"Mermaid\", true);\n  if (!Tab) _missingMdxReference(\"Tab\", true);\n  if (!Tabs) _missingMdxReference(\"Tabs\", true);\n  if (!TrophyCard) _missingMdxReference(\"TrophyCard\", true);\n  return _jsxs(_Fragment, {\n    children: [_jsx(_components.h2, {\n      id: \"fumadocs接入\",\n      children: \"FumaDocs接入\"\n    }), \"\\n\", _jsx(_components.h3, {\n      id: \"基础接入\",\n      children: \"基础接入\"\n    }), \"\\n\", _jsx(Callout, {\n      children: _jsxs(_components.p, {\n        children: [\"参照\", _jsx(_components.a, {\n          href: \"https://fumadocs.dev/docs/ui/manual-installation\",\n          children: \"官网文档\"\n        }), \", 完成基础环境配置\"]\n      })\n    }), \"\\n\", _jsx(_components.h3, {\n      id: \"核心流程处理\",\n      children: \"核心流程处理\"\n    }), \"\\n\", _jsx(Mermaid, {\n      title: \"FumaDocs处理流程\",\n      chart: \"\\nflowchart TD\\n%% 主流程\\nA[MDX] --> B[配置 source.config.ts]\\nB --> C[MDX解析/插件链]\\nC --> C1[Remark阶段 \\\\n MDAST]\\nC1 --> C2[Rehype阶段 \\\\n HAST]\\nC2 --> D[生成React组件]\\nD --> E[注册数据源 \\\\n source.ts]\\nE --> F[集成自定义渲染 \\\\n mdx-components.tsx]\\nF --> G[打包进前端应用]\\nG --> H[React组件渲染为HTML]\\nH --> I[最终网页展示]\\n\\n%% Remark 阶段细化\\nsubgraph R1[Remark插件链 \\\\n 操作MDAST]\\ndirection TB\\nR1a[remark-steps \\\\n 步骤识别/属性注入]\\nR1b[remark-heading \\\\n 提取标题/生成TOC]\\nR1c[其他remark插件 \\\\n 如gfm、math等]\\nend\\nC1 -- 依次执行 --> R1a\\nR1a --> R1b\\nR1b --> R1c\\nR1c --> C2\\n\\n%% Rehype 阶段细化\\nsubgraph R2[Rehype插件链 \\\\n 操作HAST]\\ndirection TB\\nR2a[rehype-slug \\\\n 标题id]\\nR2b[rehype-autolink-headings \\\\n 锚点]\\nR2c[rehype-toc \\\\n TOC生成/覆盖]\\nR2d[rehype-katex/其他HTML增强]\\nR2e[rehype-code \\\\n 代码高亮/代码块Transformer]\\nend\\nC2 -- 依次执行 --> R2a\\nR2a --> R2b\\nR2b --> R2c\\nR2c --> R2d\\nR2d --> R2e\\nR2e --> D\\n\\n%% 横向扩展（分组, 靠近主流程）\\nsubgraph S1[配置扩展]\\nB1[自定义schema/元数据]\\nend\\nsubgraph S2[解析扩展]\\nS2b[remark/rehype插件]\\nend\\nsubgraph S3[数据源扩展]\\nE1[生成index.ts]\\nend\\n\\nB -- 配置扩展 --> B1\\nC -- 语法扩展 --> S2b\\nE -- 索引扩展 --> E1\\n\\n%% 阶段分区\\nsubgraph 静态/编译阶段\\nB\\nC\\nC1\\nC2\\nD\\nE\\nF\\nG\\nend\\nsubgraph 运行时/SSR/SSG\\nH\\nI\\nend\\n\"\n    }), \"\\n\", _jsx(_components.h3, {\n      id: \"自定义流程处理\",\n      children: \"自定义流程处理\"\n    }), \"\\n\", _jsx(TrophyCard, {\n      title: \"结合上述流程, 从用户视角看, FumaDocs的扩展口\",\n      icon: _jsx(Fingerprint, {}),\n      children: _jsxs(_components.ul, {\n        children: [\"\\n\", _jsxs(_components.li, {\n          children: [_jsx(_components.code, {\n            children: \"src/lib/source-legal.ts\"\n          }), \" 路由+数据源+元数据处理, \", _jsx(_components.strong, {\n            children: \"内容如何被加载和路由\"\n          }), \", 侧重于HTML的主干结构\"]\n        }), \"\\n\", _jsxs(_components.li, {\n          children: [_jsx(_components.code, {\n            children: \"source.config.ts\"\n          }), \"插件链的配置扩展, \", _jsx(_components.strong, {\n            children: \"原始mdx内容如何被解析为React组件\"\n          }), \", 侧重于基础内容\"]\n        }), \"\\n\", _jsxs(_components.li, {\n          children: [_jsx(_components.code, {\n            children: \"src/components/mdx-components.tsx\"\n          }), \" React组件扩展, \", _jsx(_components.strong, {\n            children: \"组件如何被渲染\"\n          }), \", 侧重于样式和交互\"]\n        }), \"\\n\"]\n      })\n    }), \"\\n\", _jsx(_components.h2, {\n      id: \"网站布局调整\",\n      children: \"网站布局调整\"\n    }), \"\\n\", _jsx(_components.p, {\n      children: \"FumaDocs提供了几种基础布局, 这里补充一下导航菜单和按钮的排序规则\"\n    }), \"\\n\", _jsxs(_components.ul, {\n      children: [\"\\n\", _jsxs(_components.li, {\n        children: [\"整个导航是由\", _jsx(_components.code, {\n          children: \"nav\"\n        }), \"组件(选择器ID为\", _jsx(_components.code, {\n          children: \"#nd-nav\"\n        }), \")定义的, FumaDocs的默认Header整体分为左右两部分:\", \"\\n\", _jsxs(_components.ul, {\n          children: [\"\\n\", _jsx(_components.li, {\n            children: \"左侧为网站Logo+标题, 以及可以自定义的菜单栏\"\n          }), \"\\n\", _jsx(_components.li, {\n            children: \"右侧为可选搜索框, 然后是主题切换按钮, 然后是语言切换按钮, 然后是用户自定义的按钮, 最后是Github按钮链接\"\n          }), \"\\n\"]\n        }), \"\\n\"]\n      }), \"\\n\", _jsxs(_components.li, {\n        children: [_jsx(_components.code, {\n          children: \"LinkItemType\"\n        }), \"类型, 有关键字段\", _jsx(_components.code, {\n          children: \"secondary\"\n        }), \", 决定按钮是否在导航栏右侧\"]\n      }), \"\\n\", _jsxs(_components.li, {\n        children: [_jsx(_components.code, {\n          children: \"LinkItemType\"\n        }), \"类型, 关键字段\", _jsx(_components.code, {\n          children: \"type\"\n        }), \", 定义为\", _jsx(_components.code, {\n          children: \"custom\"\n        }), \"时, \", _jsx(_components.code, {\n          children: \"children\"\n        }), \"就可以使用我们自己的组件了, 不过适配默认的样式风格会花点时间\"]\n      }), \"\\n\"]\n    }), \"\\n\", _jsx(_components.h3, {\n      id: \"自定义headeralpha\",\n      children: \"自定义Header(Alpha)\"\n    }), \"\\n\", _jsxs(Callout, {\n      title: \"Alpha\",\n      type: \"warn\",\n      children: [_jsx(_components.p, {\n        children: \"当前自定义Header的方案处于Alpha阶段, 在flex多端适配上还存在问题, 请谨慎鉴用!\"\n      }), _jsxs(_components.p, {\n        children: [\"长期方案是基于FumaDocs的\", _jsx(_components.code, {\n          children: \"nav\"\n        }), \"组件重写, 实现完全自定义的需求\"]\n      })]\n    }), \"\\n\", _jsxs(_components.ul, {\n      children: [\"\\n\", _jsxs(_components.li, {\n        children: [\"更改Header右侧的按钮顺序, 使用自定义的搜索框、主题切换、语言切换、Github按钮组件, 然后全部定义为\", _jsx(_components.code, {\n          children: \"type=custom secondary=true\"\n        }), \"的LinkItemType\"]\n      }), \"\\n\", _jsx(_components.li, {\n        children: \"默认Header的样式是写死的, 总是悬浮并且和顶部有缝隙, 在滚动页面时会在缝隙处留下网页内容残影, 使用CSS样式强制覆盖\"\n      }), \"\\n\", _jsx(_components.li, {\n        children: \"默认Banner的样式也是写死的, 对于动态配置Banner支持不够, 也可使用CSS样式强制覆盖, 参见下文的css文本部分\"\n      }), \"\\n\"]\n    }), \"\\n\", _jsx(_components.h2, {\n      id: \"自定义组件\",\n      children: \"自定义组件\"\n    }), \"\\n\", _jsxs(_components.ul, {\n      children: [\"\\n\", _jsx(_components.li, {\n        children: \"前面已经详细分析过FumaDocs对于整个mdx处理的完整流程, 整体分为mdx解析、mdx组件生成、mdx组件渲染三个阶段\"\n      }), \"\\n\", _jsx(_components.li, {\n        children: \"这三个阶段我们都可以自定义, 只不过FumaDocs有一些默认顺序是固定的, 完全复写成本代价比较高\"\n      }), \"\\n\", _jsx(_components.li, {\n        children: \"因此, 我们优先使用FumaDocs提供的扩展口, 如果实在不够用, 再考虑自定义组件\"\n      }), \"\\n\"]\n    }), \"\\n\", _jsx(_components.h3, {\n      id: \"自定义样式组件\",\n      children: \"自定义样式组件\"\n    }), \"\\n\", _jsxs(_components.ul, {\n      children: [\"\\n\", _jsx(_components.li, {\n        children: \"当需要特殊展示某些内容, 或者更本质一点, 包装mdx里的html代码块: 提效或者美颜, 此时自定义组件就很方便了\"\n      }), \"\\n\", _jsxs(_components.li, {\n        children: [\"Fuma通过\", _jsx(_components.code, {\n          children: \"mdx-components.tsx\"\n        }), \"提供了易用的组件扩展, 我们只需要关注自定义组件的入参和html代码转换逻辑即可\"]\n      }), \"\\n\"]\n    }), \"\\n\", _jsx(_components.h3, {\n      id: \"自定义流程处理插件\",\n      children: \"自定义流程处理插件\"\n    }), \"\\n\", _jsxs(_components.ul, {\n      children: [\"\\n\", _jsxs(_components.li, {\n        children: [\"当涉及到mdx原始数据解析时, 我们就需要自定义流程处理插件, 例如在\", _jsx(_components.code, {\n          children: \"source.config.ts\"\n        }), \"中配置FumaDocs提供的remark/rehype插件\"]\n      }), \"\\n\", _jsxs(_components.li, {\n        children: [\"FomaDocs提供了比较丰富的remark/rehype插件, 我们可以仿照它的处理方式自己写一个插件, 然后配置到\", _jsx(_components.code, {\n          children: \"source.config.ts\"\n        }), \"中\"]\n      }), \"\\n\", _jsxs(_components.li, {\n        children: [\"但现在我们要做一个稍微难一点事情, 就是魔改FumaDocs的插件默认行为:\", \"\\n\", _jsxs(_components.ul, {\n          children: [\"\\n\", _jsx(_components.li, {\n            children: \"现在FumaDocs的目录标题解析参考了Clerk的样式处理, 但属于阉割版本的: 步骤组件的标题只在正文中处理, 没有在目录上渲染出步骤的⭕️\"\n          }), \"\\n\", _jsxs(_components.li, {\n            children: [\"通过源码分析, FumaDocs的\", _jsx(_components.code, {\n              children: \"remark-mdx-steps\"\n            }), \"插件就是用来处理正文步骤渲染的, 而\", _jsx(_components.code, {\n              children: \"remark-heading\"\n            }), \"插件是在之后默认执行的, 它生成slug数据为魔改目录提供了可能\"]\n          }), \"\\n\", _jsxs(_components.li, {\n            children: [\"然后\", _jsx(_components.code, {\n              children: \"toc-clerk.tsx\"\n            }), \"组件会根据\", _jsx(_components.code, {\n              children: \"remark-heading\"\n            }), \"生成的slug数据, 渲染生成最终的目录效果\"]\n          }), \"\\n\", _jsxs(_components.li, {\n            children: [\"魔改后的\", _jsx(_components.code, {\n              children: \"toc-clerk.tsx\"\n            }), \"组件, 会根据\", _jsx(_components.code, {\n              children: \"remark-heading\"\n            }), \"插件生成的标题数据, 渲染生成最终的步骤⭕️效果\"]\n          }), \"\\n\"]\n        }), \"\\n\"]\n      }), \"\\n\", _jsx(_components.li, {\n        children: \"魔改的流程如下:\"\n      }), \"\\n\"]\n    }), \"\\n\", _jsxs(Tabs, {\n      items: [\"源码魔改\", \"应用补丁\"],\n      children: [_jsxs(Tab, {\n        value: \"源码魔改\",\n        children: [_jsx(_components.h3, {\n          id: \"源码魔改\",\n          children: \"源码魔改\"\n        }), _jsxs(_components.div, {\n          className: \"fd-steps\",\n          children: [_jsxs(_components.div, {\n            className: \"fd-step\",\n            children: [_jsx(_components.h3, {\n              id: \"1-fork源码\",\n              \"data-fd-step\": \"1\",\n              children: \"Fork源码\"\n            }), _jsx(_Fragment, {\n              children: _jsx(_components.pre, {\n                className: \"shiki shiki-themes catppuccin-latte catppuccin-mocha\",\n                style: {\n                  \"--shiki-light\": \"#4c4f69\",\n                  \"--shiki-dark\": \"#cdd6f4\",\n                  \"--shiki-light-bg\": \"#eff1f5\",\n                  \"--shiki-dark-bg\": \"#1e1e2e\"\n                },\n                tabIndex: \"0\",\n                title: \"环境准备\",\n                \"data-language\": \"zsh\",\n                icon: \"<svg viewBox=\\\"0 0 24 24\\\"><path d=\\\"m 4,4 a 1,1 0 0 0 -0.7070312,0.2929687 1,1 0 0 0 0,1.4140625 L 8.5859375,11 3.2929688,16.292969 a 1,1 0 0 0 0,1.414062 1,1 0 0 0 1.4140624,0 l 5.9999998,-6 a 1.0001,1.0001 0 0 0 0,-1.414062 L 4.7070312,4.2929687 A 1,1 0 0 0 4,4 Z m 8,14 a 1,1 0 0 0 -1,1 1,1 0 0 0 1,1 h 8 a 1,1 0 0 0 1,-1 1,1 0 0 0 -1,-1 z\\\" fill=\\\"currentColor\\\" /></svg>\",\n                children: _jsxs(_components.code, {\n                  children: [_jsxs(_components.span, {\n                    className: \"line\",\n                    children: [_jsx(_components.span, {\n                      style: {\n                        \"--shiki-light\": \"#1E66F5\",\n                        \"--shiki-light-font-style\": \"italic\",\n                        \"--shiki-dark\": \"#89B4FA\",\n                        \"--shiki-dark-font-style\": \"italic\"\n                      },\n                      children: \"git\"\n                    }), _jsx(_components.span, {\n                      style: {\n                        \"--shiki-light\": \"#40A02B\",\n                        \"--shiki-dark\": \"#A6E3A1\"\n                      },\n                      children: \" clone\"\n                    }), _jsx(_components.span, {\n                      style: {\n                        \"--shiki-light\": \"#40A02B\",\n                        \"--shiki-dark\": \"#A6E3A1\"\n                      },\n                      children: \" https://github.com/fumadocs/fumadocs.git\"\n                    })]\n                  }), \"\\n\", _jsx(_components.span, {\n                    className: \"line\",\n                    children: _jsx(_components.span, {\n                      style: {\n                        \"--shiki-light\": \"#7C7F93\",\n                        \"--shiki-light-font-style\": \"italic\",\n                        \"--shiki-dark\": \"#9399B2\",\n                        \"--shiki-dark-font-style\": \"italic\"\n                      },\n                      children: \"# 进入根目录\"\n                    })\n                  }), \"\\n\", _jsxs(_components.span, {\n                    className: \"line\",\n                    children: [_jsx(_components.span, {\n                      style: {\n                        \"--shiki-light\": \"#D20F39\",\n                        \"--shiki-light-font-style\": \"italic\",\n                        \"--shiki-dark\": \"#F38BA8\",\n                        \"--shiki-dark-font-style\": \"italic\"\n                      },\n                      children: \"cd\"\n                    }), _jsx(_components.span, {\n                      style: {\n                        \"--shiki-light\": \"#40A02B\",\n                        \"--shiki-dark\": \"#A6E3A1\"\n                      },\n                      children: \" fumadocs\"\n                    })]\n                  }), \"\\n\", _jsx(_components.span, {\n                    className: \"line\",\n                    children: _jsx(_components.span, {\n                      style: {\n                        \"--shiki-light\": \"#7C7F93\",\n                        \"--shiki-light-font-style\": \"italic\",\n                        \"--shiki-dark\": \"#9399B2\",\n                        \"--shiki-dark-font-style\": \"italic\"\n                      },\n                      children: \"# 安装依赖\"\n                    })\n                  }), \"\\n\", _jsxs(_components.span, {\n                    className: \"line\",\n                    children: [_jsx(_components.span, {\n                      style: {\n                        \"--shiki-light\": \"#1E66F5\",\n                        \"--shiki-light-font-style\": \"italic\",\n                        \"--shiki-dark\": \"#89B4FA\",\n                        \"--shiki-dark-font-style\": \"italic\"\n                      },\n                      children: \"pnpm\"\n                    }), _jsx(_components.span, {\n                      style: {\n                        \"--shiki-light\": \"#40A02B\",\n                        \"--shiki-dark\": \"#A6E3A1\"\n                      },\n                      children: \" install\"\n                    })]\n                  }), \"\\n\", _jsx(_components.span, {\n                    className: \"line\",\n                    children: _jsx(_components.span, {\n                      style: {\n                        \"--shiki-light\": \"#7C7F93\",\n                        \"--shiki-light-font-style\": \"italic\",\n                        \"--shiki-dark\": \"#9399B2\",\n                        \"--shiki-dark-font-style\": \"italic\"\n                      },\n                      children: \"# 构建\"\n                    })\n                  }), \"\\n\", _jsxs(_components.span, {\n                    className: \"line\",\n                    children: [_jsx(_components.span, {\n                      style: {\n                        \"--shiki-light\": \"#1E66F5\",\n                        \"--shiki-light-font-style\": \"italic\",\n                        \"--shiki-dark\": \"#89B4FA\",\n                        \"--shiki-dark-font-style\": \"italic\"\n                      },\n                      children: \"pnpm\"\n                    }), _jsx(_components.span, {\n                      style: {\n                        \"--shiki-light\": \"#40A02B\",\n                        \"--shiki-dark\": \"#A6E3A1\"\n                      },\n                      children: \" build\"\n                    })]\n                  }), \"\\n\", _jsx(_components.span, {\n                    className: \"line\",\n                    children: _jsx(_components.span, {\n                      style: {\n                        \"--shiki-light\": \"#7C7F93\",\n                        \"--shiki-light-font-style\": \"italic\",\n                        \"--shiki-dark\": \"#9399B2\",\n                        \"--shiki-dark-font-style\": \"italic\"\n                      },\n                      children: \"# 启动项目\"\n                    })\n                  }), \"\\n\", _jsxs(_components.span, {\n                    className: \"line\",\n                    children: [_jsx(_components.span, {\n                      style: {\n                        \"--shiki-light\": \"#1E66F5\",\n                        \"--shiki-light-font-style\": \"italic\",\n                        \"--shiki-dark\": \"#89B4FA\",\n                        \"--shiki-dark-font-style\": \"italic\"\n                      },\n                      children: \"pnpm\"\n                    }), _jsx(_components.span, {\n                      style: {\n                        \"--shiki-light\": \"#40A02B\",\n                        \"--shiki-dark\": \"#A6E3A1\"\n                      },\n                      children: \" --filter=docs\"\n                    }), _jsx(_components.span, {\n                      style: {\n                        \"--shiki-light\": \"#40A02B\",\n                        \"--shiki-dark\": \"#A6E3A1\"\n                      },\n                      children: \" dev\"\n                    })]\n                  })]\n                })\n              })\n            })]\n          }), _jsx(_components.div, {\n            className: \"fd-step\",\n            children: _jsx(_components.h3, {\n              id: \"2-修改组件源码\",\n              \"data-fd-step\": \"2\",\n              children: \"修改组件源码\"\n            })\n          }), _jsxs(_components.div, {\n            className: \"fd-step\",\n            children: [_jsx(_components.h3, {\n              id: \"3-再次构建-生成js文件\",\n              \"data-fd-step\": \"3\",\n              children: \"再次构建, 生成js文件\"\n            }), _jsx(_Fragment, {\n              children: _jsx(_components.pre, {\n                className: \"shiki shiki-themes catppuccin-latte catppuccin-mocha\",\n                style: {\n                  \"--shiki-light\": \"#4c4f69\",\n                  \"--shiki-dark\": \"#cdd6f4\",\n                  \"--shiki-light-bg\": \"#eff1f5\",\n                  \"--shiki-dark-bg\": \"#1e1e2e\"\n                },\n                tabIndex: \"0\",\n                title: \"打包构建\",\n                \"data-language\": \"zsh\",\n                icon: \"<svg viewBox=\\\"0 0 24 24\\\"><path d=\\\"m 4,4 a 1,1 0 0 0 -0.7070312,0.2929687 1,1 0 0 0 0,1.4140625 L 8.5859375,11 3.2929688,16.292969 a 1,1 0 0 0 0,1.414062 1,1 0 0 0 1.4140624,0 l 5.9999998,-6 a 1.0001,1.0001 0 0 0 0,-1.414062 L 4.7070312,4.2929687 A 1,1 0 0 0 4,4 Z m 8,14 a 1,1 0 0 0 -1,1 1,1 0 0 0 1,1 h 8 a 1,1 0 0 0 1,-1 1,1 0 0 0 -1,-1 z\\\" fill=\\\"currentColor\\\" /></svg>\",\n                children: _jsx(_components.code, {\n                  children: _jsxs(_components.span, {\n                    className: \"line\",\n                    children: [_jsx(_components.span, {\n                      style: {\n                        \"--shiki-light\": \"#1E66F5\",\n                        \"--shiki-light-font-style\": \"italic\",\n                        \"--shiki-dark\": \"#89B4FA\",\n                        \"--shiki-dark-font-style\": \"italic\"\n                      },\n                      children: \"pnpm\"\n                    }), _jsx(_components.span, {\n                      style: {\n                        \"--shiki-light\": \"#40A02B\",\n                        \"--shiki-dark\": \"#A6E3A1\"\n                      },\n                      children: \" build\"\n                    })]\n                  })\n                })\n              })\n            })]\n          }), _jsxs(_components.div, {\n            className: \"fd-step\",\n            children: [_jsx(_components.h3, {\n              id: \"4-准备补丁文件\",\n              \"data-fd-step\": \"4\",\n              children: \"准备补丁文件\"\n            }), _jsxs(_components.ul, {\n              children: [\"\\n\", _jsxs(_components.li, {\n                children: [\"一般会有3个文件: \", _jsx(_components.code, {\n                  children: \"XXX.js\"\n                }), \", \", _jsx(_components.code, {\n                  children: \"XXX.d.ts\"\n                }), \", \", _jsx(_components.code, {\n                  children: \"XXX.d.tsx\"\n                })]\n              }), \"\\n\", _jsxs(_components.li, {\n                children: [\"文件: \", _jsx(_components.code, {\n                  children: \"node_modules/fumadocs/dist/src/components/toc-clerk.js\"\n                })]\n              }), \"\\n\", _jsxs(_components.li, {\n                children: [\"文件: \", _jsx(_components.code, {\n                  children: \"node_modules/fumadocs/dist/src/components/toc-clerk.d.ts\"\n                })]\n              }), \"\\n\", _jsxs(_components.li, {\n                children: [\"文件: \", _jsx(_components.code, {\n                  children: \"node_modules/fumadocs/dist/src/components/toc-clerk.d.tsx\"\n                })]\n              }), \"\\n\", _jsx(_components.li, {\n                children: \"拷贝到单独的文件夹中, 方便后续替换\"\n              }), \"\\n\"]\n            })]\n          })]\n        })]\n      }), _jsxs(Tab, {\n        value: \"应用补丁\",\n        children: [_jsx(_components.h3, {\n          id: \"应用补丁\",\n          children: \"应用补丁\"\n        }), _jsxs(_components.div, {\n          className: \"fd-steps\",\n          children: [_jsxs(_components.div, {\n            className: \"fd-step\",\n            children: [_jsx(_components.h3, {\n              id: \"1-清理项目环境\",\n              \"data-fd-step\": \"1\",\n              children: \"清理项目环境\"\n            }), _jsxs(_components.ul, {\n              children: [\"\\n\", _jsx(_components.li, {\n                children: \"清理项目环境, 删除node_modules、pnpm-lock.yaml\"\n              }), \"\\n\"]\n            })]\n          }), _jsxs(_components.div, {\n            className: \"fd-step\",\n            children: [_jsx(_components.h3, {\n              id: \"2-重装依赖\",\n              \"data-fd-step\": \"2\",\n              children: \"重装依赖\"\n            }), _jsx(_Fragment, {\n              children: _jsx(_components.pre, {\n                className: \"shiki shiki-themes catppuccin-latte catppuccin-mocha\",\n                style: {\n                  \"--shiki-light\": \"#4c4f69\",\n                  \"--shiki-dark\": \"#cdd6f4\",\n                  \"--shiki-light-bg\": \"#eff1f5\",\n                  \"--shiki-dark-bg\": \"#1e1e2e\"\n                },\n                tabIndex: \"0\",\n                title: \"重装依赖\",\n                \"data-language\": \"zsh\",\n                icon: \"<svg viewBox=\\\"0 0 24 24\\\"><path d=\\\"m 4,4 a 1,1 0 0 0 -0.7070312,0.2929687 1,1 0 0 0 0,1.4140625 L 8.5859375,11 3.2929688,16.292969 a 1,1 0 0 0 0,1.414062 1,1 0 0 0 1.4140624,0 l 5.9999998,-6 a 1.0001,1.0001 0 0 0 0,-1.414062 L 4.7070312,4.2929687 A 1,1 0 0 0 4,4 Z m 8,14 a 1,1 0 0 0 -1,1 1,1 0 0 0 1,1 h 8 a 1,1 0 0 0 1,-1 1,1 0 0 0 -1,-1 z\\\" fill=\\\"currentColor\\\" /></svg>\",\n                children: _jsx(_components.code, {\n                  children: _jsxs(_components.span, {\n                    className: \"line\",\n                    children: [_jsx(_components.span, {\n                      style: {\n                        \"--shiki-light\": \"#1E66F5\",\n                        \"--shiki-light-font-style\": \"italic\",\n                        \"--shiki-dark\": \"#89B4FA\",\n                        \"--shiki-dark-font-style\": \"italic\"\n                      },\n                      children: \"pnpm\"\n                    }), _jsx(_components.span, {\n                      style: {\n                        \"--shiki-light\": \"#40A02B\",\n                        \"--shiki-dark\": \"#A6E3A1\"\n                      },\n                      children: \" install\"\n                    })]\n                  })\n                })\n              })\n            })]\n          }), _jsxs(_components.div, {\n            className: \"fd-step\",\n            children: [_jsx(_components.h3, {\n              id: \"3-开始pnpm-patch会话\",\n              \"data-fd-step\": \"3\",\n              children: \"开始pnpm patch会话\"\n            }), _jsx(_Fragment, {\n              children: _jsx(_components.pre, {\n                className: \"shiki shiki-themes catppuccin-latte catppuccin-mocha\",\n                style: {\n                  \"--shiki-light\": \"#4c4f69\",\n                  \"--shiki-dark\": \"#cdd6f4\",\n                  \"--shiki-light-bg\": \"#eff1f5\",\n                  \"--shiki-dark-bg\": \"#1e1e2e\"\n                },\n                tabIndex: \"0\",\n                title: \"pnpm patch\",\n                \"data-language\": \"zsh\",\n                icon: \"<svg viewBox=\\\"0 0 24 24\\\"><path d=\\\"m 4,4 a 1,1 0 0 0 -0.7070312,0.2929687 1,1 0 0 0 0,1.4140625 L 8.5859375,11 3.2929688,16.292969 a 1,1 0 0 0 0,1.414062 1,1 0 0 0 1.4140624,0 l 5.9999998,-6 a 1.0001,1.0001 0 0 0 0,-1.414062 L 4.7070312,4.2929687 A 1,1 0 0 0 4,4 Z m 8,14 a 1,1 0 0 0 -1,1 1,1 0 0 0 1,1 h 8 a 1,1 0 0 0 1,-1 1,1 0 0 0 -1,-1 z\\\" fill=\\\"currentColor\\\" /></svg>\",\n                children: _jsx(_components.code, {\n                  children: _jsxs(_components.span, {\n                    className: \"line\",\n                    children: [_jsx(_components.span, {\n                      style: {\n                        \"--shiki-light\": \"#1E66F5\",\n                        \"--shiki-light-font-style\": \"italic\",\n                        \"--shiki-dark\": \"#89B4FA\",\n                        \"--shiki-dark-font-style\": \"italic\"\n                      },\n                      children: \"pnpm\"\n                    }), _jsx(_components.span, {\n                      style: {\n                        \"--shiki-light\": \"#40A02B\",\n                        \"--shiki-dark\": \"#A6E3A1\"\n                      },\n                      children: \" patch\"\n                    }), _jsx(_components.span, {\n                      style: {\n                        \"--shiki-light\": \"#40A02B\",\n                        \"--shiki-dark\": \"#A6E3A1\"\n                      },\n                      children: \" fumadocs-ui@15.3.3\"\n                    }), _jsx(_components.span, {\n                      style: {\n                        \"--shiki-light\": \"#40A02B\",\n                        \"--shiki-dark\": \"#A6E3A1\"\n                      },\n                      children: \" --edit-dir\"\n                    })]\n                  })\n                })\n              })\n            })]\n          }), _jsxs(_components.div, {\n            className: \"fd-step\",\n            children: [_jsx(_components.h3, {\n              id: \"4-补丁替换\",\n              \"data-fd-step\": \"4\",\n              children: \"补丁替换\"\n            }), _jsxs(_components.ul, {\n              children: [\"\\n\", _jsxs(_components.li, {\n                children: [\"补丁文件覆盖替换\", _jsx(_components.code, {\n                  children: \"node_modules/fumadocs/dist/src/components/toc-clerk.js\"\n                })]\n              }), \"\\n\", _jsxs(_components.li, {\n                children: [\"补丁文件覆盖替换\", _jsx(_components.code, {\n                  children: \"node_modules/fumadocs/dist/src/components/toc-clerk.d.ts\"\n                })]\n              }), \"\\n\", _jsxs(_components.li, {\n                children: [\"补丁文件覆盖替换\", _jsx(_components.code, {\n                  children: \"node_modules/fumadocs/dist/src/components/toc-clerk.d.tsx\"\n                })]\n              }), \"\\n\"]\n            })]\n          }), _jsxs(_components.div, {\n            className: \"fd-step\",\n            children: [_jsx(_components.h3, {\n              id: \"5-提交补丁\",\n              \"data-fd-step\": \"5\",\n              children: \"提交补丁\"\n            }), _jsx(_Fragment, {\n              children: _jsx(_components.pre, {\n                className: \"shiki shiki-themes catppuccin-latte catppuccin-mocha\",\n                style: {\n                  \"--shiki-light\": \"#4c4f69\",\n                  \"--shiki-dark\": \"#cdd6f4\",\n                  \"--shiki-light-bg\": \"#eff1f5\",\n                  \"--shiki-dark-bg\": \"#1e1e2e\"\n                },\n                tabIndex: \"0\",\n                title: \"提交补丁\",\n                \"data-language\": \"zsh\",\n                icon: \"<svg viewBox=\\\"0 0 24 24\\\"><path d=\\\"m 4,4 a 1,1 0 0 0 -0.7070312,0.2929687 1,1 0 0 0 0,1.4140625 L 8.5859375,11 3.2929688,16.292969 a 1,1 0 0 0 0,1.414062 1,1 0 0 0 1.4140624,0 l 5.9999998,-6 a 1.0001,1.0001 0 0 0 0,-1.414062 L 4.7070312,4.2929687 A 1,1 0 0 0 4,4 Z m 8,14 a 1,1 0 0 0 -1,1 1,1 0 0 0 1,1 h 8 a 1,1 0 0 0 1,-1 1,1 0 0 0 -1,-1 z\\\" fill=\\\"currentColor\\\" /></svg>\",\n                children: _jsx(_components.code, {\n                  children: _jsxs(_components.span, {\n                    className: \"line\",\n                    children: [_jsx(_components.span, {\n                      style: {\n                        \"--shiki-light\": \"#1E66F5\",\n                        \"--shiki-light-font-style\": \"italic\",\n                        \"--shiki-dark\": \"#89B4FA\",\n                        \"--shiki-dark-font-style\": \"italic\"\n                      },\n                      children: \"pnpm\"\n                    }), _jsx(_components.span, {\n                      style: {\n                        \"--shiki-light\": \"#40A02B\",\n                        \"--shiki-dark\": \"#A6E3A1\"\n                      },\n                      children: \" patch-commit\"\n                    }), _jsx(_components.span, {\n                      style: {\n                        \"--shiki-light\": \"#179299\",\n                        \"--shiki-dark\": \"#94E2D5\"\n                      },\n                      children: \" <\"\n                    }), _jsx(_components.span, {\n                      style: {\n                        \"--shiki-light\": \"#40A02B\",\n                        \"--shiki-dark\": \"#A6E3A1\"\n                      },\n                      children: \"之前的临时目录路\"\n                    }), _jsx(_components.span, {\n                      style: {\n                        \"--shiki-light\": \"#4C4F69\",\n                        \"--shiki-dark\": \"#CDD6F4\"\n                      },\n                      children: \"径\"\n                    }), _jsx(_components.span, {\n                      style: {\n                        \"--shiki-light\": \"#179299\",\n                        \"--shiki-dark\": \"#94E2D5\"\n                      },\n                      children: \">\"\n                    })]\n                  })\n                })\n              })\n            }), _jsxs(_components.ul, {\n              children: [\"\\n\", _jsxs(_components.li, {\n                children: [\"提交补丁后, 会生成一个补丁文件, 文件名类似\", _jsx(_components.code, {\n                  children: \"fumadocs-ui-15.3.3-patch-1.patch\"\n                })]\n              }), \"\\n\", _jsxs(_components.li, {\n                children: [\"同时\", _jsx(_components.code, {\n                  children: \"package.json\"\n                }), \"中也会有\", _jsx(_components.code, {\n                  children: \"pnpm.patchedDependencies\"\n                }), \"字段, 记录了补丁文件的路径信息\"]\n              }), \"\\n\"]\n            })]\n          }), _jsxs(_components.div, {\n            className: \"fd-step\",\n            children: [_jsx(_components.h3, {\n              id: \"6-验证补丁\",\n              \"data-fd-step\": \"6\",\n              children: \"验证补丁\"\n            }), _jsxs(_components.ul, {\n              children: [\"\\n\", _jsx(_components.li, {\n                children: \"再一次清理项目环境, 删除node_modules、pnpm-lock.yaml\"\n              }), \"\\n\", _jsx(_components.li, {\n                children: \"再次重装依赖\"\n              }), \"\\n\", _jsx(_components.li, {\n                children: \"启动项目, 验证补丁效果: 但你查看本文档时, 就能看到正文和目录上都有对应的步骤⭕️效果\"\n              }), \"\\n\"]\n            })]\n          }), _jsxs(_components.div, {\n            className: \"fd-step\",\n            children: [_jsx(_components.h3, {\n              id: \"7-done\",\n              \"data-fd-step\": \"7\",\n              children: \"Done\"\n            }), _jsxs(_components.ul, {\n              children: [\"\\n\", _jsx(_components.li, {\n                children: \"在不升级FumaDocs版本的前提下, 该补丁会一直生效, 重装环境时会自动应用, 无需再管了\"\n              }), \"\\n\"]\n            })]\n          })]\n        })]\n      })]\n    }), \"\\n\", _jsx(Callout, {\n      title: \"风险提醒\",\n      type: \"error\",\n      children: _jsxs(_components.ul, {\n        children: [\"\\n\", _jsx(_components.li, {\n          children: \"魔改源码打补丁的方案, 在FumaDocs升级时会失效, 需要重新魔改\"\n        }), \"\\n\", _jsxs(_components.li, {\n          children: [_jsx(_components.strong, {\n            children: \"因此, 强烈推荐给FumaDocs官方咨询、讨论、提PR\"\n          }), \", 让FumaDocs也越发好用!\"]\n        }), \"\\n\"]\n      })\n    }), \"\\n\", _jsx(_components.h2, {\n      id: \"vercel中文件读取报错问题\",\n      children: \"Vercel中文件读取报错问题\"\n    }), \"\\n\", _jsx(_components.h3, {\n      id: \"问题描述\",\n      children: \"问题描述\"\n    }), \"\\n\", _jsxs(_components.ul, {\n      children: [\"\\n\", _jsxs(_components.li, {\n        children: [\"在将包含 Fumadocs 的 Next.js 应用部署到 Vercel 后, 一个用于提取 MDX 页面内容的 API 路由 (\", _jsx(_components.code, {\n          children: \"/api/*/llm-content\"\n        }), \"), 在本地开发时工作正常\"]\n      }), \"\\n\", _jsxs(_components.li, {\n        children: [\"但在 Vercel 的 Serverless Function 环境中持续抛出 \", _jsx(_components.code, {\n          children: \"ENOENT: no such file or directory\"\n        }), \" 错误\"]\n      }), \"\\n\", _jsxs(_components.li, {\n        children: [\"错误日志指示, 系统尝试打开类似 \", _jsx(_components.code, {\n          children: \"/vercel/path0/src/mdx/docs/...\"\n        }), \" 的路径, 这是一个构建时的绝对路径, 在运行时无效\"]\n      }), \"\\n\"]\n    }), \"\\n\", _jsx(_components.h3, {\n      id: \"分析过程\",\n      children: \"分析过程\"\n    }), \"\\n\", _jsxs(_components.ol, {\n      children: [\"\\n\", _jsxs(_components.li, {\n        children: [\"初步怀疑 \", _jsx(_components.code, {\n          children: \"remark\"\n        }), \" 插件: 最初认为问题出在 \", _jsx(_components.code, {\n          children: \"getLLMText\"\n        }), \" 函数中使用的 \", _jsx(_components.code, {\n          children: \"remark\"\n        }), \" 插件链（如 \", _jsx(_components.code, {\n          children: \"remark-include\"\n        }), \", \", _jsx(_components.code, {\n          children: \"remark-docgen\"\n        }), \" 等）在运行时试图访问文件系统\"]\n      }), \"\\n\", _jsxs(_components.li, {\n        children: [\"简化 \", _jsx(_components.code, {\n          children: \"remark\"\n        }), \" 插件: 逐步移除了这些可能导致问题的插件, 但错误依旧\"]\n      }), \"\\n\", _jsxs(_components.li, {\n        children: [\"日志诊断 \", _jsx(_components.code, {\n          children: \"page\"\n        }), \" 对象: 通过在 API 路由中添加详细日志, 发现在尝试访问 \", _jsx(_components.code, {\n          children: \"page.data.content\"\n        }), \" 属性（由 \", _jsx(_components.code, {\n          children: \"docsSource.getPage()\"\n        }), \" 返回）时, 错误就会发生。这表明 Fumadocs 在运行时延迟加载此属性, 并错误地使用了构建时的文件路径\"]\n      }), \"\\n\", _jsxs(_components.li, {\n        children: [\"确认元数据可访问: 测试表明, 访问 \", _jsx(_components.code, {\n          children: \"page.data.title\"\n        }), \" 等其他元数据是安全的, 不会触发文件读取错误\"]\n      }), \"\\n\"]\n    }), \"\\n\", _jsx(_components.h3, {\n      id: \"解决方案\",\n      children: \"解决方案\"\n    }), \"\\n\", _jsxs(_components.ul, {\n      children: [\"\\n\", _jsx(_components.li, {\n        children: \"核心解决方案是避免在 API 路由运行时让 Fumadocs 的内部机制去加载文件内容, 而是由我们主动、正确地读取文件\"\n      }), \"\\n\"]\n    }), \"\\n\", _jsxs(_components.div, {\n      className: \"fd-steps\",\n      children: [_jsxs(_components.div, {\n        className: \"fd-step\",\n        children: [_jsx(_components.h3, {\n          id: \"1-nextconfigts配置\",\n          \"data-fd-step\": \"1\",\n          children: \"Next.config.ts配置\"\n        }), _jsxs(_components.ul, {\n          children: [\"\\n\", _jsxs(_components.li, {\n            children: [\"确保 MDX 文件被打包到 Vercel Serverless Function:\", \"\\n\", _jsxs(_components.ul, {\n              children: [\"\\n\", _jsxs(_components.li, {\n                children: [\"修改 \", _jsx(_components.code, {\n                  children: \"next.config.ts\"\n                }), \", 在顶层配置中添加 \", _jsx(_components.code, {\n                  children: \"outputFileTracingIncludes\"\n                }), \", 明确指定将 \", _jsx(_components.code, {\n                  children: \"src/mdx/docs/**/*\"\n                }), \" 目录下的所有文件包含在 \", _jsx(_components.code, {\n                  children: \"/api/*/llm-content\"\n                }), \" 路由的部署包中\"]\n              }), \"\\n\"]\n            }), \"\\n\"]\n          }), \"\\n\"]\n        })]\n      }), _jsxs(_components.div, {\n        className: \"fd-step\",\n        children: [_jsx(_components.h3, {\n          id: \"2-getllmtext函数\",\n          \"data-fd-step\": \"2\",\n          children: \"getLLMText函数\"\n        }), _jsxs(_components.ul, {\n          children: [\"\\n\", _jsxs(_components.li, {\n            children: [\"修改 \", _jsx(_components.code, {\n              children: \"getLLMText\"\n            }), \" 函数 (\", _jsx(_components.code, {\n              children: \"src/lib/get-llm-text.ts\"\n            }), \"):\", \"\\n\", _jsxs(_components.ul, {\n              children: [\"\\n\", _jsxs(_components.li, {\n                children: [\"更改函数签名, 使其接受 MDX 内容字符串、标题和描述作为参数: \", _jsx(_components.code, {\n                  children: \"async function getLLMText(mdxContent: string, title?: string, description?: string)\"\n                })]\n              }), \"\\n\", _jsxs(_components.li, {\n                children: [\"内部 \", _jsx(_components.code, {\n                  children: \"remark\"\n                }), \" 处理器使用简化的插件集 (\", _jsx(_components.code, {\n                  children: \"remark-frontmatter\"\n                }), \", \", _jsx(_components.code, {\n                  children: \"remark-remove-frontmatter\"\n                }), \", \", _jsx(_components.code, {\n                  children: \"remark-mdx\"\n                }), \", \", _jsx(_components.code, {\n                  children: \"remark-gfm\"\n                }), \"), 仅处理传入的字符串内容\"]\n              }), \"\\n\"]\n            }), \"\\n\"]\n          }), \"\\n\"]\n        })]\n      }), _jsxs(_components.div, {\n        className: \"fd-step\",\n        children: [_jsx(_components.h3, {\n          id: \"3-api-路由\",\n          \"data-fd-step\": \"3\",\n          children: \"API 路由\"\n        }), _jsxs(_components.ul, {\n          children: [\"\\n\", _jsxs(_components.li, {\n            children: [\"修改 API 路由 (\", _jsx(_components.code, {\n              children: \"src/app/api/legal/llm-content/route.ts\"\n            }), \"):\", \"\\n\", _jsxs(_components.ul, {\n              children: [\"\\n\", _jsxs(_components.li, {\n                children: [\"调用 \", _jsx(_components.code, {\n                  children: \"docsSource.getPage(slug, locale)\"\n                }), \" 获取 \", _jsx(_components.code, {\n                  children: \"page\"\n                }), \" 对象, 并从中安全地提取 \", _jsx(_components.code, {\n                  children: \"title\"\n                }), \" 和 \", _jsx(_components.code, {\n                  children: \"description\"\n                })]\n              }), \"\\n\", _jsxs(_components.li, {\n                children: [\"从 \", _jsx(_components.code, {\n                  children: \"page.data._file.path\"\n                }), \" 获取 MDX 文件的相对路径\"]\n              }), \"\\n\", _jsxs(_components.li, {\n                children: [\"使用 Node.js 的 \", _jsx(_components.code, {\n                  children: \"path.join(process.cwd(), 'src', 'mdx', 'docs', relativeMdxFilePath)\"\n                }), \" 构造在 Vercel 运行时环境中的正确绝对路径（\", _jsx(_components.code, {\n                  children: \"process.cwd()\"\n                }), \" 在 Vercel Serverless Function 中通常是 \", _jsx(_components.code, {\n                  children: \"/var/task\"\n                }), \"）\"]\n              }), \"\\n\", _jsxs(_components.li, {\n                children: [\"使用 \", _jsx(_components.code, {\n                  children: \"fs.readFileSync(absoluteFilePath, 'utf-8')\"\n                }), \" 同步读取文件内容\"]\n              }), \"\\n\", _jsxs(_components.li, {\n                children: [\"将手动读取到的 \", _jsx(_components.code, {\n                  children: \"mdxContent\"\n                }), \" 字符串以及 \", _jsx(_components.code, {\n                  children: \"title\"\n                }), \" 和 \", _jsx(_components.code, {\n                  children: \"description\"\n                }), \" 传递给更新后的 \", _jsx(_components.code, {\n                  children: \"getLLMText\"\n                }), \" 函数\"]\n              }), \"\\n\", _jsx(_components.li, {\n                children: \"包含详细的错误处理和日志记录, 特别是在文件读取失败时, 会尝试列出相关目录内容以辅助调试\"\n              }), \"\\n\"]\n            }), \"\\n\"]\n          }), \"\\n\"]\n        })]\n      })]\n    })]\n  });\n}\nfunction MDXContent(props = {}) {\n  const {wrapper: MDXLayout} = props.components || ({});\n  return MDXLayout ? _jsx(MDXLayout, {\n    ...props,\n    children: _jsx(_createMdxContent, {\n      ...props\n    })\n  }) : _createMdxContent(props);\n}\nreturn {\n  toc,\n  default: MDXContent\n};\nfunction _missingMdxReference(id, component) {\n  throw new Error(\"Expected \" + (component ? \"component\" : \"object\") + \" `\" + id + \"` to be defined: you likely forgot to import, pass, or provide it.\");\n}\n",
+        "fileData": {
+          "structuredData": {
+            "contents": [
+              {
+                "heading": "基础接入",
+                "content": "参照官网文档, 完成基础环境配置"
+              },
+              {
+                "heading": "自定义流程处理",
+                "content": "`src/lib/source-legal.ts` 路由+数据源+元数据处理, **内容如何被加载和路由**, 侧重于HTML的主干结构"
+              },
+              {
+                "heading": "自定义流程处理",
+                "content": "`source.config.ts`插件链的配置扩展, **原始mdx内容如何被解析为React组件**, 侧重于基础内容"
+              },
+              {
+                "heading": "自定义流程处理",
+                "content": "`src/components/mdx-components.tsx` React组件扩展, **组件如何被渲染**, 侧重于样式和交互"
+              },
+              {
+                "heading": "网站布局调整",
+                "content": "FumaDocs提供了几种基础布局, 这里补充一下导航菜单和按钮的排序规则"
+              },
+              {
+                "heading": "网站布局调整",
+                "content": "整个导航是由`nav`组件(选择器ID为`#nd-nav`)定义的, FumaDocs的默认Header整体分为左右两部分:"
+              },
+              {
+                "heading": "网站布局调整",
+                "content": "左侧为网站Logo+标题, 以及可以自定义的菜单栏"
+              },
+              {
+                "heading": "网站布局调整",
+                "content": "右侧为可选搜索框, 然后是主题切换按钮, 然后是语言切换按钮, 然后是用户自定义的按钮, 最后是Github按钮链接"
+              },
+              {
+                "heading": "网站布局调整",
+                "content": "`LinkItemType`类型, 有关键字段`secondary`, 决定按钮是否在导航栏右侧"
+              },
+              {
+                "heading": "网站布局调整",
+                "content": "`LinkItemType`类型, 关键字段`type`, 定义为`custom`时, `children`就可以使用我们自己的组件了, 不过适配默认的样式风格会花点时间"
+              },
+              {
+                "heading": "自定义headeralpha",
+                "content": "当前自定义Header的方案处于Alpha阶段, 在flex多端适配上还存在问题, 请谨慎鉴用!"
+              },
+              {
+                "heading": "自定义headeralpha",
+                "content": "长期方案是基于FumaDocs的`nav`组件重写, 实现完全自定义的需求"
+              },
+              {
+                "heading": "自定义headeralpha",
+                "content": "更改Header右侧的按钮顺序, 使用自定义的搜索框、主题切换、语言切换、Github按钮组件, 然后全部定义为`type=custom secondary=true`的LinkItemType"
+              },
+              {
+                "heading": "自定义headeralpha",
+                "content": "默认Header的样式是写死的, 总是悬浮并且和顶部有缝隙, 在滚动页面时会在缝隙处留下网页内容残影, 使用CSS样式强制覆盖"
+              },
+              {
+                "heading": "自定义headeralpha",
+                "content": "默认Banner的样式也是写死的, 对于动态配置Banner支持不够, 也可使用CSS样式强制覆盖, 参见下文的css文本部分"
+              },
+              {
+                "heading": "自定义组件",
+                "content": "前面已经详细分析过FumaDocs对于整个mdx处理的完整流程, 整体分为mdx解析、mdx组件生成、mdx组件渲染三个阶段"
+              },
+              {
+                "heading": "自定义组件",
+                "content": "这三个阶段我们都可以自定义, 只不过FumaDocs有一些默认顺序是固定的, 完全复写成本代价比较高"
+              },
+              {
+                "heading": "自定义组件",
+                "content": "因此, 我们优先使用FumaDocs提供的扩展口, 如果实在不够用, 再考虑自定义组件"
+              },
+              {
+                "heading": "自定义样式组件",
+                "content": "当需要特殊展示某些内容, 或者更本质一点, 包装mdx里的html代码块: 提效或者美颜, 此时自定义组件就很方便了"
+              },
+              {
+                "heading": "自定义样式组件",
+                "content": "Fuma通过`mdx-components.tsx`提供了易用的组件扩展, 我们只需要关注自定义组件的入参和html代码转换逻辑即可"
+              },
+              {
+                "heading": "自定义流程处理插件",
+                "content": "当涉及到mdx原始数据解析时, 我们就需要自定义流程处理插件, 例如在`source.config.ts`中配置FumaDocs提供的remark/rehype插件"
+              },
+              {
+                "heading": "自定义流程处理插件",
+                "content": "FomaDocs提供了比较丰富的remark/rehype插件, 我们可以仿照它的处理方式自己写一个插件, 然后配置到`source.config.ts`中"
+              },
+              {
+                "heading": "自定义流程处理插件",
+                "content": "但现在我们要做一个稍微难一点事情, 就是魔改FumaDocs的插件默认行为:"
+              },
+              {
+                "heading": "自定义流程处理插件",
+                "content": "现在FumaDocs的目录标题解析参考了Clerk的样式处理, 但属于阉割版本的: 步骤组件的标题只在正文中处理, 没有在目录上渲染出步骤的⭕️"
+              },
+              {
+                "heading": "自定义流程处理插件",
+                "content": "通过源码分析, FumaDocs的`remark-mdx-steps`插件就是用来处理正文步骤渲染的, 而`remark-heading`插件是在之后默认执行的, 它生成slug数据为魔改目录提供了可能"
+              },
+              {
+                "heading": "自定义流程处理插件",
+                "content": "然后`toc-clerk.tsx`组件会根据`remark-heading`生成的slug数据, 渲染生成最终的目录效果"
+              },
+              {
+                "heading": "自定义流程处理插件",
+                "content": "魔改后的`toc-clerk.tsx`组件, 会根据`remark-heading`插件生成的标题数据, 渲染生成最终的步骤⭕️效果"
+              },
+              {
+                "heading": "自定义流程处理插件",
+                "content": "魔改的流程如下:"
+              },
+              {
+                "heading": "4-准备补丁文件",
+                "content": "一般会有3个文件: `XXX.js`, `XXX.d.ts`, `XXX.d.tsx`"
+              },
+              {
+                "heading": "4-准备补丁文件",
+                "content": "文件: `node_modules/fumadocs/dist/src/components/toc-clerk.js`"
+              },
+              {
+                "heading": "4-准备补丁文件",
+                "content": "文件: `node_modules/fumadocs/dist/src/components/toc-clerk.d.ts`"
+              },
+              {
+                "heading": "4-准备补丁文件",
+                "content": "文件: `node_modules/fumadocs/dist/src/components/toc-clerk.d.tsx`"
+              },
+              {
+                "heading": "4-准备补丁文件",
+                "content": "拷贝到单独的文件夹中, 方便后续替换"
+              },
+              {
+                "heading": "1-清理项目环境",
+                "content": "清理项目环境, 删除node\\_modules、pnpm-lock.yaml"
+              },
+              {
+                "heading": "4-补丁替换",
+                "content": "补丁文件覆盖替换`node_modules/fumadocs/dist/src/components/toc-clerk.js`"
+              },
+              {
+                "heading": "4-补丁替换",
+                "content": "补丁文件覆盖替换`node_modules/fumadocs/dist/src/components/toc-clerk.d.ts`"
+              },
+              {
+                "heading": "4-补丁替换",
+                "content": "补丁文件覆盖替换`node_modules/fumadocs/dist/src/components/toc-clerk.d.tsx`"
+              },
+              {
+                "heading": "5-提交补丁",
+                "content": "提交补丁后, 会生成一个补丁文件, 文件名类似`fumadocs-ui-15.3.3-patch-1.patch`"
+              },
+              {
+                "heading": "5-提交补丁",
+                "content": "同时`package.json`中也会有`pnpm.patchedDependencies`字段, 记录了补丁文件的路径信息"
+              },
+              {
+                "heading": "6-验证补丁",
+                "content": "再一次清理项目环境, 删除node\\_modules、pnpm-lock.yaml"
+              },
+              {
+                "heading": "6-验证补丁",
+                "content": "再次重装依赖"
+              },
+              {
+                "heading": "6-验证补丁",
+                "content": "启动项目, 验证补丁效果: 但你查看本文档时, 就能看到正文和目录上都有对应的步骤⭕️效果"
+              },
+              {
+                "heading": "7-done",
+                "content": "在不升级FumaDocs版本的前提下, 该补丁会一直生效, 重装环境时会自动应用, 无需再管了"
+              },
+              {
+                "heading": "7-done",
+                "content": "魔改源码打补丁的方案, 在FumaDocs升级时会失效, 需要重新魔改"
+              },
+              {
+                "heading": "7-done",
+                "content": "**因此, 强烈推荐给FumaDocs官方咨询、讨论、提PR**, 让FumaDocs也越发好用!"
+              },
+              {
+                "heading": "问题描述",
+                "content": "在将包含 Fumadocs 的 Next.js 应用部署到 Vercel 后, 一个用于提取 MDX 页面内容的 API 路由 (`/api/*/llm-content`), 在本地开发时工作正常"
+              },
+              {
+                "heading": "问题描述",
+                "content": "但在 Vercel 的 Serverless Function 环境中持续抛出 `ENOENT: no such file or directory` 错误"
+              },
+              {
+                "heading": "问题描述",
+                "content": "错误日志指示, 系统尝试打开类似 `/vercel/path0/src/mdx/docs/...` 的路径, 这是一个构建时的绝对路径, 在运行时无效"
+              },
+              {
+                "heading": "分析过程",
+                "content": "初步怀疑 `remark` 插件: 最初认为问题出在 `getLLMText` 函数中使用的 `remark` 插件链（如 `remark-include`, `remark-docgen` 等）在运行时试图访问文件系统"
+              },
+              {
+                "heading": "分析过程",
+                "content": "简化 `remark` 插件: 逐步移除了这些可能导致问题的插件, 但错误依旧"
+              },
+              {
+                "heading": "分析过程",
+                "content": "日志诊断 `page` 对象: 通过在 API 路由中添加详细日志, 发现在尝试访问 `page.data.content` 属性（由 `docsSource.getPage()` 返回）时, 错误就会发生。这表明 Fumadocs 在运行时延迟加载此属性, 并错误地使用了构建时的文件路径"
+              },
+              {
+                "heading": "分析过程",
+                "content": "确认元数据可访问: 测试表明, 访问 `page.data.title` 等其他元数据是安全的, 不会触发文件读取错误"
+              },
+              {
+                "heading": "解决方案",
+                "content": "核心解决方案是避免在 API 路由运行时让 Fumadocs 的内部机制去加载文件内容, 而是由我们主动、正确地读取文件"
+              },
+              {
+                "heading": "1-nextconfigts配置",
+                "content": "确保 MDX 文件被打包到 Vercel Serverless Function:"
+              },
+              {
+                "heading": "1-nextconfigts配置",
+                "content": "修改 `next.config.ts`, 在顶层配置中添加 `outputFileTracingIncludes`, 明确指定将 `src/mdx/docs/**/*` 目录下的所有文件包含在 `/api/*/llm-content` 路由的部署包中"
+              },
+              {
+                "heading": "2-getllmtext函数",
+                "content": "修改 `getLLMText` 函数 (`src/lib/get-llm-text.ts`):"
+              },
+              {
+                "heading": "2-getllmtext函数",
+                "content": "更改函数签名, 使其接受 MDX 内容字符串、标题和描述作为参数: `async function getLLMText(mdxContent: string, title?: string, description?: string)`"
+              },
+              {
+                "heading": "2-getllmtext函数",
+                "content": "内部 `remark` 处理器使用简化的插件集 (`remark-frontmatter`, `remark-remove-frontmatter`, `remark-mdx`, `remark-gfm`), 仅处理传入的字符串内容"
+              },
+              {
+                "heading": "3-api-路由",
+                "content": "修改 API 路由 (`src/app/api/legal/llm-content/route.ts`):"
+              },
+              {
+                "heading": "3-api-路由",
+                "content": "调用 `docsSource.getPage(slug, locale)` 获取 `page` 对象, 并从中安全地提取 `title` 和 `description`"
+              },
+              {
+                "heading": "3-api-路由",
+                "content": "从 `page.data._file.path` 获取 MDX 文件的相对路径"
+              },
+              {
+                "heading": "3-api-路由",
+                "content": "使用 Node.js 的 `path.join(process.cwd(), 'src', 'mdx', 'docs', relativeMdxFilePath)` 构造在 Vercel 运行时环境中的正确绝对路径（`process.cwd()` 在 Vercel Serverless Function 中通常是 `/var/task`）"
+              },
+              {
+                "heading": "3-api-路由",
+                "content": "使用 `fs.readFileSync(absoluteFilePath, 'utf-8')` 同步读取文件内容"
+              },
+              {
+                "heading": "3-api-路由",
+                "content": "将手动读取到的 `mdxContent` 字符串以及 `title` 和 `description` 传递给更新后的 `getLLMText` 函数"
+              },
+              {
+                "heading": "3-api-路由",
+                "content": "包含详细的错误处理和日志记录, 特别是在文件读取失败时, 会尝试列出相关目录内容以辅助调试"
+              }
+            ],
+            "headings": [
+              {
+                "id": "fumadocs接入",
+                "content": "FumaDocs接入"
+              },
+              {
+                "id": "基础接入",
+                "content": "基础接入"
+              },
+              {
+                "id": "核心流程处理",
+                "content": "核心流程处理"
+              },
+              {
+                "id": "自定义流程处理",
+                "content": "自定义流程处理"
+              },
+              {
+                "id": "网站布局调整",
+                "content": "网站布局调整"
+              },
+              {
+                "id": "自定义headeralpha",
+                "content": "自定义Header(Alpha)"
+              },
+              {
+                "id": "自定义组件",
+                "content": "自定义组件"
+              },
+              {
+                "id": "自定义样式组件",
+                "content": "自定义样式组件"
+              },
+              {
+                "id": "自定义流程处理插件",
+                "content": "自定义流程处理插件"
+              },
+              {
+                "id": "源码魔改",
+                "content": "源码魔改"
+              },
+              {
+                "id": "1-fork源码",
+                "content": "Fork源码"
+              },
+              {
+                "id": "2-修改组件源码",
+                "content": "修改组件源码"
+              },
+              {
+                "id": "3-再次构建-生成js文件",
+                "content": "再次构建, 生成js文件"
+              },
+              {
+                "id": "4-准备补丁文件",
+                "content": "准备补丁文件"
+              },
+              {
+                "id": "应用补丁",
+                "content": "应用补丁"
+              },
+              {
+                "id": "1-清理项目环境",
+                "content": "清理项目环境"
+              },
+              {
+                "id": "2-重装依赖",
+                "content": "重装依赖"
+              },
+              {
+                "id": "3-开始pnpm-patch会话",
+                "content": "开始pnpm patch会话"
+              },
+              {
+                "id": "4-补丁替换",
+                "content": "补丁替换"
+              },
+              {
+                "id": "5-提交补丁",
+                "content": "提交补丁"
+              },
+              {
+                "id": "6-验证补丁",
+                "content": "验证补丁"
+              },
+              {
+                "id": "7-done",
+                "content": "Done"
+              },
+              {
+                "id": "vercel中文件读取报错问题",
+                "content": "Vercel中文件读取报错问题"
+              },
+              {
+                "id": "问题描述",
+                "content": "问题描述"
+              },
+              {
+                "id": "分析过程",
+                "content": "分析过程"
+              },
+              {
+                "id": "解决方案",
+                "content": "解决方案"
+              },
+              {
+                "id": "1-nextconfigts配置",
+                "content": "Next.config.ts配置"
+              },
+              {
+                "id": "2-getllmtext函数",
+                "content": "getLLMText函数"
+              },
+              {
+                "id": "3-api-路由",
+                "content": "API 路由"
               }
             ]
           }
@@ -10258,6 +10258,24 @@ const source = {
       }
     },
     {
+      "path": "introduction/(mdx)/meta.json",
+      "absolutePath": "/Users/funeye/IdeaProjects/next-ai-build/apps/ddaas/src/mdx/docs/introduction/(mdx)/meta.json",
+      "data": {
+        "title": "MDX",
+        "pages": [
+          "fuma-mdx",
+          "mdx-snippets",
+          "keybindings",
+          "mdx-shiki",
+          "mdx-mermaid",
+          "mdx-math",
+          "..."
+        ],
+        "root": false,
+        "icon": "MDX"
+      }
+    },
+    {
       "path": "introduction/(3p-integration)/meta.json",
       "absolutePath": "/Users/funeye/IdeaProjects/next-ai-build/apps/ddaas/src/mdx/docs/introduction/(3p-integration)/meta.json",
       "data": {
@@ -10274,24 +10292,6 @@ const source = {
         ],
         "root": false,
         "icon": "T3P"
-      }
-    },
-    {
-      "path": "introduction/(mdx)/meta.json",
-      "absolutePath": "/Users/funeye/IdeaProjects/next-ai-build/apps/ddaas/src/mdx/docs/introduction/(mdx)/meta.json",
-      "data": {
-        "title": "MDX",
-        "pages": [
-          "fuma-mdx",
-          "mdx-snippets",
-          "keybindings",
-          "mdx-shiki",
-          "mdx-mermaid",
-          "mdx-math",
-          "..."
-        ],
-        "root": false,
-        "icon": "MDX"
       }
     },
     {

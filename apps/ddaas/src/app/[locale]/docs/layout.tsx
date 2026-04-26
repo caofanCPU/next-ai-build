@@ -1,13 +1,13 @@
 import { baseOptions } from '@/app/[locale]/layout.config';
-import { getContentSource } from '@/lib/content-source';
+import { siteDocs } from '@/lib/site-docs';
 import type { ReactNode } from 'react';
 import { FumaGithubInfo } from '@third-ui/fuma/mdx/fuma-github-info';
 import { SiteDocsLayout, type SiteDocsLayoutConfig } from '@third-ui/fuma/base';
 import { appConfig } from '@/lib/appConfig';
-import { i18n } from '@/i18n';
+import { i18n } from '@/lib/i18n-base';
 
 async function docsOptions(locale: string): Promise<SiteDocsLayoutConfig> {
-  const docsSource = await getContentSource('docs');
+  const docsSource = await siteDocs.getContentSource('docs');
   const options = await baseOptions(locale);
   return {
     ...options,

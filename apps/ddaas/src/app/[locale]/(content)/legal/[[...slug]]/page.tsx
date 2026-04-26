@@ -1,6 +1,5 @@
-import { getMDXComponents } from '@/components/mdx-components';
 import { appConfig } from '@/lib/appConfig';
-import { getContentSource } from '@/lib/content-source';
+import { siteDocs } from '@/lib/site-docs';
 import { SiteIcon } from '@/lib/site-config';
 import { NotFoundPage } from '@base-ui/components';
 import { createFumaPage } from '@third-ui/fuma/server';
@@ -8,8 +7,8 @@ import { createFumaPage } from '@third-ui/fuma/server';
 const sourceKey = 'legal';
 const { Page, generateStaticParams, generateMetadata } = createFumaPage({
   sourceKey: sourceKey,
-  mdxContentSource: () => getContentSource('legal'),
-  getMDXComponents,
+  mdxContentSource: () => siteDocs.getContentSource('legal'),
+  getMDXComponents: siteDocs.getMDXComponents,
   mdxSourceDir: appConfig.mdxSourceDir[sourceKey],
   githubBaseUrl: appConfig.githubBaseUrl,
   siteIcon: <SiteIcon />,
@@ -23,4 +22,3 @@ const { Page, generateStaticParams, generateMetadata } = createFumaPage({
 
 export default Page;
 export { generateMetadata, generateStaticParams };
-

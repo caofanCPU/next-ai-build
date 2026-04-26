@@ -4,7 +4,7 @@ import { FingerprintProvider } from '@third-ui/clerk/fingerprint';
 import { SiteHomeLayout, type SiteHomeLayoutConfig } from '@third-ui/fuma/base';
 import { ReactNode } from 'react';
 import { clerkPageBanner, localePrefixAsNeeded, defaultLocale } from '@/lib/appConfig';
-import { i18n } from '@/i18n';
+import { i18n } from '@/lib/i18n-base';
 import { appConfig } from '@/lib/appConfig';
 
 async function homeOptions(locale: string): Promise<SiteHomeLayoutConfig> {

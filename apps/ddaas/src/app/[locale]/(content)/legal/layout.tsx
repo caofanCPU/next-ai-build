@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { baseOptions } from '@/app/[locale]/layout.config';
 import { levelNavLinks, primaryNavLinks } from '@/app/[locale]/layout.nav';
 import { showBanner, localePrefixAsNeeded, defaultLocale } from '@/lib/appConfig';
-import { getContentSource } from '@/lib/content-source';
+import { siteDocs } from '@/lib/site-docs';
 import { SiteDocsLayout, SiteHomeLayout, type SiteHomeLayoutConfig } from '@third-ui/fuma/base';
 import { appConfig } from '@/lib/appConfig';
 
@@ -24,7 +24,7 @@ export default async function Layout({
   children: ReactNode;
 }) {
   const { locale } = await params;
-  const legalSource = await getContentSource('legal');
+  const legalSource = await siteDocs.getContentSource('legal');
   const contentLayoutOptions = await contentOptions(locale);
   const homeLayoutOptions: SiteHomeLayoutConfig = {
     ...contentLayoutOptions,

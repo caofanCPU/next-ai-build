@@ -2,7 +2,7 @@ import { baseOptions } from '@/app/[locale]/layout.config';
 import { levelNavLinks, primaryNavLinks } from '@/app/[locale]/layout.nav';
 import { homeHeavyItems } from './layout.heavy';
 import { showBanner, localePrefixAsNeeded, defaultLocale } from '@/lib/appConfig';
-import { i18n } from '@/i18n';
+import { i18n } from '@/lib/i18n-base';
 import { fingerprintConfig } from '@windrun-huaiin/backend-core/lib';
 import { FingerprintProvider } from '@third-ui/clerk/fingerprint';
 import { SiteHomeLayout, type SiteHomeLayoutConfig } from '@third-ui/fuma/base';
