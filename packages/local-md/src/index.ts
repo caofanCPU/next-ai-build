@@ -13,6 +13,12 @@ export type {
   MarkdownProcessorOptions,
 } from './md/compiler';
 export type { MarkdownRendererOptions, PageRenderer } from './md/renderer';
+export type {
+  SerializedCompileResult,
+  SerializedMarkdownFileData,
+  SharedPageRenderer,
+  SharedMarkdownRendererOptions,
+} from './md/render-shared';
 export {
   createCodeFeatureOptions,
   createMathFeatureOptions,

@@ -36,12 +36,12 @@ const nextConfig: NextConfig = {
   
   // Ensuring outputFileTracingIncludes is a top-level property
   outputFileTracingIncludes: {
-    '/api/docs/llm-content': ['./src/mdx/docs/**/*'],
-    '/api/blog/llm-content': ['./src/mdx/blog/**/*'],  
-    '/api/legal/llm-content': ['./src/mdx/legal/**/*'],
-    '/[locale]/docs/[...slug]': ['./src/mdx/docs/**/*'],
-    '/[locale]/blog/[[...slug]]': ['./src/mdx/blog/**/*'],
-    '/[locale]/legal/[[...slug]]': ['./src/mdx/legal/**/*'],
+    '/api/docs/llm-content': ['./src/mdx/docs/**/*', './.source/**/*'],
+    '/api/blog/llm-content': ['./src/mdx/blog/**/*', './.source/**/*'],
+    '/api/legal/llm-content': ['./src/mdx/legal/**/*', './.source/**/*'],
+    '/[locale]/docs/[...slug]': ['./.source/**/*'],
+    '/[locale]/blog/[[...slug]]': ['./.source/**/*'],
+    '/[locale]/legal/[[...slug]]': ['./.source/**/*'],
   }
 };
 

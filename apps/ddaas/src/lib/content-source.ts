@@ -1,42 +1,28 @@
 import { createConfiguredLocalMdSourceFactory } from '@windrun-huaiin/fumadocs-local-md/server/source';
-import { createFumaDocsBaseCompilerOptions } from '@windrun-huaiin/fumadocs-local-md/presets/fuma-docs/base';
-import { createFumaDocsCodeFeature } from '@windrun-huaiin/fumadocs-local-md/presets/fuma-docs/features/code';
-import { createFumaDocsMathFeature } from '@windrun-huaiin/fumadocs-local-md/presets/fuma-docs/features/math';
-import { createFumaDocsNpmFeature } from '@windrun-huaiin/fumadocs-local-md/presets/fuma-docs/features/npm';
-import { createCommonDocsSchema, createCommonMetaSchema } from '@third-ui/lib/server';
-import { getGlobalIcon } from '@base-ui/components/server';
-import { i18n } from '@/i18n';
+import { createLocalMdSourceSharedConfig } from '@/lib/content-source-shared';
 
 type MdxSourceFactory = ReturnType<typeof createConfiguredLocalMdSourceFactory>;
 
+function resolveLocalMdMode() {
+  const enableDevRuntime = process.env.LOCAL_MD_DEV_RUNTIME?.toLowerCase() === 'true';
+
+  if (process.env.NODE_ENV !== 'production' && enableDevRuntime) {
+    return 'runtime' as const;
+  }
+
+  return 'build' as const;
+}
+
 export const mdxSourceFactory: MdxSourceFactory = createConfiguredLocalMdSourceFactory({
-  i18n,
-  icon(icon) {
-    return getGlobalIcon(icon, true);
-  },
-  frontmatterSchema: createCommonDocsSchema(),
-  metaSchema: createCommonMetaSchema(),
-  ...createFumaDocsBaseCompilerOptions({
-    features: [
-      // code
-      createFumaDocsCodeFeature(),
-
-      // math
-      createFumaDocsMathFeature(),
-
-      // npm
-      createFumaDocsNpmFeature(),
-
-      // mermaid, no need source handler, just need components for render
-
-      // type-table, no need source handler, just need components for render
-    ],
-  }),
+  ...createLocalMdSourceSharedConfig(),
 });
 
 export async function getContentSource(
   sourceKey: 'docs' | 'blog' | 'legal',
   overrides?: Parameters<MdxSourceFactory['getCachedSource']>[1],
 ) {
-  return mdxSourceFactory.getCachedSource(sourceKey, overrides);
+  return mdxSourceFactory.getCachedSource(sourceKey, {
+    mode: resolveLocalMdMode(),
+    ...overrides,
+  });
 }

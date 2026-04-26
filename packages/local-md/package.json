@@ -17,10 +17,14 @@
   "files": [
     "dist"
   ],
+  "bin": {
+    "local-md": "./dist/cli.js"
+  },
   "type": "module",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": "./dist/index.js",
+    "./cli": "./dist/cli.js",
     "./core": "./dist/core.js",
     "./server": "./dist/server/index.js",
     "./server/source": "./dist/server/source-entry.js",

@@ -5,9 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "prisma generate && next dev",
-    "build": "pnpm generate-blog-index && prisma generate && next build",
-    "build:dev": "pnpm generate-blog-index && prisma generate && next build",
-    "build:prod": "prisma generate && next build",
+    "build-local-md": "pnpm exec local-md build",
+    "build": "pnpm generate-blog-index && pnpm build-local-md && prisma generate && next build",
+    "build:dev": "pnpm generate-blog-index && pnpm build-local-md && prisma generate && next build",
+    "build:prod": "pnpm build-local-md && prisma generate && next build",
     "start": "next start",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
