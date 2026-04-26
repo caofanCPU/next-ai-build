@@ -58,7 +58,6 @@ export function useFingerprint(config: FingerprintConfig): UseFingerprintResult 
       // Capture first-touch as early as possible before any in-site navigation can overwrite context.
       getOrCreateFirstTouchData();
       const currentFingerprintId = await getOrGenerateFingerprintId();
-      console.log('Initialized fingerprintId:', currentFingerprintId);
       setFingerprintIdState(currentFingerprintId);
       return currentFingerprintId;
     } catch (error) {
@@ -79,12 +78,10 @@ export function useFingerprint(config: FingerprintConfig): UseFingerprintResult 
     }
 
     if (isInitializingAnonymousUserRef.current) {
-      console.log('Skipping anonymous user initialization because a request is already in flight:', fingerprintId);
       return;
     }
 
     if (requestedAnonymousFingerprintRef.current === fingerprintId && isInitialized) {
-      console.log('Skipping anonymous user initialization because fingerprint is already initialized:', fingerprintId);
       return;
     }
 
@@ -94,7 +91,6 @@ export function useFingerprint(config: FingerprintConfig): UseFingerprintResult 
       setIsLoading(true);
       setError(null);
 
-      console.log('Initializing anonymous user with fingerprintId:', fingerprintId);
       const fingerprintHeaders = await createFingerprintHeaders();
       const response = await fetch(config.apiEndpoint, {
         method: 'POST',
@@ -112,11 +108,9 @@ export function useFingerprint(config: FingerprintConfig): UseFingerprintResult 
       }
 
       const data = await response.json();
-      console.log('API response in initializeAnonymousUser:', data);
 
       if (data.success) {
         const updatedXUser = data.xUser || { userId: '', fingerprintId, clerkUserId: '', email: '', status: '', createdAt: '' };
-        console.log('Setting xUser:', updatedXUser);
         setXUser(updatedXUser);
         setXCredit(data.xCredit || null);
         setXSubscription(data.xSubscription || null);

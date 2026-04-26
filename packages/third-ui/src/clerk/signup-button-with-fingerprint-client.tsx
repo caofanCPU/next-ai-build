@@ -50,29 +50,12 @@ export function SignUpButtonWithFingerprint({
     }
   }, [fingerprintId, isInitialized, initializeAnonymousUser]);
 
-  // 调试日志和处理注册逻辑
-  useEffect(() => {
-    console.log('SignUpWithFingerprint on [modal] DEBUG:', {
-      fingerprintProvider: fingerprintContext ? 'Available' : 'Not found',
-      fingerprintId: fingerprintId || 'Not generated',
-      xUser: xUser ? 'Initialized' : 'Not initialized',
-      clerkMetadata: unsafeMetadata
-    });
-  }, [xUser, fingerprintId, fingerprintContext, unsafeMetadata]);
   const { openSignUp } = useClerk();
   
 
   const handleClick = () => {
     openSignUp({
       unsafeMetadata,
-    });
-
-    // 记录日志
-    console.log('SignUpButton on [modal] clicked', {
-      timestamp: new Date().toISOString(),
-      mode,
-      userId,
-      fingerprintId
     });
   };
 

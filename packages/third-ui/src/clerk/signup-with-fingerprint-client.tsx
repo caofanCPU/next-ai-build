@@ -33,16 +33,6 @@ export function SignUpWithFingerprint() {
     }
   }, [fingerprintId, isInitialized, initializeAnonymousUser]);
 
-  // 调试日志和处理注册逻辑
-  useEffect(() => {
-    console.log('SignUpWithFingerprint on [redirect] DEBUG:', {
-      fingerprintProvider: fingerprintContext ? 'Available' : 'Not found',
-      fingerprintId: fingerprintId || 'Not generated',
-      xUser: xUser ? 'Initialized' : 'Not initialized',
-      clerkMetadata: unsafeMetadata
-    });
-  }, [xUser, fingerprintId, fingerprintContext, unsafeMetadata]);
-
   return <SignUp unsafeMetadata={unsafeMetadata} />;
 }
 

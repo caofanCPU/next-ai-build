@@ -138,7 +138,6 @@ export function createFumaPage({
       totalElapsedMs: durationMs(pageStartedAt),
     });
     if (!page) {
-      console.log('[FumaPage] missing page', { slug, locale, available: source.pageTree?.[locale]?.children?.map((c: any) => c.url) });
       return (
         <DocsPage
           full

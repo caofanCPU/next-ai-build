@@ -72,8 +72,6 @@ export function ClerkProviderClient({
     clerkProviderProps.waitlistUrl = waitlistWithLocale;
   }
 
-  // console.log('ClerkProviderClient props:', clerkProviderProps);
-
   return (
     <ClerkProvider {...clerkProviderProps}>
       {children}

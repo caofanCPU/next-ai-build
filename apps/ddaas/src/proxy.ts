@@ -79,12 +79,8 @@ export default clerkMiddleware(
       url.pathname = `/${defaultLocale}${pathname}`;
 
       if (appConfig.i18n.localePrefixAsNeeded) {
-        // as-needed: 内部rewrite，用户URL保持无前缀
-        console.log('[middleware rewrite]', { from: pathname, to: url.pathname });
         return NextResponse.rewrite(url);
       } else {
-        // always: 重定向给用户，让他们看到前缀URL
-        console.log('[middleware redirect]', { from: pathname, to: url.pathname });
         return NextResponse.redirect(url);
       }
     }

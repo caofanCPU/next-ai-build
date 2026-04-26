@@ -214,7 +214,6 @@ export async function generateFingerprintId(): Promise<string> {
   // 检查现有 ID
   const existingId = checkStoredFingerprintId();
   if (existingId) {
-    console.log('Using existing fingerprint ID:', existingId);
     return existingId;
   }
 
@@ -228,7 +227,6 @@ export async function generateFingerprintId(): Promise<string> {
     setLocalStorageValue(FINGERPRINT_STORAGE_KEY, fingerprintId);
     setCookie(FINGERPRINT_COOKIE_NAME, fingerprintId, 365);
 
-    console.log('Generated new fingerprint ID:', fingerprintId);
     return fingerprintId;
   } catch (error) {
     console.warn('Failed to generate fingerprint with FingerprintJS:', error);
@@ -237,7 +235,6 @@ export async function generateFingerprintId(): Promise<string> {
     setLocalStorageValue(FINGERPRINT_STORAGE_KEY, fallbackId);
     setCookie(FINGERPRINT_COOKIE_NAME, fallbackId, 365);
 
-    console.log('Generated fallback fingerprint ID:', fallbackId);
     return fallbackId;
   }
 }
@@ -284,7 +281,6 @@ export function clearFingerprintId(): void {
 export async function getOrGenerateFingerprintId(): Promise<string> {
   const existingId = checkStoredFingerprintId();
   if (existingId) {
-    console.log('Retrieved existing fingerprint ID:', existingId);
     return existingId;
   }
 

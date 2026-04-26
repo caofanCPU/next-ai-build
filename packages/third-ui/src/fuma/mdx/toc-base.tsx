@@ -32,7 +32,6 @@ export function LLMCopyButton({ llmApiUrl, sourceKey }: LLMCopyButtonProps = {})
     if (sourceKey) {
       apiUrl += `&sourceKey=${encodeURIComponent(sourceKey)}`;
     }
-    console.log('Fetching LLM content from:', apiUrl);
 
     let content: string;
     try {

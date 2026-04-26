@@ -76,7 +76,6 @@ export function LanguageDetector({ i18nConfig }: LanguageDetectorProps) {
 
       // Use the automatic closing time from the configuration
       const timer = setTimeout(() => {
-        console.log('[LanguageDetector] Auto closing after timeout')
         setShow(false)
         // Save the rejected state when the automatic closing occurs
         savePreference(browserLang, 'rejected')

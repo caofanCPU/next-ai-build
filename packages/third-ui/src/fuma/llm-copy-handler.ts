@@ -21,17 +21,10 @@ export type LLMCopyHandlerOptions = {
  */
 export async function LLMCopyHandler(options: LLMCopyHandlerOptions): Promise<{ text?: string; error?: string; status: number }> {
   const { sourceDir, dataSource, requestedPath, locale } = options;
-
-  // log received parameters
-  console.log(`[LLMCopy] Received, locale=${locale}, path=${requestedPath}`);
-
   const slug = requestedPath?.split('/') || [];
 
   try {
-    console.log('[LLMCopy] Attempting to call getPage()');
     const page = dataSource.getPage(slug, locale);
-    // console.log(page);
-    console.log('[LLMCopy] Call to getPage() completed.');
 
     if (!page) {
       console.error(`[LLMCopy] Page or page data not found for locale=${locale}, path=${requestedPath}`);
@@ -46,19 +39,15 @@ export async function LLMCopyHandler(options: LLMCopyHandlerOptions): Promise<{ 
     const description = page.data?.description ?? page.description;
     const relativeMdxFilePath = page.path;
     const absoluteFilePath = nodePath.join(process.cwd(), sourceDir, relativeMdxFilePath);
-    console.log(`[LLMCopy] Attempting to read MDX content from: ${absoluteFilePath}`);
 
     let mdxContent: string;
     try {
       mdxContent = fs.readFileSync(absoluteFilePath, 'utf-8');
-      console.log(`[LLMCopy] Successfully read MDX content from: ${absoluteFilePath}`);
     } catch (readError: any) {
       console.error(`[LLMCopy] Failed to read file at: ${absoluteFilePath}. Error: ${readError.message}`);
       console.error('[LLMCopy] Read Error object details:', JSON.stringify(readError, Object.getOwnPropertyNames(readError), 2));
       // directory traversal debug logs
       try {
-        console.log(`[LLMCopy] Current CWD: ${process.cwd()}`);
-        console.log(`[LLMCopy] CWD contents: ${fs.readdirSync(process.cwd()).join(', ')}`);
         const srcPath = nodePath.join(process.cwd(), 'src');
         if (fs.existsSync(srcPath)) {
           console.log(`[LLMCopy] src dir contents: ${fs.readdirSync(srcPath).join(', ')}`);

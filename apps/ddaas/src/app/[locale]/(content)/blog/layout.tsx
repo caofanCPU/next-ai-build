@@ -26,7 +26,6 @@ export default async function Layout({
   children: ReactNode;
 }) {
   const { locale } = await params;
-  console.log('[blog layout] entered', { locale });
   const blogSource = await siteDocs.getContentSource('blog');
   const contentLayoutOptions = await contentOptions(locale);
   const homeLayoutOptions: SiteHomeLayoutConfig = {

@@ -7,7 +7,7 @@ import { ClerkProviderClient } from '@third-ui/clerk';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, setRequestLocale } from 'next-intl/server';
 import { montserrat } from "@/lib/fonts";
-import { cn } from '@windrun-huaiin/lib';
+import { cn } from '@windrun-huaiin/lib/utils';
 import './globals.css';
 import React from 'react';
 
@@ -36,7 +36,6 @@ export default async function RootLayout({
   children: React.ReactNode
   params: Promise<{ locale: string }>
 }) {
-  console.log('RootLayout-React version:', React.version);
   const { locale } = await paramsPromise;  // 使用新名称
   setRequestLocale(locale);
   const messages = await getMessages();
