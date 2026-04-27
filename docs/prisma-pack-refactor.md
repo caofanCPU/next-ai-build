@@ -243,6 +243,22 @@ SELECT ...;
 
 用这些日志可以判断同一进程内查询是否复用了同一个 Prisma 实例。
 
+## Supabase TLS 配置
+
+`backend-core` 和应用侧 Prisma 都只把 `DATABASE_URL` 传给 `@prisma/adapter-pg`，不在代码里强制覆盖 SSL 证书策略：
+
+```ts
+new PrismaPg({ connectionString: databaseUrl })
+```
+
+TLS 行为由数据库连接串控制。Supabase pooler 当前建议在 Vercel 环境使用：
+
+```txt
+sslmode=no-verify
+```
+
+这个配置仍然使用 TLS 加密连接，但不校验证书链和服务端身份。不要在代码里再写 `ssl: { rejectUnauthorized: false }`，因为 `pg` 会解析 `connectionString`，URL 里的 `sslmode` 才是最终生效的配置来源。
+
 ## Route 注意事项
 
 Next route/module 被 build 阶段加载是正常行为。不要在 route 顶层执行数据库查询，也不要让 import 链触发 PrismaClient 创建。
