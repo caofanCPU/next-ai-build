@@ -173,6 +173,9 @@ Thumbs.db
 # Generated local-md source artifacts
 .source/
 
+# App Prisma clients are generated during dev/build
+apps/*/src/generated/prisma/
+
 # Backup files
 *.bak
 *.backup

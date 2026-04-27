@@ -7,7 +7,7 @@ export type {
   Transaction,
   Apilog,
   UserBackup,
-} from '@prisma/client';
+} from '../../core-prisma/client';
 
 //  Prisma既是类型也是值
-export { Prisma } from '@prisma/client';
+export { Prisma } from '../../core-prisma/client';

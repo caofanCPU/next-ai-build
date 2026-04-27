@@ -1,22 +1,56 @@
-import { PrismaClient, Prisma } from '@prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
+import { PrismaClient, Prisma } from '../core-prisma/client';
+
+type AppPrismaClient = PrismaClient<'query' | 'info' | 'warn' | 'error'>;
+export type BackendCorePrismaClient = AppPrismaClient;
+export type BackendCoreHostPrismaClient = {
+  // Deliberately loose: host applications generate their own Prisma Client,
+  // so transaction overloads are structurally compatible at runtime but not
+  // nominally identical to backend-core's generated client types.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  $transaction: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  $on?: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  $executeRaw: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  $queryRaw: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  user: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  subscription: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  credit: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  transaction: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  creditAuditLog: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  userBackup: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  apilog: any;
+};
 
 const globalForPrisma = globalThis as unknown as {
-  prisma?: PrismaClient;
+  prisma?: BackendCoreHostPrismaClient;
   __prisma_query_logger_registered?: boolean;
   __prisma_query_logger_id?: string;
+  __prisma_instance_id?: string;
 };
 
 // ==================== 日志配置 ====================
 const getLogConfig = () => {
+  if (process.env.PRISMA_DEBUG === 'true') {
+    return [
+      { emit: 'event' as const, level: 'query' as const },
+      { emit: 'stdout' as const, level: 'info' as const },
+      { emit: 'stdout' as const, level: 'warn' as const },
+      { emit: 'stdout' as const, level: 'error' as const },
+    ];
+  }
+
   const env = process.env.NODE_ENV || 'development';
   switch (env) {
-    case 'development':
-      return [
-        { emit: 'event' as const, level: 'query' as const },
-        { emit: 'stdout' as const, level: 'info' as const },
-        { emit: 'stdout' as const, level: 'warn' as const },
-        { emit: 'stdout' as const, level: 'error' as const },
-      ];
     case 'test':
       return [
         { emit: 'stdout' as const, level: 'warn' as const },
@@ -29,26 +63,78 @@ const getLogConfig = () => {
 
 const logConfig = getLogConfig();
 
-// ==================== 创建 Prisma 全局单例 ====================
-export const prisma =
-  globalForPrisma.prisma ??
-  new PrismaClient<Prisma.PrismaClientOptions, 'query' | 'info' | 'warn' | 'error'>({
+function isPrismaDebugEnabled() {
+  return process.env.PRISMA_DEBUG === 'true';
+}
+
+function createPrismaInstanceId(prefix = 'core-prisma') {
+  return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+}
+
+export function createPrismaClient(databaseUrl = process.env.DATABASE_URL): AppPrismaClient {
+  if (!databaseUrl) {
+    throw new Error('DATABASE_URL is required to create PrismaClient');
+  }
+
+  const adapter = new PrismaPg({
+    connectionString: databaseUrl,
+  });
+
+  const instanceId = createPrismaInstanceId();
+  if (isPrismaDebugEnabled()) {
+    console.log(`Prisma Client Created | ID: ${instanceId}`);
+  }
+
+  const client = new PrismaClient({
+    adapter,
     log: logConfig,
   });
 
-if (process.env.NODE_ENV !== 'production') {
-  globalForPrisma.prisma = prisma;
+  return configureBackendCorePrisma(client, instanceId) as AppPrismaClient;
 }
 
-if (process.env.NODE_ENV === 'development') {
+export function configureBackendCorePrisma(
+  prismaClient: BackendCoreHostPrismaClient,
+  instanceId = globalForPrisma.__prisma_instance_id ?? createPrismaInstanceId(),
+): BackendCoreHostPrismaClient {
+  globalForPrisma.prisma = prismaClient;
+  globalForPrisma.__prisma_instance_id = instanceId;
+  registerDevelopmentQueryLogger(prismaClient, instanceId);
+  return prismaClient;
+}
+
+export function getBackendCorePrisma(): BackendCorePrismaClient {
+  if (!globalForPrisma.prisma) {
+    configureBackendCorePrisma(createPrismaClient());
+  }
+
+  return globalForPrisma.prisma as unknown as BackendCorePrismaClient;
+}
+
+// Backward-compatible lazy export. Accessing a property creates the client,
+// importing this module does not.
+export const prisma = new Proxy({} as BackendCorePrismaClient, {
+  get(_target, property, receiver) {
+    return Reflect.get(getBackendCorePrisma(), property, receiver);
+  },
+});
+
+function registerDevelopmentQueryLogger(prismaClient: BackendCoreHostPrismaClient, instanceId: string) {
+  if (!isPrismaDebugEnabled()) {
+    return;
+  }
+
   const REGISTERED_KEY = '__prisma_query_logger_registered';
   const ID_KEY = '__prisma_query_logger_id';
 
   if (globalForPrisma[REGISTERED_KEY]) {
-    console.log(`Prisma Query Logger Already Registered | ID: ${globalForPrisma[ID_KEY]}`);
+    console.log(
+      `Prisma Query Logger Already Registered | Listener ID: ${globalForPrisma[ID_KEY]} | Instance ID: ${globalForPrisma.__prisma_instance_id}`,
+    );
   } else {
     const listenerId = `listener_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`;
     globalForPrisma[ID_KEY] = listenerId;
+    console.log(`Prisma Query Logger Registered | Listener ID: ${listenerId} | Instance ID: ${instanceId}`);
 
     // --- 自定义SQL拼接 ---
     const interpolate = (query: string, params: string) => {
@@ -95,7 +181,7 @@ if (process.env.NODE_ENV === 'development') {
     };
 
     const wrappedHandler = (event: Prisma.QueryEvent) => {
-      const ms = event.duration;
+      const ms = Math.round(event.duration);
       const slow = ms >= 200 ? '🐌 SLOW SQL ' : '🚀 SQL';
 
       const interpolatedSql = interpolate(event.query, event.params);
@@ -106,17 +192,18 @@ if (process.env.NODE_ENV === 'development') {
         .replace(/"/g, '');                  // 彻底灭双引号
 
       console.log('─'.repeat(60));
+      console.log(`Prisma Instance ID: ${instanceId} | Listener ID: ${listenerId}`);
       console.log(`${clean};`);
       console.log(`⏰ 耗时: ${ms}ms, ${slow}`);
     };
     // 注册包装后的 handler
-    prisma.$on('query' as never, wrappedHandler);
+    prismaClient.$on?.('query' as never, wrappedHandler);
 
     globalForPrisma[REGISTERED_KEY] = true;
   }
 }
 
 // ==================== 便捷方法, 入参事务客户端不存在或者不传, 就返回全局非事务客户端 ====================
-export function checkAndFallbackWithNonTCClient(tx?: Prisma.TransactionClient): Prisma.TransactionClient | PrismaClient {
-  return tx ?? prisma;
+export function checkAndFallbackWithNonTCClient(tx?: Prisma.TransactionClient): Prisma.TransactionClient | BackendCorePrismaClient {
+  return tx ?? getBackendCorePrisma();
 }

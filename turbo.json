@@ -88,11 +88,11 @@
       "env": ["NODE_ENV"]
     },
     "@windrun-huaiin/dev-scripts#build": {
-      "outputs": ["dist/**"],
+      "outputs": ["dist/**", "src/core-prisma/**"],
       "env": ["NODE_ENV"]
     },
     "@windrun-huaiin/lib#build": {
-      "outputs": ["dist/**"],
+      "outputs": ["dist/**", "src/core-prisma/**"],
       "env": ["NODE_ENV"]
     },
     "@windrun-huaiin/fumadocs-local-md#build": {

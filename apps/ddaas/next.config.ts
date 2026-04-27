@@ -42,6 +42,15 @@ const nextConfig: NextConfig = {
     '/[locale]/docs/[...slug]': ['./.source/**/*'],
     '/[locale]/blog/[[...slug]]': ['./.source/**/*'],
     '/[locale]/legal/[[...slug]]': ['./.source/**/*'],
+  },
+
+  outputFileTracingExcludes: {
+    '*': [
+      '../../node_modules/.pnpm/@prisma+client*/node_modules/@prisma/client/runtime/query_engine_*',
+      '../../node_modules/.pnpm/@prisma+client*/node_modules/@prisma/client/runtime/query_compiler_*',
+      '../../node_modules/.pnpm/@prisma+client*/node_modules/.prisma/client/libquery_engine-*',
+      '../../node_modules/.pnpm/@prisma+client*/node_modules/.prisma/client/query_engine_*',
+    ],
   }
 };
 

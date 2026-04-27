@@ -27,6 +27,9 @@
       "@/*": [
         "./src/*"
       ],
+      "@app-prisma": [
+        "./src/generated/prisma/client"
+      ],
       "@third-ui/*": [
         "../../packages/third-ui/src/*"
       ],

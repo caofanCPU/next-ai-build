@@ -2,7 +2,7 @@
 
 import type { Prisma } from '@core/db/prisma-model-type';
 import type { UserBackup } from '@core/db/prisma-model-type';
-import { checkAndFallbackWithNonTCClient } from '@core/prisma/index';
+import { checkAndFallbackWithNonTCClient, type BackendCorePrismaClient } from '@core/prisma/index';
 
 export class UserBackupService {
 
@@ -135,7 +135,7 @@ export class UserBackupService {
       throw new Error('No backup data available');
     }
 
-    const restore = async (client: Prisma.TransactionClient) => {
+    const restore = async (client: Prisma.TransactionClient | BackendCorePrismaClient) => {
       const user = await client.user.create({
         data: {
           fingerprintId: backupData.fingerprintId,

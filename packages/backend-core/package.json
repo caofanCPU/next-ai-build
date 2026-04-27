@@ -42,6 +42,11 @@
       "import": "./dist/services/ai/index.mjs",
       "require": "./dist/services/ai/index.js"
     },
+    "./app/api/ai/route": {
+      "types": "./dist/app/api/ai/route.d.ts",
+      "import": "./dist/app/api/ai/route.mjs",
+      "require": "./dist/app/api/ai/route.js"
+    },
     "./config/fingerprint": {
       "types": "./dist/config/fingerprint.d.ts",
       "import": "./dist/config/fingerprint.mjs",
@@ -126,15 +131,18 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "rm -rf dist && rollup -c rollup.config.mjs",
-    "build:prod": "rm -rf dist && rollup -c rollup.config.mjs",
-    "dev": "rollup -c rollup.config.mjs --watch",
+    "prisma:generate": "rm -rf src/core-prisma && prisma generate --schema prisma/schema.prisma",
+    "build": "pnpm prisma:generate && rm -rf dist && rollup -c rollup.config.mjs",
+    "build:prod": "pnpm prisma:generate && rm -rf dist && rollup -c rollup.config.mjs",
+    "dev": "pnpm prisma:generate && rollup -c rollup.config.mjs --watch",
     "clean": "rm -rf dist",
-    "type-check": "tsc --noEmit"
+    "prepack": "pnpm build",
+    "type-check": "pnpm prisma:generate && tsc --noEmit"
   },
   "dependencies": {
     "@windrun-huaiin/contracts": "workspace:^",
     "@clerk/nextjs": "catalog:",
+    "@prisma/adapter-pg": "catalog:",
     "@prisma/client": "catalog:",
     "@upstash/redis": "catalog:",
     "@upstash/qstash": "catalog:",

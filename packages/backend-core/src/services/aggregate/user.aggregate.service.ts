@@ -81,6 +81,7 @@ export class UserAggregateService {
           operationReferId: newUser.userId,
           creditsChange: freeRegisterAmount,
         },
+        tx
       );
 
       await subscriptionService.initializeSubscription(newUser.userId, tx);
@@ -135,7 +136,7 @@ export class UserAggregateService {
       }
       const userId = user.userId;
       // 更改用户状态，保留user信息尤其是FingerprintId，防止反复注册薅羊毛
-      await userService.unregister(user.userId);
+      await userService.unregister(user.userId, tx);
       // 清空积分
       await creditService.purgeCredit(userId, 'soft_delete_user', userId, tx);
       

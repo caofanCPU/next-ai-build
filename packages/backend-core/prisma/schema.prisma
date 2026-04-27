@@ -2,7 +2,9 @@
 // - generator/datasource 配置仅为示例，合并到宿主时请以宿主的 schema 为准，必要时删除/覆盖本段。
 // - models 定义可直接复用，数据库连接信息应由宿主自行配置。
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
+  output = "../src/core-prisma"
+  engineType = "client"
 }
 
 datasource db {

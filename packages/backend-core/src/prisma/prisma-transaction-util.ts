@@ -1,5 +1,5 @@
-import { prisma } from './prisma';
-import { Prisma } from '@prisma/client';
+import { getBackendCorePrisma } from './prisma';
+import { Prisma } from '../core-prisma/client';
 
 // 事务工具类，回滚时打印回滚日志
 export async function runInTransaction<T>(
@@ -8,7 +8,7 @@ export async function runInTransaction<T>(
 ): Promise<T> {
   const start = Date.now();
   try {
-    return await prisma.$transaction(fn);
+    return await getBackendCorePrisma().$transaction(fn);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     const duration = Date.now() - start;
