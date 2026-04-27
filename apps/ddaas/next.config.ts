@@ -47,7 +47,12 @@ const nextConfig: NextConfig = {
   outputFileTracingExcludes: {
     '*': [
       '../../node_modules/.pnpm/@prisma+client*/node_modules/@prisma/client/runtime/query_engine_*',
-      '../../node_modules/.pnpm/@prisma+client*/node_modules/@prisma/client/runtime/query_compiler_*',
+      '../../node_modules/.pnpm/@prisma+client*/node_modules/@prisma/client/runtime/query_compiler_bg.cockroachdb.*',
+      '../../node_modules/.pnpm/@prisma+client*/node_modules/@prisma/client/runtime/query_compiler_bg.mysql.*',
+      '../../node_modules/.pnpm/@prisma+client*/node_modules/@prisma/client/runtime/query_compiler_bg.sqlite.*',
+      '../../node_modules/.pnpm/@prisma+client*/node_modules/@prisma/client/runtime/query_compiler_bg.sqlserver.*',
+      '../../node_modules/.pnpm/@prisma+client*/node_modules/@prisma/client/runtime/query_compiler_bg.postgresql.js',
+      '../../node_modules/.pnpm/@prisma+client*/node_modules/@prisma/client/runtime/query_compiler_bg.postgresql.wasm-base64.js',
       '../../node_modules/.pnpm/@prisma+client*/node_modules/.prisma/client/libquery_engine-*',
       '../../node_modules/.pnpm/@prisma+client*/node_modules/.prisma/client/query_engine_*',
     ],
