@@ -36,6 +36,7 @@ const globalForPrisma = globalThis as unknown as {
   __prisma_query_logger_registered?: boolean;
   __prisma_query_logger_id?: string;
   __prisma_instance_id?: string;
+  __prisma_ssl_warning_logged?: boolean;
 };
 
 // ==================== 日志配置 ====================
@@ -72,8 +73,25 @@ function createPrismaInstanceId(prefix = 'core-prisma') {
 }
 
 function createPrismaPgConfig(databaseUrl: string) {
+  const ca = process.env.SUPABASE_DB_CA_CERT;
+
+  if (!ca && !globalForPrisma.__prisma_ssl_warning_logged) {
+    console.warn(
+      'SUPABASE_DB_CA_CERT is not configured. Prisma will request TLS without certificate verification unless DATABASE_URL SSL parameters override this behavior. Configure SUPABASE_DB_CA_CERT for certificate verification.',
+    );
+    globalForPrisma.__prisma_ssl_warning_logged = true;
+  }
+
   return {
     connectionString: databaseUrl,
+    ssl: ca
+      ? {
+          ca,
+          rejectUnauthorized: true,
+        }
+      : {
+          rejectUnauthorized: false,
+        },
   };
 }
 

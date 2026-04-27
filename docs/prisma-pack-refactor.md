@@ -245,19 +245,30 @@ SELECT ...;
 
 ## Supabase TLS 配置
 
-`backend-core` 和应用侧 Prisma 都只把 `DATABASE_URL` 传给 `@prisma/adapter-pg`，不在代码里强制覆盖 SSL 证书策略：
+`backend-core` 和应用侧 Prisma 会通过 `SUPABASE_DB_CA_CERT` 提供默认 TLS 证书校验策略。业务侧 `DATABASE_URL` 如果显式携带 `sslmode`、`sslcert`、`sslkey`、`sslrootcert` 这类 SSL 参数，则按 `pg` 的解析结果生效；这是业务方自己的连接安全配置责任。
 
 ```ts
-new PrismaPg({ connectionString: databaseUrl })
+new PrismaPg({
+  connectionString: databaseUrl,
+  ssl: process.env.SUPABASE_DB_CA_CERT
+    ? { ca: process.env.SUPABASE_DB_CA_CERT, rejectUnauthorized: true }
+    : { rejectUnauthorized: false },
+})
 ```
 
-TLS 行为由数据库连接串控制。Supabase pooler 当前建议在 Vercel 环境使用：
+业务侧 DB URL 示例：
 
 ```txt
-sslmode=no-verify
+postgresql://.../postgres?schema=XXX&pgbouncer=true
 ```
 
-这个配置仍然使用 TLS 加密连接，但不校验证书链和服务端身份。不要在代码里再写 `ssl: { rejectUnauthorized: false }`，因为 `pg` 会解析 `connectionString`，URL 里的 `sslmode` 才是最终生效的配置来源。
+默认行为约定：
+
+- 未配置 `SUPABASE_DB_CA_CERT`：仍然使用 TLS 加密连接，但不校验证书链和服务端身份，并输出一次 warn。
+- 已配置 `SUPABASE_DB_CA_CERT`：使用 TLS 加密连接，并使用该 CA 校验证书链和服务端身份。
+- 如果 `DATABASE_URL` 显式携带 SSL 参数，`pg` 会以 URL 参数为准，可能覆盖上面的默认策略。例如 `sslmode=disable` 会关闭 TLS，这是业务方显式配置的结果。
+
+`SUPABASE_DB_CA_CERT` 在 Vercel 中直接粘贴真实多行 PEM 内容，不需要手写 `\n`，代码也不做换行 normalize。
 
 ## Route 注意事项
 
