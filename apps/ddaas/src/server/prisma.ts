@@ -21,7 +21,6 @@ function getPrismaLogConfig() {
 function createPrismaPgConfig(databaseUrl: string) {
   return {
     connectionString: databaseUrl,
-    ssl: { rejectUnauthorized: false },
   };
 }
 

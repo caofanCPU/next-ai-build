@@ -15,7 +15,7 @@
 | `apps/<app>/src/server/prisma.ts` | 创建应用自己的 Prisma Client | 只服务应用自己的 model。默认只打印 error；需要排查时用 `PRISMA_DEBUG=true`。不要把 app client 注册给 core。 |
 | `apps/<app>/src/server/services/*` | 应用自己的 service 放这里 | app service 可以调用 `backend-core` service，也可以使用 `@app-prisma` 操作应用自己的表。 |
 | `apps/<app>/src/app/api/**/route.ts` | 避免顶层 DB 查询 | route 顶层可以创建 handler，但不要顶层执行查询。测试查询放在 handler/hook 内部。 |
-| `apps/<app>/next.config.ts` | 保留 Prisma tracing excludes | 排除旧 Prisma engine/query compiler 的 trace 规则，避免 Next/Vercel 保守打包旧 engine 文件。 |
+| `apps/<app>/next.config.ts` | 保留 Prisma tracing excludes | 排除旧 Prisma query engine，以及非 PostgreSQL 的 query compiler；必须保留 PostgreSQL query compiler，否则 Vercel 运行时会缺文件。 |
 | 环境变量 | 可选开启 `PRISMA_DEBUG=true` | 开启后打印 core Prisma 实例 ID、query listener ID 和 SQL 耗时；稳定后不建议开启。 |
 
 ## 目标
@@ -267,9 +267,12 @@ const user = await userService.findByUserId(...);
 
 - 不应出现 `.prisma/client/libquery_engine-*`
 - 不应出现大量 `query_engine_bg.*`
-- DB API function 保持 MB 级别，而不是 80MB 级别
+- 应保留 `query_compiler_bg.postgresql.mjs`
+- 应保留 `query_compiler_bg.postgresql.wasm-base64.mjs`
+- 不应出现 MySQL/SQLite/SQL Server/CockroachDB 的 query compiler
+- DB API function 保持个位数 MB 级别，而不是 80MB 级别
 
-当前 Rust-free Prisma Client 仍可能包含少量 PostgreSQL query compiler wasm chunk，这是正常的，和旧 Rust query engine 大包不是同一问题。
+当前 Rust-free Prisma Client 需要 PostgreSQL query compiler。它不是构建期工具，而是运行期把 Prisma Client query 编译为 PostgreSQL SQL 的组件，不能从 Vercel function trace 中排除。
 
 ### 当前验证结果
 
@@ -281,39 +284,47 @@ pnpm --filter @windrun-huaiin/ddaas-website build
 
 构建成功后统计 `apps/ddaas/.next/server/app/**/*.nft.json`，关键 API route 结果：
 
-| Route | Trace size | Prisma engine files |
-| --- | ---: | ---: |
-| `/api/ai/generate` | 5.19MB | 2 |
-| `/api/user/credit-overview` | 5.87MB | 2 |
-| `/api/user/pricing-context` | 5.17MB | 2 |
-| `/api/user/anonymous/init` | 5.18MB | 2 |
-| `/api/stripe/checkout` | 6.31MB | 2 |
-| `/api/stripe/customer-portal` | 5.58MB | 2 |
-| `/api/webhook/clerk/user` | 5.14MB | 2 |
-| `/api/webhook/stripe` | 5.94MB | 2 |
+| Route | Trace size | Old query engine | PostgreSQL compiler | Other DB compiler |
+| --- | ---: | ---: | ---: | ---: |
+| `/api/ai/generate` | 7.67MB | 0 | 2 | 0 |
+| `/api/user/anonymous/init` | 7.67MB | 0 | 2 | 0 |
+| `/api/user/credit-overview` | 8.36MB | 0 | 2 | 0 |
+| `/api/user/pricing-context` | 7.66MB | 0 | 2 | 0 |
+| `/api/stripe/checkout` | 8.80MB | 0 | 2 | 0 |
+| `/api/stripe/customer-portal` | 8.06MB | 0 | 2 | 0 |
+| `/api/webhook/clerk/user` | 7.63MB | 0 | 2 | 0 |
+| `/api/webhook/stripe` | 8.43MB | 0 | 2 | 0 |
 
+对比改造前，DB API route 约为 `79-82MB`。改造后稳定在 `7-9MB`。这个体积包含 Rust-free Prisma 运行期必需的 PostgreSQL query compiler。
 
-sqlserver:  count=0
-  cockroach:  count=0
-  queryEngine/libquery_engine: count=0
-
-  具体两个文件是：
-
-  query_compiler_bg.postgresql.mjs                 0.01MB
-  query_compiler_bg.postgresql.wasm-base64.mjs     2.48MB
-
-对比改造前，DB API route 约为 `79-82MB`。改造后基本稳定在 `5-6MB`。
-
-`engines=2` 对应的是 Rust-free Prisma Client 下的 PostgreSQL query compiler chunk：
+PostgreSQL compiler 具体两个文件：
 
 ```txt
-query_compiler_bg_postgresql.wasm-base64
-query_compiler_bg_postgresql.mjs
+query_compiler_bg.postgresql.mjs                 约 0.01MB
+query_compiler_bg.postgresql.wasm-base64.mjs     约 2.48MB
 ```
 
-它们不是旧的 Rust query engine 大包。当前 trace 中已不再出现：
+当前 trace 中已确认：
+
+```txt
+mysql compiler:       count=0
+sqlite compiler:      count=0
+sqlserver compiler:   count=0
+cockroach compiler:   count=0
+queryEngine/libquery_engine: count=0
+```
+
+当前 trace 中已不再出现旧 query engine：
 
 ```txt
 .prisma/client/libquery_engine-*
 @prisma/client/runtime/query_engine_bg.*
 ```
+
+曾经尝试排除所有 `query_compiler_*`，本地 build 不一定暴露问题，因为本地完整 `node_modules` 仍可兜底；但 Vercel serverless function 只携带 traced 文件，线上会报：
+
+```txt
+ERR_MODULE_NOT_FOUND: query_compiler_bg.postgresql.mjs
+```
+
+因此 tracing excludes 只能排除旧 query engine、其它数据库 compiler、以及 PostgreSQL compiler 的 CJS 版本；不能排除 PostgreSQL `.mjs` compiler。

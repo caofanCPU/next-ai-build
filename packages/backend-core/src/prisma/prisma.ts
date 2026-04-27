@@ -74,7 +74,6 @@ function createPrismaInstanceId(prefix = 'core-prisma') {
 function createPrismaPgConfig(databaseUrl: string) {
   return {
     connectionString: databaseUrl,
-    ssl: { rejectUnauthorized: false },
   };
 }
 
