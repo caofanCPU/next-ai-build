@@ -1,11 +1,11 @@
 import { SiteIcon } from '@/lib/site-config';
 import { getTranslations } from 'next-intl/server';
 import { localePrefixAsNeeded, defaultLocale } from '@/lib/appConfig';
+import { HomeTitle } from '@third-ui/fuma/base/custom-home-layout';
 import {
-  HomeTitle,
   createSiteBaseLayoutConfig,
   type SiteBaseLayoutConfig,
-} from '@third-ui/fuma/base';
+} from '@third-ui/fuma/base/site-layout-shared';
 import { getAsNeededLocalizedUrl } from '@lib/utils';
 
 export async function baseOptions(locale: string): Promise<SiteBaseLayoutConfig> {

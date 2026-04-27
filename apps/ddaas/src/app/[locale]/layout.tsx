@@ -1,8 +1,8 @@
 import { appConfig, generatedLocales, localePrefixAsNeeded, defaultLocale } from "@/lib/appConfig";
-import { getFumaTranslations } from '@third-ui/fuma/server';
+import { getFumaTranslations } from '@third-ui/fuma/fuma-translate-util';
 import { createLocalizedSiteMetadata } from '@third-ui/lib/seo-metadata';
 import { NProgressBar } from '@third-ui/main/nprogress-bar';
-import { DocsRootProvider } from '@third-ui/fuma/base';
+import { DocsRootProvider } from '@third-ui/fuma/base/docs-root-provider';
 import { ClerkProviderClient } from '@third-ui/clerk';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, setRequestLocale } from 'next-intl/server';

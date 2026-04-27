@@ -35,7 +35,7 @@ import { Popover, PopoverContent, PopoverTrigger } from 'fumadocs-ui/components/
 import { buttonVariants } from 'fumadocs-ui/components/ui/button';
 import { useI18n } from 'fumadocs-ui/contexts/i18n';
 import { HeaderThemeSwitch } from './header-theme-switch';
-import type { ExtendedLinkItem } from './custom-home-layout';
+import type { ExtendedLinkItem } from './site-layout-shared';
 
 export type NavbarCSSVars = CSSProperties & {
   '--fd-banner-height'?: string;

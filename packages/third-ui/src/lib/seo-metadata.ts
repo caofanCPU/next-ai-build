@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
-import { getAsNeededLocalizedUrl } from '@windrun-huaiin/lib';
+import { getAsNeededLocalizedUrl } from '@windrun-huaiin/lib/utils';
 
 export interface CreateLocalizedSiteMetadataOptions {
   locale: string;

@@ -14,10 +14,12 @@ import {
   createLocalizedNavContext,
   createLocalizedNavGroup,
   createLocalizedNavLink,
+} from '@third-ui/fuma/base/nav-config';
+import {
   type SiteMenuGroupConfig,
   type SiteMenuLeafConfig,
   type SiteNavItemConfig,
-} from '@third-ui/fuma/base';
+} from '@third-ui/fuma/base/site-layout-shared';
 import { getAsNeededLocalizedUrl } from '@lib/utils';
 import { defaultLocale, localePrefixAsNeeded } from '@/lib/appConfig';
 

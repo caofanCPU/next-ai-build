@@ -46,6 +46,18 @@ const nextConfig: NextConfig = {
 
   outputFileTracingExcludes: {
     '*': [
+      './tsconfig.tsbuildinfo',
+      './tsconfig.json',
+      './tsconfig.node.json',
+      './dev-scripts.config.json',
+      './components.json',
+      './eslint.config.js',
+      './postcss.config.mjs',
+      './next.config.ts',
+      './CHANGELOG.md',
+      './LICENSE',
+      './logs/**/*',
+      './database/**/*',
       '../../node_modules/.pnpm/@prisma+client*/node_modules/@prisma/client/runtime/query_engine_*',
       '../../node_modules/.pnpm/@prisma+client*/node_modules/@prisma/client/runtime/query_compiler_bg.cockroachdb.*',
       '../../node_modules/.pnpm/@prisma+client*/node_modules/@prisma/client/runtime/query_compiler_bg.mysql.*',

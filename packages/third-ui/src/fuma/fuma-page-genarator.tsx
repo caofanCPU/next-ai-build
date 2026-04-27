@@ -2,7 +2,7 @@ import { DocsBody, DocsDescription, DocsPage, DocsTitle } from 'fumadocs-ui/page
 import { ReactNode, ReactElement, cloneElement, type CSSProperties } from 'react';
 import { TocFooterWrapper } from './mdx/toc-footer-wrapper';
 import type { LLMCopyButtonProps, LLMCopyButton } from './mdx/toc-base';
-import { getAsNeededLocalizedUrl } from '@windrun-huaiin/lib';
+import { getAsNeededLocalizedUrl } from '@windrun-huaiin/lib/utils';
 import { PortableClerkTOC, PortableClerkTOCTitle } from './mdx/toc-clerk-portable';
 import { themeSvgIconColor } from '@windrun-huaiin/base-ui/lib';
 

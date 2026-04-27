@@ -98,6 +98,21 @@
       "import": "./dist/fuma/server.mjs",
       "require": "./dist/fuma/server.js"
     },
+    "./fuma/server/page-generator": {
+      "types": "./dist/fuma/server/page-generator.d.ts",
+      "import": "./dist/fuma/server/page-generator.mjs",
+      "require": "./dist/fuma/server/page-generator.js"
+    },
+    "./fuma/server/llm-copy-handler": {
+      "types": "./dist/fuma/server/llm-copy-handler.d.ts",
+      "import": "./dist/fuma/server/llm-copy-handler.mjs",
+      "require": "./dist/fuma/server/llm-copy-handler.js"
+    },
+    "./fuma/fuma-translate-util": {
+      "types": "./dist/fuma/fuma-translate-util.d.ts",
+      "import": "./dist/fuma/fuma-translate-util.mjs",
+      "require": "./dist/fuma/fuma-translate-util.js"
+    },
     "./fuma/server/site-mdx/base": {
       "types": "./dist/fuma/server/site-mdx-base.d.ts",
       "import": "./dist/fuma/server/site-mdx-base.mjs",
@@ -142,6 +157,31 @@
       "types": "./dist/fuma/base/index.d.ts",
       "import": "./dist/fuma/base/index.mjs",
       "require": "./dist/fuma/base/index.js"
+    },
+    "./fuma/base/docs-root-provider": {
+      "types": "./dist/fuma/base/docs-root-provider.d.ts",
+      "import": "./dist/fuma/base/docs-root-provider.mjs",
+      "require": "./dist/fuma/base/docs-root-provider.js"
+    },
+    "./fuma/base/nav-config": {
+      "types": "./dist/fuma/base/nav-config.d.ts",
+      "import": "./dist/fuma/base/nav-config.mjs",
+      "require": "./dist/fuma/base/nav-config.js"
+    },
+    "./fuma/base/site-docs-layout": {
+      "types": "./dist/fuma/base/site-docs-layout.d.ts",
+      "import": "./dist/fuma/base/site-docs-layout.mjs",
+      "require": "./dist/fuma/base/site-docs-layout.js"
+    },
+    "./fuma/base/site-home-layout": {
+      "types": "./dist/fuma/base/site-home-layout.d.ts",
+      "import": "./dist/fuma/base/site-home-layout.mjs",
+      "require": "./dist/fuma/base/site-home-layout.js"
+    },
+    "./fuma/base/site-layout-shared": {
+      "types": "./dist/fuma/base/site-layout-shared.d.ts",
+      "import": "./dist/fuma/base/site-layout-shared.mjs",
+      "require": "./dist/fuma/base/site-layout-shared.js"
     },
     "./lib/server": {
       "types": "./dist/lib/server.d.ts",

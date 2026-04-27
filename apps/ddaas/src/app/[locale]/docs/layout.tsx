@@ -2,7 +2,7 @@ import { baseOptions } from '@/app/[locale]/layout.config';
 import { siteDocs } from '@/lib/site-docs';
 import type { ReactNode } from 'react';
 import { FumaGithubInfo } from '@third-ui/fuma/mdx/fuma-github-info';
-import { SiteDocsLayout, type SiteDocsLayoutConfig } from '@third-ui/fuma/base';
+import { SiteDocsLayout, type SiteDocsLayoutConfig } from '@third-ui/fuma/base/site-docs-layout';
 import { appConfig } from '@/lib/appConfig';
 import { i18n } from '@/lib/i18n-base';
 

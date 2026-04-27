@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next';
 import fs from 'fs';
 import path from 'path';
-import { getAsNeededLocalizedUrl } from '@windrun-huaiin/lib';
+import { getAsNeededLocalizedUrl } from '@windrun-huaiin/lib/utils';
 
 /**
  * Generate robots.txt content

@@ -3,9 +3,8 @@ import { MailIcon, ReceiptTextIcon, ShieldUserIcon } from '@windrun-huaiin/base-
 import Link from "next/link";
 import { FooterEmail } from './footer-email';
 import { safeT } from '../lib/t-intl';
-import { getAsNeededLocalizedUrl } from '@windrun-huaiin/lib';
+import { cn, getAsNeededLocalizedUrl } from '@windrun-huaiin/lib/utils';
 import { themeIconColor } from '@windrun-huaiin/base-ui/lib';
-import { cn } from '@windrun-huaiin/lib';
 
 interface FooterData {
   terms: string;
