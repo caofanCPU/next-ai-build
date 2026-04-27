@@ -18,15 +18,20 @@ function getPrismaLogConfig() {
   return [{ emit: 'stdout' as const, level: 'error' as const }];
 }
 
+function createPrismaPgConfig(databaseUrl: string) {
+  return {
+    connectionString: databaseUrl,
+    ssl: { rejectUnauthorized: false },
+  };
+}
+
 function createAppPrismaClient() {
   const databaseUrl = process.env.DATABASE_URL;
   if (!databaseUrl) {
     throw new Error('DATABASE_URL is required to create PrismaClient');
   }
 
-  const adapter = new PrismaPg({
-    connectionString: databaseUrl,
-  });
+  const adapter = new PrismaPg(createPrismaPgConfig(databaseUrl));
 
   return new PrismaClient({
     adapter,

@@ -71,14 +71,19 @@ function createPrismaInstanceId(prefix = 'core-prisma') {
   return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
 }
 
+function createPrismaPgConfig(databaseUrl: string) {
+  return {
+    connectionString: databaseUrl,
+    ssl: { rejectUnauthorized: false },
+  };
+}
+
 export function createPrismaClient(databaseUrl = process.env.DATABASE_URL): AppPrismaClient {
   if (!databaseUrl) {
     throw new Error('DATABASE_URL is required to create PrismaClient');
   }
 
-  const adapter = new PrismaPg({
-    connectionString: databaseUrl,
-  });
+  const adapter = new PrismaPg(createPrismaPgConfig(databaseUrl));
 
   const instanceId = createPrismaInstanceId();
   if (isPrismaDebugEnabled()) {

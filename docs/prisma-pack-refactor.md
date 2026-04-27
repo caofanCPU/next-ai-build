@@ -292,6 +292,16 @@ pnpm --filter @windrun-huaiin/ddaas-website build
 | `/api/webhook/clerk/user` | 5.14MB | 2 |
 | `/api/webhook/stripe` | 5.94MB | 2 |
 
+
+sqlserver:  count=0
+  cockroach:  count=0
+  queryEngine/libquery_engine: count=0
+
+  具体两个文件是：
+
+  query_compiler_bg.postgresql.mjs                 0.01MB
+  query_compiler_bg.postgresql.wasm-base64.mjs     2.48MB
+
 对比改造前，DB API route 约为 `79-82MB`。改造后基本稳定在 `5-6MB`。
 
 `engines=2` 对应的是 Rust-free Prisma Client 下的 PostgreSQL query compiler chunk：
