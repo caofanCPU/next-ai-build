@@ -355,3 +355,41 @@ ERR_MODULE_NOT_FOUND: query_compiler_bg.postgresql.mjs
 ```
 
 因此 tracing excludes 只能排除旧 query engine、其它数据库 compiler、以及 PostgreSQL compiler 的 CJS 版本；不能排除 PostgreSQL `.mjs` compiler。
+
+结论：`@prisma/client/runtime/query_compiler_bg.postgresql.wasm-base64.mjs` 出现在 API route trace 里是预期行为，不能排除。
+
+当前 `apps/ddaas/next.config.ts` 的 `outputFileTracingExcludes` 会排除：
+
+- 旧 Rust query engine：`query_engine_*`、`.prisma/client/libquery_engine-*`
+- 非 PostgreSQL query compiler：MySQL、SQLite、SQL Server、CockroachDB
+- PostgreSQL compiler 的 CJS 版本：`.js`
+
+但不会排除 PostgreSQL compiler 的 ESM 版本：
+
+```txt
+query_compiler_bg.postgresql.mjs
+query_compiler_bg.postgresql.wasm-base64.mjs
+```
+
+原因是当前 Prisma 6 使用：
+
+```prisma
+engineType = "client"
+```
+
+这是 Rust-free Prisma Client。它不再依赖旧的 Rust query engine，但访问 PostgreSQL 时仍需要 PostgreSQL query compiler 在运行期把 Prisma query 编译为 SQL。
+
+之前尝试排除所有 `query_compiler_*` 后，Vercel 线上已经出现过运行时报错：
+
+```txt
+ERR_MODULE_NOT_FOUND: query_compiler_bg.postgresql.mjs
+```
+
+因此：
+
+- trace 里还有 PostgreSQL `.mjs` compiler：正确
+- 它约 2.5MiB：正常，是当前 Rust-free Prisma 的运行期成本
+- 其它数据库 compiler 数量为 0：正确
+- 旧 Rust query engine 数量为 0：正确
+
+当前打包优化目标不是把 PostgreSQL compiler 也裁掉，而是确保只保留 PostgreSQL compiler，不带其它数据库 runtime 和旧 Rust engine。

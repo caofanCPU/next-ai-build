@@ -1,6 +1,6 @@
 {
   "name": "@windrun-huaiin/backend-core",
-  "version": "27.0.0",
+  "version": "28.0.0",
   "description": "Shared backend primitives: Prisma schema/client, database services, routing helpers",
   "type": "module",
   "main": "./dist/index.js",

@@ -1,5 +1,15 @@
 # @windrun-huaiin/contracts
 
+## 28.0.0
+
+### Major Changes
+
+- refactor(pack): optimize page route and api route pack size
+  - fix barral import
+  - split componts
+  - prisma change to build as package
+  - db model will be free as needed
+
 ## 27.0.0
 
 ### Major Changes

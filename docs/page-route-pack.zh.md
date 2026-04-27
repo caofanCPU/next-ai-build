@@ -527,3 +527,61 @@ import { getAsNeededLocalizedUrl } from '@windrun-huaiin/lib';
 - 这个功能是否应该移动到具体子路径入口？
 
 如果一个模块确实很重但业务需要，就让它的 import path 显式表达成本。读到 import 的人应该能看出自己正在选择哪个运行时能力。
+
+
+
+
+## Vercel部署真相
+
+Vercel 不是每个 page 一个函数。
+
+  本地 .vercel/output/functions 里这些都是 symlink：
+
+  [locale].func -> [locale]/sign-in/[[...sign-in]].func
+  [locale]/pricing.func -> sign-in/[[...sign-in]].func
+  [locale]/docs.func -> sign-in/[[...sign-in]].func
+  [locale]/docs/[...slug].func -> ../sign-in/[[...sign-in]].func
+  [locale]/blog/[[...slug]].func -> ../sign-in/[[...sign-in]].func
+  [locale]/legal/[[...slug]].func -> ../sign-in/[[...sign-in]].func
+  ...
+
+  所以 Vercel Resource 面板里所有 PAGE 都是 6.14 MB，原因就是它们最终指向同一个真实 page function。
+
+  真实函数是：
+
+  .vercel/output/functions/[locale]/sign-in/[[...sign-in]].func
+
+  它本身 du 只有 208K，但 .vc-config.json 里的 filePathMap 引用了 1075 个真实文件。按这些文件统计：
+
+  raw: 25.69 MiB
+  gzip: 5.57 MiB
+
+  Vercel 面板的 6.14 MB 基本就是这个压缩口径加上一些 launcher/config 开销。
+
+  这个共享函数里确实包含内容页重依赖
+
+  主要大头：
+
+  .source               3.49 MiB raw / 306 KiB gzip
+  shiki                 9.86 MiB raw / 1.76 MiB gzip
+  mermaid               1.08 MiB raw / 312 KiB gzip
+  katex                 512 KiB raw / 149 KiB gzip
+  cytoscape             418 KiB raw / 131 KiB gzip
+  next runtime          1.09 MiB raw / 337 KiB gzip
+  public assets         390 KiB raw / 260 KiB gzip
+  base-ui               387 KiB raw / 119 KiB gzip
+  clerk                 275 KiB raw / 35 KiB gzip
+
+  所以之前的判断要修正一下：
+
+  - Next 单页 .nft.json 里首页已经干净了，首页 trace 约 3.04 MiB。
+  - 但 Vercel 最终把 [locale] 下所有 PAGE 合成了一个共享函数。
+  - 因此 docs/blog/legal 的 Shiki、Mermaid、KaTeX、.source 又进入了这个共享 [locale] function。
+  - Vercel 面板的 6.14 MB 不是首页单页体积，而是整个 [locale] PAGE 族的共享函数体积。
+
+  接下来如果要继续压 Vercel Resource 里的 PAGE size，方向不是再查首页 import，而是压这个共享 [locale] 函数里的全局集合：
+
+  1. 优先处理 docs/blog/legal 内容页 runtime：Shiki 全语言、Mermaid、KaTeX、Cytoscape、.source。
+  2. 如果 test/* 页面不是生产必要，生产构建应移除或隔离，它们也被并入同一个 [locale] 函数。
+  3. 让 MDX/code highlight 尽量 build-time 化，不要在 page runtime 带全量 Shiki/langs。
+  4. Vercel 面板这个 PAGE size 以后不能再用来判断“首页是否干净”，要看单页 .nft.json；它只能代表 [locale] 共享函数包。

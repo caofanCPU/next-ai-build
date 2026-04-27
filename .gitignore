@@ -186,3 +186,4 @@ apps/*/src/generated/prisma/
 .gitnexus
 AGENTS.md
 CLAUDE.md
+.vercel
