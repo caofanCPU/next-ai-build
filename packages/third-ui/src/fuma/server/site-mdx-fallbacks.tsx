@@ -68,7 +68,7 @@ export function MissingMdxFeatureBlock({
           ))}
         </div>
       )}
-      <div className="whitespace-pre-wrap break-words rounded-lg border border-red-200 bg-white/70 p-3 font-mono text-xs text-red-900 dark:border-red-900/70 dark:bg-black/20 dark:text-red-100">
+      <div className="whitespace-pre-wrap wrap-break-word rounded-lg border border-red-200 bg-white/70 p-3 font-mono text-xs text-red-900 dark:border-red-900/70 dark:bg-black/20 dark:text-red-100">
         {renderChildren(children)}
       </div>
     </div>
