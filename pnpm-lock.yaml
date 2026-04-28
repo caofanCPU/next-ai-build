@@ -555,9 +555,6 @@ importers:
       '@clerk/nextjs':
         specifier: 'catalog:'
         version: 7.2.7(next@16.1.6(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      '@prisma/adapter-pg':
-        specifier: 'catalog:'
-        version: 6.19.3
       '@prisma/client':
         specifier: 'catalog:'
         version: 6.19.3(prisma@6.19.3(typescript@5.9.3))(typescript@5.9.3)
@@ -582,9 +579,6 @@ importers:
       next:
         specifier: 'catalog:'
         version: 16.1.6(@babel/core@7.29.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      prisma:
-        specifier: 'catalog:'
-        version: 6.19.3(typescript@5.9.3)
       stripe:
         specifier: 'catalog:'
         version: 22.0.2(@types/node@25.6.0)
