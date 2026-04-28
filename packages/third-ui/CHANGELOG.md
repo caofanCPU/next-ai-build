@@ -1,5 +1,11 @@
 # @windrun-huaiin/third-ui
 
+## 29.0.1
+
+### Patch Changes
+
+- fix(icon): support `xx` and `xxIcon` name
+
 ## 29.0.0
 
 ### Major Changes

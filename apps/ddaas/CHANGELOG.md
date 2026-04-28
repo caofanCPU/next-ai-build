@@ -1,5 +1,16 @@
 # @windrun-huaiin/ddaas-website
 
+## 29.0.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @windrun-huaiin/lib@29.0.0
+  - @windrun-huaiin/contracts@29.0.0
+  - @windrun-huaiin/base-ui@29.0.0
+  - @windrun-huaiin/third-ui@29.0.1
+  - @windrun-huaiin/fumadocs-local-md@29.0.0
+
 ## 29.0.0
 
 ### Major Changes
