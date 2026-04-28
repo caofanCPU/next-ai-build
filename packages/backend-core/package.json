@@ -107,6 +107,16 @@
       "import": "./dist/app/api/user/anonymous/init/route.mjs",
       "require": "./dist/app/api/user/anonymous/init/route.js"
     },
+    "./app/api/user/credit-overview/route": {
+      "types": "./dist/app/api/user/credit-overview/route.d.ts",
+      "import": "./dist/app/api/user/credit-overview/route.mjs",
+      "require": "./dist/app/api/user/credit-overview/route.js"
+    },
+    "./app/api/user/pricing-context/route": {
+      "types": "./dist/app/api/user/pricing-context/route.d.ts",
+      "import": "./dist/app/api/user/pricing-context/route.mjs",
+      "require": "./dist/app/api/user/pricing-context/route.js"
+    },
     "./app/api/stripe/checkout/route": {
       "types": "./dist/app/api/stripe/checkout/route.d.ts",
       "import": "./dist/app/api/stripe/checkout/route.mjs",

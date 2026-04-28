@@ -5,9 +5,7 @@ export { diaomaoUpdate } from '@dev-scripts/commands/diaomao-update'
 export {
   registerBackendCoreCommands,
   syncBackendCoreRoutes,
-  listBackendCoreRoutes,
-  syncBackendCorePrisma,
-  syncBackendCoreMigrations
+  listBackendCoreRoutes
 } from '@dev-scripts/commands/backend-core'
 
 // config

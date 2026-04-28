@@ -290,106 +290,63 @@ const user = await userService.findByUserId(...);
 
 ## 打包验证
 
+打包需要分清两个目标：Vercel function trace 和 `backend-core` npm tarball。前者关注运行时依赖是否被 trace 进函数；后者关注公共包里是否发布了无用源码和声明文件。
+
+### Vercel function trace
+
 构建后可通过 `.nft.json` 检查函数 trace。重点确认：
 
 - 不应出现 `.prisma/client/libquery_engine-*`
 - 不应出现大量 `query_engine_bg.*`
-- 应保留 `query_compiler_bg.postgresql.mjs`
-- 应保留 `query_compiler_bg.postgresql.wasm-base64.mjs`
 - 不应出现 MySQL/SQLite/SQL Server/CockroachDB 的 query compiler
-- DB API function 保持个位数 MB 级别，而不是 80MB 级别
-
-当前 Rust-free Prisma Client 需要 PostgreSQL query compiler。它不是构建期工具，而是运行期把 Prisma Client query 编译为 PostgreSQL SQL 的组件，不能从 Vercel function trace 中排除。
-
-### 当前验证结果
-
-验证命令：
-
-```bash
-pnpm --filter @windrun-huaiin/ddaas-website build
-```
-
-构建成功后统计 `apps/ddaas/.next/server/app/**/*.nft.json`，关键 API route 结果：
-
-| Route | Trace size | Old query engine | PostgreSQL compiler | Other DB compiler |
-| --- | ---: | ---: | ---: | ---: |
-| `/api/ai/generate` | 7.67MB | 0 | 2 | 0 |
-| `/api/user/anonymous/init` | 7.67MB | 0 | 2 | 0 |
-| `/api/user/credit-overview` | 8.36MB | 0 | 2 | 0 |
-| `/api/user/pricing-context` | 7.66MB | 0 | 2 | 0 |
-| `/api/stripe/checkout` | 8.80MB | 0 | 2 | 0 |
-| `/api/stripe/customer-portal` | 8.06MB | 0 | 2 | 0 |
-| `/api/webhook/clerk/user` | 7.63MB | 0 | 2 | 0 |
-| `/api/webhook/stripe` | 8.43MB | 0 | 2 | 0 |
-
-对比改造前，DB API route 约为 `79-82MB`。改造后稳定在 `7-9MB`。这个体积包含 Rust-free Prisma 运行期必需的 PostgreSQL query compiler。
-
-PostgreSQL compiler 具体两个文件：
-
-```txt
-query_compiler_bg.postgresql.mjs                 约 0.01MB
-query_compiler_bg.postgresql.wasm-base64.mjs     约 2.48MB
-```
-
-当前 trace 中已确认：
-
-```txt
-mysql compiler:       count=0
-sqlite compiler:      count=0
-sqlserver compiler:   count=0
-cockroach compiler:   count=0
-queryEngine/libquery_engine: count=0
-```
-
-当前 trace 中已不再出现旧 query engine：
-
-```txt
-.prisma/client/libquery_engine-*
-@prisma/client/runtime/query_engine_bg.*
-```
-
-曾经尝试排除所有 `query_compiler_*`，本地 build 不一定暴露问题，因为本地完整 `node_modules` 仍可兜底；但 Vercel serverless function 只携带 traced 文件，线上会报：
-
-```txt
-ERR_MODULE_NOT_FOUND: query_compiler_bg.postgresql.mjs
-```
-
-因此 tracing excludes 只能排除旧 query engine、其它数据库 compiler、以及 PostgreSQL compiler 的 CJS 版本；不能排除 PostgreSQL `.mjs` compiler。
-
-结论：`@prisma/client/runtime/query_compiler_bg.postgresql.wasm-base64.mjs` 出现在 API route trace 里是预期行为，不能排除。
-
-当前 `apps/ddaas/next.config.ts` 的 `outputFileTracingExcludes` 会排除：
-
-- 旧 Rust query engine：`query_engine_*`、`.prisma/client/libquery_engine-*`
-- 非 PostgreSQL query compiler：MySQL、SQLite、SQL Server、CockroachDB
-- PostgreSQL compiler 的 CJS 版本：`.js`
-
-但不会排除 PostgreSQL compiler 的 ESM 版本：
+- 应保留 PostgreSQL ESM compiler：
 
 ```txt
 query_compiler_bg.postgresql.mjs
 query_compiler_bg.postgresql.wasm-base64.mjs
 ```
 
-原因是当前 Prisma 6 使用：
-
-```prisma
-engineType = "client"
-```
-
-这是 Rust-free Prisma Client。它不再依赖旧的 Rust query engine，但访问 PostgreSQL 时仍需要 PostgreSQL query compiler 在运行期把 Prisma query 编译为 SQL。
-
-之前尝试排除所有 `query_compiler_*` 后，Vercel 线上已经出现过运行时报错：
+结论：PostgreSQL compiler 不能排除。当前 Prisma 使用 `engineType = "client"`，不再依赖旧 Rust query engine，但仍需要 PostgreSQL query compiler 在运行期把 Prisma query 编译为 SQL。之前排除所有 `query_compiler_*` 后，Vercel serverless function 已出现过：
 
 ```txt
 ERR_MODULE_NOT_FOUND: query_compiler_bg.postgresql.mjs
 ```
 
-因此：
+所以 `apps/ddaas/next.config.ts` 的 `outputFileTracingExcludes` 只能排除旧 query engine、其它数据库 compiler、以及 PostgreSQL compiler 的 CJS 版本，不能排除 PostgreSQL `.mjs` compiler。改造后 DB API route trace 从约 `79-82MB` 降到 `7-9MB`，其中约 `2.5MiB` 是 PostgreSQL compiler 的运行期成本。
 
-- trace 里还有 PostgreSQL `.mjs` compiler：正确
-- 它约 2.5MiB：正常，是当前 Rust-free Prisma 的运行期成本
-- 其它数据库 compiler 数量为 0：正确
-- 旧 Rust query engine 数量为 0：正确
+### backend-core npm tarball
 
-当前打包优化目标不是把 PostgreSQL compiler 也裁掉，而是确保只保留 PostgreSQL compiler，不带其它数据库 runtime 和旧 Rust engine。
+`backend-core` 的 npm 包不应该发布 `src/**`，也不应该发布 Prisma generated declaration maps 和内部 generated declaration files。运行时仍需要 `dist/core-prisma` 的 JS 文件；不能删除整个 `core-prisma` 产物。
+
+当前发布策略：
+
+- 发布 `dist/**` 的业务 JS 和业务声明文件
+- 保留 `dist/core-prisma/**/*.js`、`dist/core-prisma/**/*.mjs`
+- 排除 `src/**`
+- 排除 `dist/**/*.d.ts.map`
+- 排除 `dist/core-prisma/**/*.d.ts`
+- 通过 `dist/services/database/prisma-model-type.d.ts` 暴露轻量 Model 类型：`User`、`Credit`、`Transaction` 等
+
+验证命令：
+
+```bash
+NPM_CONFIG_CACHE=/tmp/npm-cache-backend-core npm pack --dry-run --json --ignore-scripts
+```
+
+当前验证结果：
+
+```txt
+tarball size:    150857 bytes
+unpacked size:   794593 bytes
+entry count:     184
+```
+
+已确认 tarball 中没有：
+
+```txt
+src/**
+dist/**/*.d.ts.map
+dist/core-prisma/**/*.d.ts
+```
+
+因此，另一个 AI 提到“删除 Prisma 自动生成的冗余类型、类型映射文件、内部命名空间”的方向是对的；但不能删除 Prisma generated JS runtime。正确边界是：公开类型只保留业务 Model 和必要 service 签名，运行时仍发布 `dist/core-prisma` 的 JS。

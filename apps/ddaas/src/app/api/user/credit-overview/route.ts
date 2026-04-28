@@ -1,154 +1,28 @@
-// Fix BigInt serialization issue
-(BigInt.prototype as any).toJSON = function () {
-  return this.toString();
-};
-
 import { defaultLocale, localePrefixAsNeeded } from '@/lib/appConfig';
-import { viewLocalTime } from '@lib/utils';
-import { getOptionalServerAuthUser } from '@core/auth/auth-utils';
-import { buildInitUserContextFromEntities } from '@core/services/context';
-import { creditService, subscriptionService } from '@core/services/database';
-import { moneyPriceConfig } from '@core/config/money-price';
-import { getAsNeededLocalizedUrl } from '@lib/utils';
-import { buildMoneyPriceData } from '@third-ui/main/money-price/server';
-import type { CreditOverviewData, CreditOverviewTranslations } from '@third-ui/main/credit';
+import { createGET } from '@core/app/api/user/credit-overview/route';
+import type { CreditOverviewTranslations } from '@third-ui/main/credit';
 import { getTranslations } from 'next-intl/server';
-import { NextResponse } from 'next/server';
 
-interface CreditOverviewPayload {
-  data: CreditOverviewData;
-  totalLabel: string;
-  translations: CreditOverviewTranslations;
-}
+export const GET = createGET({
+  defaultLocale,
+  localePrefixAsNeeded,
+  async resolveTranslations(locale) {
+    const t = await getTranslations({ locale, namespace: 'credit' });
 
-export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const locale = searchParams.get('locale') || defaultLocale;
-  const authUser = await getOptionalServerAuthUser();
-
-  if (!authUser) {
-    return NextResponse.json(null);
-  }
-
-  const { user } = authUser;
-  const enableSubscriptionUpgrade = process.env.ENABLE_STRIPE_SUBSCRIPTION_UPGRADE !== 'false';
-
-  const [credit, subscription, t, moneyPriceData] = await Promise.all([
-    creditService.getCredit(user.userId),
-    subscriptionService.getActiveSubscription(user.userId),
-    getTranslations({ locale, namespace: 'credit' }),
-    buildMoneyPriceData({
-      locale,
-      currency: moneyPriceConfig.display.currency,
-      enabledBillingTypes: ['monthly', 'yearly', 'onetime'],
-    }),
-  ]);
-
-  if (!credit) {
-    return NextResponse.json(null);
-  }
-
-  const initUserContext = buildInitUserContextFromEntities({
-    user,
-    credit,
-    subscription,
-  });
-
-  const totalBalance =
-    (credit.balanceFree ?? 0) +
-    (credit.balancePaid ?? 0) +
-    (credit.balanceOneTimePaid ?? 0);
-
-  const buckets = [
-    ...(credit.balancePaid > 0
-      ? [{
-          kind: 'subscription' as const,
-          balance: credit.balancePaid,
-          limit: credit.totalPaidLimit,
-          expiresAt: viewLocalTime(credit.paidEnd),
-        }]
-      : []),
-    ...(credit.balanceOneTimePaid > 0
-      ? [{
-          kind: 'onetime' as const,
-          balance: credit.balanceOneTimePaid,
-          limit: credit.totalOneTimePaidLimit,
-          expiresAt: viewLocalTime(credit.oneTimePaidEnd),
-        }]
-      : []),
-    ...(credit.balanceFree > 0
-      ? [{
-          kind: 'free' as const,
-          balance: credit.balanceFree,
-          limit: credit.totalFreeLimit,
-          expiresAt: viewLocalTime(credit.freeEnd),
-        }]
-      : []),
-  ];
-
-  const pricingPageBaseUrl = getAsNeededLocalizedUrl(
-    locale,
-    '/pricing',
-    localePrefixAsNeeded,
-    defaultLocale,
-  );
-
-  const data: CreditOverviewData = {
-    totalBalance,
-    buckets,
-    pricingContext: {
-      moneyPriceData,
-      moneyPriceConfig,
-      checkoutApiEndpoint: '/api/stripe/checkout',
-      customerPortalApiEndpoint: '/api/stripe/customer-portal',
-      enableSubscriptionUpgrade,
-      initUserContext,
-    },
-    ctaBehaviors: {
-      subscribe: {
-        desktop: { kind: 'modal', mode: 'subscription' },
-        mobile: { kind: 'redirect', url: `${pricingPageBaseUrl}?initialBillingType=subscription` },
-      },
-      manage: {
-        desktop: { kind: 'auth' },
-        mobile: { kind: 'auth' },
-      },
-      onetime: {
-        desktop: { kind: 'modal', mode: 'onetime' },
-        mobile: { kind: 'redirect', url: `${pricingPageBaseUrl}?initialBillingType=onetime` },
-      },
-    },
-  };
-
-  if (subscription) {
-    data.subscription = {
-      planName: subscription.priceName ?? '',
-      periodStart: viewLocalTime(subscription.subPeriodStart),
-      periodEnd: viewLocalTime(subscription.subPeriodEnd),
-    };
-  }
-
-  const translations: CreditOverviewTranslations = {
-    summaryDescription: t('summary.description'),
-    totalLabel: t('summary.totalLabel'),
-    bucketsTitle: t('buckets.title'),
-    bucketsEmpty: t('buckets.empty'),
-    expiredAtLabel: t('buckets.expiredAtLabel'),
-    expandDetail: t('buckets.expandDetail'),
-    hiddenDetail: t('buckets.hiddenDetail'),
-    bucketDefaultLabels: (t.raw('buckets.labels') as Record<string, string>) ?? {},
-    subscriptionPeriodLabel: t('subscription.periodLabel'),
-    subscriptionManage: t('subscription.manage'),
-    subscriptionInactive: t('subscription.inactive'),
-    subscribePay: t('subscription.pay'),
-    onetimeBuy: t('onetime.buy'),
-  };
-
-  const payload: CreditOverviewPayload = {
-    data,
-    totalLabel: t('summary.totalLabel'),
-    translations,
-  };
-
-  return NextResponse.json(payload);
-}
+    return {
+      summaryDescription: t('summary.description'),
+      totalLabel: t('summary.totalLabel'),
+      bucketsTitle: t('buckets.title'),
+      bucketsEmpty: t('buckets.empty'),
+      expiredAtLabel: t('buckets.expiredAtLabel'),
+      expandDetail: t('buckets.expandDetail'),
+      hiddenDetail: t('buckets.hiddenDetail'),
+      bucketDefaultLabels: (t.raw('buckets.labels') as Record<string, string>) ?? {},
+      subscriptionPeriodLabel: t('subscription.periodLabel'),
+      subscriptionManage: t('subscription.manage'),
+      subscriptionInactive: t('subscription.inactive'),
+      subscribePay: t('subscription.pay'),
+      onetimeBuy: t('onetime.buy'),
+    } satisfies CreditOverviewTranslations;
+  },
+});

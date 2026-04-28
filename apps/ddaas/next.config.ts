@@ -57,6 +57,7 @@ const nextConfig: NextConfig = {
       './CHANGELOG.md',
       './LICENSE',
       './logs/**/*',
+      './github/**/*',
       './database/**/*',
       '../../node_modules/.pnpm/@prisma+client*/node_modules/@prisma/client/runtime/query_engine_*',
       '../../node_modules/.pnpm/@prisma+client*/node_modules/@prisma/client/runtime/query_compiler_bg.cockroachdb.*',
