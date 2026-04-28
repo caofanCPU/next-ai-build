@@ -185,24 +185,24 @@ function CollapsibleSection({
 
   return (
     <section className={cn(panelClass, className)}>
-      <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+      <button
+        type="button"
+        onClick={onToggle}
+        className="flex w-full flex-col gap-3 text-left md:flex-row md:items-start md:justify-between"
+        aria-expanded={isExpanded}
+      >
         <div>
           <h2 className={sectionTitleClass}>{title}</h2>
           {description ? <p className={cn(sectionDescClass, 'mt-1')}>{description}</p> : null}
         </div>
         <div className="flex flex-wrap items-center gap-2 self-start md:justify-end">
           {headerExtra}
-          <button
-            type="button"
-            onClick={onToggle}
-            className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-background/80 px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-accent"
-            aria-expanded={isExpanded}
-          >
+          <span className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-background/80 px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-accent">
             <ChevronIcon className="h-4 w-4" />
             {isExpanded ? '折叠内容' : '展开内容'}
-          </button>
+          </span>
         </div>
-      </div>
+      </button>
 
       {isExpanded ? children : null}
     </section>
@@ -282,7 +282,12 @@ export default function TestComponentsPage() {
     <div className={pageShellClass}>
       <section className={cn(panelClass, 'relative overflow-hidden')}>
         <div className="pointer-events-none absolute inset-0 -z-10 bg-linear-to-br from-sky-100/70 via-white to-amber-100/60 dark:from-sky-950/30 dark:via-neutral-950 dark:to-amber-950/20" />
-        <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+        <button
+          type="button"
+          onClick={handleToggleAllSections}
+          className="flex w-full flex-col gap-3 text-left md:flex-row md:items-start md:justify-between"
+          aria-expanded={allSectionsExpanded}
+        >
           <div className="max-w-3xl">
             <div className="mb-3 inline-flex rounded-full border border-primary/15 bg-primary/8 px-3 py-1 text-xs font-semibold text-primary">
               组件测试页
@@ -294,16 +299,12 @@ export default function TestComponentsPage() {
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2 self-start md:justify-end">
-            <button
-              type="button"
-              onClick={handleToggleAllSections}
-              className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-background/80 px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-accent"
-            >
+            <span className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-background/80 px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-accent">
               {allSectionsExpanded ? <ChevronUpIcon className="h-4 w-4" /> : <ChevronDownIcon className="h-4 w-4" />}
               {allSectionsExpanded ? '全部折叠' : '全部展开'}
-            </button>
+            </span>
           </div>
-        </div>
+        </button>
         <div className="mt-5 flex flex-wrap gap-2 text-sm">
           <span className="rounded-full border border-emerald-300/70 bg-emerald-100 px-3 py-1 font-medium text-emerald-800 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300">
             图标总数：{iconEntries.length}
