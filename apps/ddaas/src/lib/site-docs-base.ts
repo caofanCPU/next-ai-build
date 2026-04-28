@@ -78,7 +78,7 @@ export function createSiteDocs(options: CreateSiteDocsOptions = {}) {
     }),
   };
 
-  const sourceFactory: SourceFactory = createConfiguredLocalMdSourceFactory(sharedConfig);
+  const sourceFactory: SourceFactory = createConfiguredLocalMdSourceFactory(buildConfig);
   const getMDXComponents = createSiteMdxComponents({
     baseOptions: {
       imageFallbackSrc: appConfig.style.placeHolder.image,
