@@ -1,5 +1,12 @@
 # @windrun-huaiin/backend-core
 
+## 28.0.1
+
+### Patch Changes
+
+- feat(route): credit and pricing route sink into `backend-core`
+  - cli remove `prisma:sync` and `migrations:sync` 'cause useless
+
 ## 28.0.0
 
 ### Major Changes

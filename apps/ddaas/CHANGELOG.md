@@ -1,5 +1,18 @@
 # @windrun-huaiin/ddaas-website
 
+## 28.0.1
+
+### Patch Changes
+
+- feat(route): credit and pricing route sink into `backend-core`
+  - cli remove `prisma:sync` and `migrations:sync` 'cause useless
+- Updated dependencies
+  - @windrun-huaiin/lib@28.0.0
+  - @windrun-huaiin/contracts@28.0.0
+  - @windrun-huaiin/base-ui@28.0.0
+  - @windrun-huaiin/third-ui@28.0.0
+  - @windrun-huaiin/fumadocs-local-md@28.0.0
+
 ## 28.0.0
 
 ### Major Changes
