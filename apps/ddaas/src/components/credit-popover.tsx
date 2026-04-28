@@ -1,3 +1,4 @@
+import '@/server/prisma';
 import { creditService, subscriptionService } from '@core/services/database';
 import { getOptionalServerAuthUser } from '@core/auth/auth-utils';
 import { viewLocalTime } from '@lib/utils';

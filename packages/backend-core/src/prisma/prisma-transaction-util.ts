@@ -1,5 +1,5 @@
 import { getBackendCorePrisma } from './prisma';
-import { Prisma } from '../core-prisma/client';
+import type { Prisma } from '@core/db/prisma-model-type';
 
 // 事务工具类，回滚时打印回滚日志
 export async function runInTransaction<T>(

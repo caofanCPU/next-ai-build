@@ -1,6 +1,6 @@
 import { creditService, subscriptionService, userService } from '@core/db';
 import { UserStatus } from '@core/db/constants';
-import type { Credit, Subscription, User } from '@core/db/prisma-model-type';
+import type { CoreJsonValue, Credit, Subscription, User } from '@core/db/prisma-model-type';
 import { freeAmount } from '@core/lib/credit-init';
 import { runInTransaction } from '@core/prisma/prisma-transaction-util';
 import { CreditType, OperationType } from '@core/db/constants';
@@ -22,12 +22,10 @@ class AnonymousAggregateService {
     tx: Prisma.TransactionClient,
     fingerprintId: string,
   ): Promise<void> {
-    await tx.$executeRaw`
-      SELECT pg_advisory_xact_lock(
-        ${Prisma.raw(String(ANONYMOUS_INIT_LOCK_NAMESPACE))},
-        hashtext(${fingerprintId})
-      )
-    `;
+    await tx.$executeRawUnsafe?.(
+      `SELECT pg_advisory_xact_lock(${ANONYMOUS_INIT_LOCK_NAMESPACE}, hashtext($1))`,
+      fingerprintId,
+    );
   }
 
   private async findLatestUserContextByFingerprintId(
@@ -58,7 +56,7 @@ class AnonymousAggregateService {
   private async createAnonymousUser(
     fingerprintId: string,
     tx: Prisma.TransactionClient,
-    options?: { sourceRef?: Prisma.InputJsonValue; },
+    options?: { sourceRef?: CoreJsonValue; },
   ): Promise<AnonymousInitContext> {
     const newUser = await userService.createUser(
       {
@@ -95,7 +93,7 @@ class AnonymousAggregateService {
 
   async getOrCreateByFingerprintId(
     fingerprintId: string,
-    options?: { sourceRef?: Prisma.InputJsonValue; },
+    options?: { sourceRef?: CoreJsonValue; },
   ): Promise<AnonymousInitContext> {
     return runInTransaction(async (tx) => {
       await this.lockFingerprintInit(tx, fingerprintId);

@@ -1,5 +1,11 @@
 # @windrun-huaiin/dev-scripts
 
+## 29.0.0
+
+### Major Changes
+
+- refactor(prisma): `backend-core` now support the right architechture
+
 ## 28.0.1
 
 ### Patch Changes

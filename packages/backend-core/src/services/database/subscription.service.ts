@@ -299,7 +299,7 @@ export class SubscriptionService {
         where: {
           paySubscriptionId: {
             in: activeSubscriptions
-              .map(s => s.paySubscriptionId)
+              .map((s: any) => s.paySubscriptionId)
               .filter(Boolean) as string[],
           },
           orderStatus: 'success',
@@ -307,7 +307,7 @@ export class SubscriptionService {
         select: { amount: true },
       });
 
-      revenue = transactions.reduce((sum, t) =>
+      revenue = transactions.reduce((sum: number, t: any) =>
         sum + (t.amount ? parseFloat(t.amount.toString()) : 0), 0
       );
     }

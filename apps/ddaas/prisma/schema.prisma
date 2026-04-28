@@ -22,3 +22,184 @@ model DdaasTestQuerySample {
   @@map("ddaas_test_query_sample")
   @@schema("nextai")
 }
+
+
+
+model User {
+  id            BigInt         @id @default(autoincrement())
+  userId        String         @unique @default(dbgenerated("gen_random_uuid()")) @map("user_id") @db.Uuid
+  status        String         @default("anonymous") @db.VarChar(50)
+  fingerprintId String?        @map("fingerprint_id") @db.VarChar(255)
+  clerkUserId   String?        @unique @map("clerk_user_id") @db.VarChar(255)
+  stripeCusId   String?        @unique @map("stripe_cus_id") @db.VarChar(255)
+  email         String?        @db.VarChar(255)
+  userName String?        @map("user_name") @db.VarChar(255)
+  createdAt     DateTime?      @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime?      @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  sourceRef     Json?          @map("source_ref")
+  creditAuditLogs   CreditAuditLog[]
+  credit       Credit?
+  subscription  Subscription?
+  transactions  Transaction[]
+
+  @@index([fingerprintId], map: "idx_users_fingerprint_id")
+  @@map("users")
+
+  @@schema("nextai")
+}
+
+model Subscription {
+  id                BigInt    @id @default(autoincrement())
+  userId            String    @unique @map("user_id") @db.Uuid
+  status            String    @default("incomplete") @db.VarChar(50)
+  paySubscriptionId String?   @map("pay_subscription_id") @db.VarChar(255)
+  orderId           String?    @map("order_id") @db.VarChar(255)
+  priceId           String?   @map("price_id") @db.VarChar(255)
+  priceName         String?   @map("price_name") @db.VarChar(255)
+  creditsAllocated  Int       @default(0) @map("credits_allocated")
+  subPeriodStart    DateTime? @map("sub_period_start") @db.Timestamptz(6)
+  subPeriodEnd      DateTime? @map("sub_period_end") @db.Timestamptz(6)
+  createdAt         DateTime? @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime? @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deleted           Int       @default(0)
+  user              User      @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([paySubscriptionId], map: "idx_subscriptions_pay_subscription_id")
+  @@index([orderId], map: "idx_subscriptions_order_id")
+  @@map("subscriptions")
+
+  @@schema("nextai")
+}
+
+model Credit {
+  id             BigInt    @id @default(autoincrement())
+  userId         String    @unique @map("user_id") @db.Uuid
+
+  // ===== 免费积分 =====
+  balanceFree    Int       @default(0) @map("balance_free")
+  totalFreeLimit Int       @default(0) @map("total_free_limit")
+  freeStart      DateTime? @map("free_start") @db.Timestamptz(6)
+  freeEnd        DateTime? @map("free_end") @db.Timestamptz(6)
+
+  // ===== 订阅付费积分 =====
+  balancePaid    Int       @default(0) @map("balance_paid")
+  totalPaidLimit Int       @default(0) @map("total_paid_limit")
+  paidStart      DateTime? @map("paid_start") @db.Timestamptz(6)
+  paidEnd        DateTime? @map("paid_end") @db.Timestamptz(6)
+
+  // ===== 一次性支付积分 =====
+  balanceOneTimePaid    Int       @default(0) @map("balance_onetime_paid")
+  totalOneTimePaidLimit Int       @default(0) @map("total_onetime_paid_limit")
+  oneTimePaidStart      DateTime? @map("onetime_paid_start") @db.Timestamptz(6)
+  oneTimePaidEnd        DateTime? @map("onetime_paid_end") @db.Timestamptz(6)
+
+  createdAt      DateTime? @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime? @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  user           User      @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([userId], map: "idx_credits_user_id")
+  @@map("credits")
+
+  @@schema("nextai")
+}
+
+model Transaction {
+  id                BigInt    @id @default(autoincrement())
+  userId            String    @map("user_id") @db.Uuid
+  orderId           String    @unique @map("order_id") @db.VarChar(255)
+  orderStatus       String    @default("created") @map("order_status") @db.VarChar(50)
+  orderCreatedAt    DateTime? @default(now()) @map("order_created_at") @db.Timestamptz(6)
+  orderExpiredAt    DateTime? @map("order_expired_at") @db.Timestamptz(6)
+  orderUpdatedAt    DateTime? @default(now()) @updatedAt @map("order_updated_at") @db.Timestamptz(6)
+  type              String?   @db.VarChar(50)
+  paySupplier       String?   @map("pay_supplier") @db.VarChar(255)
+  paySessionId      String?   @map("pay_session_id") @db.VarChar(255)
+  payTransactionId  String?   @unique @map("pay_transaction_id") @db.VarChar(255)
+  paySubscriptionId String?   @map("pay_subscription_id") @db.VarChar(255)
+  subPeriodStart    DateTime? @map("sub_period_start") @db.Timestamptz(6)
+  subPeriodEnd      DateTime? @map("sub_period_end") @db.Timestamptz(6)
+  subLastTryCancelAt  DateTime? @map("sub_last_try_cancel_at") @db.Timestamptz(6)
+  subPeriodCanceledAt      DateTime? @map("sub_period_canceled_at") @db.Timestamptz(6)
+  subCancellationDetail  String?   @map("sub_cancellation_detail") @db.Text
+  priceId           String?   @map("price_id") @db.VarChar(255)
+  priceName         String?   @map("price_name") @db.VarChar(255)
+  amount            Decimal?  @db.Decimal(10, 2)
+  currency          String?   @db.VarChar(50)
+  creditsGranted    Int?      @default(0) @map("credits_granted")
+  payInvoiceId      String?   @map("pay_invoice_id") @db.VarChar(255)
+  paymentStatus String    @default("un_paid") @map("payment_status") @db.VarChar(50)
+  billingReason     String?   @map("billing_reason") @db.VarChar(100)
+  hostedInvoiceUrl  String?   @map("hosted_invoice_url") @db.Text
+  invoicePdf        String?   @map("invoice_pdf") @db.Text
+  orderDetail       String?   @map("order_detail")
+  paidEmail         String?   @map("paid_email") @db.VarChar(255)
+  paidAt            DateTime? @map("paid_at") @db.Timestamptz(6)
+  paidDetail        String?   @map("paid_detail")
+  payUpdatedAt      DateTime? @map("pay_updated_at") @db.Timestamptz(6)
+  deleted           Int       @default(0)
+  user              User      @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([orderId], map: "idx_transactions_order_id")
+  @@index([paySubscriptionId], map: "idx_transactions_pay_subscription_id")
+  @@index([userId], map: "idx_transactions_user_id")
+  @@map("transactions")
+
+  @@schema("nextai")
+}
+
+model CreditAuditLog {
+  id            BigInt    @id @default(autoincrement())
+  userId        String    @map("user_id") @db.Uuid
+  creditsChange   Int       @map("credits_change")
+  feature       String?   @db.VarChar(255)
+  creditType    String    @map("credit_type") @db.VarChar(50)
+  operationType String    @map("operation_type") @db.VarChar(100)
+  operationReferId       String?   @map("operation_refer_id") @db.VarChar(255)
+  createdAt     DateTime? @default(now()) @map("created_at") @db.Timestamptz(6)
+  deleted       Int       @default(0)
+  user          User      @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([creditType], map: "idx_credit_audit_log_credit_type")
+  @@index([operationType], map: "idx_credit_audit_log_operation_type")
+  @@index([userId], map: "idx_credit_audit_log_user_id")
+  @@map("credit_audit_log")
+
+  @@schema("nextai")
+}
+
+model UserBackup {
+  id             BigInt    @id @default(autoincrement())
+  originalUserId String    @map("original_user_id") @db.Uuid
+  status         String?   @db.VarChar(50)
+  fingerprintId  String?   @map("fingerprint_id") @db.VarChar(255)
+  clerkUserId    String?   @map("clerk_user_id") @db.VarChar(255)
+  stripeCusId   String?    @map("stripe_cus_id") @db.VarChar(255)
+  email          String?   @db.VarChar(255)
+  userName String?        @map("user_name") @db.VarChar(255)
+  backupData     Json?     @map("backup_data")
+  deletedAt      DateTime? @default(now()) @map("deleted_at") @db.Timestamptz(6)
+  createdAt      DateTime? @default(now()) @map("created_at") @db.Timestamptz(6)
+  deleted        Int       @default(0)
+
+  @@index([clerkUserId], map: "idx_user_backup_clerk_user_id")
+  @@index([email], map: "idx_user_backup_email")
+  @@index([fingerprintId], map: "idx_user_backup_fingerprint_id")
+  @@index([originalUserId], map: "idx_user_backup_original_user_id")
+  @@map("user_backup")
+
+   @@schema("nextai")
+}
+
+model Apilog {
+  id         BigInt    @id @default(autoincrement())
+  apiType    String    @map("api_type") @db.VarChar(100)
+  methodName String    @map("method_name") @db.VarChar(255)
+  summary    String?
+  request    String?
+  response   String?
+  createdAt  DateTime? @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@map("apilog")
+
+  @@schema("nextai")
+}

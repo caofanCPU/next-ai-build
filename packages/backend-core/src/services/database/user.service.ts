@@ -1,16 +1,30 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import type { Prisma } from '@core/db/prisma-model-type';
-import type { User } from '@core/db/prisma-model-type';
+import type { CoreJsonValue, User } from '@core/db/prisma-model-type';
 import { UserStatus } from '@core/db/constants';
 import { checkAndFallbackWithNonTCClient } from '@core/prisma/index';
+
+export interface UpdateUserInput {
+  fingerprintId?: string | null;
+  sourceRef?: CoreJsonValue | null;
+  clerkUserId?: string | null;
+  stripeCusId?: string | null;
+  email?: string | null;
+  userName?: string | null;
+  status?: string;
+}
+
+function toPrismaJsonValue(value: CoreJsonValue | null | undefined) {
+  return value === undefined ? undefined : value;
+}
 
 export class UserService {
 
   // Create user
   async createUser(data: {
     fingerprintId?: string;
-    sourceRef?: Prisma.InputJsonValue;
+    sourceRef?: CoreJsonValue;
     clerkUserId?: string;
     stripeCusId?: string;
     email?: string;
@@ -22,7 +36,7 @@ export class UserService {
     return await client.user.create({
       data: {
         fingerprintId: data.fingerprintId,
-        sourceRef: data.sourceRef,
+        sourceRef: toPrismaJsonValue(data.sourceRef),
         clerkUserId: data.clerkUserId,
         stripeCusId: data.stripeCusId,
         email: data.email,
@@ -83,14 +97,17 @@ export class UserService {
   // Update user
   async updateUser(
     userId: string,
-    data: Prisma.UserUpdateInput,
+    data: UpdateUserInput,
     tx?: Prisma.TransactionClient
   ): Promise<User> {
     const client = checkAndFallbackWithNonTCClient(tx);
 
     return await client.user.update({
       where: { userId },
-      data,
+      data: {
+        ...data,
+        sourceRef: toPrismaJsonValue(data.sourceRef),
+      },
     });
   }
 
@@ -146,7 +163,7 @@ export class UserService {
     skip?: number;
     take?: number;
     status?: string;
-    orderBy?: Prisma.UserOrderByWithRelationInput;
+    orderBy?: Record<string, 'asc' | 'desc'>;
   }, tx?: Prisma.TransactionClient): Promise<{ users: User[]; total: number }> {
     const client = checkAndFallbackWithNonTCClient(tx);
     const { skip = 0, take = 10, status, orderBy = { createdAt: 'desc' } } = params;

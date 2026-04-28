@@ -1,3 +1,4 @@
+import '@/server/prisma';
 import { defaultLocale, localePrefixAsNeeded } from '@/lib/appConfig';
 import { createGET } from '@core/app/api/user/credit-overview/route';
 import type { CreditOverviewTranslations } from '@third-ui/main/credit';

@@ -1,5 +1,6 @@
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '@app-prisma';
+import { configureBackendCorePrisma } from '@core/prisma';
 
 const globalForPrisma = globalThis as unknown as {
   prisma?: PrismaClient;
@@ -57,6 +58,8 @@ function createAppPrismaClient() {
 }
 
 export const prisma = globalForPrisma.prisma ?? createAppPrismaClient();
+
+configureBackendCorePrisma(prisma as never);
 
 if (process.env.NODE_ENV !== 'production') {
   globalForPrisma.prisma = prisma;

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { Prisma } from '@core/db/prisma-model-type';
+import type { Prisma } from '@core/db/prisma-model-type';
 import type { Transaction } from '@core/db/prisma-model-type';
 import { OrderStatus, TransactionType, PaySupplier, PaymentStatus } from '@core/db/constants';
 import { checkAndFallbackWithNonTCClient } from '@core/prisma/index';
@@ -363,20 +363,20 @@ export class TransactionService {
 
     // Calculate statistics
     const totalRevenue = successfulTransactions.reduce(
-      (sum, t) => sum + (t.amount ? parseFloat(t.amount.toString()) : 0),
+      (sum: number, t: any) => sum + (t.amount ? parseFloat(t.amount.toString()) : 0),
       0
     );
 
     const subscriptionRevenue = successfulTransactions
-      .filter(t => t.type === TransactionType.SUBSCRIPTION)
-      .reduce((sum, t) => sum + (t.amount ? parseFloat(t.amount.toString()) : 0), 0);
+      .filter((t: any) => t.type === TransactionType.SUBSCRIPTION)
+      .reduce((sum: number, t: any) => sum + (t.amount ? parseFloat(t.amount.toString()) : 0), 0);
 
     const oneTimeRevenue = successfulTransactions
-      .filter(t => t.type === TransactionType.ONE_TIME)
-      .reduce((sum, t) => sum + (t.amount ? parseFloat(t.amount.toString()) : 0), 0);
+      .filter((t: any) => t.type === TransactionType.ONE_TIME)
+      .reduce((sum: number, t: any) => sum + (t.amount ? parseFloat(t.amount.toString()) : 0), 0);
 
     const refundedAmount = refundedTransactions.reduce(
-      (sum, t) => sum + (t.amount ? parseFloat(t.amount.toString()) : 0),
+      (sum: number, t: any) => sum + (t.amount ? parseFloat(t.amount.toString()) : 0),
       0
     );
 
@@ -399,22 +399,21 @@ export class TransactionService {
 
     const client = checkAndFallbackWithNonTCClient(tx);
 
-    const query = Prisma.sql`
-      SELECT 
-        DATE(paid_at) as date,
-        COUNT(*) as transactions,
-        SUM(amount) as revenue,
-        SUM(CASE WHEN type = 'subscription' THEN amount ELSE 0 END) as subscription_revenue,
-        SUM(CASE WHEN type = 'one_time' THEN amount ELSE 0 END) as onetime_revenue
-      FROM transactions
-      WHERE order_status = 'success'
-        AND deleted = 0
-        AND paid_at >= ${startDate}
-      GROUP BY DATE(paid_at)
-      ORDER BY date DESC
-    `;
-
-    const result = await client.$queryRaw(query);
+    const result = await client.$queryRawUnsafe(
+      `SELECT
+         DATE(paid_at) as date,
+         COUNT(*) as transactions,
+         SUM(amount) as revenue,
+         SUM(CASE WHEN type = 'subscription' THEN amount ELSE 0 END) as subscription_revenue,
+         SUM(CASE WHEN type = 'one_time' THEN amount ELSE 0 END) as onetime_revenue
+       FROM transactions
+       WHERE order_status = 'success'
+         AND deleted = 0
+         AND paid_at >= $1
+       GROUP BY DATE(paid_at)
+       ORDER BY date DESC`,
+      startDate,
+    );
 
     return result as any[];
   }

@@ -15,5 +15,9 @@ export type {
   Transaction,
   Apilog,
   UserBackup,
-} from '../core-prisma/client';
-export { Prisma } from '../core-prisma/client';
+  CoreJsonArray,
+  CoreJsonObject,
+  CoreJsonPrimitive,
+  CoreJsonValue,
+} from '../services/database/core-entities';
+export type { Prisma } from '../services/database/prisma-model-type';

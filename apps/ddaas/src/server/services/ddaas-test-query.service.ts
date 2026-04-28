@@ -1,3 +1,4 @@
+import '@/server/prisma';
 import { userService } from '@core/services/database';
 import type { PrismaClient } from '@app-prisma';
 import type { Prisma, User } from '@core/prisma';

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { Prisma } from '@core/db/prisma-model-type';
+import type { Prisma } from '@core/db/prisma-model-type';
 import type { CreditAuditLog } from '@core/db/prisma-model-type';
 import { CreditType, OperationType } from '@core/db/constants';
 import { checkAndFallbackWithNonTCClient } from '@core/prisma/index';
@@ -162,7 +162,7 @@ export class CreditAuditLogService {
     // Calculate creditAudit statistics by feature
     const featureMap = new Map<string, number>();
 
-    allUsage.forEach((creditAudit) => {
+    allUsage.forEach((creditAudit: any) => {
       if (creditAudit.operationType === OperationType.CONSUME) {
         stats.totalConsumed += creditAudit.creditsChange;
         if (creditAudit.creditType === CreditType.FREE) {
@@ -230,7 +230,7 @@ export class CreditAuditLogService {
       take: limit,
     });
 
-    return result.map((item) => ({
+    return result.map((item: any) => ({
       feature: item.feature,
       totalCredits: item._sum.creditsChange || 0,
       usageCount: item._count,
@@ -254,9 +254,7 @@ export class CreditAuditLogService {
     startDate.setDate(startDate.getDate() - days);
 
     const client = checkAndFallbackWithNonTCClient(tx);
-    const userFilter = userId ? Prisma.sql`AND user_id = ${userId}` : Prisma.sql``;
-
-    const result = await client.$queryRaw`
+    const query = `
       SELECT 
         DATE(created_at) as date,
         SUM(CASE WHEN operation_type = 'consume' THEN credits_used ELSE 0 END) as consumed,
@@ -267,12 +265,16 @@ export class CreditAuditLogService {
             THEN credits_used ELSE 0 END) as paid_consumed,
         COUNT(DISTINCT user_id) as unique_users
       FROM credit_usage
-      WHERE created_at >= ${startDate}
+      WHERE created_at >= $1
         AND deleted = 0
-        ${userFilter}
+        ${userId ? 'AND user_id = $2' : ''}
       GROUP BY DATE(created_at)
       ORDER BY date DESC
     `;
+
+    const result = userId
+      ? await client.$queryRawUnsafe(query, startDate, userId)
+      : await client.$queryRawUnsafe(query, startDate);
 
     return result as {
       date: Date;
@@ -340,7 +342,7 @@ export class CreditAuditLogService {
       client.creditAuditLog.groupBy({
         by: ['userId'],
         where: { deleted: 0 },
-      }).then((result) => result.length),
+      }).then((result: any[]) => result.length),
       client.creditAuditLog.count({ where: { deleted: 0 } }),
       client.creditAuditLog.aggregate({
         where: { operationType: OperationType.CONSUME, deleted: 0 },

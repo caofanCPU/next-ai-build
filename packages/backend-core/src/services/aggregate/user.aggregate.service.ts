@@ -1,6 +1,6 @@
 import { CreditType, OperationType, UserStatus } from '@core/db/constants';
 import { creditService, subscriptionService, userService } from '@core/db/index';
-import type { Credit, Prisma, User } from '@core/db/prisma-model-type';
+import type { CoreJsonValue, Credit, Prisma, User } from '@core/db/prisma-model-type';
 import { freeAmount, freeRegisterAmount } from '@core/lib/credit-init';
 import { runInTransaction } from '@core/prisma/prisma-transaction-util';
 
@@ -9,7 +9,7 @@ export class UserAggregateService {
 
   async initAnonymousUser(
     fingerprintId: string,
-    options?: { sourceRef?: Prisma.InputJsonValue; }
+    options?: { sourceRef?: CoreJsonValue; }
   ): Promise<{ newUser: User; credit: Credit; }> {
     return runInTransaction(async (tx) => {
       const newUser = await userService.createUser(
@@ -57,7 +57,7 @@ export class UserAggregateService {
     email?: string,
     fingerprintId?: string,
     userName?: string,
-    sourceRef?: Prisma.InputJsonValue,
+    sourceRef?: CoreJsonValue,
   ): Promise<{ newUser: User; credit: Credit; }> {
     return runInTransaction(async (tx) => {
       const newUser = await userService.createUser(

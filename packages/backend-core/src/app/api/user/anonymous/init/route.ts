@@ -20,7 +20,7 @@ import {
 } from '@core/context/user-context-service';
 import { finalizeUserContext } from '@core/context/user-context-finalizer';
 
-import type { Prisma } from '@core/db/prisma-model-type';
+import type { CoreJsonObject } from '@core/db/prisma-model-type';
 
 
 // ==================== 类型定义 ====================
@@ -70,7 +70,7 @@ function createErrorResponse(message: string, status = 400): NextResponse {
   return NextResponse.json(errorResponse, { status });
 }
 
-type SourceRefData = Prisma.InputJsonObject & {
+type SourceRefData = CoreJsonObject & {
   capturedAt?: string;
   landingUrl?: string;
   landingPath?: string;

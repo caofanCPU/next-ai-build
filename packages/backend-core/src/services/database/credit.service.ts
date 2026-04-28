@@ -1,4 +1,4 @@
-import { Prisma } from '@core/db/prisma-model-type';
+import type { Prisma } from '@core/db/prisma-model-type';
 import type { Credit, CreditAuditLog } from '@core/db/prisma-model-type';
 import { CreditType, OperationType } from '@core/db/constants';
 import { freeExpiredDays } from '@core/lib/credit-init';
@@ -679,13 +679,12 @@ export class CreditService {
   async getLowBalanceUsers(threshold: number = 10, tx?: Prisma.TransactionClient): Promise<Credit[]> {
     const client = checkAndFallbackWithNonTCClient(tx);
 
-    const query = Prisma.sql`
-      SELECT * FROM credits 
-      WHERE (balance_free + balance_paid + balance_onetime_paid) < ${threshold}
-      ORDER BY (balance_free + balance_paid + balance_onetime_paid) ASC
-    `;
-
-    return await client.$queryRaw<Credit[]>(query);
+    return await client.$queryRawUnsafe(
+      `SELECT * FROM credits
+       WHERE (balance_free + balance_paid + balance_onetime_paid) < $1
+       ORDER BY (balance_free + balance_paid + balance_onetime_paid) ASC`,
+      threshold,
+    );
   }
 
   // Get Credit Statistics

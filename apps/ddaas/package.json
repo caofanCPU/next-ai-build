@@ -1,6 +1,6 @@
 {
   "name": "@windrun-huaiin/ddaas-website",
-  "version": "28.0.1",
+  "version": "29.0.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -9,7 +9,6 @@
     "build": "pnpm generate-blog-index && prisma generate && next build",
     "build:dev": "pnpm generate-blog-index && prisma generate && next build",
     "build:prod": "pnpm build-local-md && prisma generate && next build",
-    "start": "next start",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
     "diaomao-help": "dev-scripts -h",

@@ -1,6 +1,6 @@
 {
   "name": "@windrun-huaiin/backend-core",
-  "version": "28.0.1",
+  "version": "29.0.0",
   "description": "Shared backend primitives: Prisma schema/client, database services, routing helpers",
   "type": "module",
   "main": "./dist/index.js",
@@ -134,33 +134,27 @@
     "!dist/node_modules",
     "!dist/node_modules/**",
     "src",
-    "prisma",
-    "migrations",
     "package.json",
     "README.md",
     "LICENSE"
   ],
   "scripts": {
-    "prisma:generate": "rm -rf src/core-prisma && prisma generate --schema prisma/schema.prisma",
-    "build": "pnpm prisma:generate && rm -rf dist && rollup -c rollup.config.mjs",
-    "build:prod": "pnpm prisma:generate && rm -rf dist && rollup -c rollup.config.mjs",
-    "dev": "pnpm prisma:generate && rollup -c rollup.config.mjs --watch",
+    "build": "rm -rf dist && rollup -c rollup.config.mjs",
+    "build:prod": "rm -rf dist && rollup -c rollup.config.mjs",
+    "dev": "rollup -c rollup.config.mjs --watch",
     "clean": "rm -rf dist",
     "prepack": "pnpm build",
-    "type-check": "pnpm prisma:generate && tsc --noEmit"
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "@windrun-huaiin/contracts": "workspace:^",
     "@clerk/nextjs": "catalog:",
-    "@prisma/adapter-pg": "catalog:",
-    "@prisma/client": "catalog:",
     "@upstash/redis": "catalog:",
     "@upstash/qstash": "catalog:",
     "@upstash/lock": "catalog:",
     "@windrun-huaiin/lib": "workspace:^",
     "@windrun-huaiin/third-ui": "workspace:^",
     "next": "catalog:",
-    "prisma": "catalog:",
     "stripe": "catalog:",
     "svix": "catalog:",
     "tslib": "catalog:",
@@ -180,7 +174,6 @@
     "@clerk/nextjs": "catalog:",
     "@prisma/client": "catalog:",
     "next": "catalog:",
-    "prisma": "catalog:",
     "stripe": "catalog:",
     "svix": "catalog:"
   },

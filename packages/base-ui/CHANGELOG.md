@@ -1,5 +1,16 @@
 # @windrun-huaiin/base-ui
 
+## 29.0.0
+
+### Major Changes
+
+- refactor(prisma): `backend-core` now support the right architechture
+
+### Patch Changes
+
+- Updated dependencies
+  - @windrun-huaiin/lib@29.0.0
+
 ## 28.0.0
 
 ### Major Changes
