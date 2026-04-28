@@ -7,6 +7,12 @@ date: 2025-06-23
 
 <CalloutXXX type="XXXX"/>
 
+<TrophyCard title="结合上述流程, 从用户视角看, FumaDocs的扩展口" icon={<DatabaseZapIcon />}>
+  - 本地: `DATABASE_URL="postgresql://YOURS_app:YOURS_PASSWORD@localhost:5432/postgres?sslmode=disable&schema=YOURS"`
+  - 线上事务模式(推荐): `DATABASE_URL="postgresql://YOURS_app.PROJECT_ID:PASSWORD@SERVER_HOST.pooler.supabase.com:6543/postgres?sslmode=require&schema=YOURS&pgbouncer=true"`
+  - 线上会话模式: `DATABASE_URL="postgresql://YOURS_app.PROJECT_ID:PASSWORD@SERVER_HOST.pooler.supabase.com:5432/postgres?sslmode=require&schema=YOURS"`
+</TrophyCard>
+
 <Callout title="FumaMDX·All in One" type="success">
   所有需要的语法和工具, 都在这儿
 </Callout>

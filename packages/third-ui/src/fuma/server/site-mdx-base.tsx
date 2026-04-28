@@ -35,6 +35,23 @@ const defaultFumaUiComponents: MDXComponents = {
   Tabs,
 };
 
+function withIconComponentAliases(components: MDXComponents): MDXComponents {
+  return {
+    ...components,
+    ...Object.fromEntries(
+      Object.entries(components).flatMap(([name, component]) => {
+        if (!/^[A-Z]/.test(name)) return [];
+
+        if (name.endsWith('Icon')) {
+          return [[name.slice(0, -4), component] as const];
+        }
+
+        return [[`${name}Icon`, component] as const];
+      }),
+    ),
+  };
+}
+
 export function createSiteMdxBaseComponents(
   options: SiteMdxBaseOptions = {},
 ): MDXComponents {
@@ -56,11 +73,11 @@ export function createSiteMdxComponents(
   } = options;
 
   return function getMDXComponents(components?: MDXComponents): MDXComponents {
-    return withMissingMdxComponentFallback({
+    return withMissingMdxComponentFallback(withIconComponentAliases({
       ...createSiteMdxBaseComponents(baseOptions),
       ...features.reduce<MDXComponents>((acc, feature) => ({ ...acc, ...feature }), {}),
       ...additionalComponents,
       ...components,
-    });
+    }));
   };
 }
