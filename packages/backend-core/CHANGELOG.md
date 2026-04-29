@@ -1,5 +1,11 @@
 # @windrun-huaiin/backend-core
 
+## 29.0.1
+
+### Patch Changes
+
+- fix(dependency): update peer dependency prisma version
+
 ## 29.0.0
 
 ### Major Changes
