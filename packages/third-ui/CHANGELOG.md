@@ -1,5 +1,11 @@
 # @windrun-huaiin/third-ui
 
+## 29.0.2
+
+### Patch Changes
+
+- fix(dependency): remove rare dependencies
+
 ## 29.0.1
 
 ### Patch Changes
