@@ -49,8 +49,9 @@ const DEPENDENCY_SECTIONS: DependencySection[] = [
 const UNKNOWN_VERSION = 'UNKNOWN'
 
 const NPM_TARGET_PACKAGES = [
-  '@windrun-huaiin/base-ui',
+  '@windrun-huaiin/contracts',
   '@windrun-huaiin/lib',
+  '@windrun-huaiin/base-ui',
   '@windrun-huaiin/third-ui',
   '@windrun-huaiin/backend-core',
   '@windrun-huaiin/fumadocs-local-md',

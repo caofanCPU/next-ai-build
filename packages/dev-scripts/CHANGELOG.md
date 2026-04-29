@@ -1,5 +1,11 @@
 # @windrun-huaiin/dev-scripts
 
+## 29.0.1
+
+### Patch Changes
+
+- fix(dependency): add `diaomao-update` default upgrade dependencies
+
 ## 29.0.0
 
 ### Major Changes
