@@ -56,10 +56,6 @@
   @windrun-huaiin/third-ui/fuma/server/site-mdx-components -> site-mdx-presets -> optional-features -> heavy/mermaid。虽然业务侧传了 feature 开关，但底层是在模块加载时先把所有能力实现 import 进来，导致无法做真正的
   构建裁剪。
 
-
-
-  以做到。
-
   大的判断是：
 
   在你现在这套架构下，“按 capability 配置对产物做裁剪”是可实现的，但前提是底层包要把当前这种“顶层静态导入所有能力实现”的组织方式，改成“按能力延迟装配/按入口拆分”的组织方式。

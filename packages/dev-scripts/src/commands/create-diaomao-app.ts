@@ -1,4 +1,4 @@
-import { copy, readJson, writeJson, remove, ensureDir, pathExists, rename, writeFile } from 'fs-extra';
+import { copy, readJson, writeJson, remove, ensureDir, pathExists, rename, readFile, writeFile } from 'fs-extra';
 import path from 'path';
 import { execSync } from 'child_process';
 import os from 'os';
@@ -6,6 +6,15 @@ import os from 'os';
 type CreateDiaomaoOptions = {
   schema?: string;
 };
+
+function replacePrismaSchemaName(schemaSource: string, schemaName: string): string {
+  return schemaSource
+    .replace(
+      /^\s*schemas\s*=\s*\[\s*"[^"]+"\s*,\s*"public"\s*\]/m,
+      `schemas  = ["${schemaName}", "public"]`,
+    )
+    .replace(/@@schema\("([^"]+)"\)/g, `@@schema("${schemaName}")`);
+}
 
 export async function createDiaomaoApp(targetDir: string, options: CreateDiaomaoOptions = {}) {
   const schemaName = options.schema || path.basename(targetDir);
@@ -70,31 +79,24 @@ export async function createDiaomaoApp(targetDir: string, options: CreateDiaomao
       console.log('🍻🍻Renamed .env.local.txt to .env.local');
     }
 
-    // Try to 'generate prisma/schema.prisma'
+    // Align template Prisma schema to the requested host schema name.
     const prismaDir = path.join(destDir, 'prisma');
     const schemaPath = path.join(prismaDir, 'schema.prisma');
 
     await ensureDir(prismaDir); 
 
-    // Check prisma dir, if exists then not genarate
-    if (!(await pathExists(schemaPath))) {
-      const schemaContent = [
-        'generator client {',
-        '  provider = "prisma-client-js"',
-        '}',
-        '',
-        'datasource db {',
-        '  provider = "postgresql"',
-        '  url      = env("DATABASE_URL")',
-        `  schemas  = ["${schemaName}", "public"]`,
-        '}',
-        '',
-      ].join('\n');
+    if (await pathExists(schemaPath)) {
+      const currentSchema = await readFile(schemaPath, 'utf8');
+      const nextSchema = replacePrismaSchemaName(currentSchema, schemaName);
 
-      await writeFile(schemaPath, schemaContent, 'utf8');
-      console.log(`🍻🍻Generated initial prisma/schema.prisma with schema: ${schemaName}`);
+      if (nextSchema !== currentSchema) {
+        await writeFile(schemaPath, nextSchema, 'utf8');
+        console.log(`🍻🍻Updated prisma/schema.prisma with schema: ${schemaName}`);
+      } else {
+        console.log(`prisma/schema.prisma already matches schema: ${schemaName}`);
+      }
     } else {
-      console.log('prisma/schema.prisma already exists in template, skipping generation');
+      console.log('prisma/schema.prisma not found in template, skipping schema replacement');
     }
     
     // handle .changeset folder if exists
@@ -112,6 +114,10 @@ export async function createDiaomaoApp(targetDir: string, options: CreateDiaomao
     pkg.name = path.basename(targetDir);
     pkg.version = "1.0.0";
     pkg.private = true;
+    pkg.devDependencies = pkg.devDependencies || {};
+    if (!pkg.devDependencies.dotenv) {
+      pkg.devDependencies.dotenv = 'catalog:';
+    }
 
     // remove standalone-specific scripts for non-monorepo scenario
     if (pkg.scripts) {

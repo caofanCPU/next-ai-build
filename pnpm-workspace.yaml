@@ -44,8 +44,8 @@ catalog:
   "@rollup/plugin-commonjs": 28.0.6
   "@rollup/plugin-node-resolve": 16.0.1
   "@rollup/plugin-typescript": 12.1.4
-  "@prisma/client": ^6.19.0
-  "@prisma/adapter-pg": ^6.19.0
+  "@prisma/client": ^7.8.0
+  "@prisma/adapter-pg": ^7.8.0
   "@tailwindcss/cli": ^4.2.1
   "@tailwindcss/postcss": ^4.2.1
   "@tailwindcss/typography": ^0.5.19
@@ -72,6 +72,7 @@ catalog:
   commander: ^12.0.0
   cmdk: 1.0.4
   date-fns: ^4.1.0
+  dotenv: ^17.4.2
   embla-carousel-react: 8.5.1
   estree-util-build-jsx: ^3.0.1
   estree-util-to-js: ^2.0.0
@@ -96,7 +97,7 @@ catalog:
   picocolors: ^1.0.0
   postcss: ^8.5.6
   postcss-cli: ^11.0.1
-  prisma: ^6.19.0
+  prisma: ^7.8.0
   react: 19.2.4
   react-day-picker: 8.10.1
   react-dom: 19.2.4

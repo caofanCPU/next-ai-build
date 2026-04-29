@@ -1,97 +1,212 @@
 # Prisma 7 升级说明
 
-本文档面向当前仓库 `/Users/funeye/IdeaProjects/next-ai-build`，说明如何将 Prisma 从 `6.x` 升级到 `7.x`。
+本文档面向当前仓库 `/Users/funeye/IdeaProjects/next-ai-build`，说明在现有架构下将 Prisma 从 `6.19.x` 升级到 `7.x` 时，哪些内容已经完成，哪些内容还需要调整，以及应该如何验证。
 
-本文档只覆盖以下内容：
+## 0. 从 6.x 升级到 7.8.0 的要点工作
 
-- 依赖升级
-- `schema.prisma` 调整
-- Prisma Client 生成方式调整
-- PostgreSQL + Supabase + Vercel Serverless 运行时适配
-- 当前项目中的 Prisma 工具类兼容性说明
+对当前仓库来说，从 Prisma `6.x` 升级到 `7.8.0`，真正需要落地的工作可以收敛为以下几项：
 
-本文档不覆盖以下内容：
+1. 统一升级 Prisma 相关依赖版本。
+2. 将 Prisma CLI 的数据源配置从 `schema.prisma` 移到 `prisma.config.ts`。
+3. 为 Prisma CLI 显式补齐环境变量加载，不再依赖 Prisma 6 时代的隐式 `.env` 行为。
+4. 保持宿主应用生成 Prisma Client、宿主应用创建运行时 client、`backend-core` 只消费宿主注入 client 的职责边界不变。
+5. 验证 `prisma generate`、TypeScript、`next build` 和运行时数据库访问链路。
+6. 清理脚手架和模板中的旧 Prisma 6 写法，避免新项目继续从旧配置起步。
 
-- `prisma migrate` 的线上执行
-- 自动变更线上数据库结构
-- 数据迁移脚本编写
+如果聚焦到 `apps/ddaas` 主链路，这次升级的代码改动本身很小：
 
-因为当前项目线上数据库是手动维护，所以升级目标是：
+- 升级 `prisma`、`@prisma/client`、`@prisma/adapter-pg`
+- 新增 `prisma.config.ts`
+- 从 `schema.prisma` 移除 `datasource.url`
 
-- 保持 Prisma Client 可正常生成
-- 保持应用运行时查询和事务可正常使用
-- 尽量减少对现有业务代码的侵入
+之所以能够把改造面收敛到这个程度，是因为当前仓库在升级前就已经完成了几项关键前置工作：
 
-## 1. 当前项目现状
+- 生成器已切到 `prisma-client`
+- Prisma Client 已有显式 `output`
+- 已使用 `engineType = "client"`
+- 应用运行时已接入 `@prisma/adapter-pg`
+- `backend-core` 已不再持有固定 schema 的 generated Prisma Client
 
-仓库当前是 `pnpm` monorepo，并且有两个 Prisma schema：
+因此，这次升级的重点不是重做 Prisma 架构，而是补齐 Prisma 7 的 CLI 约束，并验证现有架构在 `7.8.0` 下继续成立。
 
-- `apps/ddaas/prisma/schema.prisma`
-- `packages/backend-core/prisma/schema.prisma`
+本文档基于当前仓库真实状态编写，重点围绕以下事实：
 
-当前 catalog 版本定义在 `pnpm-workspace.yaml`：
+- `backend-core` 已经完成 Prisma 职责边界收敛
+- Prisma Client 已经由宿主应用生成并注册给 `backend-core`
+- `apps/ddaas` 已经使用 `prisma-client` generator、自定义 `output` 和 `@prisma/adapter-pg`
+- 当前升级的重点已不再是 Prisma 架构重做，而是版本升级、CLI 配置补齐和真实构建验证
 
-- `@prisma/client: ^6.17.1`
-- `prisma: ^6.17.1`
+本文档不覆盖：
 
-当前代码中存在直接从 `@prisma/client` 导入 Prisma Client 的写法，例如：
+- 线上数据库结构迁移策略
+- `prisma migrate` 的发布流程设计
+- SQL DDL 变更本身
 
+## 1. 当前仓库状态
+
+当前仓库和早期 Prisma 6 升级方案相比，已经发生了几个关键变化。
+
+### 1.1 `backend-core` 已不再生成或持有固定 Prisma Client
+
+当前 `backend-core` 的设计已经切换到“宿主应用生成 Prisma Client，运行时注入给 `backend-core`”的模式。
+
+对应实现可见：
+
+- `docs/backend-core.skills.md`
 - `packages/backend-core/src/prisma/prisma.ts`
-- `packages/backend-core/src/prisma/client.ts`
-- `packages/backend-core/src/prisma/index.ts`
 - `packages/backend-core/src/services/database/prisma-model-type.ts`
 
-当前 Node 版本为 `v22.14.0`，满足 Prisma 7 的要求。
+这意味着：
 
-## 2. Prisma 7 对本项目的主要影响
+- `backend-core` 不再依赖固定 schema 的 generated Prisma Client
+- `backend-core` 不再要求自身维护一份包内 Prisma schema 作为运行时来源
+- `backend-core` 的 Prisma 边界已经被收敛为 host contract，而不是 generated client nominal type
 
-从 Prisma 6 升级到 Prisma 7，对当前仓库最关键的变化如下：
+这一步对 Prisma 7 升级非常关键，因为它提前消除了大量生成路径、导出位置和 schema 绑定带来的升级阻力。
 
-1. `generator client` 需要改为新的生成器写法。
-2. Prisma Client 需要显式指定 `output`。
-3. 不应继续把运行时 client 完全依赖为 `@prisma/client` 默认导出位置。
-4. PostgreSQL 在 Prisma 7 下建议明确使用 driver adapter。
-5. Prisma CLI 不再默认自动加载 `.env`，需要显式处理。
+### 1.2 `apps/ddaas` 已经完成 Prisma 7 所需的大部分生成器迁移
 
-对本项目来说，真正需要关注的是运行时是否稳定，而不是迁移命令。
+当前 `apps/ddaas/prisma/schema.prisma` 已经是如下模式：
 
-## 3. 升级目标版本
-
-建议统一升级到同一小版本，避免 monorepo 中出现 Prisma 内部版本不一致。
-
-建议版本：
-
-- `prisma: ^7.5.0`
-- `@prisma/client: ^7.5.0`
-- `@prisma/adapter-pg: ^7.5.0`
-- `pg: ^8.16.3`
-- `dotenv: ^16.4.7`
-
-## 4. 依赖调整
-
-先修改根目录 `pnpm-workspace.yaml` 中的 `catalog`：
-
-```yaml
-catalog:
-  "@prisma/client": ^7.5.0
-  "prisma": ^7.5.0
-  "@prisma/adapter-pg": ^7.5.0
-  "pg": ^8.16.3
-  "dotenv": ^16.4.7
+```prisma
+generator client {
+  provider   = "prisma-client"
+  output     = "../src/generated/prisma"
+  engineType = "client"
+}
 ```
 
-然后确保使用 Prisma 的包通过 `catalog:` 引入这些依赖。
+这说明以下工作已经完成：
 
-建议至少调整：
+- 不再使用 `prisma-client-js`
+- 已显式声明 `output`
+- 已采用 Rust-free 的 `engineType = "client"`
 
-- `packages/backend-core/package.json`
-- `apps/ddaas/package.json`
+这些本来就是 Prisma 7 升级中最容易引起改造面的部分，但当前仓库已经提前完成。
 
-如果某个包只消费别处封装好的 Prisma 能力，而不直接执行 `prisma generate` 或不直接创建 Prisma Client，可以按实际情况减少依赖。
+### 1.3 `apps/ddaas` 运行时已使用 `@prisma/adapter-pg`
 
-## 5. schema.prisma 调整
+当前 `apps/ddaas/src/server/prisma.ts` 已经通过以下方式创建 Prisma Client：
 
-当前两个 schema 都还在使用旧写法：
+- 从 `@app-prisma` 导入宿主 generated client
+- 使用 `@prisma/adapter-pg`
+- 将实例通过 `configureBackendCorePrisma()` 注册给 `backend-core`
+
+这意味着：
+
+- 运行时接入模式已经符合 Prisma 7 推荐方向
+- `backend-core` 不需要为 Prisma 7 单独改造自己的 client 创建逻辑
+- 升级的风险点主要收敛到版本兼容和运行时验证，而不是架构重写
+
+## 2. 对本仓库的真实影响判断
+
+在当前架构下，从 `6.19.x` 升到 `7.x`，影响已经明显小于早期方案。
+
+### 2.1 不再是“架构级改造”
+
+本次升级不再需要做以下事情：
+
+- 不需要再把 Prisma Client 从 `backend-core` 拆出去
+- 不需要再把 schema 决策权从 `backend-core` 回收到宿主
+- 不需要再把 `backend-core` 从固定 `@@schema("nextai")` client 中解耦
+- 不需要再把上层应用接入方式整体重写
+
+这些工作已经完成。
+
+### 2.2 当前还需要关注的改造面
+
+当前真正需要关注的内容主要有四类：
+
+1. Prisma 依赖版本统一升级到 7.x
+2. Prisma CLI 的 `.env` 加载策略补齐
+3. 构建裁剪和 trace 规则对 Prisma 7 的兼容性验证
+4. 脚手架和文档中的旧 generator 配置清理
+
+因此，本次升级的工作量判断更接近：
+
+- `apps/ddaas` 主链路：小
+- `backend-core`：小
+- build / deploy 验证：中
+- 脚手架与文档收尾：小
+
+整体属于“升级级改造”，不再是“架构级改造”。
+
+## 3. Prisma 7 对当前仓库仍然重要的变化
+
+虽然大部分结构性工作已经完成，但 Prisma 7 仍有几个需要明确处理的点。
+
+## 3.1 Prisma CLI 不再默认加载 `.env`
+
+这是 Prisma 7 的一个关键 breaking change。
+
+在 Prisma 6 中，很多项目默认依赖 Prisma CLI 自动加载 `.env`。到了 Prisma 7，需要显式配置环境变量加载方式。
+
+这会影响当前仓库中的命令，例如：
+
+- `apps/ddaas/package.json` 中的 `prisma generate`
+
+如果不补齐这部分配置，可能出现以下问题：
+
+- 本地 `prisma generate` 找不到 `DATABASE_URL`
+- CI 中 `prisma generate` 行为与本地不一致
+- 某些脚手架生成项目后，用户需要手动补环境加载逻辑
+
+### 推荐处理方式
+
+优先选一种明确方案并在仓库内统一：
+
+1. 新增 `prisma.config.ts`，显式处理 schema 和环境变量加载
+2. 或者在执行 Prisma CLI 前，通过脚本显式加载 `.env`
+
+只要仓库统一，不必强求某一种具体写法，但不能继续依赖“Prisma CLI 会自动帮我兜底”。
+
+## 3.2 Prisma 版本需要整仓统一
+
+当前根目录 `pnpm-workspace.yaml` 中，Prisma 相关 catalog 仍然是 `6.19.x`：
+
+- `prisma`
+- `@prisma/client`
+- `@prisma/adapter-pg`
+
+升级时应统一改到同一组 7.x 版本，避免 monorepo 内 Prisma 内部版本不一致。
+
+建议原则：
+
+- `prisma`
+- `@prisma/client`
+- `@prisma/adapter-pg`
+
+三者保持同一小版本。
+
+如果某个包直接使用 Prisma CLI 或 Prisma runtime，也应继续通过 `catalog:` 引用统一版本。
+
+## 3.3 构建裁剪规则需要验证，而不是想当然复用
+
+当前 `apps/ddaas/next.config.ts` 中仍保留了一组 Prisma runtime tracing excludes，用于减少构建产物体积。
+
+这些规则最早是围绕旧 Prisma runtime 布局形成的，例如：
+
+- `query_engine_*`
+- `query_compiler_bg.*`
+- `.prisma/client/libquery_engine-*`
+
+在当前仓库中，因为已经使用：
+
+- `provider = "prisma-client"`
+- `engineType = "client"`
+- `@prisma/adapter-pg`
+
+很多旧排除项可能只是冗余，但 Prisma 7 升级后仍然应该重新验证以下问题：
+
+- Next build 后是否仍会打入不需要的 Prisma runtime 文件
+- Vercel / serverless trace 是否仍然完整
+- Prisma 查询运行时是否缺失必要依赖
+
+这里更像“验证项”，而不是预设一定要改代码。
+
+## 3.4 脚手架仍残留旧 generator 配置
+
+当前 `packages/dev-scripts/src/commands/create-diaomao-app.ts` 仍然会生成：
 
 ```prisma
 generator client {
@@ -99,553 +214,212 @@ generator client {
 }
 ```
 
-升级到 Prisma 7 后，建议改成新写法，并显式指定输出目录。
+这与当前仓库的正式 Prisma 架构已经不一致。
 
-### 5.1 apps/ddaas 的 schema
+如果不修复，会导致：
 
-文件：
+- 新脚手架项目仍然从旧 generator 起步
+- 新项目在升级 Prisma 7 时又要重复一遍已经解决过的问题
 
-- `apps/ddaas/prisma/schema.prisma`
+因此这部分虽然不阻塞 `apps/ddaas` 升级，但应该作为同一次升级收尾的一部分一并修复。
 
-建议改为：
+## 4. `backend-core` 在 Prisma 7 下的影响
 
-```prisma
-generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
-}
+## 4.1 影响已经明显降低
+
+由于当前 `backend-core` 已经不直接依赖宿主 generated Prisma Client 的具体 nominal 类型，因此 Prisma 7 对它的影响主要集中在：
+
+- host contract 的结构兼容性
+- 事务客户端类型别名的可继续使用性
+- query logger 所消费的事件字段是否保持兼容
+
+从当前实现看，这部分风险不高。
+
+原因是：
+
+- `packages/backend-core/src/prisma/prisma.ts` 对 client 能力的约束是结构性的
+- `packages/backend-core/src/services/database/prisma-model-type.ts` 中的 `Prisma` namespace 已经是自定义薄类型层
+- `backend-core` 当前不是靠导入自己生成的 Prisma 类型维持运行时
+
+## 4.2 需要关注的点
+
+虽然 `backend-core` 不需要大改，但仍应验证：
+
+- `$transaction` 的运行时行为与当前封装是否一致
+- `$on('query')` 的事件结构在 Prisma 7 下是否保持兼容
+- 调试日志中对 `event.params` 的解析是否仍然成立
+
+从当前代码看，这些更像回归验证项，而不是必然改造项。
+
+## 5. `apps/ddaas` 在 Prisma 7 下的影响
+
+## 5.1 生成配置已经基本就绪
+
+`apps/ddaas/prisma/schema.prisma` 当前已经满足 Prisma 7 的主要 generator 要求，因此不需要再做以下改造：
+
+- 不需要从 `prisma-client-js` 改到 `prisma-client`
+- 不需要补 `output`
+- 不需要再把 generated client 改为应用私有目录导出
+
+## 5.2 运行时初始化逻辑可以基本保留
+
+`apps/ddaas/src/server/prisma.ts` 当前实现已经具备以下特点：
+
+- 使用宿主自己的 generated Prisma Client
+- 使用 `PrismaPg`
+- 用单例方式复用 client
+- 启动时注册到 `backend-core`
+
+这套模式在 Prisma 7 下没有明显需要推翻的地方。
+
+重点只在于版本升级后要做一次真实验证：
+
+- 连接是否正常
+- SSL 配置是否正常
+- query event 是否正常
+- 事务是否正常
+
+## 5.3 `@app-prisma` alias 可以继续保留
+
+当前 `apps/ddaas/tsconfig.json` 中：
+
+```json
+"@app-prisma": ["./src/generated/prisma/client"]
 ```
 
-### 5.2 backend-core 的 schema
+这类 alias 方案和 Prisma 7 并不冲突，反而更适合当前仓库。
 
-文件：
+建议继续保留，原因如下：
 
-- `packages/backend-core/prisma/schema.prisma`
+- 业务代码不必关心 generated 相对路径
+- Prisma 生成目录调整时，影响面更小
+- 宿主应用的 generated client 边界更清晰
 
-建议改为：
+## 6. 建议的升级范围
 
-```prisma
-generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
-}
-```
+如果只看“让 `ddaas` 在 Prisma 7 下稳定运行”，建议把升级范围控制在以下几项。
 
-说明：
+### 必须改
 
-- `output` 路径是相对 `schema.prisma` 所在目录的。
-- 上面这个路径会把生成结果放到各自包的 `src/generated/prisma`。
-- 后续业务代码需要从这个生成目录导入，而不是继续假设所有运行时类型都从 `@prisma/client` 自动提供。
+- 升级 `pnpm-workspace.yaml` 中 Prisma 相关 catalog 到同一组 7.x
+- 更新 lockfile
+- 为 Prisma CLI 补齐显式 `.env` 加载方案
+- 验证 `apps/ddaas` 的 `prisma generate`、`next build` 和运行时查询
 
-## 6. 运行时代码调整
+### 建议一起改
 
-### 6.1 导入路径调整
+- 更新 `packages/dev-scripts/src/commands/create-diaomao-app.ts`，改为生成当前正式使用的 Prisma generator 配置
+- 复核 `apps/ddaas/next.config.ts` 中 Prisma tracing excludes 是否仍有必要或是否需要微调
+- 更新相关内部文档，避免继续传播旧方案
 
-当前代码大量使用：
+### 当前不建议扩大范围
 
-```ts
-import { PrismaClient, Prisma } from '@prisma/client';
-```
+- 不建议借这次升级重新设计 `backend-core` 的 Prisma 抽象
+- 不建议借这次升级重新引入包内 Prisma Client
+- 不建议把“线上 SQL/migration 流程改造”与 Prisma 7 升级强行绑定
 
-升级后，应改为从生成目录导入。例如在 `packages/backend-core` 中：
+这些都不是当前升级的主矛盾。
 
-```ts
-import { PrismaClient, Prisma } from '../generated/prisma/client';
-```
+## 7. 推荐的升级执行顺序
 
-具体路径以最终 `output` 为准。
+建议按以下顺序推进。
 
-### 6.2 PostgreSQL adapter 调整
+### 第一步：升级依赖版本
 
-当前数据库是 PostgreSQL，因此 Prisma 7 建议在运行时显式使用 `@prisma/adapter-pg`。
-
-示例：
-
-```ts
-import { PrismaPg } from '@prisma/adapter-pg';
-import { PrismaClient } from '../generated/prisma/client';
-
-const adapter = new PrismaPg({
-  connectionString: process.env.DATABASE_URL!,
-  connectionTimeoutMillis: 5_000,
-  idleTimeoutMillis: 300_000,
-});
-
-const prisma = new PrismaClient({
-  adapter,
-});
-```
-
-说明：
-
-- `DATABASE_URL` 仍然是主运行时连接串。
-- 显式设置超时参数更稳妥，避免升级后因为底层 `pg` 默认行为差异导致线上等待异常。
-
-## 7. Supabase + Vercel Serverless 适配建议
-
-当前部署环境是：
-
-- 后端运行在 Vercel Serverless
-- 数据库使用 Supabase PostgreSQL
-
-这种场景下，更建议应用运行时使用 Supabase 提供的 `transaction mode` 连接。
-
-### 7.1 为什么优先 transaction mode
-
-原因很直接：
-
-- Serverless 实例短生命周期、并发波动大
-- `transaction mode` 更适合作为外部连接池
-- Prisma 运行时查询和事务都更适合走这种 pooled connection
-
-### 7.2 连接串建议
-
-运行时建议：
-
-- 使用 Supabase 的 `transaction mode` 连接串
-- 在连接串上加 `?pgbouncer=true`
-
-示意：
-
-```env
-DATABASE_URL="postgres://USER:PASSWORD@HOST:6543/postgres?pgbouncer=true"
-```
-
-说明：
-
-- `6543` 只是常见 pooler 端口示意，具体以 Supabase 控制台提供的连接串为准。
-- `?pgbouncer=true` 是重点，用于避免 prepared statements 与 pooler 模式冲突。
-
-### 7.3 本项目对 session mode 的态度
-
-本项目运行时不需要优先使用 Supabase `session mode`。
-
-如果只关心应用运行和事务：
-
-- `transaction mode` 即可
-
-本文档不讨论 `prisma migrate`，因此也不要求为迁移单独维护 direct connection 方案。
-
-## 8. Prisma 事务能力是否还能正常使用
-
-可以。
-
-Prisma 7 配合 `PrismaPg` 时，事务能力仍然保留，主要包括：
-
-- `prisma.$transaction([...])`
-- `prisma.$transaction(async (tx) => { ... })`
-
-这意味着当前项目里的事务封装思路可以保留。
-
-对于当前部署模型，推荐继续使用：
-
-- `prisma.$transaction(async (tx) => { ... })`
-
-这是因为它最接近当前已有封装，也更适合封装日志、错误打印和回滚观测。
-
-## 9. 现有工具类兼容性判断
-
-### 9.1 `packages/backend-core/src/prisma/prisma.ts`
-
-当前职责：
-
-- 创建 Prisma 全局单例
-- 注册 SQL query 日志监听
-- 格式化输出 SQL
-- 提供事务客户端降级工具
-
-升级到 Prisma 7 后：
-
-- 整体设计仍可保留
-- 需要调整 import 路径
-- 需要在 `new PrismaClient()` 时注入 `adapter`
-- query 日志监听大概率仍可继续使用
-- `event.params` 格式建议在升级后手工跑几条 SQL 验证一下
-
-结论：
-
-- 这是“可保留、需微调”的文件
-- 不是需要推倒重写的文件
-
-### 9.2 `packages/backend-core/src/prisma/prisma-transaction-util.ts`
-
-当前职责：
-
-- 对 `prisma.$transaction` 做一层封装
-- 事务异常时打印回滚日志
-
-升级到 Prisma 7 后：
-
-- 事务 API 仍可继续使用
-- 回滚行为仍由 Prisma 保证
-- 需要调整的主要是类型导入路径
-
-结论：
-
-- 这个文件也属于“可保留、需微调”
-
-## 10. 推荐的升级步骤
-
-建议按以下顺序操作。
-
-### 第一步：修改依赖版本
-
-修改：
-
-- `pnpm-workspace.yaml`
-- 各相关 package 的 `package.json`
-
-补齐或升级：
+统一升级：
 
 - `prisma`
 - `@prisma/client`
 - `@prisma/adapter-pg`
-- `pg`
-- `dotenv`
 
-### 第二步：修改两个 schema 的 generator
+并刷新 lockfile。
 
-修改：
+### 第二步：补 Prisma CLI 环境加载
 
-- `apps/ddaas/prisma/schema.prisma`
-- `packages/backend-core/prisma/schema.prisma`
+让以下命令在 Prisma 7 下具备稳定行为：
 
-统一切到：
+- `prisma generate`
 
-```prisma
-generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
-}
-```
+重点保证：
 
-### 第三步：显式处理 env 加载
+- 本地执行稳定
+- CI 执行稳定
+- 不依赖 Prisma CLI 的隐式 `.env` 自动加载
 
-建议在会执行 Prisma CLI 的包内增加 `prisma.config.ts`。
+### 第三步：本地生成与类型检查
 
-示例：
+至少验证：
 
-```ts
-import 'dotenv/config';
-import { defineConfig, env } from 'prisma/config';
+- `prisma generate`
+- TypeScript type-check
+- `next build`
 
-export default defineConfig({
-  schema: 'prisma/schema.prisma',
-  datasource: {
-    url: env('DATABASE_URL'),
-  },
-});
-```
+### 第四步：运行时回归
 
-适用包：
+重点验证：
 
-- `apps/ddaas`
-- `packages/backend-core`
+- 数据库连接
+- 查询执行
+- 事务执行
+- Prisma debug query logger
+- `backend-core` 相关 route 的数据库访问链路
 
-是否两个都加，取决于是否都要独立执行 `prisma generate`。
+### 第五步：构建产物和 serverless trace 验证
 
-### 第四步：生成 Prisma Client
+重点检查：
 
-执行：
+- 是否仍有多余 Prisma runtime 文件进入产物
+- 是否误裁掉了 Prisma 7 运行时所需文件
+- Vercel/serverless 场景下是否存在冷启动或缺文件问题
 
-```bash
-pnpm install
-pnpm --filter @windrun-huaiin/backend-core exec prisma generate
-pnpm --filter @windrun-huaiin/ddaas-website exec prisma generate
-```
+### 第六步：修正文档与脚手架
 
-### 第五步：修改运行时代码导入
+最后再清理：
 
-重点文件：
+- 旧升级文档
+- 脚手架旧 generator 配置
+- 与旧 Prisma 架构相关的误导性说明
 
-- `packages/backend-core/src/prisma/prisma.ts`
-- `packages/backend-core/src/prisma/client.ts`
-- `packages/backend-core/src/prisma/index.ts`
-- `packages/backend-core/src/services/database/prisma-model-type.ts`
-- `packages/backend-core/src/prisma/prisma-transaction-util.ts`
+## 8. 风险评估
 
-处理原则：
+结合当前仓库状态，本次升级的主要风险已经不是业务代码，而是外围工具链和运行时环境。
 
-- 从生成目录导入 Prisma 类型和 Prisma Client
-- 在 `PrismaClient` 初始化时注入 `PrismaPg`
-- 保留现有日志与事务封装逻辑
+### 低风险
 
-### 第六步：验证运行时
+- `backend-core` 的 Prisma 边界设计
+- `ddaas` 的 generated client 输出路径
+- `adapter-pg` 的整体接入方式
 
-至少验证以下内容：
+### 中风险
 
-1. 应用启动后 Prisma Client 能正常初始化
-2. 普通查询可正常执行
-3. `runInTransaction` 内多条写操作可以成功提交
-4. 人为抛错时事务可以回滚
-5. SQL 日志仍能正常打印
+- Prisma 7 CLI 不再自动加载 `.env`
+- Next build / Vercel trace 对 Prisma 7 runtime 文件布局的适配
+- SSL 与连接参数在升级后的真实运行表现
 
-## 11. 最小改动原则
+### 高风险项
 
-本项目升级到 Prisma 7 的核心策略不是“全面重构”，而是：
+当前没有明显的高风险“架构级阻塞项”。
 
-- 先迁移生成方式
-- 再迁移 import 路径
-- 再接入 `PrismaPg`
-- 保留现有封装层
+如果升级失败，更可能是某个具体构建或环境细节问题，而不是当前整体设计方向错误。
 
-也就是说，当前已有的：
+## 9. 最终结论
 
-- SQL 打印工具
-- 事务工具
-- 全局单例模式
+对当前仓库来说，Prisma `6.19.x -> 7.x` 的改造已经不大了。
 
-都可以继续沿用，只需要围绕 Prisma 7 的新生成模式和 adapter 模式做兼容调整。
+更准确地说：
 
-## 12. 结论
+- 大部分困难的架构工作已经提前完成
+- 当前剩余任务主要是版本升级、CLI 配置补齐和构建运行时验证
+- `backend-core` 不需要为了 Prisma 7 再经历一次大的职责边界重构
 
-对当前仓库来说，Prisma 7 升级是可做的，而且不需要推翻现有 Prisma 封装。
+因此，这次升级应按“最小必要改造 + 完整验证链路”的思路推进，而不是再按早期方案去预估一轮中大型重构。
 
-升级后的现实目标应该是：
+## 10. 本仓库当前建议检查清单
 
-- 继续在 Vercel Serverless 上运行
-- 继续连接 Supabase PostgreSQL
-- 运行时优先使用 Supabase `transaction mode`
-- 保留现有事务封装和 SQL 日志能力
-- 不把数据库结构变更流程耦合进这次升级
-
-从工程角度看，这次升级的主要工作量集中在：
-
-- 依赖升级
-- schema generator 调整
-- Prisma Client 导入路径调整
-- `PrismaPg` 接入
-
-而不是业务查询逻辑重写。
-
-## 13. 多项目使用模式的现实问题
-
-当前项目在 Prisma 6 下的使用模式是：
-
-- `backend-core` 作为底层通用能力包发布
-- `backend-core` 提供通用数据表相关的 service 方法与工具
-- `ddaas` 或其他上层应用自己维护完整 schema
-- 上层应用通过脚本把基础表同步进自己的 schema
-- Prisma Client 的生成发生在 `ddaas` 这类应用项目内
-
-这套模式在 Prisma 6 下能较顺地工作，一个重要原因是 Prisma 6 的默认使用方式更“隐式”：
-
-- Client 默认生成到 `node_modules`
-- 下层包更容易直接依赖 `@prisma/client`
-- 多个包更容易假设“自己看到的是同一个 Prisma Client 世界”
-
-到了 Prisma 7，这个前提不再成立。
-
-### 13.1 Prisma 7 下无法继续依赖“隐式共享 client”
-
-Prisma 7 明确要求：
-
-- 使用 `prisma-client` generator
-- 显式指定 `output`
-- 从生成目录导入 Prisma Client
-
-这意味着：
-
-- `backend-core` 无法天然知道消费方把 client 生成到了哪里
-- `backend-core` 也不能再默认依赖消费方的 `@prisma/client` 产物
-
-结论：
-
-- Prisma 6 下那种“应用层生成，底层包隐式复用”的实现方式，在 Prisma 7 下不能原样照搬
-
-### 13.2 如果 backend-core 自己生成 client，会发生什么
-
-如果 `backend-core` 自己也生成一份 Prisma Client，那么它作为 npm 包发布时，通常需要把生成产物一起发布出去。
-
-这本身不是大问题，尤其当前基础表数量不大，生成物体积通常可接受。
-
-但更重要的影响是：
-
-- `backend-core` 的 generated client
-- `ddaas` 的 generated client
-
-它们会成为两套不同的 Prisma Client。
-
-需要注意：
-
-- 它们可以连接同一个数据库
-- 但它们不是同一个事务上下文
-- 它们的 `PrismaClient` / `TransactionClient` 类型也不应默认认为完全可互换
-
-### 13.3 为什么事务是核心冲突点
-
-当前项目需要支持这样的业务场景：
-
-- `ddaas` 先写自己的业务表
-- 再调用 `backend-core` 的 service 写基础表
-- 两者在同一个事务里统一提交或回滚
-
-这在 Prisma 7 下并不是做不到，但有一个硬前提：
-
-- 所有事务内操作必须走同一个 client 开启出来的那个 `tx`
-
-如果出现下面这种情况：
-
-- `ddaas` 用自己的 Prisma Client 开启事务
-- `backend-core` 的 service 内部却切回了 `backend-core` 自己的全局单例 client
-
-那么：
-
-- `backend-core` 的操作就不在 `ddaas` 的事务里
-- 事务原子性会被破坏
-
-所以真正的问题不是“能不能跨项目组合处理数据”，而是：
-
-- 不能依赖两套独立 Prisma Client 自动共享同一个事务
-
-### 13.4 Prisma 7 下可行的工程做法
-
-如果希望继续维持“数据库 schema 在应用项目里，backend-core 主要提供 service 能力”的模式，那么最现实的约束是：
-
-- `backend-core` 的 service 必须支持传入外部 `tx` 或 `db`
-- 事务场景下，`backend-core` 必须优先使用调用方传入的同一个事务上下文
-- 不能在事务内部偷偷回退到 `backend-core` 自己的全局单例 Prisma Client
-
-也就是说：
-
-- 非事务场景：可以使用默认全局单例
-- 跨模块事务场景：必须显式透传同一个 `tx`
-
-### 13.5 这是否代表 Prisma 7 无法支持跨模块组合
-
-不是。
-
-Prisma 7 仍然可以支持：
-
-- 多模块共同操作同一个数据库
-- 多模块参与同一个事务
-- 上层应用调用底层 service 完成组合业务
-
-但实现方式必须从“隐式共享 client”改成“显式传递事务上下文”。
-
-### 13.6 这对当前仓库意味着什么
-
-对当前仓库来说，有两条现实路线：
-
-第一条路线：
-
-- `backend-core` 自己也生成 Prisma Client
-- 发布时带上 generated client
-- `backend-core` 继续导出自己的通用 model type、service 和工具
-- 事务场景下，上层应用需要把同一个 `tx` 显式传给 `backend-core`
-
-第二条路线：
-
-- `backend-core` 不发布 generated client
-- 上层应用统一 generate
-- `backend-core` 改造成更抽象的 service/repository 层，不再直接绑定 Prisma 原生类型
-
-从改造成本看：
-
-- 第一条路线改动更小
-- 第二条路线工程边界更纯，但重构量明显更大
-
-## 14. Prisma 6 升级到 7，是否有明显收益
-
-这部分需要非常务实地看。
-
-如果项目只是把 Prisma 当作 ORM / SQL 构建工具，而当前 Prisma 6 已经稳定可用，那么 Prisma 7 不一定是“必须立即升级”的版本。
-
-### 14.1 Prisma 7 的主要收益
-
-Prisma 官方给出的 Prisma 7 方向，核心是新的 Rust-free client 架构：
-
-- 更小的生成产物
-- 不再需要 Rust engine 二进制
-- 在 serverless / edge / 打包场景下更轻量
-- 部署更简单，跨环境兼容性更好
-
-官方文档中明确提到，新 `prisma-client` + Rust-free 架构会带来：
-
-- 更小的 bundle size
-- 更少的系统资源占用
-- 更轻量的部署体验
-
-这些收益对以下场景更有价值：
-
-- Vercel Serverless
-- 较强调包体积和冷启动的环境
-- 频繁打包发布的 monorepo
-- 对 Rust engine 二进制分发较敏感的 CI/CD 流程
-
-### 14.2 Prisma 7 最大的代价
-
-Prisma 7 的主要代价也很明显：
-
-- `output` 必须显式配置
-- import 路径要改
-- PostgreSQL 需要 driver adapter
-- `.env` 加载方式要显式处理
-- 像当前仓库这种多项目/底层 service 包模式，边界会比 Prisma 6 更严格
-
-所以如果当前 Prisma 6 已经很稳定，升级成本并不是零。
-
-### 14.3 Prisma 6 在并发下是否明显更差
-
-就 Prisma 官方文档来看，没有看到一个可以直接下结论的说法：
-
-- “Prisma 6 在高并发下性能很差”
-- 或者 “升级到 Prisma 7 会显著提升普通 CRUD 并发性能”
-
-我没有找到 Prisma 官方把 Prisma 7 的核心卖点定义为：
-
-- 单纯查询吞吐显著提升
-- 普通 CRUD 并发大幅优于 Prisma 6
-
-更准确地说，Prisma 7 的优势更偏向于：
-
-- client 架构更现代
-- serverless/edge 部署更轻
-- 避免 Rust binary 带来的构建和运行时包袱
-
-也就是说，如果你的判断标准是：
-
-- 日常 ORM 查询够不够用
-- 是否能少写 CRUD
-- 事务是否稳定
-
-那么 Prisma 6 在这类用途上并没有官方证据表明“已经明显不行”。
-
-### 14.4 对当前项目的现实判断
-
-结合当前仓库特点：
-
-- 主要诉求是 ORM / SQL 能力
-- 不依赖 Prisma 的新潮能力
-- 有多项目共用 service 的特殊架构
-- 已经有自己的通用表同步方案
-
-所以这次升级并不是一个“必须立刻做”的高优先级事项。
-
-更现实的判断是：
-
-- 如果你当前 Prisma 6 运行稳定，且发布构建没有明显被 Rust engine 拖累
-- 如果 serverless 部署体积、冷启动、二进制兼容性没有成为实际痛点
-
-那么留在 Prisma 6 一段时间，是合理的。
-
-### 14.5 什么情况下更值得升到 7
-
-更适合升级到 Prisma 7 的情况包括：
-
-- 你想统一切到 Rust-free client
-- 你在 Vercel/Serverless 环境里被包体积或构建产物困扰
-- 你未来准备把 Prisma 的工程边界重新梳理清楚
-- 你愿意接受一次围绕 client 输出和事务上下文传递的结构调整
-
-### 14.6 当前建议
-
-对当前项目，建议不要把“升级到 Prisma 7”理解为纯收益升级。
-
-更准确的判断是：
-
-- 它有部署和运行时架构上的收益
-- 但不一定会直接带来你最关心的业务 CRUD 性能跃迁
-- 对当前多项目 Prisma 使用模式，它反而会暴露边界问题
-
-因此，如果当前 Prisma 6 已稳定支撑业务，且没有遇到明显的打包、部署、二进制兼容问题，那么继续停留在 Prisma 6，是完全合理的工程选择。
+- `pnpm-workspace.yaml` 中 Prisma catalog 是否全部升级到同一组 7.x
+- `apps/ddaas/package.json` 中 `prisma generate` 是否已经具备显式 env 加载方案
+- `apps/ddaas/prisma/schema.prisma` 是否继续保持 `provider = "prisma-client"` 与显式 `output`
+- `apps/ddaas/src/server/prisma.ts` 在 Prisma 7 下是否仍正常创建连接、注册 query logger、执行事务
+- `apps/ddaas/next.config.ts` 中 Prisma tracing excludes 是否经过重新验证
+- `packages/dev-scripts/src/commands/create-diaomao-app.ts` 是否仍在生成旧版 `prisma-client-js`
+- `backend-core` 的 query logger 与事务封装是否完成 Prisma 7 回归测试

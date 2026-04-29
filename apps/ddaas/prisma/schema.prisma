@@ -6,25 +6,10 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
   schemas  = ["nextai", "public"]
 }
 
-// === ddaaS application-only sample model ===
-// This table is intentionally not created in the database. It documents where
-// ddaaS-owned models should live when they are added alongside backend-core.
-model DdaasTestQuerySample {
-  id        BigInt    @id @default(autoincrement())
-  sampleKey String    @unique @map("sample_key") @db.VarChar(255)
-  note      String?   @db.Text
-  createdAt DateTime? @default(now()) @map("created_at") @db.Timestamptz(6)
-
-  @@map("ddaas_test_query_sample")
-  @@schema("nextai")
-}
-
-
-
+// === backend-core models ===
 model User {
   id            BigInt         @id @default(autoincrement())
   userId        String         @unique @default(dbgenerated("gen_random_uuid()")) @map("user_id") @db.Uuid

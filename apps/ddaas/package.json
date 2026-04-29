@@ -51,6 +51,7 @@
     "@types/react-dom": "catalog:",
     "@typescript-eslint/parser": "catalog:",
     "@windrun-huaiin/dev-scripts": "workspace:*",
+    "dotenv": "catalog:",
     "eslint": "catalog:",
     "eslint-config-next": "catalog:",
     "eslint-plugin-unused-imports": "catalog:",
