@@ -22,8 +22,13 @@ function getPrismaLogConfig() {
 
 function createPrismaPgConfig(databaseUrl: string) {
   const ca = process.env.SUPABASE_DB_CA_CERT;
+  const prismaDebugEnabled = process.env.PRISMA_DEBUG === 'true';
 
-  if (!ca && !globalForPrisma.__app_prisma_ssl_warning_logged) {
+  if (
+    prismaDebugEnabled &&
+    !ca &&
+    !globalForPrisma.__app_prisma_ssl_warning_logged
+  ) {
     console.warn(
       'SUPABASE_DB_CA_CERT is not configured. Prisma will request TLS without certificate verification unless DATABASE_URL SSL parameters override this behavior. Configure SUPABASE_DB_CA_CERT for certificate verification.',
     );
