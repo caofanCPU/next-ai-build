@@ -1,5 +1,11 @@
 # @windrun-huaiin/backend-core
 
+## 29.0.2
+
+### Patch Changes
+
+- fix(clerk): log debug
+
 ## 29.0.1
 
 ### Patch Changes
