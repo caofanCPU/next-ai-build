@@ -1,5 +1,11 @@
 # @windrun-huaiin/base-ui
 
+## 29.0.1
+
+### Patch Changes
+
+- feat(ui): add `XSwitchButton` and `UndoableConfirmDialog` components
+
 ## 29.0.0
 
 ### Major Changes

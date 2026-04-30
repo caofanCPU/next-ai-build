@@ -1,5 +1,17 @@
 # @windrun-huaiin/ddaas-website
 
+## 29.0.4
+
+### Patch Changes
+
+- feat(ui): add `XSwitchButton` and `UndoableConfirmDialog` components
+- Updated dependencies
+  - @windrun-huaiin/lib@29.0.0
+  - @windrun-huaiin/base-ui@29.0.1
+  - @windrun-huaiin/third-ui@29.0.3
+  - @windrun-huaiin/backend-core@29.0.1
+  - @windrun-huaiin/fumadocs-local-md@29.0.0
+
 ## 29.0.3
 
 ### Patch Changes
