@@ -20,6 +20,7 @@ import React, { createContext, useContext, useEffect, useMemo, useRef, useState 
 import type { FingerprintContextType, FingerprintProviderProps } from './types';
 import { useFingerprint } from './use-fingerprint';
 import { CopyableText } from '@windrun-huaiin/base-ui/ui';
+import { XSwitchButton } from '../../main/buttons';
 import { createFingerprintHeaders } from './fingerprint-client';
 import {
   getOrCreateDebugFingerprintOverride,
@@ -436,35 +437,15 @@ export function FingerprintStatus() {
                   {translations.panel.title}
                 </div>
                 <div className="flex items-center gap-2">
-                  <button
+                  <XSwitchButton
                     type="button"
-                    onClick={() => setPanelMode((prev) => prev === 'info' ? 'test' : 'info')}
-                    className={cn(
-                      'inline-flex items-center gap-2 rounded-full border px-2 py-1 text-[11px] font-semibold shadow-sm transition-all duration-200',
-                      panelMode === 'test'
-                        ? cn('border-transparent text-white', themeButtonGradientClass, themeButtonGradientHoverClass)
-                        : themedGhostButtonClass
-                    )}
-                    aria-pressed={panelMode === 'test'}
-                  >
-                    <span>{translations.panel.testModeLabel}</span>
-                    <span
-                      className={cn(
-                        'relative inline-flex h-5 w-9 items-center rounded-full transition-colors',
-                        panelMode === 'test'
-                          ? 'bg-white/25'
-                          : 'bg-slate-300 dark:bg-slate-700'
-                      )}
-                    >
-                      <span
-                        className={cn(
-                          'inline-block size-4 rounded-full shadow-sm transition-transform',
-                          panelMode === 'test' ? 'bg-white' : 'bg-white dark:bg-slate-100',
-                          panelMode === 'test' ? 'translate-x-4' : 'translate-x-0.5'
-                        )}
-                      />
-                    </span>
-                  </button>
+                    checked={panelMode === 'test'}
+                    onCheckedChange={(nextChecked) => setPanelMode(nextChecked ? 'test' : 'info')}
+                    checkedLabel={translations.panel.testModeLabel}
+                    uncheckedLabel={translations.panel.testModeLabel}
+                    size="compact"
+                    className="border px-2 py-1 text-[11px] shadow-sm"
+                  />
                   <button
                     type="button"
                     aria-label={translations.panel.closeAriaLabel}
