@@ -36,6 +36,18 @@ export interface AuthMiddlewareOptions {
   intlMiddleware: (req: NextRequest) => ReturnType<typeof NextResponse.next> | Response | undefined;
 }
 
+function isClerkDebugEnabled() {
+  return process.env.CLERK_DEBUG === 'true';
+}
+
+function logClerkDebug(message: string, ...args: unknown[]) {
+  if (!isClerkDebugEnabled()) {
+    return;
+  }
+
+  console.log(message, ...args);
+}
+
 async function authenticateWithClerk(auth: ClerkMiddlewareAuth): Promise<ProviderIdentity | null> {
   const { userId } = await auth();
   if (!userId) {
@@ -71,7 +83,7 @@ export async function handleAuthMiddleware(
       return (await auth()).redirectToSignIn();
     }
     const requestHeaders = buildAuthenticatedRequestHeaders(req, identity);
-    console.log('Forward auth context for protected page:', identity.provider, identity.providerUserId);
+    logClerkDebug('Forward auth context for protected page:', identity.provider, identity.providerUserId);
     return intlMiddleware(
       new NextRequest(req.url, {
         headers: requestHeaders,
@@ -87,7 +99,7 @@ export async function handleAuthMiddleware(
       return (await auth()).redirectToSignIn();
     }
     const requestHeaders = buildAuthenticatedRequestHeaders(req, identity);
-    console.log('Forward auth context for protected API:', identity.provider, identity.providerUserId);
+    logClerkDebug('Forward auth context for protected API:', identity.provider, identity.providerUserId);
     return NextResponse.next({
       request: {
         headers: requestHeaders,
@@ -96,12 +108,12 @@ export async function handleAuthMiddleware(
   }
 
   if (publicApiRoutes(req)) {
-    console.log('Public API route, no auth required:', req.nextUrl.pathname);
+    logClerkDebug('Public API route, no auth required:', req.nextUrl.pathname);
     return NextResponse.next();
   }
 
   if (req.nextUrl.pathname.startsWith('/api/')) {
-    console.log('Other API route, no internationalization:', req.nextUrl.pathname);
+    logClerkDebug('Other API route, no internationalization:', req.nextUrl.pathname);
     return NextResponse.next();
   }
 
