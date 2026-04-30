@@ -83,19 +83,41 @@ import {
   CircleQuestionMark as RawCircleQuestionMark,
   CircleSmall as RawCircleSmall,
   CircleStop as RawCircleStop,
+  ClipboardType as RawClipboardType,
   Coffee as RawCoffee,
   Coins as RawCoins,
   Component as RawComponentIcon,
+  Command as RawCommand,
   Copy as RawCopy,
   CopyCheck as RawCopyCheck,
+  Copyright as RawCopyright,
+  CornerDownLeft as RawCornerDownLeft,
+  CornerDownRight as RawCornerDownRight,
+  CornerLeftDown as RawCornerLeftDown,
+  CornerLeftUp as RawCornerLeftUp,
+  CornerRightDown as RawCornerRightDown,
+  CornerRightUp as RawCornerRightUp,
+  CornerUpLeft as RawCornerUpLeft,
+  CornerUpRight as RawCornerUpRight,
+  CreativeCommons as RawCreativeCommons,
+  Crop as RawCrop,
+  Cross as RawCross,
   Cpu as RawCpu,
   Database as RawDatabase,
   DatabaseZap as RawDatabaseZap,
+  Dna as RawDna,
   Dot as RawDot,
   Download as RawDownload,
+  Droplet as RawDroplet,
+  DropletOff as RawDropletOff,
+  Droplets as RawDroplets,
+  Egg as RawEgg,
+  EggFried as RawEggFried,
+  EggOff as RawEggOff,
   Ellipsis as RawEllipsis,
   EllipsisVertical as RawEllipsisVertical,
   Eye as RawEye,
+  EyeClosed as RawEyeClosed,
   EyeOff as RawEyeOff,
   ExternalLink as RawExternalLink,
   Facebook as RawFacebook,
@@ -107,6 +129,7 @@ import {
   Fingerprint as RawFingerprint,
   Folder as RawFolder,
   FolderOpen as RawFolderOpen,
+  Frown as RawFrown,
   Gem as RawGem,
   Gift as RawGift,
   GitMerge as RawGitMerge,
@@ -125,6 +148,8 @@ import {
   ImageUp as RawImageUp,
   Infinity as RawInfinity,
   Info as RawInfo,
+  Key as RawKey,
+  KeyRound as RawKeyRound,
   Keyboard as RawKeyboard,
   LandPlot as RawLandPlot,
   Languages as RawLanguages,
@@ -157,6 +182,7 @@ import {
   Plus as RawPlus,
   QrCode as RawQrCode,
   ReceiptText as RawReceiptText,
+  Redo2 as RawRedo2,
   RefreshCcw as RawRefreshCcw,
   Regex as RawRegex,
   Replace as RawReplace,
@@ -176,10 +202,13 @@ import {
   ShieldUser as RawShieldUser,
   ShoppingCart as RawShoppingCart,
   Sigma as RawSigma,
+  Smile as RawSmile,
+  SmilePlus as RawSmilePlus,
   SplinePointer as RawSplinePointer,
   Sparkles as RawSparkles,
   Sprout as RawSprout,
   SquareDashedBottomCode as RawSquareDashedBottomCode,
+  SquaresExclude as RawSquaresExclude,
   SquareTerminal as RawSquareTerminal,
   Star as RawStar,
   Sun as RawSun,
@@ -187,6 +216,7 @@ import {
   Terminal as RawTerminal,
   Trash2 as RawTrash2,
   Twitter as RawTwitter,
+  Undo2 as RawUndo2,
   Usb as RawUsb,
   UserRoundCheck as RawUserRoundCheck,
   Wand2 as RawWand2,
@@ -251,19 +281,41 @@ export const ChevronDownIcon = createGlobalLucideIcon(RawChevronDown, 'ChevronDo
 export const ChevronLeftIcon = createGlobalLucideIcon(RawChevronLeft, 'ChevronLeftIcon');
 export const ChevronRightIcon = createGlobalLucideIcon(RawChevronRight, 'ChevronRightIcon');
 export const ChevronUpIcon = createGlobalLucideIcon(RawChevronUp, 'ChevronUpIcon');
+export const ClipboardTypeIcon = createGlobalLucideIcon(RawClipboardType, 'ClipboardTypeIcon');
 export const CoffeeIcon = createGlobalLucideIcon(RawCoffee, 'CoffeeIcon');
 export const CoinsIcon = createGlobalLucideIcon(RawCoins, 'CoinsIcon');
 export const ComponentIcon = createGlobalLucideIcon(RawComponentIcon, 'ComponentIcon');
+export const CommandIcon = createGlobalLucideIcon(RawCommand, 'CommandIcon');
 export const CopyIcon = createGlobalLucideIcon(RawCopy, 'CopyIcon');
 export const CopyCheckIcon = createGlobalLucideIcon(RawCopyCheck, 'CopyCheckIcon');
+export const CopyrightIcon = createGlobalLucideIcon(RawCopyright, 'CopyrightIcon');
+export const CornerDownLeftIcon = createGlobalLucideIcon(RawCornerDownLeft, 'CornerDownLeftIcon');
+export const CornerDownRightIcon = createGlobalLucideIcon(RawCornerDownRight, 'CornerDownRightIcon');
+export const CornerLeftDownIcon = createGlobalLucideIcon(RawCornerLeftDown, 'CornerLeftDownIcon');
+export const CornerLeftUpIcon = createGlobalLucideIcon(RawCornerLeftUp, 'CornerLeftUpIcon');
+export const CornerRightDownIcon = createGlobalLucideIcon(RawCornerRightDown, 'CornerRightDownIcon');
+export const CornerRightUpIcon = createGlobalLucideIcon(RawCornerRightUp, 'CornerRightUpIcon');
+export const CornerUpLeftIcon = createGlobalLucideIcon(RawCornerUpLeft, 'CornerUpLeftIcon');
+export const CornerUpRightIcon = createGlobalLucideIcon(RawCornerUpRight, 'CornerUpRightIcon');
+export const CreativeCommonsIcon = createGlobalLucideIcon(RawCreativeCommons, 'CreativeCommonsIcon');
+export const CropIcon = createGlobalLucideIcon(RawCrop, 'CropIcon');
+export const CrossIcon = createGlobalLucideIcon(RawCross, 'CrossIcon');
 export const CpuIcon = createGlobalLucideIcon(RawCpu, 'CpuIcon');
 export const DatabaseIcon = createGlobalLucideIcon(RawDatabase, 'DatabaseIcon');
 export const DatabaseZapIcon = createGlobalLucideIcon(RawDatabaseZap, 'DatabaseZapIcon');
+export const DnaIcon = createGlobalLucideIcon(RawDna, 'DnaIcon');
 export const DotIcon = createGlobalLucideIcon(RawDot, 'DotIcon');
 export const DownloadIcon = createGlobalLucideIcon(RawDownload, 'DownloadIcon');
+export const DropletIcon = createGlobalLucideIcon(RawDroplet, 'DropletIcon');
+export const DropletOffIcon = createGlobalLucideIcon(RawDropletOff, 'DropletOffIcon');
+export const DropletsIcon = createGlobalLucideIcon(RawDroplets, 'DropletsIcon');
+export const EggIcon = createGlobalLucideIcon(RawEgg, 'EggIcon');
+export const EggFriedIcon = createGlobalLucideIcon(RawEggFried, 'EggFriedIcon');
+export const EggOffIcon = createGlobalLucideIcon(RawEggOff, 'EggOffIcon');
 export const EllipsisIcon = createGlobalLucideIcon(RawEllipsis, 'EllipsisIcon');
 export const EllipsisVerticalIcon = createGlobalLucideIcon(RawEllipsisVertical, 'EllipsisVerticalIcon');
 export const EyeIcon = createGlobalLucideIcon(RawEye, 'EyeIcon');
+export const EyeClosedIcon = createGlobalLucideIcon(RawEyeClosed, 'EyeClosedIcon');
 export const EyeOffIcon = createGlobalLucideIcon(RawEyeOff, 'EyeOffIcon');
 export const ExternalLinkIcon = createGlobalLucideIcon(RawExternalLink, 'ExternalLinkIcon');
 export const FacebookIcon = createGlobalLucideIcon(RawFacebook, 'FacebookIcon');
@@ -276,6 +328,7 @@ export const FileUpIcon = createGlobalLucideIcon(RawFileUp, 'FileUpIcon');
 export const FingerprintIcon = createGlobalLucideIcon(RawFingerprint, 'FingerprintIcon');
 export const FolderIcon = createGlobalLucideIcon(RawFolder, 'FolderIcon');
 export const FolderOpenIcon = createGlobalLucideIcon(RawFolderOpen, 'FolderOpenIcon');
+export const FrownIcon = createGlobalLucideIcon(RawFrown, 'FrownIcon');
 export const GemIcon = createGlobalLucideIcon(RawGem, 'GemIcon');
 export const GiftIcon = createGlobalLucideIcon(RawGift, 'GiftIcon');
 export const GitMergeIcon = createGlobalLucideIcon(RawGitMerge, 'GitMergeIcon');
@@ -294,6 +347,8 @@ export const InfoIcon = createGlobalLucideIcon(RawInfo, 'InfoIcon');
 export const ImageDownIcon = createGlobalLucideIcon(RawImageDown, 'ImageDownIcon');
 export const ImageOffIcon = createGlobalLucideIcon(RawImageOff, 'ImageOffIcon');
 export const ImageUpIcon = createGlobalLucideIcon(RawImageUp, 'ImageUpIcon');
+export const KeyIcon = createGlobalLucideIcon(RawKey, 'KeyIcon');
+export const KeyRoundIcon = createGlobalLucideIcon(RawKeyRound, 'KeyRoundIcon');
 export const KeyboardIcon = createGlobalLucideIcon(RawKeyboard, 'KeyboardIcon');
 export const LandPlotIcon = createGlobalLucideIcon(RawLandPlot, 'LandPlotIcon');
 export const LanguagesIcon = createGlobalLucideIcon(RawLanguages, 'LanguagesIcon');
@@ -326,6 +381,7 @@ export const PinOffIcon = createGlobalLucideIcon(RawPinOff, 'PinOffIcon');
 export const PlusIcon = createGlobalLucideIcon(RawPlus, 'PlusIcon');
 export const QrCodeIcon = createGlobalLucideIcon(RawQrCode, 'QrCodeIcon');
 export const ReceiptTextIcon = createGlobalLucideIcon(RawReceiptText, 'ReceiptTextIcon');
+export const Redo2Icon = createGlobalLucideIcon(RawRedo2, 'Redo2Icon');
 export const RefreshCcwIcon = createGlobalLucideIcon(RawRefreshCcw, 'RefreshCcwIcon');
 export const RegexIcon = createGlobalLucideIcon(RawRegex, 'RegexIcon');
 export const ReplaceIcon = createGlobalLucideIcon(RawReplace, 'ReplaceIcon');
@@ -343,8 +399,11 @@ export const ShareIcon = createGlobalLucideIcon(RawShare, 'ShareIcon');
 export const SigmaIcon = createGlobalLucideIcon(RawSigma, 'SigmaIcon');
 export const ShieldUserIcon = createGlobalLucideIcon(RawShieldUser, 'ShieldUserIcon');
 export const ShoppingCartIcon = createGlobalLucideIcon(RawShoppingCart, 'ShoppingCartIcon');
+export const SmileIcon = createGlobalLucideIcon(RawSmile, 'SmileIcon');
+export const SmilePlusIcon = createGlobalLucideIcon(RawSmilePlus, 'SmilePlusIcon');
 export const SproutIcon = createGlobalLucideIcon(RawSprout, 'SproutIcon');
 export const SquareDashedBottomCodeIcon = createGlobalLucideIcon(RawSquareDashedBottomCode, 'SquareDashedBottomCodeIcon');
+export const SquaresExcludeIcon = createGlobalLucideIcon(RawSquaresExclude, 'SquaresExcludeIcon');
 export const SquareTerminalIcon = createGlobalLucideIcon(RawSquareTerminal, 'SquareTerminalIcon');
 export const ServerIcon = createGlobalLucideIcon(RawServer, 'ServerIcon');
 export const SplinePointerIcon = createGlobalLucideIcon(RawSplinePointer, 'SplinePointerIcon');
@@ -355,6 +414,7 @@ export const TabletsIcon = createGlobalLucideIcon(RawTablets, 'TabletsIcon');
 export const TerminalIcon = createGlobalLucideIcon(RawTerminal, 'TerminalIcon');
 export const Trash2Icon = createGlobalLucideIcon(RawTrash2, 'Trash2Icon');
 export const TwitterIcon = createGlobalLucideIcon(RawTwitter, 'TwitterIcon');
+export const Undo2Icon = createGlobalLucideIcon(RawUndo2, 'Undo2Icon');
 export const UsbIcon = createGlobalLucideIcon(RawUsb, 'UsbIcon');
 export const UserRoundCheckIcon = createGlobalLucideIcon(RawUserRoundCheck, 'UserRoundCheckIcon');
 export const Wand2Icon = createGlobalLucideIcon(RawWand2, 'Wand2Icon');

@@ -41,6 +41,7 @@ import {
   ConfirmDialog,
   HighPriorityConfirmDialog,
   InfoDialog,
+  UndoableConfirmDialog,
 } from '@third-ui/main/alert-dialog';
 import {
   XFilterPills,
@@ -100,6 +101,7 @@ type ActiveDialogDemo =
   | 'info-error'
   | 'confirm-normal'
   | 'confirm-danger'
+  | 'undoable-confirm'
   | 'high-priority';
 
 const sleep = (ms: number) => new Promise((resolve) => window.setTimeout(resolve, ms));
@@ -397,6 +399,17 @@ export default function TestComponentsPage() {
                 minWidth="min-w-0"
                 className={dialogDangerDemoButtonClass}
                 button={{ icon: <CircleAlertIcon />, text: '危险确认', onClick: () => setActiveDialogDemo('confirm-danger') }}
+              />
+              <XButton
+                type="single"
+                variant="subtle"
+                minWidth="min-w-0"
+                className={dialogDangerDemoButtonClass}
+                button={{
+                  icon: <CircleAlertIcon />,
+                  text: '倒计时删除',
+                  onClick: () => setActiveDialogDemo('undoable-confirm'),
+                }}
               />
             </div>
           </div>
@@ -1136,6 +1149,26 @@ export default function TestComponentsPage() {
         confirmText="Delete"
         onCancel={() => setActionText('ConfirmDialog：danger 取消')}
         onConfirm={() => setActionText('ConfirmDialog：danger 确认')}
+      />
+
+      <UndoableConfirmDialog
+        open={activeDialogDemo === 'undoable-confirm'}
+        onOpenChange={(open) => setActiveDialogDemo(open ? 'undoable-confirm' : null)}
+        title="Delete this record?"
+        description="点击删除后会进入等待期。等待期内可以撤回，倒计时结束后才会执行删除。"
+        pendingTitle="Delete scheduled"
+        pendingDescription="删除操作即将执行。倒计时结束前点击 Undo 可以撤回。"
+        countdownSeconds={5}
+        cancelText="Cancel"
+        confirmText="Delete"
+        undoText="Undo"
+        onCancel={() => setActionText('UndoableConfirmDialog：取消')}
+        onUndo={() => setActionText('UndoableConfirmDialog：已撤回')}
+        onConfirm={async () => {
+          setActionText('UndoableConfirmDialog：倒计时结束，开始删除');
+          await sleep(400);
+          setActionText('UndoableConfirmDialog：删除已执行');
+        }}
       />
 
       <HighPriorityConfirmDialog
