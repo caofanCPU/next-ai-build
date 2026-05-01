@@ -1,5 +1,11 @@
 # @windrun-huaiin/third-ui
 
+## 29.0.4
+
+### Patch Changes
+
+- feat(menu): linked item prefetch issue fixed
+
 ## 29.0.3
 
 ### Patch Changes

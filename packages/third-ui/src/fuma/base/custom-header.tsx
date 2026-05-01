@@ -43,6 +43,10 @@ export type NavbarCSSVars = CSSProperties & {
   '--fd-nav-max-width'?: string;
 };
 
+const PrefetchLinkItem = LinkItem as (
+  props: ComponentProps<typeof LinkItem> & { prefetch?: boolean },
+) => ReactNode;
+
 export interface CustomHomeHeaderProps extends HomeLayoutProps {
   /**
    * Banner height in rem units
@@ -527,8 +531,9 @@ function NavbarLinkItem({
   return (
     <NavigationMenuItem>
       <NavigationMenuLink asChild>
-        <LinkItem
+        <PrefetchLinkItem
           item={item}
+          prefetch={item.prefetch ?? false}
           aria-label={item.type === 'icon' ? item.label : undefined}
           {...props}
           className={cn(
@@ -537,7 +542,7 @@ function NavbarLinkItem({
           )}
         >
           {item.type === 'icon' ? item.icon : item.text}
-        </LinkItem>
+        </PrefetchLinkItem>
       </NavigationMenuLink>
     </NavigationMenuItem>
   );
@@ -585,8 +590,9 @@ function MenuLinkItem({
 
   return (
     <NavigationMenuLink asChild>
-      <LinkItem
+      <PrefetchLinkItem
         item={item}
+        prefetch={item.prefetch ?? false}
         className={cn(
           {
             main: 'inline-flex items-center gap-2 py-1.5 transition-colors hover:text-fd-popover-foreground/50 data-[active=true]:font-medium data-[active=true]:text-fd-primary [&_svg]:size-4',
@@ -605,7 +611,7 @@ function MenuLinkItem({
       >
         {item.icon}
         {item.type === 'icon' ? undefined : item.text}
-      </LinkItem>
+      </PrefetchLinkItem>
     </NavigationMenuLink>
   );
 }

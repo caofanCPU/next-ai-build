@@ -119,3 +119,68 @@ run=5 dns=0.004381s connect=0.057982s tls=0.116507s ttfb=0.339509s total=0.33995
 
 5. 对高频且低风险的读取加短 TTL 进程内缓存。
    很短的 TTL 也能减少本地开发和流量峰值时的重复 REST 延迟。
+
+
+
+faq本地测试数据很明确：本地小批量查询时，缓存是负优化。
+
+  对比：
+
+  - 缓存开启：
+      - Redis mget：~1376ms
+      - service 总耗时：~2300ms
+      - route 总耗时：~2.9s
+  - 缓存关闭：
+      - DB 查询：4ms - 9ms
+      - service 总耗时：4ms - 10ms
+      - route 总耗时：136ms - 196ms
+
+
+这次链路已经定位得比较清楚了。
+
+  总耗时拆分：
+
+  SDK HTTP total: 827ms
+  FAQ route handler: 531ms
+  FAQ auth total: 343ms
+  service total: 185ms
+  Redis mget raw: 87ms
+
+  FAQ 服务端内部已经占了：
+
+  343 + 185 ≈ 528ms
+
+  和 route 531ms 基本对齐。说明主要慢点就在 FAQ 服务端 handler 内，不是业务方到 FAQ 的网络。
+
+  最明显的两个耗时点：
+
+  load_active_key: 99ms
+  touch_last_used_at: 239ms
+  cacheDurationMs: 185ms
+  Upstash mget: 87ms
+
+  这里有两个结论：
+
+  1. touch_last_used_at 是最大单点，239ms，而且它是每次请求都写 DB。
+     这个应该先优化。读题接口不应该被“更新 key 最近使用时间”阻塞。建议改成异步 fire-and-forget，或者加节流。最小改法是：
+
+     void touchOuterClientKeyLastUsedAt(clientId, keyVersion).catch(...)
+
+     这样 route 至少能少 239ms 左右。
+
+  2. cacheDurationMs 185ms 但 Upstash debug 是 87ms，说明 getOuterQuestionDetailCacheMap 包装层还有接近 100ms。
+
+  1. 先把 touch_last_used_at 从同步链路移走。
+     预期这条请求从 route 531ms 降到大约 290ms。
+  2. 再考虑 active key 缓存。
+     load_active_key 99ms 每次都查 DB，也可以缓存 client key 公钥，比如内存 LRU/TTL 1-5 分钟。这样 auth 可以再省 99ms。
+  3. 最后看 Redis wrapper 的 185ms vs 87ms 差值。
+     先不用急，因为最大收益在 DB 写和 DB 读。
+
+  还有 SDK HTTP 827ms 和 FAQ route 531ms 之间差了约 296ms。这部分包含：
+
+  业务方 fetch 发起/TLS/平台 external api 统计口径
+  FAQ function 进入 route 前后
+  response 回传与 SDK response.text/json parse
+
+  但因为 FAQ route 内已经 531ms，先把服务端内部压下来最划算。
