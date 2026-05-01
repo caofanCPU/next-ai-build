@@ -21,6 +21,63 @@ let redisHealthTimer: ReturnType<typeof setTimeout> | null = null;
 let qstashHealthTimer: ReturnType<typeof setTimeout> | null = null;
 let cachedRedisPrefixed: Redis | null = null;
 
+const isUpstashDebugEnabled = (): boolean => process.env.UPSTASH_DEBUG === 'true';
+
+const formatDuration = (startedAt: number): string => `${Date.now() - startedAt}ms`;
+
+const logUpstashDuration = (
+  scope: string,
+  operation: string,
+  startedAt: number,
+  status: 'ok' | 'error' | 'unavailable',
+  error?: unknown
+): void => {
+  if (!isUpstashDebugEnabled()) {
+    return;
+  }
+
+  const message = `[Upstash Debug] ${scope} ${operation} completed in ${formatDuration(startedAt)} status=${status}`;
+  if (error == null) {
+    console.log(message);
+    return;
+  }
+
+  const errorMessage = error instanceof Error ? error.message : String(error);
+  console.log(`${message} error=${errorMessage}`);
+};
+
+const isPromiseLike = <T>(value: unknown): value is Promise<T> =>
+  typeof value === 'object' && value !== null && typeof (value as Promise<T>).then === 'function';
+
+const trackUpstashOperation = <T>(
+  scope: string,
+  operation: string,
+  startedAt: number,
+  run: () => T
+): T => {
+  try {
+    const result = run();
+    if (isPromiseLike(result)) {
+      return result.then(
+        (resolved) => {
+          logUpstashDuration(scope, operation, startedAt, 'ok');
+          return resolved;
+        },
+        (error) => {
+          logUpstashDuration(scope, operation, startedAt, 'error', error);
+          throw error;
+        }
+      ) as T;
+    }
+
+    logUpstashDuration(scope, operation, startedAt, 'ok');
+    return result;
+  } catch (error) {
+    logUpstashDuration(scope, operation, startedAt, 'error', error);
+    throw error;
+  }
+};
+
 const isNonEmpty = (value: string | undefined): value is string =>
   typeof value === 'string' && value.trim().length > 0;
 
@@ -115,46 +172,54 @@ const createPrefixedPipeline = <T extends object>(target: T, prefix: string): T 
       }
 
       return (...args: unknown[]) => {
+        const operation = typeof prop === 'string' ? prop : String(prop);
+        const startedAt = Date.now();
         if (prop === 'eval' || prop === 'evalsha' || prop === 'evalro' || prop === 'evalshaRo') {
           const [script, keys, argv] = args as [string, string[], unknown[]];
-          return (value as (...innerArgs: unknown[]) => unknown).call(
-            obj,
-            script,
-            prefixRedisKeys(prefix, keys),
-            argv
+          return trackUpstashOperation('Redis', operation, startedAt, () =>
+            (value as (...innerArgs: unknown[]) => unknown).call(
+              obj,
+              script,
+              prefixRedisKeys(prefix, keys),
+              argv
+            )
           );
         }
 
         if (prop === 'pipeline' || prop === 'multi') {
-          const nested = (value as (...innerArgs: unknown[]) => unknown).call(obj);
-          return createPrefixedPipeline(nested as T, prefix);
+          return trackUpstashOperation('Redis', operation, startedAt, () => {
+            const nested = (value as (...innerArgs: unknown[]) => unknown).call(obj);
+            return createPrefixedPipeline(nested as T, prefix);
+          });
         }
 
-        if (typeof prop === 'string' && keyArrayCommands.has(prop)) {
-          const nextArgs = prefixVariadicKeyArgs(args, prefix);
-          return (value as (...innerArgs: unknown[]) => unknown).apply(obj, nextArgs);
-        }
+        return trackUpstashOperation('Redis', operation, startedAt, () => {
+          if (typeof prop === 'string' && keyArrayCommands.has(prop)) {
+            const nextArgs = prefixVariadicKeyArgs(args, prefix);
+            return (value as (...innerArgs: unknown[]) => unknown).apply(obj, nextArgs);
+          }
 
-        if (typeof prop === 'string' && allStringKeyCommands.has(prop)) {
-          const nextArgs = prefixVariadicKeyArgs(args, prefix);
-          return (value as (...innerArgs: unknown[]) => unknown).apply(obj, nextArgs);
-        }
+          if (typeof prop === 'string' && allStringKeyCommands.has(prop)) {
+            const nextArgs = prefixVariadicKeyArgs(args, prefix);
+            return (value as (...innerArgs: unknown[]) => unknown).apply(obj, nextArgs);
+          }
 
-        if (prop === 'mset') {
-          const [entries] = args as [Record<string, unknown>];
-          const prefixedEntries = Object.fromEntries(
-            Object.entries(entries).map(([key, entryValue]) => [prefixRedisKey(prefix, key), entryValue])
-          );
-          return (value as (...innerArgs: unknown[]) => unknown).call(obj, prefixedEntries);
-        }
+          if (prop === 'mset') {
+            const [entries] = args as [Record<string, unknown>];
+            const prefixedEntries = Object.fromEntries(
+              Object.entries(entries).map(([key, entryValue]) => [prefixRedisKey(prefix, key), entryValue])
+            );
+            return (value as (...innerArgs: unknown[]) => unknown).call(obj, prefixedEntries);
+          }
 
-        if (prop === 'hmget') {
+          if (prop === 'hmget') {
+            const nextArgs = prefixFirstStringArg(args, prefix);
+            return (value as (...innerArgs: unknown[]) => unknown).apply(obj, nextArgs);
+          }
+
           const nextArgs = prefixFirstStringArg(args, prefix);
           return (value as (...innerArgs: unknown[]) => unknown).apply(obj, nextArgs);
-        }
-
-        const nextArgs = prefixFirstStringArg(args, prefix);
-        return (value as (...innerArgs: unknown[]) => unknown).apply(obj, nextArgs);
+        });
       };
     },
   });
@@ -393,11 +458,22 @@ export const withRedis = async <T>(fn: (redis: Redis) => Promise<T> | T): Promis
 };
 
 export const withQstash = async <T>(
-  fn: (qstash: QstashClient) => Promise<T> | T
+  fn: (qstash: QstashClient) => Promise<T> | T,
+  operation = 'request'
 ): Promise<T | null> => {
+  const startedAt = Date.now();
   const qstash = await ensureQstash();
   if (!qstash) {
+    logUpstashDuration('QStash', operation, startedAt, 'unavailable');
     return null;
   }
-  return fn(qstash);
+
+  try {
+    const result = await fn(qstash);
+    logUpstashDuration('QStash', operation, startedAt, 'ok');
+    return result;
+  } catch (error) {
+    logUpstashDuration('QStash', operation, startedAt, 'error', error);
+    throw error;
+  }
 };

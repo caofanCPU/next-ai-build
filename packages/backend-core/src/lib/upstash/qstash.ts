@@ -99,7 +99,7 @@ export const publishMessage = async <TBody extends PublishBody>(
       messageId: typeof result === 'string' ? result : result?.messageId ?? null,
       message,
     };
-  });
+  }, 'publishMessage');
 };
 
 /**
@@ -133,7 +133,7 @@ export const publishBroadcastMessage = async <TBody extends PublishBody>(
       messageIds,
       message,
     };
-  });
+  }, 'publishBroadcastMessage');
 };
 
 /**
@@ -162,7 +162,7 @@ export const publishFIFOQueueMessage = async <TBody extends PublishBody>(
       messageId: typeof result === 'string' ? result : result?.messageId ?? null,
       message,
     };
-  });
+  }, 'publishFIFOQueueMessage');
 };
 
 /**
@@ -183,7 +183,7 @@ export const publishDelayedMessage = async <TBody extends PublishBody>(
       messageId: typeof result === 'string' ? result : result?.messageId ?? null,
       message,
     };
-  });
+  }, 'publishDelayedMessage');
 };
 
 export interface ScheduleMessageOptions<TBody extends PublishBody = PublishBody>
@@ -217,7 +217,7 @@ export const scheduleMessage = async <TBody extends PublishBody>(
       scheduleId: typeof result === 'string' ? result : result?.scheduleId ?? result?.id ?? null,
       message,
     };
-  });
+  }, 'scheduleMessage');
 };
 
 /**
@@ -235,7 +235,7 @@ export const cancelSchedule = async (scheduleId: string): Promise<boolean> => {
       return true;
     }
     return false;
-  });
+  }, 'cancelSchedule');
 
   return result ?? false;
 };

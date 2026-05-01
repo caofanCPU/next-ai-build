@@ -1,5 +1,11 @@
 # @windrun-huaiin/backend-core
 
+## 29.0.3
+
+### Patch Changes
+
+- feat(upstash): add log debug switch
+
 ## 29.0.2
 
 ### Patch Changes
