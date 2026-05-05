@@ -21,6 +21,7 @@ import {
   dialogTitleClass,
   secondaryButtonClass,
 } from './dialog-styles';
+import type { ConfirmDialogEmphasis } from './confirm-dialog';
 
 export interface UndoableConfirmDialogProps {
   open: boolean;
@@ -32,6 +33,7 @@ export interface UndoableConfirmDialogProps {
   cancelText?: string;
   confirmText?: string;
   undoText?: string;
+  emphasis?: ConfirmDialogEmphasis;
   countdownSeconds?: number;
   onCancel?: () => void;
   onConfirm: () => void | Promise<void>;
@@ -48,6 +50,7 @@ export function UndoableConfirmDialog({
   cancelText = 'Cancel',
   confirmText = 'Delete',
   undoText = 'Undo',
+  emphasis = 'confirm',
   countdownSeconds = 5,
   onCancel,
   onConfirm,
@@ -59,6 +62,8 @@ export function UndoableConfirmDialog({
   const [confirming, setConfirming] = React.useState(false);
   const timeoutRef = React.useRef<number | null>(null);
   const intervalRef = React.useRef<number | null>(null);
+  const cancelButtonClass = emphasis === 'cancel' ? dangerButtonClass : secondaryButtonClass;
+  const confirmButtonClass = emphasis === 'cancel' ? secondaryButtonClass : dangerButtonClass;
 
   const clearTimers = React.useCallback(() => {
     if (timeoutRef.current) {
@@ -121,6 +126,10 @@ export function UndoableConfirmDialog({
     onOpenChange(false);
     onCancel?.();
   };
+  const handleClose = React.useCallback(() => {
+    resetState();
+    onOpenChange(false);
+  }, [onOpenChange, resetState]);
 
   const handleUndo = () => {
     resetState();
@@ -133,7 +142,7 @@ export function UndoableConfirmDialog({
   return (
     <AlertDialog open={open} onOpenChange={(nextOpen) => {
       if (!nextOpen) {
-        handleCancel();
+        handleClose();
         return;
       }
 
@@ -142,7 +151,7 @@ export function UndoableConfirmDialog({
       <AlertDialogContent
         className={cn(dialogContentClass, 'border-red-300 dark:border-red-700')}
         overlayClassName={dialogThemedOverlayClass}
-        onOverlayClick={pending ? undefined : handleCancel}
+        onOverlayClick={pending ? undefined : handleClose}
       >
         <div className={dialogHeaderClass}>
           <AlertDialogTitle asChild>
@@ -156,7 +165,7 @@ export function UndoableConfirmDialog({
           <button
             type="button"
             className={closeButtonClass}
-            onClick={pending ? handleUndo : handleCancel}
+            onClick={handleClose}
             aria-label="Close"
             disabled={confirming}
           >
@@ -195,14 +204,14 @@ export function UndoableConfirmDialog({
               <button
                 type="button"
                 onClick={handleCancel}
-                className={secondaryButtonClass}
+                className={cancelButtonClass}
               >
                 {cancelText}
               </button>
               <button
                 type="button"
                 onClick={startCountdown}
-                className={dangerButtonClass}
+                className={confirmButtonClass}
               >
                 {confirmText}
               </button>

@@ -1,5 +1,5 @@
 import { getTranslations } from 'next-intl/server';
-import { getGlobalIcon } from '@windrun-huaiin/base-ui/components/server';
+import { getGlobalIcon } from '@windrun-huaiin/base-ui/components/shared';
 import type { globalLucideIcons } from '@windrun-huaiin/base-ui/icons';
 import { themeIconColor } from '@windrun-huaiin/base-ui/lib';
 import { cn } from '@windrun-huaiin/lib/utils';

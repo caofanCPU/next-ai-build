@@ -1,5 +1,17 @@
 # @windrun-huaiin/third-ui
 
+## 29.1.0
+
+### Minor Changes
+
+- fix(ui): add icon and fix alter-dialog issues
+  - break changes: `glocal-icon` export path from `server` to `share`
+
+### Patch Changes
+
+- Updated dependencies
+  - @windrun-huaiin/base-ui@29.0.2
+
 ## 29.0.4
 
 ### Patch Changes

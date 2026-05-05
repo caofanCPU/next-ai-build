@@ -1,4 +1,4 @@
-import { getGlobalIcon, globalLucideIcons } from '@base-ui/components/server';
+import { getGlobalIcon, globalLucideIcons } from '@base-ui/components/shared';
 import { createConfiguredLocalMdSourceFactory } from '@local-md/server/source';
 import {
   createFumaDocsBaseCompilerOptions,

@@ -26,6 +26,7 @@ import {
 } from './dialog-styles';
 
 export type ConfirmDialogType = 'normal' | 'danger';
+export type ConfirmDialogEmphasis = 'confirm' | 'cancel';
 
 interface ConfirmDialogProps {
   open: boolean;
@@ -35,6 +36,7 @@ interface ConfirmDialogProps {
   description: React.ReactNode;
   cancelText?: string;
   confirmText?: string;
+  emphasis?: ConfirmDialogEmphasis;
   onCancel?: () => void;
   onConfirm?: () => void;
 }
@@ -70,15 +72,21 @@ export function ConfirmDialog({
   description,
   cancelText = 'Cancel',
   confirmText = 'Confirm',
+  emphasis = 'confirm',
   onCancel,
   onConfirm,
 }: ConfirmDialogProps) {
   const typeClass = confirmTypeClassMap[type];
   const Icon = typeClass.Icon;
+  const cancelButtonClass = emphasis === 'cancel' ? typeClass.action : secondaryButtonClass;
+  const confirmButtonClass = emphasis === 'cancel' ? secondaryButtonClass : typeClass.action;
 
   const handleCancel = () => {
     onOpenChange(false);
     onCancel?.();
+  };
+  const handleClose = () => {
+    onOpenChange(false);
   };
 
   return (
@@ -86,7 +94,7 @@ export function ConfirmDialog({
       <AlertDialogContent
         className={cn(dialogContentClass, typeClass.content)}
         overlayClassName={dialogThemedOverlayClass}
-        onOverlayClick={handleCancel}
+        onOverlayClick={handleClose}
       >
         <div className={dialogHeaderClass}>
           <AlertDialogTitle asChild>
@@ -100,7 +108,7 @@ export function ConfirmDialog({
           <button
             type="button"
             className={closeButtonClass}
-            onClick={handleCancel}
+            onClick={handleClose}
             aria-label="Close"
           >
             <XIcon className="size-4" />
@@ -112,11 +120,11 @@ export function ConfirmDialog({
         </AlertDialogDescription>
 
         <div className={dialogFooterClass}>
-          <AlertDialogCancel className={secondaryButtonClass} onClick={handleCancel}>
+          <AlertDialogCancel className={cancelButtonClass} onClick={handleCancel}>
             {cancelText}
           </AlertDialogCancel>
           <AlertDialogAction
-            className={typeClass.action}
+            className={confirmButtonClass}
             onClick={() => {
               onOpenChange(false);
               onConfirm?.();

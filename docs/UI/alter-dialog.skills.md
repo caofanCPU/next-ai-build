@@ -56,7 +56,7 @@
 | --- | --- | --- | --- |
 | `AdsAlertDialog` | 关闭 | 关闭 | 只关闭, 不触发 `onCancel` / `onConfirm` |
 | `InfoDialog` | 关闭 | 关闭 | 只关闭, 不触发 `onConfirm` |
-| `ConfirmDialog` | cancel | cancel | 触发 `onCancel` |
+| `ConfirmDialog` | 关闭 | 关闭 | 只关闭, 不触发 `onCancel` / `onConfirm` |
 | `HighPriorityConfirmDialog` | cancel | 不关闭 | 不支持点击外部关闭 |
 
 如果未来新增弹窗, 必须先明确点击外部的语义。不要默认让点击外部触发 confirm。
@@ -219,6 +219,10 @@
 - `confirmText`
   - 含义: 确认按钮文案。
   - 默认: `'Confirm'`
+- `emphasis`
+  - 含义: 控制哪一个底部按钮承担重点着色。
+  - 可选值: `'confirm' | 'cancel'`
+  - 默认: `'confirm'`
 - `onCancel`
   - 含义: 取消回调。
   - 可选。
@@ -236,8 +240,9 @@
 ### 约束
 
 - `normal` 和 `danger` 共用同一个组件, 不再拆 `DangerConfirmDialog`。
-- 右上角 `XIcon` 按 cancel 语义处理, 会触发 `onCancel`。
-- 点击弹窗外部按 cancel 语义处理, 会触发 `onCancel`。
+- `emphasis` 只影响按钮视觉重点, 不改变按钮位置和语义。`cancel` 仍然在左边, `confirm` 仍然在右边。
+- 右上角 `XIcon` 只关闭弹窗, 不触发 `onCancel`。
+- 点击弹窗外部只关闭弹窗, 不触发 `onCancel`。
 - `normal` 类型的标题图标使用主题色: `themeBgColor` + `themeIconColor`, 不使用黑色外圈。
 - 危险确认不改变主体背景色, 只改变边框、图标和确认按钮。
 - 删除场景建议 `confirmText` 使用精确动作词, 例如 `Delete`、`Clear`、`Reset`, 不要都写成 `Confirm`。
@@ -258,6 +263,9 @@
 
 - `open`
   - 含义: 是否打开弹窗。
+  - 必填。
+- `onOpenChange`
+  - 含义: 打开状态变更, 用于纯关闭行为同步。
   - 必填。
 - `title`
   - 含义: 标题内容。
@@ -288,7 +296,7 @@
 - 使用 `createPortal(document.body)`。
 - 遮罩更强, z-index 更高。
 - 尺寸、padding、标题区、描述区、footer 间距与其他弹窗保持一致。
-- 右上角 `XIcon` 按 cancel 语义处理。
+- 右上角 `XIcon` 只关闭弹窗, 不触发 `onCancel`。
 - 点击外部不关闭。高优先级弹窗必须让用户通过明确按钮或 `XIcon` 做决策。
 - 不负责监听路由跳转、刷新、关闭 tab 等行为。那些应由 guard/hook 层处理, 弹窗只负责展示高优先级确认 UI。
 
@@ -391,8 +399,24 @@
 ```
 
 ```tsx
+<ConfirmDialog
+  open={open}
+  onOpenChange={setOpen}
+  type="normal"
+  title="Apply generated result?"
+  description="Discarding the generated result wastes compute that has already been spent."
+  cancelText="Discard Result"
+  confirmText="Apply"
+  emphasis="cancel"
+  onCancel={handleDiscard}
+  onConfirm={handleApply}
+/>
+```
+
+```tsx
 <HighPriorityConfirmDialog
   open={open}
+  onOpenChange={setOpen}
   title="Leave this flow?"
   description="Unsaved changes may be lost if you leave now."
   cancelText="Stay"

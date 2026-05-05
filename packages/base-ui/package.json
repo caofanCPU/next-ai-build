@@ -1,6 +1,6 @@
 {
   "name": "@windrun-huaiin/base-ui",
-  "version": "29.0.1",
+  "version": "29.0.2",
   "description": "Base UI components for windrun-huaiin projects",
   "type": "module",
   "exports": {
@@ -28,6 +28,11 @@
       "types": "./dist/components/server.d.ts",
       "import": "./dist/components/server.mjs",
       "require": "./dist/components/server.js"
+    },
+    "./components/shared": {
+      "types": "./dist/components/shared.d.ts",
+      "import": "./dist/components/shared.mjs",
+      "require": "./dist/components/shared.js"
     },
     "./icons": {
       "types": "./dist/icons/index.d.ts",

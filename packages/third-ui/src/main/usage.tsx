@@ -1,6 +1,6 @@
 import { getTranslations } from 'next-intl/server';
 import { cn } from '@windrun-huaiin/lib/utils';
-import { globalLucideIcons as icons, getGlobalIcon } from '@windrun-huaiin/base-ui/components/server';
+import { globalLucideIcons as icons, getGlobalIcon } from '@windrun-huaiin/base-ui/components/shared';
 import { themeIconColor } from '@windrun-huaiin/base-ui/lib';
 import { richText } from './rich-text-expert';
 import { responsiveSection } from './section-layout';

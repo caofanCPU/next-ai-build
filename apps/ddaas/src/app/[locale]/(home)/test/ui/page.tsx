@@ -100,6 +100,7 @@ type ActiveDialogDemo =
   | 'info-success'
   | 'info-error'
   | 'confirm-normal'
+  | 'confirm-normal-reversed'
   | 'confirm-danger'
   | 'undoable-confirm'
   | 'high-priority';
@@ -392,6 +393,13 @@ export default function TestComponentsPage() {
                 minWidth="min-w-0"
                 className={dialogDemoButtonClass}
                 button={{ icon: <CircleQuestionMarkIcon />, text: '普通确认', onClick: () => setActiveDialogDemo('confirm-normal') }}
+              />
+              <XButton
+                type="single"
+                variant="subtle"
+                minWidth="min-w-0"
+                className={dialogDangerDemoButtonClass}
+                button={{ icon: <CircleQuestionMarkIcon />, text: '反转确认应用', onClick: () => setActiveDialogDemo('confirm-normal-reversed') }}
               />
               <XButton
                 type="single"
@@ -1150,6 +1158,18 @@ export default function TestComponentsPage() {
         onCancel={() => setActionText('ConfirmDialog：danger 取消')}
         onConfirm={() => setActionText('ConfirmDialog：danger 确认')}
       />
+      <ConfirmDialog
+        open={activeDialogDemo === 'confirm-normal-reversed'}
+        onOpenChange={(open) => setActiveDialogDemo(open ? 'confirm-normal-reversed' : null)}
+        type="normal"
+        title="Apply generated result?"
+        description="这是一个反转重点按钮的普通确认弹窗。Apply 是正常流程，但 Cancel 代表放弃已经消耗资源生成的数据，因此左侧取消按钮被重点着色。"
+        cancelText="Discard Result"
+        confirmText="Apply"
+        emphasis="cancel"
+        onCancel={() => setActionText('ConfirmDialog：reversed 取消并放弃结果')}
+        onConfirm={() => setActionText('ConfirmDialog：reversed 应用结果')}
+      />
 
       <UndoableConfirmDialog
         open={activeDialogDemo === 'undoable-confirm'}
@@ -1173,13 +1193,14 @@ export default function TestComponentsPage() {
 
       <HighPriorityConfirmDialog
         open={activeDialogDemo === 'high-priority'}
+        onOpenChange={(open) => setActiveDialogDemo(open ? 'high-priority' : null)}
         title="Leave this flow?"
         description="这是一个高优先级确认弹窗，用来测试强遮罩、高 z-index、关闭按钮和二选一决策。"
         cancelText="Stay"
         confirmText="Leave"
         onCancel={() => {
           closeActiveDialog();
-          setActionText('HighPriorityConfirmDialog：取消/关闭');
+          setActionText('HighPriorityConfirmDialog：取消');
         }}
         onConfirm={() => {
           closeActiveDialog();

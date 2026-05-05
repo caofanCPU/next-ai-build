@@ -18,6 +18,7 @@ import { themeBgColor, themeBorderColor, themeIconColor } from "@windrun-huaiin/
 
 interface HighPriorityConfirmDialogProps {
   open: boolean;
+  onOpenChange: (open: boolean) => void;
   onCancel: () => void;
   onConfirm: () => void;
   title: string;
@@ -28,6 +29,7 @@ interface HighPriorityConfirmDialogProps {
 
 export function HighPriorityConfirmDialog({
   open,
+  onOpenChange,
   onCancel,
   onConfirm,
   title,
@@ -43,6 +45,10 @@ export function HighPriorityConfirmDialog({
   }, []);
 
   if (!open || !mounted) return null;
+
+  const handleClose = () => {
+    onOpenChange(false);
+  };
 
   return createPortal(
     <div className="fixed inset-0 z-10000 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
@@ -62,7 +68,7 @@ export function HighPriorityConfirmDialog({
           <button
             type="button"
             className={closeButtonClass}
-            onClick={onCancel}
+            onClick={handleClose}
             aria-label="Close"
           >
             <XIcon className="size-4" />

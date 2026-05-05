@@ -1,5 +1,12 @@
 # @windrun-huaiin/base-ui
 
+## 29.0.2
+
+### Patch Changes
+
+- fix(ui): add icon and fix alter-dialog issues
+  - break changes: `glocal-icon` export path from `server` to `share`
+
 ## 29.0.1
 
 ### Patch Changes

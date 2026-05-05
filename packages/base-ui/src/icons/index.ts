@@ -64,6 +64,9 @@ import {
   Briefcase as RawBriefcase,
   BringToFront as RawBringToFront,
   BrushCleaning as RawBrushCleaning,
+  CalendarClock as RawCalendarClock,
+  CalendarDays as RawCalendarDays,
+  CalendarHeart as RawCalendarHeart,
   Building2 as RawBuilding2,
   Bug as RawBug,
   BugOff as RawBugOff,
@@ -73,6 +76,8 @@ import {
   CheckCheck as RawCheckCheck,
   CheckLine as RawCheckLine,
   ChevronDown as RawChevronDown,
+  ChevronsLeft as RawChevronsLeft,
+  ChevronsRight as RawChevronsRight,
   ChevronLeft as RawChevronLeft,
   ChevronRight as RawChevronRight,
   ChevronUp as RawChevronUp,
@@ -160,6 +165,7 @@ import {
   Link as RawLink,
   ListTodo as RawListTodo,
   Loader2 as RawLoader2,
+  Locate as RawLocate,
   LogIn as RawLogIn,
   LogOut as RawLogOut,
   Mail as RawMail,
@@ -261,6 +267,9 @@ export const BrainCircuitIcon = createGlobalLucideIcon(RawBrainCircuit, 'BrainCi
 export const BriefcaseIcon = createGlobalLucideIcon(RawBriefcase, 'BriefcaseIcon');
 export const BringToFrontIcon = createGlobalLucideIcon(RawBringToFront, 'BringToFrontIcon');
 export const BrushCleaningIcon = createGlobalLucideIcon(RawBrushCleaning, 'BrushCleaningIcon');
+export const CalendarClockIcon = createGlobalLucideIcon(RawCalendarClock, 'CalendarClockIcon');
+export const CalendarDaysIcon = createGlobalLucideIcon(RawCalendarDays, 'CalendarDaysIcon');
+export const CalendarHeartIcon = createGlobalLucideIcon(RawCalendarHeart, 'CalendarHeartIcon');
 export const Building2Icon = createGlobalLucideIcon(RawBuilding2, 'Building2Icon');
 export const BugIcon = createGlobalLucideIcon(RawBug, 'BugIcon');
 export const BugOffIcon = createGlobalLucideIcon(RawBugOff, 'BugOffIcon');
@@ -278,6 +287,8 @@ export const CircleArrowUpIcon = createGlobalLucideIcon(RawCircleArrowUp, 'Circl
 export const CheckCheckIcon = createGlobalLucideIcon(RawCheckCheck, 'CheckCheckIcon');
 export const CheckLineIcon = createGlobalLucideIcon(RawCheckLine, 'CheckLineIcon');
 export const ChevronDownIcon = createGlobalLucideIcon(RawChevronDown, 'ChevronDownIcon');
+export const ChevronsLeftIcon = createGlobalLucideIcon(RawChevronsLeft, 'ChevronsLeftIcon');
+export const ChevronsRightIcon = createGlobalLucideIcon(RawChevronsRight, 'ChevronsRightIcon');
 export const ChevronLeftIcon = createGlobalLucideIcon(RawChevronLeft, 'ChevronLeftIcon');
 export const ChevronRightIcon = createGlobalLucideIcon(RawChevronRight, 'ChevronRightIcon');
 export const ChevronUpIcon = createGlobalLucideIcon(RawChevronUp, 'ChevronUpIcon');
@@ -359,6 +370,7 @@ export const LightbulbIcon = createGlobalLucideIcon(RawLightbulb, 'LightbulbIcon
 export const LinkIcon = createGlobalLucideIcon(RawLink, 'LinkIcon');
 export const ListTodoIcon = createGlobalLucideIcon(RawListTodo, 'ListTodoIcon');
 export const Loader2Icon = createGlobalLucideIcon(RawLoader2, 'Loader2Icon');
+export const LocateIcon = createGlobalLucideIcon(RawLocate, 'LocateIcon');
 export const LogInIcon = createGlobalLucideIcon(RawLogIn, 'LogInIcon');
 export const LogOutIcon = createGlobalLucideIcon(RawLogOut, 'LogOutIcon');
 export const MailIcon = createGlobalLucideIcon(RawMail, 'MailIcon');

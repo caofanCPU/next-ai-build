@@ -1,5 +1,18 @@
 # @windrun-huaiin/ddaas-website
 
+## 29.0.8
+
+### Patch Changes
+
+- fix(ui): add icon and fix alter-dialog issues
+  - break changes: `glocal-icon` export path from `server` to `share`
+- Updated dependencies
+  - @windrun-huaiin/lib@29.0.0
+  - @windrun-huaiin/base-ui@29.0.2
+  - @windrun-huaiin/third-ui@29.1.0
+  - @windrun-huaiin/backend-core@29.0.3
+  - @windrun-huaiin/fumadocs-local-md@29.0.0
+
 ## 29.0.7
 
 ### Patch Changes
