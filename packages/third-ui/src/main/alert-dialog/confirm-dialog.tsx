@@ -39,6 +39,7 @@ interface ConfirmDialogProps {
   confirmText?: string;
   emphasis?: ConfirmDialogEmphasis;
   loadingActions?: readonly DialogLoadingAction[];
+  loadingFullPage?: boolean;
   onCancel?: DialogActionHandler;
   onConfirm?: DialogActionHandler;
 }
@@ -76,6 +77,7 @@ export function ConfirmDialog({
   confirmText = 'Confirm',
   emphasis = 'confirm',
   loadingActions,
+  loadingFullPage,
   onCancel,
   onConfirm,
 }: ConfirmDialogProps) {
@@ -83,7 +85,7 @@ export function ConfirmDialog({
   const Icon = typeClass.Icon;
   const cancelButtonClass = emphasis === 'cancel' ? typeClass.action : secondaryButtonClass;
   const confirmButtonClass = emphasis === 'cancel' ? secondaryButtonClass : typeClass.action;
-  const { dialogLoading, runDialogAction } = useDialogLoadingAction({ loadingActions, onOpenChange });
+  const { dialogLoading, runDialogAction } = useDialogLoadingAction({ loadingActions, loadingFullPage, onOpenChange });
 
   const handleCancel = () => {
     void runDialogAction('cancel', onCancel);

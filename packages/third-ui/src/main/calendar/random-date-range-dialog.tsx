@@ -26,6 +26,7 @@ type RandomDateRangeDialogProps = {
   defaultRangeDays?: number;
   onOpenChange: (open: boolean) => void;
   loadingActions?: readonly DialogLoadingAction[];
+  loadingFullPage?: boolean;
   onApply: (range: RandomCalendarRange) => void | Promise<void>;
   onClear?: (range: RandomCalendarRange) => void;
 };
@@ -183,6 +184,7 @@ export function RandomDateRangeDialog({
   defaultRangeDays = DEFAULT_RANGE_DAYS,
   onOpenChange,
   loadingActions,
+  loadingFullPage,
   onApply,
   onClear,
 }: RandomDateRangeDialogProps) {
@@ -213,7 +215,7 @@ export function RandomDateRangeDialog({
   const buildDraggedRangeRef = useRef<(clientX: number) => RandomCalendarRange | null>(() => null);
   const previousBodyOverflowRef = useRef<string | null>(null);
   const today = useMemo(() => getTodayString(), []);
-  const { dialogLoading, runDialogAction } = useDialogLoadingAction({ loadingActions, onOpenChange });
+  const { dialogLoading, runDialogAction } = useDialogLoadingAction({ loadingActions, loadingFullPage, onOpenChange });
   const baseReferenceDate = anchorDate || today;
   const previousOpenRef = useRef(false);
   const startRatio = getRatioByDate(draftRange.startDate ?? baseReferenceDate, trackBounds);

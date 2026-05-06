@@ -37,6 +37,7 @@ export interface UndoableConfirmDialogProps {
   emphasis?: ConfirmDialogEmphasis;
   countdownSeconds?: number;
   loadingActions?: readonly DialogLoadingAction[];
+  loadingFullPage?: boolean;
   onCancel?: DialogActionHandler;
   onConfirm: DialogActionHandler;
   onUndo?: DialogActionHandler;
@@ -55,6 +56,7 @@ export function UndoableConfirmDialog({
   emphasis = 'confirm',
   countdownSeconds = 5,
   loadingActions,
+  loadingFullPage,
   onCancel,
   onConfirm,
   onUndo,
@@ -67,7 +69,7 @@ export function UndoableConfirmDialog({
   const intervalRef = React.useRef<number | null>(null);
   const cancelButtonClass = emphasis === 'cancel' ? dangerButtonClass : secondaryButtonClass;
   const confirmButtonClass = emphasis === 'cancel' ? secondaryButtonClass : dangerButtonClass;
-  const { dialogLoading, runDialogAction } = useDialogLoadingAction({ loadingActions, onOpenChange });
+  const { dialogLoading, runDialogAction } = useDialogLoadingAction({ loadingActions, loadingFullPage, onOpenChange });
 
   const clearTimers = React.useCallback(() => {
     if (timeoutRef.current) {

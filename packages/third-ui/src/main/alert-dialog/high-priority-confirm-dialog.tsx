@@ -27,6 +27,7 @@ interface HighPriorityConfirmDialogProps {
   confirmText?: string;
   cancelText?: string;
   loadingActions?: readonly DialogLoadingAction[];
+  loadingFullPage?: boolean;
 }
 
 export function HighPriorityConfirmDialog({
@@ -39,9 +40,10 @@ export function HighPriorityConfirmDialog({
   confirmText = "Confirm",
   cancelText = "Cancel",
   loadingActions,
+  loadingFullPage,
 }: HighPriorityConfirmDialogProps) {
   const [mounted, setMounted] = useState(false);
-  const { dialogLoading, runDialogAction } = useDialogLoadingAction({ loadingActions, onOpenChange });
+  const { dialogLoading, runDialogAction } = useDialogLoadingAction({ loadingActions, loadingFullPage, onOpenChange });
   
   useEffect(() => {
     // Ensure portal target exists and prevent hydration mismatch

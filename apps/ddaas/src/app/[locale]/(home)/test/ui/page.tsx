@@ -1908,7 +1908,9 @@ export default function TestComponentsPage() {
         cancelText="Clear Planned"
         confirmText="Save All"
         emphasis="cancel"
-        onCancel={() => {
+        loadingActions={['cancel', 'confirm']}
+        onCancel={async () => {
+          await sleep(DIALOG_LOADING_DEMO_DELAY_MS);
           const targetDates = new Set(combinedPlannedDates);
 
           setCombinedDayStates((current) => {
@@ -1918,7 +1920,8 @@ export default function TestComponentsPage() {
           });
           setActionText(`Random Calendar: 批量清除 ${targetDates.size} 个 planned 日期`);
         }}
-        onConfirm={() => {
+        onConfirm={async () => {
+          await sleep(DIALOG_LOADING_DEMO_DELAY_MS);
           const targetDates = [...combinedPlannedDates];
 
           setCombinedDayStates((current) => {

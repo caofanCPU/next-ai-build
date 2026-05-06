@@ -12,7 +12,9 @@ date: 2026-05-07
 - `X` 和 overlay 都是 close-only 语义, 不触发业务 action
 - `cancel` 是取消 action, `confirm` 是确认/应用 action, `undo` 是撤回 action
 - 异步 loading 绑定按钮 action, 不绑定弹窗整体
-- 除 `AdsAlertDialog` 外, 支持用 `loadingActions` 显式声明哪些 action 需要全屏 loading
+- 除 `AdsAlertDialog` 外, 支持用 `loadingActions` 显式声明哪些 action 需要 loading
+- loading 默认是居中的小范围面板, 使用半透明柔和背景压住底层内容, 但不阻断用户查看页面其他区域
+- 只有需要强阻断页面操作时, 才传 `loadingFullPage={true}` 使用全屏遮罩
 - `AdsAlertDialog` 偏展示和跳转, 不承载 loading action 语义
 
 ## 组件选择
@@ -33,7 +35,7 @@ date: 2026-05-07
 'cancel' | 'confirm' | 'undo'
 ```
 
-业务只需要记住: `loadingActions` 里填哪个 key, 就表示执行对应 `onXxx` 回调时显示全屏 `Loading`
+业务只需要记住: `loadingActions` 里填哪个 key, 就表示执行对应 `onXxx` 回调时显示 `Loading`
 
 ```tsx
 <ConfirmDialog
@@ -50,11 +52,30 @@ date: 2026-05-07
 />
 ```
 
+默认 loading 是非全页面板, 适合弹窗确认、按钮提交、局部批处理这类短耗时操作。
+
+需要强阻断页面操作时, 传 `loadingFullPage={true}`:
+
+```tsx
+<ConfirmDialog
+  open={open}
+  onOpenChange={setOpen}
+  loadingActions={['confirm']}
+  loadingFullPage={true}
+  title="Apply changes?"
+  description="This will update the current data."
+  confirmText="Apply"
+  onConfirm={async () => {
+    await applyChanges();
+  }}
+/>
+```
+
 行为顺序固定: 
 
 1. 点击按钮
 2. 弹窗立即关闭
-3. 如果 action 命中 `loadingActions`, 展示全屏 `Loading`
+3. 如果 action 命中 `loadingActions`, 展示 `Loading`
 4. 执行业务回调
 5. Promise settle 后关闭 `Loading`
 

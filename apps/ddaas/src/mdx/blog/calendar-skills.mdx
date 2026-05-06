@@ -102,7 +102,8 @@ date: 2026-05-07
 - `defaultRangeDays`: 默认窗口天数
 - `onOpenChange`: 开关回调
 - `onApply`: 确认范围
-- `loadingActions`: 可选, 沿用弹窗 action key；传 `['confirm']` 时, 点击 Apply 后关闭弹窗并显示全屏 `Loading`, 等待 `onApply` 的 Promise settle
+- `loadingActions`: 可选, 沿用弹窗 action key；传 `['confirm']` 时, 点击 Apply 后关闭弹窗并显示 `Loading`, 等待 `onApply` 的 Promise settle
+- `loadingFullPage`: 可选, 默认 `false` 显示居中的小范围 loading 面板, 使用半透明背景压住底层内容；传 `true` 时使用全屏 loading
 - `onClear`: 弹窗内部重置到参考窗口时回调, 可选
 
 交互语义: 

@@ -38,6 +38,7 @@ interface InfoDialogProps {
   description: React.ReactNode;
   confirmText?: string;
   loadingActions?: readonly DialogLoadingAction[];
+  loadingFullPage?: boolean;
   onConfirm?: DialogActionHandler;
 }
 
@@ -86,12 +87,13 @@ export function InfoDialog({
   description,
   confirmText = 'OK',
   loadingActions,
+  loadingFullPage,
   onConfirm,
 }: InfoDialogProps) {
   const typeClass = infoTypeClassMap[type];
   const Icon = typeClass.Icon;
   const handleClose = () => onOpenChange(false);
-  const { dialogLoading, runDialogAction } = useDialogLoadingAction({ loadingActions, onOpenChange });
+  const { dialogLoading, runDialogAction } = useDialogLoadingAction({ loadingActions, loadingFullPage, onOpenChange });
 
   return (
     <>
