@@ -25,6 +25,7 @@ import {
   dialogThemedOverlayClass,
   dialogTitleClass,
 } from './dialog-styles';
+import { DialogLoadingAction, DialogActionHandler, useDialogLoadingAction } from './dialog-loading-action';
 
 export type InfoDialogType = 'info' | 'warn' | 'success' | 'error';
 type InfoDialogIcon = typeof BadgeInfoIcon;
@@ -36,7 +37,8 @@ interface InfoDialogProps {
   title: React.ReactNode;
   description: React.ReactNode;
   confirmText?: string;
-  onConfirm?: () => void;
+  loadingActions?: readonly DialogLoadingAction[];
+  onConfirm?: DialogActionHandler;
 }
 
 const infoTypeClassMap: Record<InfoDialogType, {
@@ -83,57 +85,61 @@ export function InfoDialog({
   title,
   description,
   confirmText = 'OK',
+  loadingActions,
   onConfirm,
 }: InfoDialogProps) {
   const typeClass = infoTypeClassMap[type];
   const Icon = typeClass.Icon;
   const handleClose = () => onOpenChange(false);
+  const { dialogLoading, runDialogAction } = useDialogLoadingAction({ loadingActions, onOpenChange });
 
   return (
-    <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent
-        className={cn(dialogContentClass, typeClass.content)}
-        overlayClassName={dialogThemedOverlayClass}
-        onOverlayClick={handleClose}
-      >
-        <div className={dialogHeaderClass}>
-          <AlertDialogTitle asChild>
-            <div className={dialogTitleClass}>
-              <span className={cn('inline-flex size-9 shrink-0 items-center justify-center rounded-full ring-1', typeClass.iconWrap)}>
-                <Icon className={cn('size-5', typeClass.icon)} />
-              </span>
-              <span className="min-w-0 truncate">{title}</span>
-            </div>
-          </AlertDialogTitle>
-          <button
-            type="button"
-            className={closeButtonClass}
-            onClick={handleClose}
-            aria-label="Close"
-          >
-            <XIcon className="size-4" />
-          </button>
-        </div>
+    <>
+      <AlertDialog open={open} onOpenChange={onOpenChange}>
+        <AlertDialogContent
+          className={cn(dialogContentClass, typeClass.content)}
+          overlayClassName={dialogThemedOverlayClass}
+          onOverlayClick={handleClose}
+        >
+          <div className={dialogHeaderClass}>
+            <AlertDialogTitle asChild>
+              <div className={dialogTitleClass}>
+                <span className={cn('inline-flex size-9 shrink-0 items-center justify-center rounded-full ring-1', typeClass.iconWrap)}>
+                  <Icon className={cn('size-5', typeClass.icon)} />
+                </span>
+                <span className="min-w-0 truncate">{title}</span>
+              </div>
+            </AlertDialogTitle>
+            <button
+              type="button"
+              className={closeButtonClass}
+              onClick={handleClose}
+              aria-label="Close"
+            >
+              <XIcon className="size-4" />
+            </button>
+          </div>
 
-        <AlertDialogDescription className={dialogDescriptionClass}>
-          {description}
-        </AlertDialogDescription>
+          <AlertDialogDescription className={dialogDescriptionClass}>
+            {description}
+          </AlertDialogDescription>
 
-        <div className={dialogFooterClass}>
-          <AlertDialogAction
-            className={cn(
-              'inline-flex min-h-10 items-center justify-center rounded-full px-5 py-2 text-sm font-bold transition focus-visible:outline-none focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-60',
-              typeClass.action
-            )}
-            onClick={() => {
-              onOpenChange(false);
-              onConfirm?.();
-            }}
-          >
-            {confirmText}
-          </AlertDialogAction>
-        </div>
-      </AlertDialogContent>
-    </AlertDialog>
+          <div className={dialogFooterClass}>
+            <AlertDialogAction
+              className={cn(
+                'inline-flex min-h-10 items-center justify-center rounded-full px-5 py-2 text-sm font-bold transition focus-visible:outline-none focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-60',
+                typeClass.action
+              )}
+              onClick={() => {
+                void runDialogAction('confirm', onConfirm);
+              }}
+            >
+              {confirmText}
+            </AlertDialogAction>
+          </div>
+        </AlertDialogContent>
+      </AlertDialog>
+      {dialogLoading}
+    </>
   );
 }

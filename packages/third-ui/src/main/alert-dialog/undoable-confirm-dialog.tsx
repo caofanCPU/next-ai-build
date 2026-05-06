@@ -22,6 +22,7 @@ import {
   secondaryButtonClass,
 } from './dialog-styles';
 import type { ConfirmDialogEmphasis } from './confirm-dialog';
+import { DialogLoadingAction, DialogActionHandler, useDialogLoadingAction } from './dialog-loading-action';
 
 export interface UndoableConfirmDialogProps {
   open: boolean;
@@ -35,9 +36,10 @@ export interface UndoableConfirmDialogProps {
   undoText?: string;
   emphasis?: ConfirmDialogEmphasis;
   countdownSeconds?: number;
-  onCancel?: () => void;
-  onConfirm: () => void | Promise<void>;
-  onUndo?: () => void;
+  loadingActions?: readonly DialogLoadingAction[];
+  onCancel?: DialogActionHandler;
+  onConfirm: DialogActionHandler;
+  onUndo?: DialogActionHandler;
 }
 
 export function UndoableConfirmDialog({
@@ -52,6 +54,7 @@ export function UndoableConfirmDialog({
   undoText = 'Undo',
   emphasis = 'confirm',
   countdownSeconds = 5,
+  loadingActions,
   onCancel,
   onConfirm,
   onUndo,
@@ -64,6 +67,7 @@ export function UndoableConfirmDialog({
   const intervalRef = React.useRef<number | null>(null);
   const cancelButtonClass = emphasis === 'cancel' ? dangerButtonClass : secondaryButtonClass;
   const confirmButtonClass = emphasis === 'cancel' ? secondaryButtonClass : dangerButtonClass;
+  const { dialogLoading, runDialogAction } = useDialogLoadingAction({ loadingActions, onOpenChange });
 
   const clearTimers = React.useCallback(() => {
     if (timeoutRef.current) {
@@ -100,12 +104,11 @@ export function UndoableConfirmDialog({
     setConfirming(true);
 
     try {
-      await onConfirm();
-      onOpenChange(false);
+      await runDialogAction('confirm', onConfirm);
     } finally {
       setConfirming(false);
     }
-  }, [clearTimers, onConfirm, onOpenChange]);
+  }, [clearTimers, onConfirm, runDialogAction]);
 
   const startCountdown = () => {
     clearTimers();
@@ -123,102 +126,105 @@ export function UndoableConfirmDialog({
 
   const handleCancel = () => {
     resetState();
-    onOpenChange(false);
-    onCancel?.();
+    void runDialogAction('cancel', onCancel);
   };
   const handleClose = React.useCallback(() => {
     resetState();
     onOpenChange(false);
   }, [onOpenChange, resetState]);
 
-  const handleUndo = () => {
+  const handleUndo = async () => {
     resetState();
-    onOpenChange(false);
-    onUndo?.();
+    await runDialogAction('undo', onUndo);
   };
 
   const displayTitle = pending ? pendingTitle ?? title : title;
   const displayDescription = pending ? pendingDescription ?? description : description;
   return (
-    <AlertDialog open={open} onOpenChange={(nextOpen) => {
-      if (!nextOpen) {
-        handleClose();
-        return;
-      }
+    <>
+      <AlertDialog open={open} onOpenChange={(nextOpen) => {
+        if (!nextOpen) {
+          handleClose();
+          return;
+        }
 
-      onOpenChange(nextOpen);
-    }}>
-      <AlertDialogContent
-        className={cn(dialogContentClass, 'border-red-300 dark:border-red-700')}
-        overlayClassName={dialogThemedOverlayClass}
-        onOverlayClick={pending ? undefined : handleClose}
-      >
-        <div className={dialogHeaderClass}>
-          <AlertDialogTitle asChild>
-            <div className={dialogTitleClass}>
-              <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-red-100 text-red-600 ring-1 ring-red-200 dark:bg-red-950 dark:text-red-300 dark:ring-red-900">
-                {pending ? <Trash2Icon className="size-5" /> : <CircleAlertIcon className="size-5" />}
-              </span>
-              <span className="min-w-0 truncate">{displayTitle}</span>
-            </div>
-          </AlertDialogTitle>
-          <button
-            type="button"
-            className={closeButtonClass}
-            onClick={handleClose}
-            aria-label="Close"
-            disabled={confirming}
-          >
-            <XIcon className="size-4" />
-          </button>
-        </div>
-
-        <AlertDialogDescription className={cn(dialogDescriptionClass, 'min-h-[44px]')}>
-          <span>{displayDescription}</span>
-        </AlertDialogDescription>
-
-        <div className="flex h-12 items-center justify-center py-1">
-          <div className="flex items-baseline justify-center gap-2">
-            <span className={cn('text-4xl font-black leading-none tabular-nums', pending && 'animate-bounce', themeIconColor)}>
-              {pending ? remainingSeconds : safeCountdownSeconds}
-            </span>
-            <span className={cn('text-sm font-bold', themeIconColor)}>
-              s
-            </span>
-          </div>
-        </div>
-
-        <div className={cn(dialogFooterClass, 'min-h-[88px] sm:min-h-10 sm:items-center')}>
-          {pending ? (
+        onOpenChange(nextOpen);
+      }}>
+        <AlertDialogContent
+          className={cn(dialogContentClass, 'border-red-300 dark:border-red-700')}
+          overlayClassName={dialogThemedOverlayClass}
+          onOverlayClick={pending ? undefined : handleClose}
+        >
+          <div className={dialogHeaderClass}>
+            <AlertDialogTitle asChild>
+              <div className={dialogTitleClass}>
+                <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-red-100 text-red-600 ring-1 ring-red-200 dark:bg-red-950 dark:text-red-300 dark:ring-red-900">
+                  {pending ? <Trash2Icon className="size-5" /> : <CircleAlertIcon className="size-5" />}
+                </span>
+                <span className="min-w-0 truncate">{displayTitle}</span>
+              </div>
+            </AlertDialogTitle>
             <button
               type="button"
-              onClick={handleUndo}
-              className={secondaryButtonClass}
+              className={closeButtonClass}
+              onClick={handleClose}
+              aria-label="Close"
               disabled={confirming}
             >
-              <Undo2Icon className="mr-1.5 size-4" />
-              {undoText}
+              <XIcon className="size-4" />
             </button>
-          ) : (
-            <>
+          </div>
+
+          <AlertDialogDescription className={cn(dialogDescriptionClass, 'min-h-[44px]')}>
+            <span>{displayDescription}</span>
+          </AlertDialogDescription>
+
+          <div className="flex h-12 items-center justify-center py-1">
+            <div className="flex items-baseline justify-center gap-2">
+              <span className={cn('text-4xl font-black leading-none tabular-nums', pending && 'animate-bounce', themeIconColor)}>
+                {pending ? remainingSeconds : safeCountdownSeconds}
+              </span>
+              <span className={cn('text-sm font-bold', themeIconColor)}>
+                s
+              </span>
+            </div>
+          </div>
+
+          <div className={cn(dialogFooterClass, 'min-h-[88px] sm:min-h-10 sm:items-center')}>
+            {pending ? (
               <button
                 type="button"
-                onClick={handleCancel}
-                className={cancelButtonClass}
+                onClick={() => {
+                  void handleUndo();
+                }}
+                className={secondaryButtonClass}
+                disabled={confirming}
               >
-                {cancelText}
+                <Undo2Icon className="mr-1.5 size-4" />
+                {undoText}
               </button>
-              <button
-                type="button"
-                onClick={startCountdown}
-                className={confirmButtonClass}
-              >
-                {confirmText}
-              </button>
-            </>
-          )}
-        </div>
-      </AlertDialogContent>
-    </AlertDialog>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  onClick={handleCancel}
+                  className={cancelButtonClass}
+                >
+                  {cancelText}
+                </button>
+                <button
+                  type="button"
+                  onClick={startCountdown}
+                  className={confirmButtonClass}
+                >
+                  {confirmText}
+                </button>
+              </>
+            )}
+          </div>
+        </AlertDialogContent>
+      </AlertDialog>
+      {dialogLoading}
+    </>
   );
 }

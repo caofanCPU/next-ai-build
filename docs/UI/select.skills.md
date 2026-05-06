@@ -1,0 +1,254 @@
+# Select Skills
+
+本说明给 AI 使用。目标是快速判断胶囊选择、筛选选择和 token 输入该用哪个组件，并保持页面表单/筛选 UI 一致。
+
+## 设计原则
+
+- 这里的 select 指“按钮式选择 / 胶囊选择 / token 输入”，不是原生 `<select>`。
+- 单选、多选、筛选、表单字段、自由 token 输入应优先使用现有组件。
+- 选项数据使用 `{ label, value }`，`value` 是业务稳定值，`label` 是显示文案。
+- 不要把 `XToggleButton` 当多选筛选器用；多选请用 `XPillSelect mode="multiple"`。
+- 不要把 `XTokenInput` 当固定选项选择器用；固定选项请用 `XPillSelect`。
+- 胶囊选择器适合低到中等数量选项，不适合上百项搜索列表。
+
+## 组件选择
+
+| 需求 | 推荐组件 |
+| --- | --- |
+| 下拉单选胶囊 | `XPillSelect mode="single"` |
+| 下拉多选胶囊 | `XPillSelect mode="multiple"` |
+| 表单字段里的单选胶囊 | `XFormPills` |
+| 筛选条里的单选胶囊 | `XFilterPills` |
+| 自由输入多个标签/token | `XTokenInput` |
+| 单选切换按钮组 | `XToggleButton`，见 button skills |
+
+## XPillOption
+
+统一选项结构：
+
+```ts
+type XPillOption = {
+  label: string;
+  value: string;
+};
+```
+
+使用指导：
+
+- `value` 不要用展示文案拼接出来，应该是稳定业务值。
+- 空值 `''` 可以表达“全部/未选择”，但要谨慎，只在筛选或 allow clear 场景使用。
+- 多选值应是 string array。
+
+## XPillSelect
+
+适用场景：
+
+- 需要下拉展开的单选。
+- 需要下拉展开的多选。
+- 需要把已选项以 pill 展示在触发器内。
+- 多选项可能需要聚合显示，例如全部选中时显示“全部方向”。
+
+核心参数：
+
+- `mode`：`'single' | 'multiple'`。
+- `value`：单选为 `string`，多选为 `string[]`。
+- `onChange`：单选返回 `string`，多选返回 `string[]`。
+- `options`：选项数组。
+- `emptyLabel`：未选择时的提示。
+- `allowClear`：再次点击已选项或已选 pill 时允许清空。
+- `size`：`'default' | 'compact'`。
+- `allSelectedLabel`：多选全选时显示聚合 pill。
+- `maxVisiblePills`：限制触发器内最多显示几个已选 pill，超出显示 `+N`。
+- `maxPillWidthClassName`：限制 pill 文本最大宽度。
+
+使用指导：
+
+- 表单主区域用默认尺寸。
+- 工具栏、筛选条、密集区域用 `size="compact"`。
+- 多选数量多时配置 `maxVisiblePills`，避免撑开布局。
+- 如果所有选项都选中，优先用 `allSelectedLabel` 聚合显示。
+- `allowClear` 用于用户需要快速回到空状态的场景。
+- 单选选择后会自动收起；多选选择后保持打开。
+
+```tsx
+<XPillSelect
+  mode="single"
+  value={category}
+  onChange={setCategory}
+  options={categoryOptions}
+  emptyLabel="请选择分类"
+  allowClear
+/>
+```
+
+```tsx
+<XPillSelect
+  mode="multiple"
+  value={selectedTags}
+  onChange={setSelectedTags}
+  options={tagOptions}
+  emptyLabel="请选择多个标签"
+  allSelectedLabel="全部标签"
+  maxVisiblePills={2}
+  allowClear
+/>
+```
+
+## XPillSelect 输入扩展
+
+`XPillSelect` 支持 `inputEnabled`，用于“固定选项 + 允许补充新值”的轻量场景。
+
+使用指导：
+
+- 只在选项集可被用户补充时开启。
+- 输入会去掉逗号并 trim。
+- 多选会自动去重。
+- 如果要做大量自由 token 输入，优先用 `XTokenInput`。
+
+```tsx
+<XPillSelect
+  mode="multiple"
+  value={skills}
+  onChange={setSkills}
+  options={skillOptions}
+  emptyLabel="选择或输入技能"
+  inputEnabled
+  inputPlaceholder="输入后回车"
+  onInputTransform={(value) => value.toLowerCase()}
+/>
+```
+
+## XFormPills
+
+适用场景：
+
+- 表单字段里的单选胶囊。
+- 需要 label + select 组合。
+- 希望表单字段视觉保持一致。
+
+核心参数：
+
+- `label`：字段标题。
+- `value`：当前值。
+- `options`：选项数组。
+- `onChange`：变更回调。
+- `emptyLabel`：未选择提示。
+- `allowClear`：允许清空。
+
+使用指导：
+
+- 优先用于表单、配置面板、设置项。
+- 不要在筛选条里用它；筛选条更适合 `XFilterPills`。
+- 当前封装是单选语义，多选表单字段请直接使用 `XPillSelect mode="multiple"` 并自行放 label。
+
+```tsx
+<XFormPills
+  label="所属模块"
+  value={module}
+  onChange={setModule}
+  options={moduleOptions}
+  emptyLabel="请选择模块"
+  allowClear
+/>
+```
+
+## XFilterPills
+
+适用场景：
+
+- 列表筛选。
+- 小型筛选条。
+- 需要“全部 + 单选条件”的场景。
+
+核心参数：
+
+- `label`：筛选标题。
+- `value`：当前筛选值。
+- `options`：筛选选项。
+- `onChange`：变更回调。
+- `allLabel`：全部选项文案。
+
+使用指导：
+
+- 它内部会把 `{ label: allLabel, value: '' }` 放到选项前面。
+- 默认使用 compact 尺寸。
+- 适合单选筛选，不适合多选筛选。
+- 多选筛选请直接用 `XPillSelect mode="multiple"`。
+
+```tsx
+<XFilterPills
+  label="筛选方向"
+  value={direction}
+  onChange={setDirection}
+  options={directionOptions}
+  allLabel="全部"
+/>
+```
+
+## XTokenInput
+
+适用场景：
+
+- 自由输入多个 tag。
+- 用户需要回车创建 token。
+- token 不来自固定选项。
+
+核心参数：
+
+- `value`：string array。
+- `onChange`：返回 string array。
+- `placeholder`：输入占位。
+- `emptyLabel`：空状态说明。
+- `disabled`：禁用。
+- `size`：`'default' | 'compact'`。
+- `maxPillWidthClassName`：token 文本最大宽度。
+
+行为：
+
+- 输入回车提交 token。
+- 失焦会提交当前输入。
+- 输入会去掉逗号并 trim。
+- token 自动去重。
+- 空输入按 Backspace 会删除最后一个 token。
+
+使用指导：
+
+- 适合自由标签，不适合固定选项选择。
+- token 可能很长时设置 `maxPillWidthClassName`。
+- 密集表单或表格过滤区用 `size="compact"`。
+
+```tsx
+<XTokenInput
+  value={tokens}
+  onChange={setTokens}
+  placeholder="输入标签后回车"
+  emptyLabel="还没有输入任何标签"
+/>
+```
+
+```tsx
+<XTokenInput
+  size="compact"
+  value={keywords}
+  onChange={setKeywords}
+  placeholder="输入关键词"
+  maxPillWidthClassName="max-w-[120px]"
+/>
+```
+
+## 布局建议
+
+- 对照展示 default / compact 时，用小卡片并排。
+- 多个选择器放在表单中时，保持 label、间距、宽度一致。
+- 多选触发器要避免被大量 pill 撑爆，优先 `maxVisiblePills`。
+- 筛选条里不要使用过长 label；长文案放到说明文本或 tooltip。
+
+## AI 判断 Checklist
+
+- 固定选项单选？用 `XPillSelect mode="single"`。
+- 固定选项多选？用 `XPillSelect mode="multiple"`。
+- 表单字段单选且需要 label？用 `XFormPills`。
+- 筛选条单选且有“全部”？用 `XFilterPills`。
+- 用户自由输入多个标签？用 `XTokenInput`。
+- 只是视图模式二选一/三选一？用 `XToggleButton`，不要用 Pill Select。
+- 选项很多、需要搜索分页、远程查询？当前这些组件不适合，应考虑专门的 combobox/search select。

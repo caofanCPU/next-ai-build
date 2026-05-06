@@ -5,3 +5,4 @@ export * from './confirm-dialog';
 export * from './high-priority-confirm-dialog';
 export * from './info-dialog';
 export * from './undoable-confirm-dialog';
+export type { DialogLoadingAction } from './dialog-loading-action';

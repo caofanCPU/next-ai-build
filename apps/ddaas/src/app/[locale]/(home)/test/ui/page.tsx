@@ -102,10 +102,18 @@ type ActiveDialogDemo =
   | 'confirm-normal'
   | 'confirm-normal-reversed'
   | 'confirm-danger'
+  | 'info-loading'
+  | 'confirm-loading-confirm'
+  | 'confirm-loading-cancel'
   | 'undoable-confirm'
+  | 'undoable-loading-confirm'
+  | 'undoable-loading-undo'
+  | 'undoable-loading-both'
+  | 'high-priority-loading'
   | 'high-priority';
 
 const sleep = (ms: number) => new Promise((resolve) => window.setTimeout(resolve, ms));
+const DIALOG_LOADING_DEMO_DELAY_MS = 2000;
 
 const createExpandedSections = (expanded: boolean): ExpandedSections =>
   collapsibleSectionIds.reduce(
@@ -382,9 +390,9 @@ export default function TestComponentsPage() {
           </div>
 
           <div className={compareCardClass}>
-            <div className="mb-3 text-sm font-medium text-foreground">ConfirmDialog</div>
+            <div className="mb-3 text-sm font-medium text-foreground">ConfirmDialog 基础样式</div>
             <p className="mb-4 text-xs leading-6 text-muted-foreground">
-              双按钮确认弹窗，normal 跟随主题色，danger 使用红色危险语义。
+              双按钮确认弹窗，normal 跟随主题色，danger 使用红色危险语义，倒计时弹窗展示二阶段确认。
             </p>
             <div className="flex flex-wrap gap-2">
               <XButton
@@ -423,7 +431,7 @@ export default function TestComponentsPage() {
           </div>
 
           <div className={compareCardClass}>
-            <div className="mb-3 text-sm font-medium text-foreground">HighPriorityConfirmDialog</div>
+            <div className="mb-3 text-sm font-medium text-foreground">HighPriorityConfirmDialog 基础样式</div>
             <p className="mb-4 text-xs leading-6 text-muted-foreground">
               强遮罩、高层级、必须决策，适合流程中断、离开页面、丢失状态这类高优先级场景。
             </p>
@@ -438,6 +446,95 @@ export default function TestComponentsPage() {
                 onClick: () => setActiveDialogDemo('high-priority'),
               }}
             />
+          </div>
+
+          <div className={cn(compareCardClass, 'lg:col-span-2')}>
+            <div className="mb-3 text-sm font-medium text-foreground">Loading Action 展示</div>
+            <p className="mb-4 text-xs leading-6 text-muted-foreground">
+              按钮动作关闭弹窗后执行异步回调；只有 `loadingActions` 命中的 action 会展示全屏 Loading。
+            </p>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              <XButton
+                type="single"
+                variant="subtle"
+                minWidth="min-w-0"
+                className={dialogDemoButtonClass}
+                button={{ icon: <BadgeInfoIcon />, text: 'Info confirm', onClick: () => setActiveDialogDemo('info-loading') }}
+              />
+              <XButton
+                type="single"
+                variant="subtle"
+                minWidth="min-w-0"
+                className={dialogDemoButtonClass}
+                button={{ icon: <CircleQuestionMarkIcon />, text: 'Confirm action', onClick: () => setActiveDialogDemo('confirm-loading-confirm') }}
+              />
+              <XButton
+                type="single"
+                variant="subtle"
+                minWidth="min-w-0"
+                className={dialogDangerDemoButtonClass}
+                button={{ icon: <CircleQuestionMarkIcon />, text: 'Cancel action', onClick: () => setActiveDialogDemo('confirm-loading-cancel') }}
+              />
+              <XButton
+                type="single"
+                variant="subtle"
+                minWidth="min-w-0"
+                className={cn(dialogDemoButtonClass, themeIconColor, 'border-current bg-primary/5 hover:bg-primary/10')}
+                button={{
+                  icon: <FAQSIcon />,
+                  text: 'High priority',
+                  onClick: () => setActiveDialogDemo('high-priority-loading'),
+                }}
+              />
+            </div>
+            <div className={codeHintClass}>
+              {`loadingActions={['confirm']} / loadingActions={['cancel']}`}
+            </div>
+          </div>
+
+          <div className={cn(compareCardClass, 'lg:col-span-2')}>
+            <div className="mb-3 text-sm font-medium text-foreground">UndoableConfirmDialog Loading Action</div>
+            <p className="mb-4 text-xs leading-6 text-muted-foreground">
+              首屏按钮只进入倒计时，不展示 Loading；倒计时完成触发 `confirm`，或等待期点击 `undo` 时才按配置展示 Loading。
+            </p>
+            <div className="grid gap-3 md:grid-cols-3">
+              <XButton
+                type="single"
+                variant="subtle"
+                minWidth="min-w-0"
+                className={dialogDangerDemoButtonClass}
+                button={{
+                  icon: <CircleAlertIcon />,
+                  text: '倒计时确认 Loading',
+                  onClick: () => setActiveDialogDemo('undoable-loading-confirm'),
+                }}
+              />
+              <XButton
+                type="single"
+                variant="subtle"
+                minWidth="min-w-0"
+                className={dialogDemoButtonClass}
+                button={{
+                  icon: <CircleAlertIcon />,
+                  text: '倒计时撤回 Loading',
+                  onClick: () => setActiveDialogDemo('undoable-loading-undo'),
+                }}
+              />
+              <XButton
+                type="single"
+                variant="subtle"
+                minWidth="min-w-0"
+                className={dialogDangerDemoButtonClass}
+                button={{
+                  icon: <CircleAlertIcon />,
+                  text: '倒计时双路径 Loading',
+                  onClick: () => setActiveDialogDemo('undoable-loading-both'),
+                }}
+              />
+            </div>
+            <div className={codeHintClass}>
+              {`Undoable: loadingActions={['confirm']} 表示倒计时后的 onConfirm；loadingActions={['undo']} 表示等待期 Undo；两者都需要就传 ['confirm', 'undo']。`}
+            </div>
           </div>
         </div>
       </CollapsibleSection>
@@ -1259,6 +1356,20 @@ export default function TestComponentsPage() {
         confirmText="Close"
         onConfirm={() => setActionText('InfoDialog：error 确认')}
       />
+      <InfoDialog
+        open={activeDialogDemo === 'info-loading'}
+        onOpenChange={(open) => setActiveDialogDemo(open ? 'info-loading' : null)}
+        type="info"
+        title="Run loading demo?"
+        description="点击 Got it 后会立即关闭弹窗，并展示全屏 Loading，持续 2 秒后结束。"
+        confirmText="Got it"
+        loadingActions={['confirm']}
+        onConfirm={async () => {
+          setActionText('InfoDialog：confirm loading 开始');
+          await sleep(DIALOG_LOADING_DEMO_DELAY_MS);
+          setActionText('InfoDialog：confirm loading 完成');
+        }}
+      />
 
       <ConfirmDialog
         open={activeDialogDemo === 'confirm-normal'}
@@ -1294,6 +1405,39 @@ export default function TestComponentsPage() {
         onCancel={() => setActionText('ConfirmDialog：reversed 取消并放弃结果')}
         onConfirm={() => setActionText('ConfirmDialog：reversed 应用结果')}
       />
+      <ConfirmDialog
+        open={activeDialogDemo === 'confirm-loading-confirm'}
+        onOpenChange={(open) => setActiveDialogDemo(open ? 'confirm-loading-confirm' : null)}
+        type="normal"
+        title="Apply changes with loading?"
+        description="点击 Apply 后会关闭弹窗并展示 Loading；Cancel 仍是普通关闭和回调。"
+        cancelText="Cancel"
+        confirmText="Apply"
+        loadingActions={['confirm']}
+        onCancel={() => setActionText('ConfirmDialog：confirm loading 示例取消')}
+        onConfirm={async () => {
+          setActionText('ConfirmDialog：confirm loading 开始');
+          await sleep(DIALOG_LOADING_DEMO_DELAY_MS);
+          setActionText('ConfirmDialog：confirm loading 完成');
+        }}
+      />
+      <ConfirmDialog
+        open={activeDialogDemo === 'confirm-loading-cancel'}
+        onOpenChange={(open) => setActiveDialogDemo(open ? 'confirm-loading-cancel' : null)}
+        type="normal"
+        title="Discard generated result?"
+        description="点击 Discard Result 后会关闭弹窗并展示 Loading；Apply 不触发 loading。"
+        cancelText="Discard Result"
+        confirmText="Apply"
+        emphasis="cancel"
+        loadingActions={['cancel']}
+        onCancel={async () => {
+          setActionText('ConfirmDialog：cancel loading 开始');
+          await sleep(DIALOG_LOADING_DEMO_DELAY_MS);
+          setActionText('ConfirmDialog：cancel loading 完成');
+        }}
+        onConfirm={() => setActionText('ConfirmDialog：cancel loading 示例应用')}
+      />
 
       <UndoableConfirmDialog
         open={activeDialogDemo === 'undoable-confirm'}
@@ -1314,6 +1458,70 @@ export default function TestComponentsPage() {
           setActionText('UndoableConfirmDialog：删除已执行');
         }}
       />
+      <UndoableConfirmDialog
+        open={activeDialogDemo === 'undoable-loading-confirm'}
+        onOpenChange={(open) => setActiveDialogDemo(open ? 'undoable-loading-confirm' : null)}
+        title="Archive this record?"
+        description="点击 Archive 只进入倒计时，不展示 Loading。倒计时结束执行 onConfirm 时才展示 Loading。"
+        pendingTitle="Archive scheduled"
+        pendingDescription="倒计时结束后会执行归档动作。这个阶段仍可点击 Undo 撤回。"
+        countdownSeconds={3}
+        cancelText="Cancel"
+        confirmText="Archive"
+        undoText="Undo"
+        loadingActions={['confirm']}
+        onCancel={() => setActionText('UndoableConfirmDialog：confirm loading 示例取消')}
+        onUndo={() => setActionText('UndoableConfirmDialog：confirm loading 示例撤回')}
+        onConfirm={async () => {
+          setActionText('UndoableConfirmDialog：confirm loading 开始');
+          await sleep(DIALOG_LOADING_DEMO_DELAY_MS);
+          setActionText('UndoableConfirmDialog：confirm loading 完成');
+        }}
+      />
+      <UndoableConfirmDialog
+        open={activeDialogDemo === 'undoable-loading-undo'}
+        onOpenChange={(open) => setActiveDialogDemo(open ? 'undoable-loading-undo' : null)}
+        title="Replace saved set?"
+        description="点击 Replace 只进入倒计时。倒计时期间点击 Undo 会关闭弹窗并展示 Loading。"
+        pendingTitle="Replace scheduled"
+        pendingDescription="点击 Undo 将模拟恢复已暂存的业务状态，并展示 Loading。"
+        countdownSeconds={5}
+        cancelText="Cancel"
+        confirmText="Replace"
+        undoText="Undo"
+        loadingActions={['undo']}
+        onCancel={() => setActionText('UndoableConfirmDialog：undo loading 示例取消')}
+        onUndo={async () => {
+          setActionText('UndoableConfirmDialog：undo loading 开始');
+          await sleep(DIALOG_LOADING_DEMO_DELAY_MS);
+          setActionText('UndoableConfirmDialog：undo loading 完成');
+        }}
+        onConfirm={() => setActionText('UndoableConfirmDialog：undo loading 示例倒计时完成')}
+      />
+      <UndoableConfirmDialog
+        open={activeDialogDemo === 'undoable-loading-both'}
+        onOpenChange={(open) => setActiveDialogDemo(open ? 'undoable-loading-both' : null)}
+        title="Publish scheduled changes?"
+        description="点击 Publish 只进入倒计时；等待倒计时完成或点击 Undo 都会关闭弹窗并展示 Loading。"
+        pendingTitle="Publish scheduled"
+        pendingDescription="不操作会在倒计时结束后发布；点击 Undo 会撤回发布。两条路径都会展示 Loading。"
+        countdownSeconds={5}
+        cancelText="Cancel"
+        confirmText="Publish"
+        undoText="Undo"
+        loadingActions={['confirm', 'undo']}
+        onCancel={() => setActionText('UndoableConfirmDialog：双路径 loading 示例取消')}
+        onUndo={async () => {
+          setActionText('UndoableConfirmDialog：双路径 undo loading 开始');
+          await sleep(DIALOG_LOADING_DEMO_DELAY_MS);
+          setActionText('UndoableConfirmDialog：双路径 undo loading 完成');
+        }}
+        onConfirm={async () => {
+          setActionText('UndoableConfirmDialog：双路径 confirm loading 开始');
+          await sleep(DIALOG_LOADING_DEMO_DELAY_MS);
+          setActionText('UndoableConfirmDialog：双路径 confirm loading 完成');
+        }}
+      />
 
       <HighPriorityConfirmDialog
         open={activeDialogDemo === 'high-priority'}
@@ -1329,6 +1537,21 @@ export default function TestComponentsPage() {
         onConfirm={() => {
           closeActiveDialog();
           setActionText('HighPriorityConfirmDialog：确认');
+        }}
+      />
+      <HighPriorityConfirmDialog
+        open={activeDialogDemo === 'high-priority-loading'}
+        onOpenChange={(open) => setActiveDialogDemo(open ? 'high-priority-loading' : null)}
+        title="Leave and save draft?"
+        description="点击 Leave 会关闭高优先级弹窗，并展示 Loading，直到模拟保存草稿完成。"
+        cancelText="Stay"
+        confirmText="Leave"
+        loadingActions={['confirm']}
+        onCancel={() => setActionText('HighPriorityConfirmDialog：loading 示例取消')}
+        onConfirm={async () => {
+          setActionText('HighPriorityConfirmDialog：confirm loading 开始');
+          await sleep(DIALOG_LOADING_DEMO_DELAY_MS);
+          setActionText('HighPriorityConfirmDialog：confirm loading 完成');
         }}
       />
     </div>
