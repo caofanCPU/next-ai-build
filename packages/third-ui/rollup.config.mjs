@@ -16,6 +16,7 @@ const entries = [
   'src/main/index.ts',
   'src/main/alert-dialog/index.ts',
   'src/main/buttons/index.ts',
+  'src/main/calendar/index.ts',
   'src/main/credit/index.ts',
   'src/main/credit/server.ts',
   'src/main/hero/index.ts',

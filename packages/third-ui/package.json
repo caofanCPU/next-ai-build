@@ -38,6 +38,11 @@
       "import": "./dist/main/buttons/index.mjs",
       "require": "./dist/main/buttons/index.js"
     },
+    "./main/calendar": {
+      "types": "./dist/main/calendar/index.d.ts",
+      "import": "./dist/main/calendar/index.mjs",
+      "require": "./dist/main/calendar/index.js"
+    },
     "./main/credit": {
       "types": "./dist/main/credit/index.d.ts",
       "import": "./dist/main/credit/index.mjs",
