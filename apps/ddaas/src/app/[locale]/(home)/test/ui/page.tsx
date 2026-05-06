@@ -495,6 +495,9 @@ export default function TestComponentsPage() {
                 setActionText(`CalendarDateRangeInput: ${getRangeSummary(range)}`);
               }}
               placeholder="点击选择起止日期"
+              defaultRangeDays={10}
+              showDayCount={true}
+              dayCountUnit='D'
               themedCalendarIcon={true}
               clearPressFeedback="subtle"
             />

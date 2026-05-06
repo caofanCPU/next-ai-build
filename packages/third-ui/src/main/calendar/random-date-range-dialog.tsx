@@ -86,10 +86,6 @@ function getRangeLabel(range: RandomCalendarRange): string {
     return 'No range selected';
   }
 
-  if (range.startDate === range.endDate) {
-    return range.startDate;
-  }
-
   return `${range.startDate} ~ ${range.endDate}`;
 }
 

@@ -57,7 +57,7 @@ function getRangeLabel(value: CalendarDateRangeValue, showDayCount: boolean, day
     return null;
   }
 
-  const dateLabel = value.startDate === value.endDate ? value.startDate : `${value.startDate} ~ ${value.endDate}`;
+  const dateLabel = `${value.startDate} ~ ${value.endDate}`;
 
   if (!showDayCount) {
     return dateLabel;
