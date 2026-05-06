@@ -11,6 +11,7 @@ import {
   XIcon,
 } from '@windrun-huaiin/base-ui/icons';
 import { cn } from '@windrun-huaiin/lib/utils';
+import { DialogLoadingAction, DialogActionHandler, useDialogLoadingAction } from '../alert-dialog/dialog-loading-action';
 import { usePressFeedback } from '../buttons/use-press-feedback';
 
 export type RandomCalendarRange = {
@@ -24,7 +25,8 @@ type RandomDateRangeDialogProps = {
   anchorDate: string;
   defaultRangeDays?: number;
   onOpenChange: (open: boolean) => void;
-  onApply: (range: RandomCalendarRange) => void;
+  loadingActions?: readonly DialogLoadingAction[];
+  onApply: (range: RandomCalendarRange) => void | Promise<void>;
   onClear?: (range: RandomCalendarRange) => void;
 };
 
@@ -180,6 +182,7 @@ export function RandomDateRangeDialog({
   anchorDate,
   defaultRangeDays = DEFAULT_RANGE_DAYS,
   onOpenChange,
+  loadingActions,
   onApply,
   onClear,
 }: RandomDateRangeDialogProps) {
@@ -210,6 +213,7 @@ export function RandomDateRangeDialog({
   const buildDraggedRangeRef = useRef<(clientX: number) => RandomCalendarRange | null>(() => null);
   const previousBodyOverflowRef = useRef<string | null>(null);
   const today = useMemo(() => getTodayString(), []);
+  const { dialogLoading, runDialogAction } = useDialogLoadingAction({ loadingActions, onOpenChange });
   const baseReferenceDate = anchorDate || today;
   const previousOpenRef = useRef(false);
   const startRatio = getRatioByDate(draftRange.startDate ?? baseReferenceDate, trackBounds);
@@ -228,6 +232,10 @@ export function RandomDateRangeDialog({
 
     return [...new Set(values)];
   }, [trackBounds.endDate, trackBounds.startDate]);
+
+  const handleApply = useCallback<DialogActionHandler>(() => {
+    return onApply(draftRange);
+  }, [draftRange, onApply]);
 
   useEffect(() => {
     if (open && !previousOpenRef.current) {
@@ -472,12 +480,13 @@ export function RandomDateRangeDialog({
   }, [open]);
 
   if (!open) {
-    return null;
+    return <>{dialogLoading}</>;
   }
 
   return createPortal(
-    <div className="fixed inset-0 z-120 flex select-none items-center justify-center bg-slate-950/60 px-3 py-6 backdrop-blur-sm">
-      <div className="w-full max-w-2xl overflow-hidden rounded-3xl border border-black/10 bg-white shadow-2xl dark:border-white/10 dark:bg-slate-950">
+    <>
+      <div className="fixed inset-0 z-120 flex select-none items-center justify-center bg-slate-950/60 px-3 py-6 backdrop-blur-sm">
+        <div className="w-full max-w-2xl overflow-hidden rounded-3xl border border-black/10 bg-white shadow-2xl dark:border-white/10 dark:bg-slate-950">
         <div className="space-y-5 p-4">
           <div className="relative flex items-center justify-center px-16 text-center">
             <div ref={resultLabelRef} className="select-none text-base font-semibold text-slate-900 dark:text-white">{getRangeLabel(draftRange)}</div>
@@ -493,8 +502,7 @@ export function RandomDateRangeDialog({
               <button
                 type="button"
                 onClick={() => {
-                  onApply(draftRange);
-                  onOpenChange(false);
+                  void runDialogAction('confirm', handleApply);
                 }}
                 disabled={!draftRange.startDate || !draftRange.endDate}
                 className={cn(
@@ -734,8 +742,10 @@ export function RandomDateRangeDialog({
 
           </div>
         </div>
+        </div>
       </div>
-    </div>,
+      {dialogLoading}
+    </>,
     document.body
   );
 }

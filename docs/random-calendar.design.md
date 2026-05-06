@@ -520,9 +520,10 @@ type CalendarDayState<TStateKey extends string = string> = {
   anchorDate={selectedDate}
   defaultRangeDays={7}
   onOpenChange={setRangeOpen}
-  onApply={(nextRange) => {
+  loadingActions={['confirm']}
+  onApply={async (nextRange) => {
     setRange(nextRange);
-    runQuery(nextRange);
+    await runQuery(nextRange);
   }}
 />
 ```

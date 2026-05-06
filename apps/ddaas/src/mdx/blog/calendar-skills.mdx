@@ -102,6 +102,7 @@ date: 2026-05-07
 - `defaultRangeDays`: 默认窗口天数
 - `onOpenChange`: 开关回调
 - `onApply`: 确认范围
+- `loadingActions`: 可选, 沿用弹窗 action key；传 `['confirm']` 时, 点击 Apply 后关闭弹窗并显示全屏 `Loading`, 等待 `onApply` 的 Promise settle
 - `onClear`: 弹窗内部重置到参考窗口时回调, 可选
 
 交互语义: 
@@ -126,9 +127,10 @@ date: 2026-05-07
   anchorDate={selectedDate}
   defaultRangeDays={7}
   onOpenChange={setRangeOpen}
-  onApply={(nextRange) => {
+  loadingActions={['confirm']}
+  onApply={async (nextRange) => {
     setRange(nextRange);
-    runQuery(nextRange);
+    await runQuery(nextRange);
   }}
 />
 ```

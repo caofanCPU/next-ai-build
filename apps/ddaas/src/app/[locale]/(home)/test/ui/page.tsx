@@ -1943,7 +1943,9 @@ export default function TestComponentsPage() {
         anchorDate={combinedSelectedDate}
         defaultRangeDays={7}
         onOpenChange={setCombinedRangeDialogOpen}
-        onApply={(range) => {
+        loadingActions={['confirm']}
+        onApply={async (range) => {
+          await sleep(DIALOG_LOADING_DEMO_DELAY_MS);
           setCombinedPlannedRange(range);
           setCombinedDayStates((current) => {
             const nextStates = new Map(current);
