@@ -514,7 +514,7 @@ export default function TestComponentsPage() {
 
       <CollapsibleSection
         title="GradientButton 展示"
-        description="保留默认渐变风格，同时展示 `soft`、`subtle`、链接态、点击态、禁用态和对齐差异。"
+        description="保留默认渐变风格，同时展示 `soft`、`subtle`、链接态、点击态、禁用态、对齐差异和按压反馈。"
         isExpanded={expandedSections['gradient-button']}
         onToggle={() => handleToggleSection('gradient-button')}
       >
@@ -568,12 +568,66 @@ export default function TestComponentsPage() {
               />
             </div>
           </div>
+
+          <div className="rounded-2xl border border-border/60 bg-background/70 p-4 lg:col-span-2">
+            <div className="mb-3 text-sm font-medium text-foreground">Press Feedback 按压反馈</div>
+            <p className="mb-4 text-xs leading-6 text-muted-foreground">
+              轻点、快点按钮，观察 180ms pressed flash。按压样式只改变 transform / brightness / shadow，不覆盖主题底色。
+            </p>
+            <div className="grid gap-3 md:grid-cols-3">
+              <GradientButton
+                className={gradientButtonDemoClass}
+                title="默认 subtle 反馈"
+                onClick={() => handleAction('GradientButton pressFeedback 默认 subtle')}
+              />
+              <GradientButton
+                className={gradientButtonDemoClass}
+                title="solid 强反馈"
+                pressFeedback="solid"
+                variant="soft"
+                onClick={() => handleAction('GradientButton pressFeedback solid')}
+              />
+              <GradientButton
+                className={gradientButtonDemoClass}
+                title="none 关闭反馈"
+                pressFeedback="none"
+                variant="subtle"
+                onClick={() => handleAction('GradientButton pressFeedback none')}
+              />
+              <GradientButton
+                className={gradientButtonDemoClass}
+                title="链接 subtle 反馈"
+                href="#"
+                openInNewTab={false}
+                variant="subtle"
+              />
+              <GradientButton
+                className={gradientButtonDemoClass}
+                title="链接 solid 反馈"
+                href="#"
+                openInNewTab={false}
+                pressFeedback="solid"
+                variant="soft"
+              />
+              <GradientButton
+                className={gradientButtonDemoClass}
+                title="禁用无反馈"
+                disabled
+                pressFeedback="solid"
+                icon={<ShieldIcon />}
+                onClick={() => handleAction('GradientButton 禁用无反馈')}
+              />
+            </div>
+            <div className={codeHintClass}>
+              {`<GradientButton pressFeedback="solid" /> / <GradientButton pressFeedback="none" />`}
+            </div>
+          </div>
         </div>
       </CollapsibleSection>
 
       <CollapsibleSection
         title="XButton 展示"
-        description="这里集中展示 `single` 和 `split` 两种模式，方便确认默认、soft、subtle 三种层级。"
+        description="这里集中展示 `single` 和 `split` 两种模式，方便确认默认、soft、subtle 三种层级和按压反馈。"
         isExpanded={expandedSections['x-button']}
         onToggle={() => handleToggleSection('x-button')}
         className="relative z-10"
@@ -708,6 +762,76 @@ export default function TestComponentsPage() {
                   },
                 ]}
               />
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-border/60 bg-background/70 p-4 lg:col-span-2">
+            <div className="mb-3 text-sm font-medium text-foreground">Press Feedback 按压反馈</div>
+            <p className="mb-4 text-xs leading-6 text-muted-foreground">
+              single、split main、dropdown trigger 使用独立 pressed key。菜单项当前点击后立即关闭，暂不做 flash 展示。
+            </p>
+            <div className="grid gap-4 xl:grid-cols-2">
+              <div className="grid gap-3 sm:grid-cols-3">
+                <XButton
+                  type="single"
+                  variant="subtle"
+                  button={{
+                    icon: <HandHeartIcon />,
+                    text: '默认 subtle',
+                    onClick: () => handleAction('XButton pressFeedback 默认 subtle'),
+                  }}
+                  className={xButtonSingleDemoClass}
+                />
+                <XButton
+                  type="single"
+                  variant="soft"
+                  pressFeedback="solid"
+                  button={{
+                    icon: <ZapIcon />,
+                    text: 'solid 强反馈',
+                    onClick: () => handleAction('XButton pressFeedback solid'),
+                  }}
+                  className={xButtonSingleDemoClass}
+                />
+                <XButton
+                  type="single"
+                  pressFeedback={false}
+                  button={{
+                    icon: <ShieldIcon />,
+                    text: '关闭反馈',
+                    onClick: () => handleAction('XButton pressFeedback false'),
+                  }}
+                  className={xButtonSingleDemoClass}
+                />
+              </div>
+
+              <XButton
+                type="split"
+                variant="subtle"
+                pressFeedback="solid"
+                mainButton={{
+                  icon: <RocketIcon />,
+                  text: 'solid 分体反馈',
+                  onClick: () => handleAction('XButton pressFeedback solid split 主按钮'),
+                }}
+                mainButtonClassName={xButtonSplitMainDemoClass}
+                dropdownButtonClassName={xButtonSplitDropdownDemoClass}
+                menuItems={[
+                  {
+                    icon: <CopyIcon className="mr-2 h-4 w-4" />,
+                    text: '复制当前状态',
+                    onClick: () => handleAction('XButton pressFeedback solid split 复制当前状态'),
+                  },
+                  {
+                    icon: <ExternalLinkIcon className="mr-2 h-4 w-4" />,
+                    text: '打开测试说明',
+                    onClick: () => handleAction('XButton pressFeedback solid split 打开测试说明'),
+                  },
+                ]}
+              />
+            </div>
+            <div className={codeHintClass}>
+              {`<XButton pressFeedback="solid" /> / <XButton pressFeedback={false} />`}
             </div>
           </div>
         </div>

@@ -4,8 +4,14 @@ import React, { useState, useRef, useEffect, ReactNode } from 'react'
 import { ChevronDownIcon, Loader2Icon } from '@windrun-huaiin/base-ui/icons'
 import { themeBgColor, themeBorderColor, themeIconColor, themeMainBgColor } from '@windrun-huaiin/base-ui/lib'
 import { cn } from '@windrun-huaiin/lib/utils'
+import { PressFeedback, resolvePressFeedbackMode, usePressFeedback } from './use-press-feedback'
 
 type XButtonVariant = 'default' | 'soft' | 'subtle'
+type XButtonPressKey = 'single' | 'main' | 'dropdown'
+
+const PRESS_FEEDBACK_MS = 180
+const xButtonPressSubtleClass = 'translate-y-px scale-[0.98] shadow-inner brightness-95'
+const xButtonPressSolidClass = 'translate-y-[2px] scale-[0.95] shadow-[inset_0_2px_4px_rgba(15,23,42,0.18)] brightness-95'
 
 interface BaseButtonConfig {
   icon: ReactNode
@@ -30,6 +36,7 @@ interface SingleButtonProps {
   className?: string
   iconClassName?: string
   variant?: XButtonVariant
+  pressFeedback?: PressFeedback
 }
 
 interface SplitButtonProps {
@@ -43,6 +50,7 @@ interface SplitButtonProps {
   dropdownButtonClassName?: string
   iconClassName?: string
   variant?: XButtonVariant
+  pressFeedback?: PressFeedback
 }
 
 type xButtonProps = SingleButtonProps | SplitButtonProps
@@ -50,7 +58,9 @@ type xButtonProps = SingleButtonProps | SplitButtonProps
 export function XButton(props: xButtonProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
-  const menuRef = useRef<HTMLDivElement>(null)
+  const splitRef = useRef<HTMLDivElement>(null)
+  const pressMode = resolvePressFeedbackMode(props.pressFeedback)
+  const { pressedKey, flash, getPressProps } = usePressFeedback<XButtonPressKey>(PRESS_FEEDBACK_MS)
 
   const { iconClassName } = props
   const defaultIconClass = "w-5 h-5"
@@ -76,7 +86,7 @@ export function XButton(props: xButtonProps) {
   useEffect(() => {
     if (props.type === 'split') {
       const handleClickOutside = (event: MouseEvent) => {
-        if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        if (splitRef.current && !splitRef.current.contains(event.target as Node)) {
           setMenuOpen(false)
         }
       }
@@ -104,7 +114,8 @@ export function XButton(props: xButtonProps) {
     }
   }
 
-  const baseButtonClass = "flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold transition-colors"
+  const getButtonPressClass = () => pressMode === 'solid' ? xButtonPressSolidClass : xButtonPressSubtleClass
+  const baseButtonClass = "flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold transition-[transform,background-color,filter,box-shadow,border-color,color]"
   const singleButtonVariantClass = variant === 'soft'
     ? cn(
         themeBgColor,
@@ -141,25 +152,38 @@ export function XButton(props: xButtonProps) {
           "bg-transparent hover:bg-neutral-50 dark:hover:bg-neutral-800 sm:border-l",
           themeIconColor,
           "border-neutral-200 dark:border-neutral-800"
-        )
-      : "bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-white hover:bg-neutral-300 dark:hover:bg-neutral-700 sm:border-l sm:border-neutral-300 sm:dark:border-neutral-700"
+      )
+    : "bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-white hover:bg-neutral-300 dark:hover:bg-neutral-700 sm:border-l sm:border-neutral-300 sm:dark:border-neutral-700"
+  const splitContainerVariantClass = variant === 'soft'
+    ? cn('border', themeBorderColor)
+    : variant === 'subtle'
+      ? 'border border-neutral-200 dark:border-neutral-800'
+      : null
   const disabledClass = "opacity-60 cursor-not-allowed"
 
   if (props.type === 'single') {
     const { button, loadingText, minWidth = 'min-w-[110px]', className = '' } = props
     const isDisabled = button.disabled || isLoading
+    const isPressed = pressMode !== 'none' && pressedKey === 'single' && !button.disabled
     const actualLoadingText = loadingText || button.text?.trim() || 'Loading...'
 
     return (
       <button
-        onClick={() => handleButtonClick(button.onClick)}
+        onClick={() => {
+          if (!isDisabled && pressMode !== 'none') {
+            flash('single')
+          }
+          handleButtonClick(button.onClick)
+        }}
         disabled={isDisabled}
+        {...(pressMode !== 'none' && !isDisabled ? getPressProps('single') : {})}
         className={cn(
           "w-full sm:w-auto",
           minWidth,
           baseButtonClass,
           singleButtonVariantClass,
           "rounded-full",
+          isPressed && getButtonPressClass(),
           isDisabled && disabledClass,
           className
         )}
@@ -182,21 +206,33 @@ export function XButton(props: xButtonProps) {
 
   const { mainButton, menuItems, loadingText, menuWidth = 'w-full sm:w-40', className = '', mainButtonClassName = '', dropdownButtonClassName = '' } = props
   const isMainDisabled = mainButton.disabled || isLoading
+  const isMainPressed = pressMode !== 'none' && pressedKey === 'main' && !mainButton.disabled
+  const isDropdownPressed = pressMode !== 'none' && pressedKey === 'dropdown' && !isLoading
   const actualLoadingText = loadingText || mainButton.text?.trim() || 'Loading...'
 
   return (
     <div className={cn(
-      "relative flex flex-row items-stretch w-full sm:w-auto rounded-full gap-0",
+      "relative inline-flex flex-row items-stretch w-full sm:w-fit rounded-full gap-0",
+      splitContainerVariantClass,
       menuOpen && "z-90",
       className
-    )}>
+    )}
+      ref={splitRef}
+    >
       <button
-        onClick={() => handleButtonClick(mainButton.onClick)}
+        onClick={() => {
+          if (!isMainDisabled && pressMode !== 'none') {
+            flash('main')
+          }
+          handleButtonClick(mainButton.onClick)
+        }}
         disabled={isMainDisabled}
+        {...(pressMode !== 'none' && !isMainDisabled ? getPressProps('main') : {})}
         className={cn(
           "flex-1 min-w-0 sm:min-w-[100px] sm:flex-initial rounded-l-full",
           baseButtonClass,
           splitMainButtonVariantClass,
+          isMainPressed && getButtonPressClass(),
           isMainDisabled && disabledClass,
           mainButtonClassName
         )}
@@ -218,12 +254,19 @@ export function XButton(props: xButtonProps) {
 
       <button
         type="button"
-        onClick={() => setMenuOpen(!menuOpen)}
+        onClick={() => {
+          if (!isLoading && pressMode !== 'none') {
+            flash('dropdown')
+          }
+          setMenuOpen(!menuOpen)
+        }}
         disabled={isLoading}
+        {...(pressMode !== 'none' && !isLoading ? getPressProps('dropdown') : {})}
         className={cn(
           "w-12 rounded-r-full",
           baseButtonClass,
           splitDropdownVariantClass,
+          isDropdownPressed && getButtonPressClass(),
           isLoading && disabledClass,
           dropdownButtonClassName
         )}
@@ -234,7 +277,6 @@ export function XButton(props: xButtonProps) {
 
       {menuOpen && (
         <div
-          ref={menuRef}
           className={cn(
             "absolute top-full right-0 mt-2 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-lg shadow-lg z-50 overflow-hidden",
             menuWidth

@@ -12,8 +12,13 @@ import {
 } from "@windrun-huaiin/base-ui/lib";
 import Link from "next/link";
 import React, { useState } from 'react';
+import { PressFeedback, resolvePressFeedbackMode, usePressFeedback } from './use-press-feedback';
 
 type GradientButtonVariant = 'default' | 'soft' | 'subtle';
+
+const PRESS_FEEDBACK_MS = 180;
+const gradientPressSubtleClass = 'translate-y-px scale-[0.98] shadow-inner brightness-95';
+const gradientPressSolidClass = 'translate-y-[2px] scale-[0.96] shadow-[inset_0_2px_4px_rgba(15,23,42,0.22)] brightness-90';
 
 export interface GradientButtonProps {
   title: React.ReactNode;
@@ -30,6 +35,7 @@ export interface GradientButtonProps {
   loadingText?: React.ReactNode;
   preventDoubleClick?: boolean;
   variant?: GradientButtonVariant;
+  pressFeedback?: PressFeedback;
 }
 
 export function GradientButton({
@@ -47,8 +53,11 @@ export function GradientButton({
   preventDoubleClick = true,
   iconClassName,
   variant = 'default',
+  pressFeedback,
 }: GradientButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const pressMode = resolvePressFeedbackMode(pressFeedback);
+  const { pressedKey, flash, getPressProps } = usePressFeedback<'root'>(PRESS_FEEDBACK_MS);
   const actualLoadingText = loadingText || title?.toString().trim() || 'Loading...';
 
   const defaultIconClass = "h-4 w-4";
@@ -94,6 +103,12 @@ export function GradientButton({
   };
 
   const isDisabled = disabled || isLoading;
+  const isPressed = pressMode !== 'none' && pressedKey === 'root' && !disabled;
+  const pressClassName = isPressed
+    ? pressMode === 'solid'
+      ? gradientPressSolidClass
+      : gradientPressSubtleClass
+    : null;
   const displayTitle = isLoading ? actualLoadingText : title;
   const iconProvided = icon !== undefined;
 
@@ -163,11 +178,13 @@ export function GradientButton({
   const buttonClassName = cn(
     baseButtonStyles,
     variantClassName,
-    'text-base font-bold transition-all duration-300 rounded-full',
+    'text-base font-bold transition-[transform,background-color,filter,box-shadow,border-color,color] duration-300 rounded-full',
     alignmentClass,
+    pressClassName,
     isDisabled && 'opacity-50 cursor-not-allowed',
     className,
   );
+  const pressProps = pressMode !== 'none' && !isDisabled ? getPressProps('root') : {};
 
   return (
     <div className={`flex flex-row gap-3 ${getAlignmentClass()}`}>
@@ -175,8 +192,14 @@ export function GradientButton({
         <button
           type="button"
           className={buttonClassName}
-          onClick={handleClick}
+          onClick={(event) => {
+            if (!isDisabled && pressMode !== 'none') {
+              flash('root');
+            }
+            handleClick(event);
+          }}
           disabled={isDisabled}
+          {...pressProps}
         >
           {buttonContent}
         </button>
@@ -185,8 +208,18 @@ export function GradientButton({
           href={href || "#"}
           className={cn(buttonClassName, "no-underline hover:no-underline")}
           {...(openInNewTab ? { target: "_blank", rel: preserveReferrer ? 'noopener' : 'noopener noreferrer' } : {})}
-          onClick={isDisabled ? (e) => e.preventDefault() : undefined}
+          onClick={(event) => {
+            if (isDisabled) {
+              event.preventDefault();
+              return;
+            }
+
+            if (pressMode !== 'none') {
+              flash('root');
+            }
+          }}
           aria-disabled={isDisabled}
+          {...pressProps}
         >
           {buttonContent}
         </Link>
