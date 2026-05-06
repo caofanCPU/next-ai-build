@@ -1,0 +1,270 @@
+---
+title: Alert Dialog Skills
+description: 本说明给 AI 使用目标是快速判断页面级弹窗该用哪个组件、按钮语义如何处理、异步 loading 该挂在哪个 action 上
+date: 2026-05-07
+---
+
+## 设计原则
+
+- 弹窗按交互语义选择, 不按业务文案新建组件
+- 弹窗组件只负责结构、视觉、关闭语义、按钮 action 语义, 不理解业务接口
+- 文案由业务传入, 基础组件只提供英文 fallback
+- `X` 和 overlay 都是 close-only 语义, 不触发业务 action
+- `cancel` 是取消 action, `confirm` 是确认/应用 action, `undo` 是撤回 action
+- 异步 loading 绑定按钮 action, 不绑定弹窗整体
+- 除 `AdsAlertDialog` 外, 支持用 `loadingActions` 显式声明哪些 action 需要全屏 loading
+- `AdsAlertDialog` 偏展示和跳转, 不承载 loading action 语义
+
+## 组件选择
+
+| 组件 | 使用场景 | 按钮语义 |
+| --- | --- | --- |
+| `AdsAlertDialog` | 广告、活动、图片公告、带外链展示 | 可无按钮 / cancel / confirm, 但无 loading action |
+| `InfoDialog` | 信息提示、结果反馈、轻量警告 | confirm |
+| `ConfirmDialog` | 普通确认、危险确认、应用/放弃二选一 | cancel + confirm |
+| `UndoableConfirmDialog` | 需要二阶段确认且允许倒计时内撤回 | cancel + confirm + undo |
+| `HighPriorityConfirmDialog` | 高优先级阻断确认、流程中断决策 | cancel + confirm |
+
+## Loading Action
+
+通用 key 只有三个: 
+
+```ts
+'cancel' | 'confirm' | 'undo'
+```
+
+业务只需要记住: `loadingActions` 里填哪个 key, 就表示执行对应 `onXxx` 回调时显示全屏 `Loading`
+
+```tsx
+<ConfirmDialog
+  open={open}
+  onOpenChange={setOpen}
+  loadingActions={['confirm']}
+  title="Apply changes?"
+  description="This will update the current data."
+  confirmText="Apply"
+  onConfirm={async () => {
+    await applyChanges();
+    await reloadData();
+  }}
+/>
+```
+
+行为顺序固定: 
+
+1. 点击按钮
+2. 弹窗立即关闭
+3. 如果 action 命中 `loadingActions`, 展示全屏 `Loading`
+4. 执行业务回调
+5. Promise settle 后关闭 `Loading`
+
+错误处理边界: 
+
+- 底层用 `finally` 保证 loading 关闭
+- 底层不负责业务错误文案
+- 调用方应该在自己的状态、toast 或页面区域里处理错误展示
+
+## 关闭语义
+
+| 操作 | 语义 | 触发 loading |
+| --- | --- | --- |
+| `X` | 只关闭弹窗 | 否 |
+| overlay | 只关闭弹窗 | 否 |
+| cancel 按钮 | 关闭后执行 `onCancel` | 由 `loadingActions.includes('cancel')` 控制 |
+| confirm/apply 按钮 | 关闭后执行 `onConfirm` | 由 `loadingActions.includes('confirm')` 控制 |
+| undo 按钮 | 关闭后执行 `onUndo` | 由 `loadingActions.includes('undo')` 控制 |
+
+## UndoableConfirmDialog 特殊规则
+
+`UndoableConfirmDialog` 有两个阶段: 
+
+- 首屏: `cancel` + 初始确认按钮
+- pending 阶段: 倒计时 + `undo`
+
+首屏确认按钮只进入倒计时, 不执行业务 `onConfirm`, 也不触发 loading
+
+`confirm` 在 `UndoableConfirmDialog` 里表示: 倒计时结束后真正执行 `onConfirm` 的动作
+
+```tsx
+<UndoableConfirmDialog
+  open={open}
+  onOpenChange={setOpen}
+  loadingActions={['confirm']}
+  title="Archive this item?"
+  description="You can undo before the countdown ends."
+  confirmText="Archive"
+  undoText="Undo"
+  onConfirm={async () => {
+    await archiveItem();
+  }}
+/>
+```
+
+如果倒计时自然完成和点击撤回都需要 loading: 
+
+```tsx
+<UndoableConfirmDialog
+  open={open}
+  onOpenChange={setOpen}
+  loadingActions={['confirm', 'undo']}
+  title="Publish changes?"
+  description="Publishing can still be undone before the countdown ends."
+  confirmText="Publish"
+  undoText="Undo"
+  onConfirm={async () => {
+    await publishChanges();
+  }}
+  onUndo={async () => {
+    await restoreDraft();
+  }}
+/>
+```
+
+## InfoDialog
+
+使用场景: 
+
+- 信息说明
+- 成功或失败反馈
+- 轻量警告
+- 用户只需要知道并关闭
+
+类型: 
+
+```ts
+'info' | 'warn' | 'success' | 'error'
+```
+
+使用指导: 
+
+- 只有一个 confirm 按钮
+- 不要用 `InfoDialog` 做二选一决策
+- 如果 OK 后要等待异步操作, 使用 `loadingActions={['confirm']}`
+
+```tsx
+<InfoDialog
+  open={open}
+  onOpenChange={setOpen}
+  type="success"
+  title="Saved"
+  description="Your changes have been saved."
+  confirmText="Done"
+/>
+```
+
+## ConfirmDialog
+
+使用场景: 
+
+- 是否继续
+- 是否保存、应用、提交
+- 是否删除、清空、重置
+- 是否放弃已经生成或编辑的结果
+
+核心参数: 
+
+- `type="normal"`: 普通确认, confirm 按钮跟随主题色
+- `type="danger"`: 危险确认, confirm 按钮使用红色危险语义
+- `emphasis="confirm"`: 默认, confirm 是重点按钮
+- `emphasis="cancel"`: cancel 是重点按钮, 适合“放弃结果/丢弃内容”这类取消语义更危险的场景
+
+```tsx
+<ConfirmDialog
+  open={open}
+  onOpenChange={setOpen}
+  type="danger"
+  title="Delete this item?"
+  description="This action cannot be undone."
+  cancelText="Cancel"
+  confirmText="Delete"
+  onConfirm={handleDelete}
+/>
+```
+
+```tsx
+<ConfirmDialog
+  open={open}
+  onOpenChange={setOpen}
+  type="normal"
+  emphasis="cancel"
+  title="Apply generated result?"
+  description="Discarding the generated result wastes work that already finished."
+  cancelText="Discard Result"
+  confirmText="Apply"
+  loadingActions={['cancel']}
+  onCancel={async () => {
+    await discardGeneratedResult();
+  }}
+/>
+```
+
+## HighPriorityConfirmDialog
+
+使用场景: 
+
+- 离开流程
+- 未保存状态可能丢失
+- 流程中断
+- 用户必须立即决策
+
+使用指导: 
+
+- 使用强遮罩和更高层级
+- 点击外部不关闭
+- `X` 仍然只关闭, 不触发 `onCancel`
+- 不负责监听路由跳转、关闭 tab、刷新页面；那些应该由 guard/hook 层处理
+
+```tsx
+<HighPriorityConfirmDialog
+  open={open}
+  onOpenChange={setOpen}
+  title="Leave this flow?"
+  description="Unsaved changes may be lost if you leave now."
+  cancelText="Stay"
+  confirmText="Leave"
+  loadingActions={['confirm']}
+  onConfirm={async () => {
+    await saveDraftBeforeLeave();
+  }}
+/>
+```
+
+## AdsAlertDialog
+
+使用场景: 
+
+- 广告弹窗
+- 活动推广
+- 图片公告
+- 升级引导
+
+使用指导: 
+
+- 图片展示优先, 不承载危险确认语义
+- 按钮可选
+- `X` 和 overlay 只关闭
+- 不支持 `loadingActions`
+
+```tsx
+<AdsAlertDialog
+  open={open}
+  onOpenChange={setOpen}
+  title="New feature"
+  description="Try the latest workflow."
+  imgSrc={imageUrl}
+  imgHref={landingUrl}
+  confirmText="View"
+/>
+```
+
+## 文案规则
+
+- 信息提示: `OK`、`Got it`、`Close`、`Done`
+- 普通确认: `Confirm`、`Continue`、`Apply`、`Save`
+- 删除: `Delete`
+- 清空: `Clear`
+- 重置: `Reset`
+- 放弃: `Discard`、`Discard Result`
+- 离开: `Leave`、`Stay`
+
+不要把所有危险操作都写成 `Confirm`, 按钮文案要表达真实动作

@@ -1,0 +1,267 @@
+---
+title: Calendar Skills
+description: 本说明给 AI 使用, 让AI快速判断该使用什么样的日历U组件
+date: 2026-05-07
+---
+
+## 设计原则
+
+- 日历组件解决的是“日期输入、日期定位、日期状态表达”, 不是完整业务流程
+- 范围选择是输入过程, 不是主界面长期状态；范围 apply 后, 主界面应展示业务结果
+- 月历只展示当前日期状态, 不展示拖动历史、生成过程或后端执行细节
+- 单日是最终落点, 范围只是提升批量规划或查询效率
+- 通用组件只使用 `{ startDate, endDate }`, 业务字段名由页面自行映射
+- 不要把接口请求、缓存版本、批量保存、权限判断放进通用日历组件
+
+## 组件选择
+
+| 需求 | 推荐组件 |
+| --- | --- |
+| 列表筛选、报表查询、导出条件里的日期范围输入 | `CalendarDateRangeInput` |
+| 只需要弹窗式滑动范围选择, 不需要输入框外壳 | `RandomDateRangeDialog` |
+| 需要展示某个月内每日状态, 并支持选中日期 | `CalendarStatusView` |
+| 需要“范围生成数据 + 日历状态回填 + 单日审查 + 批量处理” | 业务方组合 `CalendarStatusView` + `RandomDateRangeDialog` |
+
+## CalendarDateRangeInput
+
+适用场景: 
+
+- 列表筛选中的日期范围
+- 订单、日志、报表、导出、账单等查询条件
+- 需要一个只读输入框, 点击后打开滑动范围弹窗
+
+核心参数: 
+
+- `value`: `{ startDate: string | null; endDate: string | null }`
+- `onChange`: 范围 apply 或清空时回调
+- `placeholder`: 默认 `滑动窗口日期`
+- `defaultRangeDays`: 打开弹窗后的默认窗口天数
+- `showDayCount`: 是否在输入框里展示天数, 默认不展示
+- `dayCountUnit`: 天数单位, 默认 `D`, 业务可传 `天`
+- `themedCalendarIcon`: 日历图标是否启用主题色, 默认启用
+- `clearPressFeedback`: 清空按钮按压反馈, 默认 `subtle`, 可传 `none`、`subtle`、`solid`
+- `disabled` / `className` / `onOpenChange`: 常规控制参数
+
+使用指导: 
+
+- 组件本身不绑定业务字段名
+- 业务层负责把 `createdAtFrom/createdAtTo`、`startDate/endDate`、`from/to` 映射为通用 value
+- 清空时返回 `{ startDate: null, endDate: null }`
+- `onChange` 内可以更新筛选状态, 但不建议组件内部直接发请求
+- 清空按钮应只清空日期, 不应触发打开弹窗
+
+```tsx
+<CalendarDateRangeInput
+  value={{
+    startDate: filters.startDate ?? null,
+    endDate: filters.endDate ?? null,
+  }}
+  onChange={(range) => {
+    setFilters((current) => ({
+      ...current,
+      startDate: range.startDate,
+      endDate: range.endDate,
+    }));
+  }}
+/>
+```
+
+业务字段名不同也不要扩展组件参数, 直接在业务层适配: 
+
+```tsx
+<CalendarDateRangeInput
+  value={{
+    startDate: query.createdAtFrom ?? null,
+    endDate: query.createdAtTo ?? null,
+  }}
+  onChange={(range) => {
+    setQuery((current) => ({
+      ...current,
+      createdAtFrom: range.startDate,
+      createdAtTo: range.endDate,
+    }));
+  }}
+  showDayCount
+  dayCountUnit="天"
+/>
+```
+
+## RandomDateRangeDialog
+
+适用场景: 
+
+- 页面已经有自己的触发器, 只需要弹窗选择范围
+- 日历头部 action 点击后进入范围规划
+- 复杂业务中需要把范围弹窗和业务确认、批量处理分开控制
+
+核心参数: 
+
+- `open`: 弹窗是否打开
+- `value`: 当前范围值
+- `anchorDate`: 参考日期, 弹窗快捷操作围绕它展开
+- `defaultRangeDays`: 默认窗口天数
+- `onOpenChange`: 开关回调
+- `onApply`: 确认范围
+- `onClear`: 弹窗内部重置到参考窗口时回调, 可选
+
+交互语义: 
+
+- 拖动左控制点修改开始日期
+- 拖动右控制点修改结束日期
+- 拖动中间窗口整体平移范围
+- 快捷 `7D/10D/15D/30D` 都围绕当前参考日期展开
+- `This Month` 使用当前参考日期所在自然月
+- Apply 后弹窗职责结束, 业务方决定后续查询、生成或回填
+
+实现注意: 
+
+- 弹窗通过 portal 渲染到 `document.body`, 遮罩应是页面级
+- 弹窗打开时会锁定 body 滚动, 关闭时恢复
+- 不要把它嵌进月历格子或卡片内部作为长期可见状态
+
+```tsx
+<RandomDateRangeDialog
+  open={rangeOpen}
+  value={range}
+  anchorDate={selectedDate}
+  defaultRangeDays={7}
+  onOpenChange={setRangeOpen}
+  onApply={(nextRange) => {
+    setRange(nextRange);
+    runQuery(nextRange);
+  }}
+/>
+```
+
+## CalendarStatusView
+
+适用场景: 
+
+- 需要可选中日期的月历
+- 需要展示每日状态点
+- 需要日期迁移式导航: 上月、下月、去年、明年会同步迁移选中日期
+- 需要一个可选主 action, 作为范围规划或批量处理入口
+
+核心参数: 
+
+- `selectedDate`: 当前选中日期, 格式为 `YYYY-MM-DD`
+- `dayStates`: 日期状态 Map
+- `action`: 顶部主操作按钮, 可选
+- `onSelectedDateChange`: 日期变化回调
+- `className`: 样式扩展
+
+日期状态结构: 
+
+```ts
+type CalendarDayState<TStateKey extends string = string> = {
+  key: TStateKey;
+  title?: string;
+  tone?: 'saved' | 'planned' | 'warning' | 'danger' | 'neutral';
+};
+```
+
+使用指导: 
+
+- `key` 是业务状态, 业务方自己定义, 例如 `saved`、`planned`、`draft`、`published`
+- `tone` 只是视觉语义, 不要反向驱动业务逻辑
+- 空日期不要传状态, 点击后只切换选中日期
+- `action` 没有业务意义时不要传, 避免出现只能点击但没有上下文的按钮
+- 业务详情区、请求逻辑、保存逻辑都放在外层容器
+
+```tsx
+<CalendarStatusView
+  selectedDate={selectedDate}
+  dayStates={dayStates}
+  onSelectedDateChange={setSelectedDate}
+  action={{
+    icon: <CalendarDaysIcon className="h-4 w-4" />,
+    label: 'Plan range',
+    onPress: () => setRangeOpen(true),
+  }}
+/>
+```
+
+## 组合使用: 规划审查场景
+
+当页面需要从一段范围生成一批临时数据, 并逐日审查时, 使用业务容器组合日历组件
+
+推荐流程: 
+
+1. `CalendarStatusView` 展示已保存和已规划日期
+2. 没有 planned 数据时, 主 action 使用 `CalendarDaysIcon`, 点击打开 `RandomDateRangeDialog`
+3. 范围 Apply 后, 业务方生成或构造 planned 数据
+4. 月历只标记 planned 结果, 不保留范围拖动过程
+5. 自动切换到第一条 planned 日期, 右侧展示该日内容
+6. 有 planned 数据时, 主 action 使用 `CalendarClockIcon`, 点击进入批量处理弹窗
+7. 单日保存后, 该日从 planned 变为 saved
+8. 单日清除后, 该日从 planned 列表移除
+9. 批量保存把所有 planned 改为 saved
+10. 批量清除删除所有 planned 状态
+
+范围规划时如果范围内已有 saved 日期, 业务方应跳过 saved, 并继续向后补齐 planned 天数这样可以保证“选择了 N 天窗口, 就得到 N 条 planned 数据”
+
+```ts
+function buildPlannedDatesSkippingSaved(
+  range: CalendarDateRangeValue,
+  states: Map<string, CalendarDayState>
+) {
+  const requestedDayCount = buildDateRangeDates(range).length;
+  const plannedDates: string[] = [];
+  let cursorDate = range.startDate;
+
+  while (cursorDate && plannedDates.length < requestedDayCount) {
+    if (states.get(cursorDate)?.key !== 'saved') {
+      plannedDates.push(cursorDate);
+    }
+    cursorDate = addDays(cursorDate, 1);
+  }
+
+  return plannedDates;
+}
+```
+
+## 业务边界
+
+通用日历组件不应该知道: 
+
+- 请求哪个接口
+- 业务字段名是什么
+- 哪些日期来自数据库
+- planned 是否过期
+- snapshot/version/cache 如何处理
+- 保存、替换、删除、批量提交的真实流程
+- 权限、配额、并发冲突、错误恢复
+
+这些应放在页面或业务容器中
+
+## 常见场景
+
+### 列表筛选
+
+使用 `CalendarDateRangeInput`业务层把组件 value 映射到查询字段, `onChange` 后刷新列表或更新 URL query
+
+### 报表导出
+
+使用 `CalendarDateRangeInput` 或 `RandomDateRangeDialog`如果页面已有导出按钮, 点击导出前打开 dialog 会更轻
+
+### 任务排期
+
+使用 `CalendarStatusView` 展示 scheduled/done/blocked 等状态范围选择和批量生成由业务容器处理
+
+### 内容规划
+
+使用 `CalendarStatusView` + `RandomDateRangeDialog`planned 是临时内容, saved/published 是正式内容
+
+### 纯日期浏览
+
+只用 `CalendarStatusView`, 不传 `action`右侧详情根据 `selectedDate` 渲染
+
+## 不推荐做法
+
+- 不要把范围拖选直接塞进月历格子里
+- 不要让月历长期显示“刚才拖过的范围背景”
+- 不要在通用组件里接收 `startFieldName/endFieldName`
+- 不要让 `tone` 成为业务判断来源
+- 不要在已有 planned 数据未处理时直接再次生成新 planned 批次
+- 不要把 `CalendarDateRangeInput` 做成可输入文本框；当前设计是只读触发器
+- 不要让弹窗遮罩只覆盖局部卡片, 日期范围弹窗应是页面级工作区
