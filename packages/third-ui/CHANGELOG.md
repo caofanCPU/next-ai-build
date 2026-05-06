@@ -1,5 +1,15 @@
 # @windrun-huaiin/third-ui
 
+## 29.2.1
+
+### Patch Changes
+
+- fix(ui): add calendar componnets
+  - `GradientButton` and `XButton` now support press animate, and default `subset`
+  - add X.skills.md
+  - add UI test page
+  - loading animate support local or full page size
+
 ## 29.2.0
 
 ### Minor Changes
