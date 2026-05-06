@@ -1,5 +1,23 @@
 # @windrun-huaiin/ddaas-website
 
+## 29.1.0
+
+### Minor Changes
+
+- fix(ui): add calendar componnets
+  - `GradientButton` and `XButton` now support press animate, and default `subset`
+  - add X.skills.md
+  - add UI test page
+
+### Patch Changes
+
+- Updated dependencies
+  - @windrun-huaiin/lib@29.0.0
+  - @windrun-huaiin/base-ui@29.0.2
+  - @windrun-huaiin/third-ui@29.2.0
+  - @windrun-huaiin/backend-core@29.0.3
+  - @windrun-huaiin/fumadocs-local-md@29.0.0
+
 ## 29.0.8
 
 ### Patch Changes

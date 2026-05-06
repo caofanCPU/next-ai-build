@@ -1,5 +1,14 @@
 # @windrun-huaiin/third-ui
 
+## 29.2.0
+
+### Minor Changes
+
+- fix(ui): add calendar componnets
+  - `GradientButton` and `XButton` now support press animate, and default `subset`
+  - add X.skills.md
+  - add UI test page
+
 ## 29.1.0
 
 ### Minor Changes
