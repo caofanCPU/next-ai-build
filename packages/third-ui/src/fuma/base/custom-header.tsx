@@ -396,7 +396,10 @@ function CustomNavbar({
       : '88rem';
   const minNavWidth = '15rem';
   const widthStyle = floating
-    ? { width: `clamp(${minNavWidth}, 100vw, ${resolvedMaxWidth})` }
+    ? {
+        width: `min(calc(100vw - 1rem), ${resolvedMaxWidth})`,
+        maxWidth: resolvedMaxWidth,
+      }
     : { width: '100%', maxWidth: resolvedMaxWidth, minWidth: minNavWidth };
   const headerStyle = {
     ...cssVars,
@@ -410,9 +413,9 @@ function CustomNavbar({
         {...props}
         style={headerStyle}
         className={cn(
-          'rounded-2xl border px-4 py-1 transition-[background-color,box-shadow,transform] duration-300 backdrop-blur-xl shadow-lg shadow-black/5',
+          'rounded-2xl border px-4 py-1 transition-[background-color,box-shadow] duration-300 backdrop-blur-xl shadow-lg shadow-black/5',
           floating
-            ? 'fixed left-1/2 top-[--fd-banner-height] z-1001 -translate-x-1/2'
+            ? 'fixed inset-x-0 top-[--fd-banner-height] z-1001 mx-auto'
             : 'relative mx-auto w-full',
           isTransparent
             ? 'border-transparent bg-transparent shadow-transparent'
