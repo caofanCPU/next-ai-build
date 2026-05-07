@@ -132,12 +132,12 @@ const levelMenus: SiteMenuGroupConfig[] = [
   },
   {
     text: 'preview',
-    path: '/test',
+    path: '/test/ana',
     prefetch: false,
     landing: {
       text: 'Preview Suite',
       description: 'Preview pages and interactive playgrounds.',
-      path: '/test',
+      path: '/test/ana',
       prefetch: false,
     },
     items: previewTestLinks,

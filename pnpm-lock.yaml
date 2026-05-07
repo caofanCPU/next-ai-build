@@ -96,6 +96,9 @@ catalogs:
     '@upstash/redis':
       specifier: ^1.34.0
       version: 1.37.0
+    border-beam:
+      specifier: ^1.0.1
+      version: 1.0.1
     chokidar:
       specifier: ^3.5.3
       version: 3.6.0
@@ -356,6 +359,9 @@ importers:
       '@windrun-huaiin/third-ui':
         specifier: workspace:*
         version: link:../../packages/third-ui
+      border-beam:
+        specifier: 'catalog:'
+        version: 1.0.1(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       clsx:
         specifier: 'catalog:'
         version: 2.1.1
@@ -3419,6 +3425,12 @@ packages:
 
   birpc@4.0.0:
     resolution: {integrity: sha512-LShSxJP0KTmd101b6DRyGBj57LZxSDYWKitQNW/mi8GRMvZb078Uf9+pveax1DrVL89vm7mWe+TovdI/UDOuPw==}
+
+  border-beam@1.0.1:
+    resolution: {integrity: sha512-kswSYT8zRmt5en+wZMtJAbM8RjJglqSKwyRuQZWXnMHQsBwJisaznTfhD8SWvWJZKAtGbSkE2q/wY7seiNDmcw==}
+    peerDependencies:
+      react: '>=18.0.0'
+      react-dom: '>=18.0.0'
 
   brace-expansion@1.1.14:
     resolution: {integrity: sha512-MWPGfDxnyzKU7rNOW9SP/c50vi3xrmrua/+6hfPbCS2ABNWfx24vPidzvC7krjU/RTo235sV776ymlsMtGKj8g==}
@@ -8693,6 +8705,11 @@ snapshots:
   binary-extensions@2.3.0: {}
 
   birpc@4.0.0: {}
+
+  border-beam@1.0.1(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
+    dependencies:
+      react: 19.2.4
+      react-dom: 19.2.4(react@19.2.4)
 
   brace-expansion@1.1.14:
     dependencies:

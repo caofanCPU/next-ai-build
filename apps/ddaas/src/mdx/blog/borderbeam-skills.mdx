@@ -1,0 +1,631 @@
+---
+title: Border Beam动画效果组件
+description: 炫彩界面动起来！
+date: 2026-05-07
+---
+
+## 按钮体系的房子比喻
+
+把一个页面想象成一栋房子，按钮不是同一种东西。它们有的是大门，有的是门把手，有的是房间里的灯开关，有的是墙上的模式切换面板。`BorderBeam` 这种炫彩动画效果只能承担“最显眼的入口标识”，不能替代所有按钮。
+
+按钮职责可以这样理解：
+
+| 组件 | 房子里的角色 | 适用场景 | 不适用场景 |
+| --- | --- | --- | --- |
+| `BorderBeam` 包裹的高强调按钮 | 大门口的霓虹招牌 / 主入口灯箱 | 页面唯一最高强调入口、首屏 CTA、AI/生成类动作、空状态引导、关键转化动作 | 普通后台操作、表格行内操作、弹窗 footer、危险操作、工具栏 icon、多个并排按钮、切换控件 |
+| `GradientButton` | 漂亮的主门 / 精致内饰按钮 | Landing CTA、跳转按钮、营销按钮、强调型链接、有主题感的页面主操作 | 所有普通业务操作、密集后台页面里的每个按钮、局部控件内部按钮 |
+| `XButton type="single"` | 日常门把手 / 标准操作按钮 | 普通业务动作、工具栏里的图标+文案按钮、页面级操作、soft/subtle 层级动作 | 页面最高转化 CTA、复杂组合控件内部按钮、表格行内密集小操作 |
+| `XButton type="split"` | 主门把手旁边带一个更多操作抽屉 | 主动作 + 更多相关动作、发布/导出/执行并带低频选项 | 普通双按钮、复杂二级菜单、需要外部 portal 的复杂菜单、炫彩外壳常驻场景 |
+| `XToggleButton` | 墙上的模式选择面板 | 单选切换、计费周期、视图模式、tabs-like 切换 | CTA、提交按钮、多选筛选、表单 select、需要强视觉吸引的动作 |
+| `XSwitchButton` | 灯开关 | 开/关状态、启用/停用某个设置、布尔状态切换 | 页面 CTA、提交动作、导航跳转、需要炫彩强调的主入口 |
+| 原生 `button` | 组件内部的小开关 / 小螺丝 | 弹窗 footer、表格行内、dropdown item、menu item、编辑器工具、关闭/清除/token 删除 | 独立页面级业务动作、需要统一按钮 API 的主操作 |
+
+使用原则：
+
+- 一个视图里最多一个常驻 `BorderBeam` 高强调按钮。多个炫彩动画按钮只适合展示页、组件 demo、营销页特定区块。
+- `BorderBeam` 是最高强调装饰层，不是新的默认按钮样式。
+- 普通业务按钮仍然从 `XButton type="single"` 开始，低强调用 `subtle`，有主题感但不抢眼用 `soft`。
+- 危险操作不要使用 `BorderBeam` 或主题渐变伪装；危险动作应使用红色文本、红色边框或弹窗危险语义。
+- `XToggleButton` 和 `XSwitchButton` 是状态控件，不是行动入口；不要为了炫酷把切换控件做成 beam。
+- 如果按钮是某个复杂组件内部的一部分，优先用原生 `button`，让父组件控制尺寸、焦点、hover、disabled、aria 状态。
+
+决策顺序：
+
+1. 它只是组件内部控件吗？用原生 `button`。
+2. 它是单选或开关状态吗？用 `XToggleButton` 或 `XSwitchButton`。
+3. 它是普通业务动作吗？用 `XButton type="single"`。
+4. 它是主动作加更多动作吗？用 `XButton type="split"`。
+5. 它是页面 CTA、跳转或营销入口吗？用 `GradientButton`。
+6. 它是页面唯一、最高价值、需要强吸引注意的入口吗？才考虑给它加 `BorderBeam`。
+
+最简定位：
+
+```txt
+原生 button：组件内部零件
+XSwitchButton / XToggleButton：状态控制面板
+XButton：日常业务操作
+GradientButton：漂亮 CTA / 强调链接
+BorderBeam：最高强调入口上的霓虹主招牌
+```
+
+## Quick start
+
+```tsx
+import { BorderBeam } from 'border-beam';
+
+function App() {
+  return (
+    <BorderBeam>
+      <div style={{ padding: 32, borderRadius: 16, background: '#1d1d1d' }}>
+        Your content here
+      </div>
+    </BorderBeam>
+  );
+}
+```
+
+The component wraps your content and overlays the animated beam effect. It auto-detects the `border-radius` of the first child element.
+
+## Sizes
+
+Three built-in size presets control the glow intensity and animation style:
+
+```tsx
+<BorderBeam size="md">  {/* Full border glow (default) */}
+  <Card />
+</BorderBeam>
+
+<BorderBeam size="sm">  {/* Compact glow for small elements */}
+  <IconButton />
+</BorderBeam>
+
+<BorderBeam size="line">  {/* Bottom-only traveling glow */}
+  <SearchBar />
+</BorderBeam>
+```
+
+## Color variants
+
+Four color palettes are available:
+
+```tsx
+<BorderBeam colorVariant="colorful" />  {/* Rainbow spectrum (default) */}
+<BorderBeam colorVariant="mono" />      {/* Grayscale */}
+<BorderBeam colorVariant="ocean" />     {/* Blue-purple tones */}
+<BorderBeam colorVariant="sunset" />    {/* Orange-yellow-red tones */}
+```
+
+All variants except `mono` animate through a hue-shift cycle.
+
+## Theme
+
+Adapts beam colors for dark or light backgrounds:
+
+```tsx
+<BorderBeam theme="dark" />   {/* Dark background (default) */}
+<BorderBeam theme="light" />  {/* Light background */}
+<BorderBeam theme="auto" />   {/* Detects system preference */}
+```
+
+## Strength
+
+Control the overall intensity of the effect without affecting the wrapped content:
+
+```tsx
+<BorderBeam strength={0.7}>  {/* 70% intensity */}
+  <Card />
+</BorderBeam>
+```
+
+`strength` accepts a value from `0` (invisible) to `1` (full intensity, default).
+
+## Play / pause
+
+Toggle the animation on and off with smooth fade transitions:
+
+```tsx
+const [active, setActive] = useState(true);
+
+<BorderBeam active={active} onDeactivate={() => console.log('faded out')}>
+  <Card />
+</BorderBeam>
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `children` | `ReactNode` | — | Content to wrap |
+| `size` | `'sm' \| 'md' \| 'line'` | `'md'` | Size/type preset |
+| `colorVariant` | `'colorful' \| 'mono' \| 'ocean' \| 'sunset'` | `'colorful'` | Color palette |
+| `theme` | `'dark' \| 'light' \| 'auto'` | `'dark'` | Background adaptation |
+| `strength` | `number` | `1` | Effect opacity (0–1), only affects the beam layers |
+| `duration` | `number` | `1.96` / `2.4` | Animation cycle duration in seconds |
+| `active` | `boolean` | `true` | Whether the animation is playing |
+| `borderRadius` | `number` | auto-detected | Custom border radius in px |
+| `brightness` | `number` | `1.3` | Glow brightness multiplier |
+| `saturation` | `number` | `1.2` | Glow saturation multiplier |
+| `hueRange` | `number` | `30` | Hue rotation range in degrees |
+| `staticColors` | `boolean` | `false` | Disable hue-shift animation |
+| `className` | `string` | — | Additional class on the wrapper |
+| `style` | `CSSProperties` | — | Additional inline styles on the wrapper |
+| `onActivate` | `() => void` | — | Called when fade-in completes |
+| `onDeactivate` | `() => void` | — | Called when fade-out completes |
+
+All standard `HTMLDivElement` attributes are also forwarded to the wrapper.
+
+## How it works
+
+`BorderBeam` renders a wrapper `<div>` with:
+
+- **`::after`** — the beam stroke (conic gradient masked to the border)
+- **`::before`** — inner glow layer
+- **`[data-beam-bloom]`** — outer bloom/glow child div
+
+All effect layers are absolutely positioned and use `pointer-events: none`, so they never interfere with your content. Animations use CSS `@property` for smooth GPU-accelerated transitions.
+
+## 核心代码位置
+
+- `src/BorderBeam.tsx`
+  - React 壳组件。
+  - 使用 `useId()` 生成实例级 CSS 名称，避免多个实例互相污染。
+  - 自动探测第一个子元素 `border-radius`。
+  - 根据 `active` 切换 `data-active` / `data-fading`，做平滑淡入淡出。
+  - 通过 `<style>{cssStyles}</style>` 注入每个实例独立的 CSS。
+- `src/styles.ts`
+  - 真正的样式与动画核心。
+  - `sizePresets` 定义 `sm` / `md` / `line` 三种形态。
+  - `sizeThemePresets` 定义浅色/深色背景下的描边、不透明度、内阴影与饱和度。
+  - `colorPalettes` / `smallColorPalettes` / `lineColorPalettes` 定义彩色光斑。
+  - `generateBeamCSS()` 根据 size 派发到三种 CSS 生成函数。
+- `src/types.ts`
+  - 外部 API 类型。
+- `demo/src/App.tsx`
+  - 实际使用示例：聊天输入框、icon button、搜索框、playground。
+
+## 本质
+
+`BorderBeam` 本质是一个动画装饰壳。它不处理按钮语义、不处理业务点击、不处理 loading、不处理 href，也不替代内部组件。它只负责给内部内容叠加三层装饰动画。
+
+渲染结构：
+
+```tsx
+<>
+  <style>{cssStyles}</style>
+  <div
+    data-beam={id}
+    data-active={isActive && !isFading ? "" : undefined}
+    data-fading={isFading ? "" : undefined}
+  >
+    {children}
+    <div data-beam-bloom />
+  </div>
+</>
+```
+
+所以它可以包：
+
+- 原生 `button`
+- 已有按钮组件
+- 输入框
+- search bar
+- card
+- 普通 `div` 容器
+
+需要注意：`BorderBeam` 外层是 `div`，所以包住一个内部 `button` 不会形成 button 嵌套 button。但 `BorderBeam` 自己会设置 `overflow: hidden`，因此不适合直接包带下拉菜单、floating badge、popover 的复杂组件。
+
+## 效果层结构
+
+三层动画职责：
+
+- `::after`
+  - 外圈彩色描边层。
+  - 使用 `background: conic-gradient(...), radial-gradient(...)...`。
+  - 使用 `mask` / `-webkit-mask` 把背景裁成边框。
+- `::before`
+  - 内发光层。
+  - 使用多层 `radial-gradient` 加 `inset box-shadow`。
+  - 透明度低于外圈，增强边缘通透感。
+- `[data-beam-bloom]`
+  - 外部 bloom 光晕层。
+  - 使用 `filter: blur(8px) brightness(...) saturate(...)`。
+  - `pointer-events: none`，不拦截内部组件交互。
+
+关键 CSS 属性：
+
+```css
+[data-beam] {
+  position: relative;
+  border-radius: var(--detected-or-custom-radius);
+  overflow: hidden;
+}
+
+[data-beam]::before,
+[data-beam]::after,
+[data-beam] [data-beam-bloom] {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+```
+
+## Size 形态
+
+`BorderBeam` 有三个 size：
+
+| size | 视觉形态 | 适合内容 |
+| --- | --- | --- |
+| `sm` | 小尺寸紧凑全边框光效 | icon button、小按钮、小型 pill |
+| `md` | 标准全边框旋转光效 | card、较大按钮、面板、输入框 |
+| `line` | 底部横向扫光 | search bar、长输入框、命令面板触发器 |
+
+默认时长：
+
+- `sm` / `md`: `1.96s`
+- `line`: `2.4s`
+
+`line` 模式会把 `hueRange` 限制到最多 `13deg`，避免底部扫光颜色变化过于激烈。
+
+## Theme 参数
+
+`sizeThemePresets` 按 size 和 theme 控制强度：
+
+```ts
+{
+  strokeOpacity: number;
+  innerOpacity: number;
+  bloomOpacity: number;
+  innerShadow: string;
+  saturation: number;
+}
+```
+
+深色背景倾向：
+
+- 更高的 bloom
+- 更高的 inner glow
+- 白色内阴影
+- 饱和度约 `1.2`
+
+浅色背景倾向：
+
+- 更低的 stroke / inner / bloom opacity
+- 黑色半透明内阴影
+- 饱和度约 `0.96`
+
+对于 `bg-neutral-100 dark:bg-neutral-900` 这类基础主题，深色模式可以保留更明显的白色高光；浅色模式应降低彩色层和 bloom，避免边框显脏。
+
+## Color Variant
+
+内置颜色：
+
+- `colorful`
+  - 红、蓝、绿、青、紫、橙、粉的彩虹光斑。
+  - 默认效果，视觉最强。
+- `mono`
+  - 灰阶光斑。
+  - 自动禁用 hue-shift，并把不透明度降低，避免灰色光效变成硬边。
+- `ocean`
+  - 蓝紫色系。
+  - 更适合科技、工具、AI 类型界面。
+- `sunset`
+  - 橙、黄、红色系。
+  - 更适合暖色 CTA 或活动入口。
+
+小按钮使用 `smallColorPalettes`，大内容使用 `colorPalettes`，底部扫光使用 `lineColorPalettes` 和 `lineBloomColors`。
+
+## 动画核心
+
+### 1. CSS @property
+
+`BorderBeam` 通过 `@property` 注册可动画的 CSS 自定义属性：
+
+```css
+@property --beam-angle-id {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: true;
+}
+
+@property --beam-opacity-id {
+  syntax: "<number>";
+  initial-value: 0;
+  inherits: true;
+}
+```
+
+好处是 gradient 可以直接基于自定义属性平滑变化：
+
+```css
+@keyframes beam-spin-id {
+  to { --beam-angle-id: 360deg; }
+}
+
+@keyframes beam-fade-in-id {
+  to { --beam-opacity-id: 1; }
+}
+
+@keyframes beam-fade-out-id {
+  from { --beam-opacity-id: 1; }
+  to { --beam-opacity-id: 0; }
+}
+```
+
+### 2. 外圈边框 mask
+
+外圈描边不是普通 border，而是“背景 + mask 裁剪”：
+
+```css
+[data-beam][data-active]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  border-radius: inherit;
+  background:
+    conic-gradient(from var(--beam-angle-id), transparent 0%, rgba(255,255,255,.75) 66%, transparent 78%),
+    radial-gradient(ellipse 70px 40px at 33% -7.4%, rgb(255, 50, 100), transparent),
+    radial-gradient(ellipse 60px 35px at 12% -5%, rgb(40, 140, 255), transparent);
+  -webkit-mask:
+    conic-gradient(from var(--beam-angle-id), transparent 30%, white 52%, white 80%, transparent 95%),
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: source-in, xor;
+  mask:
+    conic-gradient(from var(--beam-angle-id), transparent 30%, white 52%, white 80%, transparent 95%),
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: intersect, exclude;
+}
+```
+
+`linear-gradient(...) content-box` 与 `exclude/xor` 会挖掉中间内容区，只留下边框区域。
+
+### 3. 内发光
+
+内发光层使用较低透明度的 radial gradients：
+
+```css
+[data-beam][data-active]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background:
+    radial-gradient(ellipse 9px 18px at 2% 68%, rgba(50, 200, 80, 0.5), transparent),
+    radial-gradient(ellipse 59px 9px at 72% -3%, rgba(255, 120, 40, 0.35), transparent);
+  box-shadow: inset 0 0 5px 1px var(--inner-shadow);
+  pointer-events: none;
+}
+```
+
+`md` 形态的内发光还会使用多层 mask，让光效主要集中在边缘，不覆盖主体内容。
+
+### 4. Bloom 光晕
+
+Bloom 层负责模糊外光：
+
+```css
+[data-beam] [data-beam-bloom] {
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  border-radius: inherit;
+  background: conic-gradient(from var(--beam-angle-id), transparent 58%, rgba(255,255,255,.85) 70%, transparent 82%);
+  filter: blur(8px) brightness(1.3) saturate(1.2);
+  pointer-events: none;
+}
+```
+
+它同样使用 mask 把光晕限制在边框区域附近。
+
+### 5. Hue Shift
+
+非 `mono` 且 `staticColors=false` 时，会启用色相动画：
+
+```css
+@keyframes beam-hue-shift-id {
+  0% {
+    filter: hue-rotate(-30deg) brightness(1.3) saturate(1.2);
+  }
+  50% {
+    filter: hue-rotate(30deg) brightness(1.3) saturate(1.2);
+  }
+  100% {
+    filter: hue-rotate(-30deg) brightness(1.3) saturate(1.2);
+  }
+}
+```
+
+`mono` 会强制静态颜色，避免灰阶动画产生突兀闪烁。
+
+## Line 模式
+
+`line` 模式不是旋转角度，而是横向位移：
+
+```css
+@property --beam-x-id {
+  syntax: "<number>";
+  initial-value: 0;
+  inherits: true;
+}
+
+@property --beam-w-id {
+  syntax: "<number>";
+  initial-value: 1;
+  inherits: true;
+}
+
+@property --beam-h-id {
+  syntax: "<number>";
+  initial-value: 1;
+  inherits: true;
+}
+```
+
+核心动画：
+
+```css
+@keyframes beam-travel-id {
+  0%   { --beam-x-id: 0.06; --beam-w-id: 0.5; }
+  10%  { --beam-x-id: 0.15; --beam-w-id: 0.8; }
+  50%  { --beam-x-id: 0.5;  --beam-w-id: 1.5; }
+  90%  { --beam-x-id: 0.85; --beam-w-id: 0.8; }
+  100% { --beam-x-id: 0.94; --beam-w-id: 0.5; }
+}
+```
+
+渐变定位到底部：
+
+```css
+radial-gradient(
+  ellipse calc(78px * var(--beam-w-id)) calc(60px * var(--beam-h-id))
+  at calc(var(--beam-x-id) * 100%) 100%,
+  white 0%,
+  rgba(255, 255, 255, 0.5) 45%,
+  transparent 100%
+)
+```
+
+额外动画：
+
+- `beam-edge-fade`
+  - 在左右边缘时淡出，避免光点贴边突兀。
+- `beam-breathe`
+  - 控制高度呼吸。
+- `beam-spike` / `beam-spike2`
+  - 控制光柱尖峰宽度。
+
+## Active / Fading 状态
+
+`BorderBeam` 的 `active` 不是简单显示/隐藏，而是有淡出状态：
+
+```ts
+if (active && !isActive && !isFading) {
+  setIsActive(true);
+} else if (!active && isActive && !isFading) {
+  setIsFading(true);
+}
+```
+
+动画结束后：
+
+```ts
+if (animationName.includes("fade-out")) {
+  setIsActive(false);
+  setIsFading(false);
+  onDeactivate?.();
+} else if (animationName.includes("fade-in")) {
+  onActivate?.();
+}
+```
+
+对应 DOM：
+
+- `data-active`
+  - 播放主动画 + fade in。
+- `data-fading`
+  - 继续播放主动画 + fade out。
+- fade out 结束后移除活动层。
+
+## Strength
+
+`strength` 通过 CSS 变量控制，不影响 children：
+
+```tsx
+const mergedStyle = {
+  ...(style ?? {}),
+  "--beam-strength": Math.max(0, Math.min(1, strength)),
+} as CSSProperties;
+```
+
+各层 opacity 都乘以它：
+
+```css
+opacity: calc(var(--beam-opacity-id) * 0.48 * var(--beam-strength, 1));
+```
+
+这保证了调低动画强度时，内部按钮、输入框或卡片内容不会变透明。
+
+## Border Radius 探测
+
+未显式传 `borderRadius` 时，组件会读取第一个 child 的 `borderTopLeftRadius`：
+
+```ts
+const child = el.firstElementChild as HTMLElement | null;
+const computed = getComputedStyle(child);
+const raw = parseFloat(computed.borderTopLeftRadius);
+```
+
+如果读取失败，则回退到 `sizePresets[size].borderRadius`。
+
+这也是它能包任意 UI 的关键：内部内容圆角不同，外层 beam 会尽量同步。
+
+## Demo 使用示例
+
+`demo/src/App.tsx` 展示了三种典型用法：
+
+```tsx
+<BorderBeam size="md" colorVariant="colorful" theme="dark" active>
+  <MockChatInput />
+</BorderBeam>
+```
+
+```tsx
+<BorderBeam size="sm" colorVariant="colorful" theme="dark" active>
+  <MockIconButton />
+</BorderBeam>
+```
+
+```tsx
+<BorderBeam
+  size="line"
+  colorVariant="colorful"
+  theme="dark"
+  active
+  duration={2.4}
+  borderRadius={20}
+>
+  <MockSearchBar />
+</BorderBeam>
+```
+
+Playground 还展示了动态控制：
+
+```tsx
+<BorderBeam
+  size={playgroundSize}
+  colorVariant={playgroundColorVariant}
+  theme="dark"
+  active={playgroundActive}
+  duration={playgroundDuration}
+  strength={playgroundStrength / 100}
+>
+  <div className={`card ${playgroundSize === "sm" ? "card-sm" : "card-md"}`} />
+</BorderBeam>
+```
+
+## 无障碍与性能
+
+- 装饰层是纯视觉效果，应保持 `pointer-events: none`。
+- `BorderBeam` 外层是 `div`，内部交互元素仍负责自身的 button/link/input 语义。
+- 使用大量 `filter: blur()`、多层 gradient 和 mask，有一定渲染成本。
+- 列表、表格、工具栏中不应批量常驻动画。
+- 大量同时存在时，优先通过 `active` 控制少量实例播放。
+- 消费侧如果需要完整降低动态效果，应配合 `prefers-reduced-motion`。
+
+```css
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+```
+
+## 许可
+
+当前仓库为 MIT License。参考或复制较多实现时，应保留原项目许可说明。

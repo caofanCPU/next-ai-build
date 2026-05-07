@@ -33,6 +33,7 @@ import { createGlobalIcon, createGlobalLucideIcon } from '@base-ui/components/ic
 import {
   Airplay as RawAirplay,
   Album as RawAlbumIcon,
+  AlarmClock as RawAlarmClock,
   AlignHorizontalJustifyEnd as RawAlignHorizontalJustifyEnd,
   ArrowLeft as RawArrowLeft,
   ArrowRight as RawArrowRight,
@@ -70,6 +71,8 @@ import {
   Building2 as RawBuilding2,
   Bug as RawBug,
   BugOff as RawBugOff,
+  Camera as RawCamera,
+  CameraOff as RawCameraOff,
   Car as RawCar,
   ChartColumnStacked as RawChartColumnStacked,
   Check as RawCheck,
@@ -85,6 +88,7 @@ import {
   CircleAlert as RawCircleAlert,
   CircleArrowDown as RawCircleArrowDown,
   CircleArrowUp as RawCircleArrowUp,
+  CirclePause as RawCirclePause,
   CircleQuestionMark as RawCircleQuestionMark,
   CircleSmall as RawCircleSmall,
   CircleStop as RawCircleStop,
@@ -172,6 +176,7 @@ import {
   MessageCircleCode as RawMessageCircleCode,
   MessageCircleMore as RawMessageCircleMore,
   MessageSquareDiff as RawMessageSquareDiff,
+  MonitorPlay as RawMonitorPlay,
   MoreHorizontal as RawMoreHorizontal,
   MousePointerClick as RawMousePointerClick,
   Music4 as RawMusic4,
@@ -225,6 +230,8 @@ import {
   Undo2 as RawUndo2,
   Usb as RawUsb,
   UserRoundCheck as RawUserRoundCheck,
+  Video as RawVideo,
+  VideoOff as RawVideoOff,
   Wand2 as RawWand2,
   Workflow as RawWorkflow,
   X as RawX,
@@ -237,6 +244,7 @@ export { createSiteIcon } from '@base-ui/components/site-icon';
 
 export const AlbumIcon = createGlobalLucideIcon(RawAlbumIcon, 'AlbumIcon');
 export const AirplayIcon = createGlobalLucideIcon(RawAirplay, 'AirplayIcon');
+export const AlarmClockIcon = createGlobalLucideIcon(RawAlarmClock, 'AlarmClockIcon');
 export const AlignHorizontalJustifyEndIcon = createGlobalLucideIcon(RawAlignHorizontalJustifyEnd, 'AlignHorizontalJustifyEndIcon');
 export const ArrowLeftIcon = createGlobalLucideIcon(RawArrowLeft, 'ArrowLeftIcon');
 export const ArrowRightIcon = createGlobalLucideIcon(RawArrowRight, 'ArrowRightIcon');
@@ -273,12 +281,15 @@ export const CalendarHeartIcon = createGlobalLucideIcon(RawCalendarHeart, 'Calen
 export const Building2Icon = createGlobalLucideIcon(RawBuilding2, 'Building2Icon');
 export const BugIcon = createGlobalLucideIcon(RawBug, 'BugIcon');
 export const BugOffIcon = createGlobalLucideIcon(RawBugOff, 'BugOffIcon');
+export const CameraIcon = createGlobalLucideIcon(RawCamera, 'CameraIcon');
+export const CameraOffIcon = createGlobalLucideIcon(RawCameraOff, 'CameraOffIcon');
 export const BadgeQuestionMarkIcon = createGlobalLucideIcon(RawBadgeQuestionMark, 'BadgeQuestionMarkIcon');
 export const CarIcon = createGlobalLucideIcon(RawCar, 'CarIcon');
 export const ChartColumnStackedIcon = createGlobalLucideIcon(RawChartColumnStacked, 'ChartColumnStackedIcon');
 export const CircleIcon = createGlobalLucideIcon(RawCircle, 'CircleIcon');
 export const CircleAlertIcon = createGlobalLucideIcon(RawCircleAlert, 'CircleAlertIcon');
 export const CircleQuestionMarkIcon = createGlobalLucideIcon(RawCircleQuestionMark, 'CircleQuestionMarkIcon');
+export const CirclePauseIcon = createGlobalLucideIcon(RawCirclePause, 'CirclePauseIcon');
 export const CircleSmallIcon = createGlobalLucideIcon(RawCircleSmall, 'CircleSmallIcon');
 export const CircleStopIcon = createGlobalLucideIcon(RawCircleStop, 'CircleStopIcon');
 export const CheckIcon = createGlobalLucideIcon(RawCheck, 'CheckIcon');
@@ -377,6 +388,7 @@ export const MailIcon = createGlobalLucideIcon(RawMail, 'MailIcon');
 export const MessageCircleMoreIcon = createGlobalLucideIcon(RawMessageCircleMore, 'MessageCircleMoreIcon');
 export const MessageCircleCodeIcon = createGlobalLucideIcon(RawMessageCircleCode, 'MessageCircleCodeIcon');
 export const MessageSquareDiffIcon = createGlobalLucideIcon(RawMessageSquareDiff, 'MessageSquareDiffIcon');
+export const MonitorPlayIcon = createGlobalLucideIcon(RawMonitorPlay, 'MonitorPlayIcon');
 export const Music4Icon = createGlobalLucideIcon(RawMusic4, 'Music4Icon');
 export const MoonIcon = createGlobalLucideIcon(RawMoon, 'MoonIcon');
 export const MoreHorizontalIcon = createGlobalLucideIcon(RawMoreHorizontal, 'MoreHorizontalIcon');
@@ -429,6 +441,8 @@ export const TwitterIcon = createGlobalLucideIcon(RawTwitter, 'TwitterIcon');
 export const Undo2Icon = createGlobalLucideIcon(RawUndo2, 'Undo2Icon');
 export const UsbIcon = createGlobalLucideIcon(RawUsb, 'UsbIcon');
 export const UserRoundCheckIcon = createGlobalLucideIcon(RawUserRoundCheck, 'UserRoundCheckIcon');
+export const VideoIcon = createGlobalLucideIcon(RawVideo, 'VideoIcon');
+export const VideoOffIcon = createGlobalLucideIcon(RawVideoOff, 'VideoOffIcon');
 export const Wand2Icon = createGlobalLucideIcon(RawWand2, 'Wand2Icon');
 export const WorkflowIcon = createGlobalLucideIcon(RawWorkflow, 'WorkflowIcon');
 export const XIcon = createGlobalLucideIcon(RawX, 'XIcon');

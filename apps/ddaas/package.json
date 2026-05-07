@@ -30,6 +30,7 @@
     "@windrun-huaiin/lib": "workspace:*",
     "@windrun-huaiin/third-ui": "workspace:*",
     "@windrun-huaiin/backend-core": "workspace:*",
+    "border-beam": "catalog:",
     "clsx": "catalog:",
     "lucide-react": "catalog:",
     "next": "catalog:",
