@@ -1,0 +1,356 @@
+---
+title: 环境变量速查表
+description: 基于 RR.txt 整理的项目环境变量分类文档
+date: 2026-04-28
+---
+
+## 说明
+
+本文约定如下：
+
+- `NEXT_PUBLIC_` 开头的变量会暴露到前端
+- 不带 `NEXT_PUBLIC_` 的变量默认按服务端敏感配置处理
+- `YOURS-`、`XXX`、空值都表示模板占位，不是可直接使用的真实值
+- 表格里的变量名列支持双击复制；带问号图标的字段可查看补充说明
+
+## 不敏感配置
+
+<Callout title="不敏感配置" type="info">
+  这一类通常是公开配置或前端可见配置，主要用于站点展示、页面行为、路由、价格展示和非敏感业务参数。凡是 `NEXT_PUBLIC_` 开头的变量，都默认视为会暴露到客户端。
+</Callout>
+
+## 网站基础配置
+
+这组变量定义站点身份、源码链接和全局视觉参数。
+
+<CheetTable
+  title="网站基础配置"
+  description="站点级公开配置，通常会参与页面渲染、SEO、源码链接或全局 UI 展示。"
+  copyableColumns={['变量名']}
+>
+
+| 变量名??双击复制变量名 | 说明 |
+| --- | --- |
+| !!`NEXT_PUBLIC_APP_NAME` | 站点名称 |
+| !!`NEXT_PUBLIC_BASE_URL` | 站点主域名??本地一般是 `http://localhost:3000`，生产环境应使用真实 HTTPS 域名 |
+| `NEXT_PUBLIC_I18N_LOCALE_PREFIX_AS_NEEDED` | 国际化路由前缀策略 |
+| `NEXT_PUBLIC_GITHUB` | 仓库主页地址 |
+| `NEXT_PUBLIC_GITHUB_BASE_URL` | 仓库默认分支根地址??通常用于拼接源码链接、编辑链接或文档源码入口 |
+| `NEXT_PUBLIC_STYLE_ICON_COLOR` | UI 图标主色??支持 `purple`、`orange`、`indigo`、`emerald`、`rose` |
+| `NEXT_PUBLIC_STYLE_SVG_ICON_SIZE` | SVG 图标尺寸 |
+| `NEXT_PUBLIC_STYLE_WATERMARK_TEXT` | 页面水印文本 |
+
+</CheetTable>
+
+## Clerk 前端路由配置
+
+这组变量控制登录、注册和候补名单等 Clerk 页面入口与跳转行为。
+
+<CheetTable
+  title="Clerk 前端路由"
+  description="这些是前端可见路由配置，用来统一 Clerk 登录注册入口和认证完成后的兜底跳转。"
+  copyableColumns={['变量名']}
+>
+
+| 变量名 | 说明 |
+| --- | --- |
+| !!`NEXT_PUBLIC_CLERK_SIGN_IN_URL` | 登录页路由 |
+| `NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL` | 登录完成后的兜底跳转地址 |
+| !!`NEXT_PUBLIC_CLERK_SIGN_UP_URL` | 注册页路由 |
+| `NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL` | 注册完成后的兜底跳转地址 |
+| `NEXT_PUBLIC_CLERK_WAITLIST_URL` | 候补名单页面路由 |
+
+</CheetTable>
+
+## 媒体加载与超时控制
+
+这组变量用于前端媒体延迟显示和外部嵌入内容的超时控制。
+
+<CheetTable
+  title="媒体加载与超时"
+  description="前端体验类配置，主要影响图片延迟展示和外部嵌入内容的等待时间。"
+  copyableColumns={['变量名']}
+>
+
+| 变量名 | 说明 |
+| --- | --- |
+| `NEXT_PUBLIC_DELAYED_IMG_SECONDS` | 延迟图片显示秒数 |
+| `NEXT_PUBLIC_SUNO_EMBED_TIMEOUT_SECONDS` | Suno 嵌入内容超时秒数 |
+
+</CheetTable>
+
+## OpenRouter 与聊天配置
+
+这组变量主要控制模型名、超时、上下文窗口，以及本地 mock 行为。
+
+<CheetTable
+  title="OpenRouter 与聊天配置"
+  description="真实请求和本地 mock 共用的行为配置。生产环境应重点复核 timeout、mock 开关和模型名。"
+  copyableColumns={['变量名']}
+>
+
+| 变量名 | 说明 |
+| --- | --- |
+| !!`OPENROUTER_TIMEOUT_SECONDS` | OpenRouter 请求超时时间 |
+| !!`NEXT_PUBLIC_OPENROUTER_MODEL_NAME` | 前端默认展示或使用的模型名 |
+| `NEXT_PUBLIC_CHAT_CONTEXT_WINDOW_TURNS` | 多轮对话保留轮数 |
+| `OPENROUTER_MOCK_TYPE` | mock 响应类型??参考下方 `OPENROUTER_MOCK_TYPE` 枚举 |
+| `OPENROUTER_MOCK_TIMEOUT_SECONDS` | mock 响应前等待时间 |
+| `OPENROUTER_MOCK_STREAM_CHUNK_DELAY_MS` | mock 流式分片延迟 |
+| `OPENROUTER_MOCK_STREAM_CHUNK_SIZE` | mock 每次输出的分片大小 |
+
+</CheetTable>
+
+### OPENROUTER_MOCK_TYPE 参考
+
+- `0`: Normal
+- `1`: Loading
+- `2`: TimeOut
+- `3`: PartTimeout
+- `4`: PartAborted
+- `5`: PartInterrupted
+
+## Stripe 价格与积分配置
+
+这部分用于定义订阅套餐、年付折扣、一次性购买以及积分发放规则。
+
+<CheetTable
+  title="订阅模式"
+  description="订阅类套餐按套餐与周期拆分，每个套餐都需要 Price ID、金额、币种和积分配置。"
+  copyableColumns={['Price ID', '金额', '币种', '积分', '折扣']}
+>
+
+| 套餐 | 周期 | Price ID | 金额 | 币种 | 积分 | 折扣 |
+| --- | --- | --- | --- | --- | --- | --- |
+| Pro | Monthly | !!`STRIPE_PRO_MONTHLY_PRICE_ID` | `STRIPE_PRO_MONTHLY_AMOUNT` | `STRIPE_PRO_MONTHLY_CURRENCY` | `STRIPE_PRO_MONTHLY_CREDITS` | - |
+| Ultra | Monthly | !!`STRIPE_ULTRA_MONTHLY_PRICE_ID` | `STRIPE_ULTRA_MONTHLY_AMOUNT` | `STRIPE_ULTRA_MONTHLY_CURRENCY` | `STRIPE_ULTRA_MONTHLY_CREDITS` | - |
+| Pro | Yearly | !!`STRIPE_PRO_YEARLY_PRICE_ID` | `STRIPE_PRO_YEARLY_AMOUNT` | `STRIPE_PRO_YEARLY_CURRENCY` | `STRIPE_PRO_YEARLY_CREDITS` | `STRIPE_PRO_DISCOUNT_PERCENT`??年付展示折扣 |
+| Ultra | Yearly | !!`STRIPE_ULTRA_YEARLY_PRICE_ID` | `STRIPE_ULTRA_YEARLY_AMOUNT` | `STRIPE_ULTRA_YEARLY_CURRENCY` | `STRIPE_ULTRA_YEARLY_CREDITS` | `STRIPE_ULTRA_DISCOUNT_PERCENT`??年付展示折扣 |
+
+</CheetTable>
+
+<CheetTable
+  title="一次性支付"
+  description="一次性购买套餐按档位拆分，只发放一次性积分，不创建订阅周期。"
+  copyableColumns={['Price ID', '金额', '币种', '积分']}
+>
+
+| 档位 | Price ID | 金额 | 币种 | 积分 |
+| --- | --- | --- | --- | --- |
+| Less | !!`STRIPE_ONE_TIME_LESS_PRICE_ID` | `STRIPE_ONE_TIME_LESS_AMOUNT` | `STRIPE_ONE_TIME_LESS_CURRENCY` | `STRIPE_ONE_TIME_LESS_CREDITS` |
+| Mid | !!`STRIPE_ONE_TIME_MID_PRICE_ID` | `STRIPE_ONE_TIME_MID_AMOUNT` | `STRIPE_ONE_TIME_MID_CURRENCY` | `STRIPE_ONE_TIME_MID_CREDITS` |
+| More | !!`STRIPE_ONE_TIME_MORE_PRICE_ID` | `STRIPE_ONE_TIME_MORE_AMOUNT` | `STRIPE_ONE_TIME_MORE_CURRENCY` | `STRIPE_ONE_TIME_MORE_CREDITS` |
+
+</CheetTable>
+
+## 公开开关与本地调试开关
+
+这组变量控制 Banner、水印、延迟图片、Clerk 页面样式以及本地 markdown 调试行为。
+
+<CheetTable
+  title="公开开关与本地调试开关"
+  description="多数变量会影响前端展示；调试类开关应避免在生产环境误开。"
+  copyableColumns={['变量名']}
+>
+
+| 变量名 | 说明 |
+| --- | --- |
+| `NEXT_PUBLIC_STYLE_SHOW_BANNER` | 是否显示站点 Banner |
+| `NEXT_PUBLIC_STYLE_CLERK_PAGE_BANNER` | 是否在 Clerk 页面显示 Banner |
+| `NEXT_PUBLIC_STYLE_CLERK_AUTH_IN_MODAL` | 是否以弹窗方式展示认证流程 |
+| `NEXT_PUBLIC_STYLE_WATERMARK_ENABLED` | 是否启用水印 |
+| `NEXT_PUBLIC_DELAYED_IMG_ENABLED` | 是否启用延迟图片策略 |
+| !!`CLERK_DEBUG` | Clerk 调试开关??生产环境建议关闭 |
+| !!`LOCAL_MD_*` | 本地 Markdown 缓存、调试和运行时控制 |
+
+</CheetTable>
+
+## 计费与积分基础配置
+
+这组变量用于决定支付提供商、模拟用户价格类型，以及积分初始化和过期规则。
+
+<CheetTable
+  title="计费与积分基础配置"
+  description="计费运行时的基础参数。支付提供商、初始积分和过期天数会直接影响用户权益。"
+  copyableColumns={['变量名']}
+>
+
+| 变量名 | 说明 |
+| --- | --- |
+| `MONEY_PRICE_MOCK_USER_TYPE` | 模拟用户价格档位??参考下方 `MONEY_PRICE_MOCK_USER_TYPE` 枚举 |
+| !!`ACTIVE_PAYMENT_PROVIDER` | 当前启用的支付服务提供商 |
+| `CREDITS_INIT_FREE_AMOUNT` | 游客初始积分 |
+| `CREDITS_INIT_FREE_REGISTER_AMOUNT` | 注册用户初始积分 |
+| `CREDITS_INIT_FREE_EXPIRED_DAYS` | 免费积分过期天数 |
+| `CREDITS_ONE_TIME_EXPIRED_DAYS` | 一次性购买积分过期天数 |
+
+</CheetTable>
+
+### MONEY_PRICE_MOCK_USER_TYPE 参考
+
+- `0`: FreeUser
+- `1`: MonthPro
+- `2`: MonthUltra
+- `3`: YearPro
+- `4`: YearUltra
+
+## 敏感配置
+
+<Callout title="敏感配置" type="warn">
+  这一类通常包含私钥、数据库连接、Webhook 密钥、服务端令牌和内部调试开关。不要把这类变量暴露到前端，也不要把真实值提交到仓库。
+</Callout>
+
+## 数据库配置
+
+项目注释里已经强调了数据库权限隔离的重要性。生产与本地环境应严格分开，并避免把高权限连接串直接用于日常开发。
+
+<TrophyCard title="安全才是最大的豪华与自由, ⚠️🚨数据库配置" icon={<DatabaseZapIcon />}>
+  - 本地: `DATABASE_URL="postgresql://YOURS_app:YOURS_PASSWORD@localhost:5432/postgres?sslmode=disable&schema=YOURS"`
+  - 线上事务模式(推荐): `DATABASE_URL="postgresql://YOURS_app.PROJECT_ID:PASSWORD@SERVER_HOST.pooler.supabase.com:6543/postgres?sslmode=require&schema=YOURS&pgbouncer=true"`
+  - 线上会话模式: `DATABASE_URL="postgresql://YOURS_app.PROJECT_ID:PASSWORD@SERVER_HOST.pooler.supabase.com:5432/postgres?sslmode=require&schema=YOURS"`
+</TrophyCard>
+
+<CheetTable
+  title="数据库配置"
+  description="数据库连接串属于高敏感配置。生产环境优先使用项目专属账号和池化连接，不要使用超级用户连接串。"
+  copyableColumns={['变量名']}
+>
+
+| 变量名 | 说明 |
+| --- | --- |
+| !!`DATABASE_URL` | Prisma 和后端服务的数据库连接串??本地常用 `sslmode=disable`；线上建议使用 Supabase pooler 事务模式并开启 SSL |
+
+</CheetTable>
+
+### 配置注意事项
+
+- 生产环境优先使用项目专属账号，不要直接使用超级用户
+- 模板明确提示不要随意使用 `sslmode=require/no-verify` 的不安全变种
+- 本地环境因为权限与证书条件不同，通常会禁用 SSL
+
+## Clerk 服务端配置
+
+<CheetTable
+  title="Clerk 服务端配置"
+  description="Clerk 认证相关密钥。Publishable Key 可公开，Secret Key 和 Webhook Secret 只能放在服务端。"
+  copyableColumns={['变量名']}
+>
+
+| 变量名 | 说明 |
+| --- | --- |
+| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | 前端可公开的 Clerk Key |
+| !!`CLERK_SECRET_KEY` | 后端调用 Clerk API 使用的私钥 |
+| !!`CLERK_WEBHOOK_SECRET` | Clerk Webhook 签名校验密钥 |
+
+</CheetTable>
+
+## Stripe 密钥配置
+
+<CheetTable
+  title="Stripe 密钥配置"
+  description="Stripe 支付密钥。服务端私钥和 Webhook 签名密钥必须按环境隔离。"
+  copyableColumns={['变量名']}
+>
+
+| 变量名 | 说明 |
+| --- | --- |
+| `STRIPE_PUBLISHABLE_KEY` | Stripe 前端公钥 |
+| !!`STRIPE_SECRET_KEY` | Stripe 服务端私钥 |
+| !!`STRIPE_WEBHOOK_SECRET` | Stripe Webhook 签名密钥 |
+
+</CheetTable>
+
+## OpenRouter 密钥配置
+
+<CheetTable
+  title="OpenRouter 密钥配置"
+  description="OpenRouter 服务端访问密钥。不要使用 `NEXT_PUBLIC_` 前缀，也不要传给浏览器。"
+  copyableColumns={['变量名']}
+>
+
+| 变量名 | 说明 |
+| --- | --- |
+| !!`OPENROUTER_API_KEY` | OpenRouter 服务端访问密钥 |
+
+</CheetTable>
+
+## Upstash 配置
+
+包括 Redis 和 QStash 两部分，前者偏缓存与状态，后者偏异步任务。
+
+<CheetTable
+  title="Upstash 配置"
+  description="Redis REST Token、QStash Token 和签名密钥都属于服务端敏感配置；只有缓存任务 URL 可以按业务需要暴露到前端。"
+  copyableColumns={['变量名']}
+>
+
+| 变量名 | 说明 |
+| --- | --- |
+| `UPSTASH_REDIS_REST_URL` | Upstash Redis REST 地址 |
+| !!`UPSTASH_REDIS_REST_TOKEN` | Redis REST Token |
+| `QSTASH_URL` | QStash 服务地址 |
+| !!`QSTASH_TOKEN` | QStash 访问令牌 |
+| !!`QSTASH_CURRENT_SIGNING_KEY` | 当前签名校验密钥 |
+| !!`QSTASH_NEXT_SIGNING_KEY` | 下一个轮换签名密钥??用于密钥轮换期间兼容新旧签名 |
+| `NEXT_PUBLIC_QSTASH_CACHE_TASK_URL` | 前端可见的缓存任务接口地址 |
+
+</CheetTable>
+
+## 分析、代理与 FAQ 配置
+
+这组变量包含统计分析、CDN 代理以及 FAQ 服务配置。
+
+<CheetTable
+  title="分析、代理与 FAQ 配置"
+  description="统计 ID 和代理 URL 属于公开配置；FAQ 写入密钥和服务端调试开关应按敏感配置处理。"
+  copyableColumns={['变量名']}
+>
+
+| 变量名 | 说明 |
+| --- | --- |
+| `NEXT_PUBLIC_GOOGLE_ANALYTICS_ID` | Google Analytics 跟踪 ID |
+| `NEXT_PUBLIC_MICROSOFT_CLARITY_ID` | Microsoft Clarity 跟踪 ID |
+| `NEXT_PUBLIC_STYLE_CDN_PROXY_URL` | 前端资源代理地址 |
+| `NEXT_PUBLIC_QSTASH_CACHE_TASK_URL` | 暴露到前端的缓存任务接口地址 |
+| !!`WINDRUN_HUAIIN_FAQ_*` | FAQ 服务的地址、客户端身份、密钥版本与读写密钥??通配项里可能包含敏感读写密钥，不能一概视为公开配置 |
+| !!`WINDRUN_HUAIIN_SDK_DEBUG` | FAQ SDK 调试开关 |
+| `WINDRUN_HUAIIN_FAQ_OUTER_CACHE_ENABLED` | FAQ 外层缓存开关 |
+
+</CheetTable>
+
+## 敏感开关
+
+这类变量不一定是密钥，但会影响调试行为、价格模拟、支付升级流程和内部状态暴露，仍然建议仅保留在服务端环境中。
+
+<CheetTable
+  title="敏感开关"
+  description="这类开关会改变运行时行为或暴露调试信息。上线前应逐项复核，尤其是 mock、debug 和内部状态展示。"
+  copyableColumns={['变量名']}
+>
+
+| 变量名 | 说明 |
+| --- | --- |
+| !!`SHOW_FINGERPRINT_STATUS` | 是否显示指纹状态 |
+| !!`OPENROUTER_ENABLE_MOCK` | 是否启用 OpenRouter mock |
+| !!`NEXT_PUBLIC_OPENROUTER_DEBUG` | 是否开启前端调试输出??虽然带 `NEXT_PUBLIC_`，但生产环境仍应谨慎启用 |
+| !!`ENABLE_STRIPE_SUBSCRIPTION_UPGRADE` | 是否允许订阅升级流程 |
+| !!`MONEY_PRICE_MOCK_USER_ENABLED` | 是否启用价格模拟用户 |
+| !!`PRISMA_DEBUG` | 是否输出 Prisma 调试信息 |
+
+</CheetTable>
+
+## 建议的分层理解
+
+如果只从运维和排查角度理解，可以把这些变量分成四层：
+
+- `公开展示层`: 站点名称、URL、主题、水印、前端开关
+- `业务配置层`: 套餐价格、积分规则、支付提供商、模型名、FAQ 行为
+- `基础设施层`: 数据库、Clerk、Stripe、OpenRouter、Upstash
+- `调试与模拟层`: mock、debug、隐藏开关、缓存调试
+
+## 使用建议
+
+- 本地开发先最小化配置：`DATABASE_URL`、Clerk、Stripe、OpenRouter 至少要能跑通核心流程
+- 所有 `NEXT_PUBLIC_` 变量都要默认视为可被用户看到，不要放入任何私密信息
+- 支付、Webhook、数据库、第三方服务私钥建议按环境分开管理，不要共用
+- mock 和 debug 开关在生产环境上线前应逐项复核

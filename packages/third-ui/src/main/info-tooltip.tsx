@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { CircleQuestionMarkIcon } from '@windrun-huaiin/base-ui/icons';
 import { themeBorderColor, themeIconColor, themeRingColor } from '@windrun-huaiin/base-ui/lib';
 import { cn } from '@windrun-huaiin/lib/utils';
@@ -12,6 +13,67 @@ type InfoTooltipProps = {
   desktopSide?: 'right' | 'bottom';
 };
 
+type TooltipPosition = {
+  left: number;
+  top: number;
+  maxWidth: number;
+  side: 'bottom' | 'inline';
+};
+
+const TOOLTIP_MARGIN = 12;
+const TOOLTIP_GAP = 8;
+const TOOLTIP_MAX_WIDTH = 288;
+
+function clamp(value: number, min: number, max: number) {
+  return Math.min(Math.max(value, min), max);
+}
+
+function getTooltipPosition(
+  target: HTMLElement,
+  align: NonNullable<InfoTooltipProps['align']>,
+  desktopSide: NonNullable<InfoTooltipProps['desktopSide']>,
+): TooltipPosition {
+  const rect = target.getBoundingClientRect();
+  const viewportWidth = window.innerWidth;
+  const viewportHeight = window.innerHeight;
+  const maxWidth = Math.min(
+    TOOLTIP_MAX_WIDTH,
+    Math.max(160, viewportWidth - TOOLTIP_MARGIN * 2),
+  );
+  const useInlineSide = desktopSide === 'right' && viewportWidth >= 768;
+
+  if (useInlineSide) {
+    const rightSpace = viewportWidth - rect.right - TOOLTIP_GAP - TOOLTIP_MARGIN;
+    const leftSpace = rect.left - TOOLTIP_GAP - TOOLTIP_MARGIN;
+    const placeRight = rightSpace >= Math.min(220, maxWidth) || rightSpace >= leftSpace;
+    const preferredLeft = placeRight
+      ? rect.right + TOOLTIP_GAP
+      : rect.left - maxWidth - TOOLTIP_GAP;
+
+    return {
+      left: clamp(preferredLeft, TOOLTIP_MARGIN, viewportWidth - maxWidth - TOOLTIP_MARGIN),
+      top: clamp(
+        rect.top + rect.height / 2,
+        TOOLTIP_MARGIN + 40,
+        viewportHeight - TOOLTIP_MARGIN - 40,
+      ),
+      maxWidth,
+      side: 'inline',
+    };
+  }
+
+  const preferredLeft = align === 'start'
+    ? rect.left
+    : rect.right - maxWidth;
+
+  return {
+    left: clamp(preferredLeft, TOOLTIP_MARGIN, viewportWidth - maxWidth - TOOLTIP_MARGIN),
+    top: Math.min(rect.bottom + TOOLTIP_GAP, viewportHeight - TOOLTIP_MARGIN),
+    maxWidth,
+    side: 'bottom',
+  };
+}
+
 export function InfoTooltip({
   content,
   className,
@@ -20,7 +82,17 @@ export function InfoTooltip({
 }: InfoTooltipProps) {
   const normalizedContent = content.trim();
   const containerRef = useRef<HTMLSpanElement | null>(null);
+  const tooltipRef = useRef<HTMLSpanElement | null>(null);
   const [open, setOpen] = useState(false);
+  const [position, setPosition] = useState<TooltipPosition | null>(null);
+
+  const updatePosition = () => {
+    if (!containerRef.current) {
+      return;
+    }
+
+    setPosition(getTooltipPosition(containerRef.current, align, desktopSide));
+  };
 
   useEffect(() => {
     function handlePointerDown(event: MouseEvent | TouchEvent) {
@@ -29,7 +101,11 @@ export function InfoTooltip({
       }
 
       const target = event.target;
-      if (target instanceof Node && !containerRef.current.contains(target)) {
+      if (
+        target instanceof Node &&
+        !containerRef.current.contains(target) &&
+        !tooltipRef.current?.contains(target)
+      ) {
         setOpen(false);
       }
     }
@@ -43,6 +119,23 @@ export function InfoTooltip({
     };
   }, []);
 
+  useEffect(() => {
+    if (!open) {
+      setPosition(null);
+      return;
+    }
+
+    updatePosition();
+
+    window.addEventListener('resize', updatePosition);
+    window.addEventListener('scroll', updatePosition, true);
+
+    return () => {
+      window.removeEventListener('resize', updatePosition);
+      window.removeEventListener('scroll', updatePosition, true);
+    };
+  }, [align, desktopSide, open]);
+
   if (!normalizedContent) {
     return null;
   }
@@ -50,7 +143,7 @@ export function InfoTooltip({
   return (
     <span
       ref={containerRef}
-      className={cn('relative inline-flex h-5 w-5 shrink-0 align-middle', className)}
+      className={cn('inline-flex h-5 w-5 shrink-0 align-middle', className)}
       onMouseLeave={() => setOpen(false)}
     >
       <button
@@ -76,24 +169,27 @@ export function InfoTooltip({
       >
         <CircleQuestionMarkIcon className="h-4 w-4" />
       </button>
-      <span
-        className={cn(
-          'pointer-events-none absolute top-full z-50 mt-2 w-[min(18rem,calc(100vw-2rem))] rounded-2xl border bg-white/95 px-3 py-2 text-xs leading-5 text-slate-600 shadow-xl backdrop-blur-sm dark:bg-slate-950/95 dark:text-slate-300',
-          align === 'start' ? 'left-0 right-auto' : 'right-0 left-auto',
-          desktopSide === 'right'
-            ? align === 'start'
-              ? 'sm:left-0 sm:right-auto md:left-full md:right-auto md:top-1/2 md:mt-0 md:ml-2 md:-translate-y-1/2'
-              : 'sm:right-0 sm:left-auto md:left-full md:right-auto md:top-1/2 md:mt-0 md:ml-2 md:-translate-y-1/2'
-            : align === 'start'
-              ? 'md:left-0 md:right-auto md:top-full md:mt-2 md:ml-0 md:translate-y-0'
-              : 'md:right-0 md:left-auto md:top-full md:mt-2 md:ml-0 md:translate-y-0',
-          open ? 'block' : 'hidden',
-          themeBorderColor,
-        )}
-        role="tooltip"
-      >
-        {normalizedContent}
-      </span>
+      {open && position
+        ? createPortal(
+          <span
+            ref={tooltipRef}
+            className={cn(
+              'pointer-events-none fixed z-50 max-h-[calc(100vh-1.5rem)] overflow-y-auto rounded-2xl border bg-white/95 px-3 py-2 text-xs leading-5 text-slate-600 shadow-xl backdrop-blur-sm dark:bg-slate-950/95 dark:text-slate-300',
+              position.side === 'inline' && '-translate-y-1/2',
+              themeBorderColor,
+            )}
+            style={{
+              left: position.left,
+              top: position.top,
+              width: position.maxWidth,
+            }}
+            role="tooltip"
+          >
+            {normalizedContent}
+          </span>,
+          document.body,
+        )
+        : null}
     </span>
   );
 }

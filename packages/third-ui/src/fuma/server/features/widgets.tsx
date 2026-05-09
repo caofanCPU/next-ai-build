@@ -5,6 +5,7 @@ import { ZiaCard } from '../../mdx/zia-card';
 import { GradientButton } from '../../../main/buttons';
 import { ZiaFile, ZiaFolder } from '../../mdx/zia-file';
 import { SunoEmbed } from '../../mdx/suno-embed';
+import { CheetTable } from '../../mdx/cheet-table';
 
 const ImageGrid = lazy(() =>
   import('../../heavy/image-grid').then((mod) => ({ default: mod.ImageGrid })),
@@ -24,6 +25,7 @@ export function createWidgetMdxComponents(
     ZiaFile,
     ZiaFolder,
     SunoEmbed,
+    CheetTable,
     ImageGrid: (props) => (
       <ImageGrid {...props} cdnBaseUrl={cdnBaseUrl} />
     ),
