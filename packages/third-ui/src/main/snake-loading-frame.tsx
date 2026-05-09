@@ -2,7 +2,7 @@
 
 import type { ReactNode, RefObject } from 'react';
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { cn } from '@windrun-huaiin/lib/utils';
 
 type SnakeShape = 'circle' | 'rounded-rect';

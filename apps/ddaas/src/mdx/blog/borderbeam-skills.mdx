@@ -4,6 +4,55 @@ description: 炫彩界面动起来！
 date: 2026-05-07
 ---
 
+Github问题
+## Description
+
+Using `BorderBeam` with `colorVariant="colorful"` causes severe CPU and GPU spikes immediately on page load, even without any user interaction. The component runs **multiple infinite CSS animations simultaneously** from the moment it mounts:
+
+- `beam-hue-shift-*` — 12s infinite loop
+- `beam-hue-shift-bloom-*` — 8s infinite loop
+- `beam-spin-*`, `beam-travel-*`, `beam-breathe-*`, `beam-spike-*`, `beam-edge-fade-*`
+
+With `colorVariant="colorful"`, the border layer uses **9 radial gradients**, all of which are constantly repainted by the GPU.
+
+## Reproduction
+
+```tsx
+<BorderBeam
+  colorVariant="colorful"
+  brightness={1.15}
+  strength={0.75}
+  duration={5}
+>
+  <div>...</div>
+</BorderBeam>
+```
+
+Open the page → CPU immediately jumps to 60–100%, GPU usage spikes accordingly, fans spin up.
+
+## Environment
+
+- Electron app (Chromium renderer)
+- macOS 15 / Apple Silicon
+- `border-beam` v1.0.1
+
+## Expected Behavior
+
+Animations should either:
+1. Not run until the user hovers/interacts (opt-in `activeOnHover` prop), **or**
+2. Be throttled / respect `prefers-reduced-motion`, **or**
+3. Use `will-change` and `contain: strict` to isolate paint cost
+
+## Suggested Fix
+
+- Add an `activeOnHover` prop that keeps the component visually static until hovered
+- Reduce the number of simultaneous animations for the `colorful` variant
+- Respect `@media (prefers-reduced-motion: reduce)` by disabling or slowing animations
+
+We ended up removing the component entirely from our homepage because of this issue. Happy to contribute a PR if you'd like to go this route.
+
+---
+
 ## 按钮体系的房子比喻
 
 把一个页面想象成一栋房子，按钮不是同一种东西。它们有的是大门，有的是门把手，有的是房间里的灯开关，有的是墙上的模式切换面板。`BorderBeam` 这种炫彩动画效果只能承担“最显眼的入口标识”，不能替代所有按钮。

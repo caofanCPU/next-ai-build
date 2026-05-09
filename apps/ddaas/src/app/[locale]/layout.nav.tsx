@@ -4,6 +4,7 @@ import {
   HighlighterIcon,
   MmdIcon,
   PaletteIcon,
+  PanelsTopLeftIcon,
   ShieldUserIcon,
   SnippetsIcon,
   SparklesIcon,
@@ -79,6 +80,14 @@ const previewTestLinks: SiteMenuLeafConfig[] = [
     prefetch: false,
     icon: <HighlighterIcon />,
     className: 'lg:col-start-3 lg:row-start-2',
+  },
+  {
+    text: 'BeamFrame',
+    description: 'Border frame animation playground.',
+    path: '/test/ana',
+    prefetch: false,
+    icon: <PanelsTopLeftIcon />,
+    className: 'lg:col-start-4 lg:row-start-1',
   },
 ];
 

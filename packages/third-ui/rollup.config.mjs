@@ -15,6 +15,7 @@ const entries = [
   'src/ai/index.ts',
   'src/main/index.ts',
   'src/main/alert-dialog/index.ts',
+  'src/main/beam-frame/index.ts',
   'src/main/buttons/index.ts',
   'src/main/calendar/index.ts',
   'src/main/credit/index.ts',

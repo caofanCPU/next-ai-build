@@ -38,6 +38,11 @@
       "import": "./dist/main/buttons/index.mjs",
       "require": "./dist/main/buttons/index.js"
     },
+    "./main/beam-frame": {
+      "types": "./dist/main/beam-frame/index.d.ts",
+      "import": "./dist/main/beam-frame/index.mjs",
+      "require": "./dist/main/beam-frame/index.js"
+    },
     "./main/calendar": {
       "types": "./dist/main/calendar/index.d.ts",
       "import": "./dist/main/calendar/index.mjs",
@@ -225,13 +230,14 @@
     "@windrun-huaiin/base-ui": "workspace:^",
     "@windrun-huaiin/contracts": "workspace:^",
     "@windrun-huaiin/lib": "workspace:^",
+    "animejs": "catalog:",
     "class-variance-authority": "catalog:",
-    "framer-motion": "catalog:",
     "fumadocs-core": "catalog:",
     "fumadocs-ui": "catalog:",
     "hast-util-to-jsx-runtime": "^2.3.6",
     "katex": "catalog:",
     "mermaid": "catalog:",
+    "motion": "catalog:",
     "react-medium-image-zoom": "catalog:",
     "remark": "catalog:",
     "remark-gfm": "catalog:",
