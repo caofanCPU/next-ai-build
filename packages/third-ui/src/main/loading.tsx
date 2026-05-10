@@ -1,7 +1,9 @@
 'use client';
 
+import { useEffect, useMemo, useRef } from 'react';
 import { cn } from '@windrun-huaiin/lib/utils';
 import { themeSvgIconColor } from '@windrun-huaiin/base-ui/lib';
+import { animate, type JSAnimation } from 'animejs';
 
 const NUM_ROWS = 15;
 const NUM_COLS = 15;
@@ -66,6 +68,7 @@ interface LoadingProps {
   className?: string;
   label?: string;
   labelClassName?: string;
+  paused?: boolean;
 }
 
 export function Loading({
@@ -74,31 +77,81 @@ export function Loading({
   className,
   label = 'Loading...',
   labelClassName,
+  paused = false,
 }: LoadingProps = {}) {
-  const colors = createLoadingPalette(themeColor);
-  const dots = [];
+  const gridRef = useRef<HTMLDivElement | null>(null);
+  const animationRef = useRef<JSAnimation | null>(null);
+  const pausedRef = useRef(paused);
+  const colors = useMemo(() => createLoadingPalette(themeColor), [themeColor]);
   const centerX = (NUM_COLS - 1) / 2;
   const centerY = (NUM_ROWS - 1) / 2;
+  const dots = useMemo(() => {
+    const nextDots = [];
 
-  for (let i = 0; i < NUM_ROWS; i++) {
-    for (let j = 0; j < NUM_COLS; j++) {
-      // Calculate distance from the center of the grid
-      const distance = Math.sqrt(Math.pow(i - centerY, 2) + Math.pow(j - centerX, 2));
-      dots.push({
-        id: `${i}-${j}`,
-        row: i,
-        col: j,
-        // Animation delay based on distance, creating a ripple effect
-        delay: distance * STAGGER_DELAY_FACTOR,
-        // Color selection based on distance rings
-        color: colors[Math.floor(distance) % colors.length],
-      });
+    for (let i = 0; i < NUM_ROWS; i++) {
+      for (let j = 0; j < NUM_COLS; j++) {
+        const distance = Math.sqrt(Math.pow(i - centerY, 2) + Math.pow(j - centerX, 2));
+        nextDots.push({
+          id: `${i}-${j}`,
+          row: i,
+          col: j,
+          delay: distance * STAGGER_DELAY_FACTOR,
+          color: colors[Math.floor(distance) % colors.length],
+        });
+      }
     }
-  }
+
+    return nextDots;
+  }, [centerX, centerY, colors]);
 
   // Calculate the total width and height of the dot container
   const containerWidth = (NUM_COLS - 1) * SPACING + DOT_SIZE;
   const containerHeight = (NUM_ROWS - 1) * SPACING + DOT_SIZE;
+
+  pausedRef.current = paused;
+
+  useEffect(() => {
+    const grid = gridRef.current;
+
+    if (!grid) {
+      return undefined;
+    }
+
+    const dotNodes = Array.from(grid.querySelectorAll<HTMLElement>('[data-loading-dot]'));
+
+    animationRef.current?.revert();
+    animationRef.current = animate(dotNodes, {
+      opacity: [0, 1, 0.7, 0],
+      scale: [0.2, 1.2, 0.8, 0.2],
+      duration: ANIMATION_DURATION * 1000,
+      delay: (target?: unknown) => Number((target as HTMLElement | undefined)?.dataset.loadingDelay ?? 0) * 1000,
+      ease: 'inOutSine',
+      loop: true,
+    });
+
+    if (pausedRef.current) {
+      animationRef.current.pause();
+    }
+
+    return () => {
+      animationRef.current?.revert();
+      animationRef.current = null;
+    };
+  }, [dots]);
+
+  useEffect(() => {
+    const animation = animationRef.current;
+
+    if (!animation) {
+      return;
+    }
+
+    if (paused) {
+      animation.pause();
+    } else {
+      animation.play();
+    }
+  }, [paused]);
 
   return (
     <div
@@ -109,6 +162,7 @@ export function Loading({
       )}
     >
       <div
+        ref={gridRef}
         style={{
           width: containerWidth,
           height: containerHeight,
@@ -120,6 +174,8 @@ export function Loading({
         {dots.map(dot => (
           <div
             key={dot.id}
+            data-loading-dot=""
+            data-loading-delay={dot.delay}
             style={{
               position: 'absolute',
               left: dot.col * SPACING,
@@ -128,13 +184,8 @@ export function Loading({
               height: DOT_SIZE,
               backgroundColor: dot.color,
               borderRadius: '50%',
-              animationName: 'loading-dot-pulse',
-              animationDuration: `${ANIMATION_DURATION}s`,
-              animationTimingFunction: 'cubic-bezier(0.45, 0, 0.55, 1)',
-              animationIterationCount: 'infinite',
-              animationDelay: `${dot.delay}s`,
-              opacity: 0,
-              transform: 'scale(0)',
+              opacity: 0.35,
+              transform: 'scale(0.2)',
             }}
           />
         ))}

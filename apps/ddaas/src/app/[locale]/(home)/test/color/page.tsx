@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import NProgress from 'nprogress';
+import { CirclePauseIcon, MonitorPlayIcon } from '@base-ui/icons';
 import { PiIcon } from '@windrun-huaiin/base-ui/icons';
 import {
   __SUPPORTED_THEME_COLORS,
@@ -14,7 +15,7 @@ import {
   type SupportedThemeColor,
 } from '@base-ui/lib/theme-util';
 import { cn } from '@lib/utils';
-import { getLoadingCycleDurationMs, Loading } from '@third-ui/main/loading';
+import { Loading } from '@third-ui/main/loading';
 import { SnakeLoadingFrame, SnakeLoadingPreview } from '@third-ui/main/loading-frame';
 
 const themeNames = Object.keys(THEME_COLOR_NAME_TO_CLASS_MAP) as Array<keyof typeof THEME_COLOR_NAME_TO_CLASS_MAP>;
@@ -43,9 +44,6 @@ const THEME_SELECTOR_ACTIVE_CLASS_MAP: Record<SupportedThemeColor, string> = {
   'text-rose-500': 'border-rose-600 bg-rose-500 text-white shadow-[0_10px_30px_rgba(244,63,94,0.28)]',
 };
 
-const LOADING_PREVIEW_CYCLE_LIMIT = 5;
-const LOADING_PREVIEW_AUTO_HIDE_MS = getLoadingCycleDurationMs() * LOADING_PREVIEW_CYCLE_LIMIT;
-
 function TonePreview({
   title,
   dark = false,
@@ -66,14 +64,18 @@ function TonePreview({
   const heroEyesOn = THEME_HERO_EYES_ON_CLASS_MAP[themeClass];
   const markClass = THEME_RICH_TEXT_MARK_CLASS_MAP[themeClass];
   const titleClass = THEME_TEXT_TITLE_CLASS_MAP[themeClass];
-  const [isSnakeLoading, setIsSnakeLoading] = useState(true);
-  const [showLoadingAnimation, setShowLoadingAnimation] = useState(true);
+  const [isSnakePaused, setIsSnakePaused] = useState(false);
+  const [isLoadingPaused, setIsLoadingPaused] = useState(false);
   const previewActionButtonClass = cn(
     'shrink-0 rounded-full border bg-white px-3 py-1.5 text-xs font-semibold transition-colors duration-200',
     themeClass,
     dark
       ? 'border-current/50 bg-slate-900 hover:border-current hover:bg-slate-800'
       : 'border-current/35 bg-white hover:border-current hover:bg-white',
+  );
+  const previewIconButtonClass = cn(
+    'inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-transparent transition-colors duration-200 hover:bg-current/10',
+    themeClass,
   );
   const previewSurfaceClass = dark
     ? 'border-slate-700 bg-slate-900 text-slate-100'
@@ -84,37 +86,8 @@ function TonePreview({
   const circleFrameClass = dark
     ? 'border-slate-700 bg-slate-900'
     : 'border-slate-200 bg-white';
-  const [loadingPreviewVersion, setLoadingPreviewVersion] = useState(0);
-  const [loadingLimitReached, setLoadingLimitReached] = useState(false);
-
-  useEffect(() => {
-    if (!showLoadingAnimation) {
-      return;
-    }
-
-    const timer = window.setTimeout(() => {
-      setShowLoadingAnimation(false);
-      setLoadingLimitReached(true);
-    }, LOADING_PREVIEW_AUTO_HIDE_MS);
-
-    return () => {
-      window.clearTimeout(timer);
-    };
-  }, [showLoadingAnimation, loadingPreviewVersion]);
-
-  const restartLoadingPreview = () => {
-    setLoadingLimitReached(false);
-    setLoadingPreviewVersion((current) => current + 1);
-    setShowLoadingAnimation(true);
-  };
-
   const handleLoadingToggle = () => {
-    if (showLoadingAnimation) {
-      setShowLoadingAnimation(false);
-      return;
-    }
-
-    restartLoadingPreview();
+    setIsLoadingPaused((current) => !current);
   };
 
   return (
@@ -139,7 +112,8 @@ function TonePreview({
               <div className="flex items-center gap-3">
                 <SnakeLoadingFrame
                   shape="circle"
-                  loading={isSnakeLoading}
+                  loading
+                  paused={isSnakePaused}
                   themeColor={themeHex}
                   className={cn(
                     'inline-flex h-16 w-16 items-center justify-center border',
@@ -161,10 +135,16 @@ function TonePreview({
               <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  onClick={() => setIsSnakeLoading((current) => !current)}
-                  className={previewActionButtonClass}
+                  onClick={() => setIsSnakePaused((current) => !current)}
+                  className={previewIconButtonClass}
+                  aria-label={isSnakePaused ? 'Resume ring animation' : 'Pause ring animation'}
+                  title={isSnakePaused ? 'Resume ring animation' : 'Pause ring animation'}
                 >
-                  {isSnakeLoading ? 'Stop Ring' : 'Start Ring'}
+                  {isSnakePaused ? (
+                    <MonitorPlayIcon className={cn('h-6 w-6', themeClass)} />
+                  ) : (
+                    <CirclePauseIcon className={cn('h-6 w-6', themeClass)} />
+                  )}
                 </button>
                 <button
                   type="button"
@@ -198,40 +178,31 @@ function TonePreview({
             <button
               type="button"
               onClick={handleLoadingToggle}
-              className={previewActionButtonClass}
+              className={previewIconButtonClass}
+              aria-label={isLoadingPaused ? 'Resume loading animation' : 'Pause loading animation'}
+              title={isLoadingPaused ? 'Resume loading animation' : 'Pause loading animation'}
             >
-              {showLoadingAnimation ? 'Hide Loading' : 'Restart Loading'}
+              {isLoadingPaused ? (
+                <MonitorPlayIcon className={cn('h-6 w-6', themeClass)} />
+              ) : (
+                <CirclePauseIcon className={cn('h-6 w-6', themeClass)} />
+              )}
             </button>
           </div>
-          {showLoadingAnimation ? (
-            <Loading
-              key={loadingPreviewVersion}
-              themeColor={themeHex}
-              compact
-              label="Loading"
-              className={cn(
-                'overflow-hidden border border-current shadow-inner',
-                dark
-                  ? 'bg-slate-950'
-                  : 'bg-linear-to-br from-slate-100 via-white to-slate-50',
-                themeClass
-              )}
-              labelClassName={dark ? 'text-white' : 'text-slate-700'}
-            />
-          ) : (
-            <div
-              className={cn(
-                'flex min-h-[250px] items-center justify-center rounded-[28px] border border-dashed text-sm font-medium',
-                dark
-                  ? 'border-slate-700 bg-slate-950 text-slate-400'
-                  : 'border-slate-200 bg-slate-50 text-slate-500',
-              )}
-            >
-              {loadingLimitReached
-                ? `Loading preview paused by cycles end`
-                : 'Loading preview paused by clicked'}
-            </div>
-          )}
+          <Loading
+            themeColor={themeHex}
+            compact
+            paused={isLoadingPaused}
+            label={isLoadingPaused ? 'Paused' : 'Loading'}
+            className={cn(
+              'overflow-hidden border border-current shadow-inner',
+              dark
+                ? 'bg-slate-950'
+                : 'bg-linear-to-br from-slate-100 via-white to-slate-50',
+              themeClass
+            )}
+            labelClassName={dark ? 'text-white' : 'text-slate-700'}
+          />
         </section>
 
         <section>

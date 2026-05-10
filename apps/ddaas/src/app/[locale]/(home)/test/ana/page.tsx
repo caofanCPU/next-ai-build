@@ -226,7 +226,7 @@ export default function App() {
               </div>
               <h1 className="text-3xl font-semibold tracking-tight text-foreground md:text-4xl">BorderBeam Wrapper</h1>
             </div>
-            <span className="inline-flex self-start items-center gap-2 rounded-full border border-border/70 bg-background/80 px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-accent md:self-auto">
+            <span className="inline-flex min-w-24 self-start items-center justify-center gap-2 rounded-full border border-border/70 bg-background/80 px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-accent md:self-auto">
               <ToggleIcon className="h-4 w-4" />
               {isExpanded ? 'Fold' : 'Expand'}
             </span>

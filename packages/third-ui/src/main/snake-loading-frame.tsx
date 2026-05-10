@@ -4,7 +4,7 @@ import type { ReactNode } from 'react';
 import { useEffect, useRef, useState } from 'react';
 import { motion } from 'motion/react';
 import { cn } from '@windrun-huaiin/lib/utils';
-import { MotionBeamFrame } from './motion';
+import { AnimeBeamFrame } from './anime';
 import type { BeamFrameTone } from './beam-frame-config';
 
 type SnakeShape = 'circle' | 'rounded-rect';
@@ -13,6 +13,7 @@ export interface SnakeLoadingFrameProps {
   shape: SnakeShape;
   loading: boolean;
   children: ReactNode;
+  paused?: boolean;
   className?: string;
   themeColor?: string;
   tone?: BeamFrameTone;
@@ -104,6 +105,7 @@ function SnakeFrameBase({
   shape,
   loading,
   children,
+  paused = false,
   className,
   themeColor = DEFAULT_THEME_COLOR,
   tone = 'rainbow',
@@ -122,7 +124,7 @@ function SnakeFrameBase({
   const circleContentInset =
     shape === 'circle' ? Math.max(6, resolvedStrokeWidth + 4) : 0;
   const isPreview = previewProgress !== undefined;
-  const isActivelyLoading = loading && !isPreview;
+  const isActivelyLoading = loading && !paused && !isPreview;
 
   useEffect(() => {
     if (shape === 'circle') {
@@ -230,7 +232,7 @@ function SnakeFrameBase({
               themeColor={themeColor}
             />
           ) : (
-            <MotionBeamFrame
+            <AnimeBeamFrame
               active={isActivelyLoading}
               interactive={false}
               tone={tone}
@@ -239,7 +241,7 @@ function SnakeFrameBase({
               className="absolute inset-0 h-full w-full"
             >
               <div className="h-full w-full" />
-            </MotionBeamFrame>
+            </AnimeBeamFrame>
           )}
         </motion.div>
       ) : null}
