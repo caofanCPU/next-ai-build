@@ -126,7 +126,7 @@ export default function LoadingTestPage() {
                   paused={isClassicPaused}
                   themeColor={themeSvgIconColor}
                   label={isClassicPaused ? 'Paused' : 'Loading'}
-                  className="min-h-[360px] overflow-hidden bg-transparent"
+                  className="min-h-[360px] overflow-hidden bg-transparent dark:bg-transparent"
                   labelClassName="text-slate-700 dark:text-white"
                 />
               </LoadingDemoCard>

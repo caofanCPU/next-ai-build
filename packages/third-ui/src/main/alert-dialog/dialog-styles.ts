@@ -12,7 +12,7 @@ import {
 import { cn } from '@windrun-huaiin/lib/utils';
 
 export const dialogSurfaceClass = cn(
-  'w-[calc(100vw-2rem)] max-w-md rounded-2xl border bg-white p-5 text-neutral-950 shadow-2xl outline-none dark:bg-neutral-950 dark:text-neutral-50',
+  'min-h-[240px] w-[calc(100vw-2rem)] max-w-md rounded-2xl border bg-white p-5 text-neutral-950 shadow-2xl outline-none dark:bg-neutral-950 dark:text-neutral-50',
   'border-neutral-200 dark:border-neutral-800'
 );
 
@@ -24,6 +24,12 @@ export const dialogThemedOverlayClass = cn(
 export const dialogContentClass = cn(
   'fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2',
   dialogSurfaceClass
+);
+
+export const dialogLoadingContentClass = cn(
+  'fixed left-1/2 top-1/2 z-10000 -translate-x-1/2 -translate-y-1/2',
+  dialogSurfaceClass,
+  'flex items-center justify-center overflow-hidden animate-in fade-in-0 zoom-in-95 duration-150'
 );
 
 export const dialogHeaderClass = 'flex items-start justify-between gap-4';

@@ -42,12 +42,11 @@ import { AnimeBeamFrame } from '@third-ui/main/anime';
 <CheetTable
   title="BeamFrame Props"
   description="MotionBeamFrame 和 AnimeBeamFrame 共享同一组 props"
-  copyableColumns={['参数']}
 >
 
 | 参数 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| !!`children` | `ReactNode` | 必填 | 被光效包裹的实际内容 |
+| `children` | `ReactNode` | 必填 | 被光效包裹的实际内容 |
 | `active` | `boolean` | `false` | 是否主动运行动画 |
 | `interactive` | `boolean` | `true` | 是否在 hover/focus 时自动运行动画 |
 | `tone` | `BeamFrameTone` | `'theme'` | 光效配色, 支持 `theme`、`rainbow`、`mono`、`warm`、`cool` |
@@ -64,12 +63,11 @@ import { AnimeBeamFrame } from '@third-ui/main/anime';
 <CheetTable
   title="BEAM_FRAME_STYLE 参数"
   description="修改这些值即可调整光圈、运动线条和环境光"
-  copyableColumns={['参数']}
 >
 
 | 参数 | 当前值 | 影响范围 | 调整建议 |
 | --- | --- | --- | --- |
-| !!`ambientGlowOpacity` | `0.24` | 静态整圈柔光透明度 | 暗色背景弱时增大, 亮色背景脏时减小 |
+| `ambientGlowOpacity` | `0.24` | 静态整圈柔光透明度 | 暗色背景弱时增大, 亮色背景脏时减小 |
 | `beamOpacity` | `1.0` | 移动 trace 的透明度 | 通常保持 `1` |
 | `auraOpacity` | `0.86` | 头部光圈透明度 | 光圈太抢眼时降到 `0.7` 左右 |
 | `auraLength` | `0.08` | 头部光圈长度 | 越大光圈拖得越长, 建议 `0.06 ~ 0.14` |
@@ -87,12 +85,11 @@ import { AnimeBeamFrame } from '@third-ui/main/anime';
 <CheetTable
   title="Tone 配色"
   description="光效颜色由三个 CSS 变量注入 SVG"
-  copyableColumns={['Tone']}
 >
 
 | Tone | 颜色来源 | 适用场景 |
 | --- | --- | --- |
-| !!`theme` | `themeName` 对应的主题 palette | 默认推荐, 跟随站点主题 |
+| `theme` | `themeName` 对应的主题 palette | 默认推荐, 跟随站点主题 |
 | `rainbow` | 红、蓝、绿 | 展示型卡片、强调入口 |
 | `mono` | 灰、蓝灰、白 | 安静、专业、低干扰场景 |
 | `warm` | 橙、黄、红 | 促销、价格、CTA |
@@ -320,12 +317,11 @@ animationRef.current.speed = BASE_DURATION_SECONDS / duration;
 <CheetTable
   title="常见调整"
   description="应用方优先通过这些参数做小步调整"
-  copyableColumns={['目标']}
 >
 
 | 目标 | 修改参数 | 建议 |
 | --- | --- | --- |
-| !!运动线更明显 | `traceLength`、`traceWidth` | 先把 `traceWidth` 加到 `1.3`, 再考虑加长 `traceLength` |
+| 运动线更明显 | `traceLength`、`traceWidth` | 先把 `traceWidth` 加到 `1.3`, 再考虑加长 `traceLength` |
 | 光圈更克制 | `auraWidth`、`auraOpacity` | 先降 `auraWidth`, 不要直接删 filter |
 | 暗色主题光圈太弱 | `auraOpacity`、`ambientGlowOpacity` | 小幅增加, 避免整圈染色 |
 | 亮色主题边线发白 | `auraGradientId` stops | 避免使用纯白高光, 优先用 palette 色 |

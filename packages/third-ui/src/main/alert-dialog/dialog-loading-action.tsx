@@ -3,6 +3,7 @@
 import React from 'react';
 import { createPortal } from 'react-dom';
 import { Loading } from '../loading';
+import { dialogLoadingContentClass } from './dialog-styles';
 
 export type DialogLoadingAction = 'cancel' | 'confirm' | 'undo';
 export type DialogActionHandler = () => void | Promise<void>;
@@ -29,18 +30,19 @@ export function useDialogLoadingAction({
     action: DialogLoadingAction,
     handler?: DialogActionHandler
   ) => {
-    onOpenChange(false);
-
     if (!handler) {
+      onOpenChange(false);
       return;
     }
 
     if (!loadingActions?.includes(action)) {
+      onOpenChange(false);
       await handler();
       return;
     }
 
     setLoading(true);
+    onOpenChange(false);
 
     try {
       await handler();
@@ -56,12 +58,12 @@ export function useDialogLoadingAction({
           <Loading className="h-full w-full" />
         </div>
       ) : (
-        <div className="pointer-events-none fixed inset-0 z-10000 flex items-center justify-center p-4">
-          <div className="pointer-events-auto overflow-hidden rounded-[28px] bg-neutral-50/58 shadow-[0_18px_56px_rgba(15,23,42,0.14)] backdrop-blur-md dark:bg-neutral-900/58 dark:shadow-[0_18px_56px_rgba(0,0,0,0.34)]">
+        <div className="fixed inset-0 z-10000">
+          <div className={dialogLoadingContentClass}>
             <Loading
               compact
               label="Loading"
-              className="min-h-[250px] w-[min(22rem,calc(100vw-2rem))] bg-transparent"
+              className="min-h-[220px] w-full rounded-none bg-transparent px-0 py-0 dark:bg-transparent"
               labelClassName="text-foreground"
             />
           </div>

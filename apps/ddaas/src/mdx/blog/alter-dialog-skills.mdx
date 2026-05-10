@@ -13,11 +13,17 @@ date: 2026-05-07
 - `cancel` 是取消 action, `confirm` 是确认/应用 action, `undo` 是撤回 action
 - 异步 loading 绑定按钮 action, 不绑定弹窗整体
 - 除 `AdsAlertDialog` 外, 支持用 `loadingActions` 显式声明哪些 action 需要 loading
-- loading 默认是居中的小范围面板, 使用半透明柔和背景压住底层内容, 但不阻断用户查看页面其他区域
+- loading 默认是原地替换式面板, 复用普通弹窗 surface 尺寸和位置, 视觉上像弹窗内容切换成 Loading
+- loading 默认用全屏透明交互锁阻塞后续操作, 但不使用遮罩压暗页面, 用户仍能看见页面内容
 - 只有需要强阻断页面操作时, 才传 `loadingFullPage={true}` 使用全屏遮罩
 - `AdsAlertDialog` 偏展示和跳转, 不承载 loading action 语义
 
 ## 组件选择
+
+<CheetTable
+  title="Alert Dialog 组件选择"
+  description="按交互语义选择组件。AdsAlertDialog 偏展示, 其余弹窗都可以挂 loadingActions。"
+>
 
 | 组件 | 使用场景 | 按钮语义 |
 | --- | --- | --- |
@@ -26,6 +32,8 @@ date: 2026-05-07
 | `ConfirmDialog` | 普通确认、危险确认、应用/放弃二选一 | cancel + confirm |
 | `UndoableConfirmDialog` | 需要二阶段确认且允许倒计时内撤回 | cancel + confirm + undo |
 | `HighPriorityConfirmDialog` | 高优先级阻断确认、流程中断决策 | cancel + confirm |
+
+</CheetTable>
 
 ## Loading Action
 
@@ -54,6 +62,16 @@ date: 2026-05-07
 
 默认 loading 是非全页面板, 适合弹窗确认、按钮提交、局部批处理这类短耗时操作。
 
+默认 loading 的视觉规则:
+
+- 命中 `loadingActions` 后先建立全屏透明交互锁, 再关闭原弹窗
+- 透明交互锁阻塞用户继续点击页面, 避免后端接口完成前重复操作
+- 不使用 `cursor-wait`, Web 端鼠标不显示系统等待光标
+- loading 面板复用 `dialogSurfaceClass` 的宽度、圆角、背景、边框、阴影和 `min-h-[240px]`
+- loading 面板位置和普通弹窗一致, 都在屏幕中心
+- `Loading` 组件自身必须以透明背景承载, 暗色模式也要覆盖为 `dark:bg-transparent`
+- 设计目标是功能上已经关闭弹窗, 视觉上像原弹窗内容原地切换为 Loading
+
 需要强阻断页面操作时, 传 `loadingFullPage={true}`:
 
 ```tsx
@@ -71,13 +89,19 @@ date: 2026-05-07
 />
 ```
 
-行为顺序固定: 
+命中 `loadingActions` 的行为顺序固定: 
 
 1. 点击按钮
-2. 弹窗立即关闭
-3. 如果 action 命中 `loadingActions`, 展示 `Loading`
+2. 立即设置 loading, 建立全屏透明交互锁
+3. 关闭原弹窗
 4. 执行业务回调
 5. Promise settle 后关闭 `Loading`
+
+未命中 `loadingActions` 的普通 action 行为顺序:
+
+1. 点击按钮
+2. 关闭原弹窗
+3. 执行业务回调
 
 错误处理边界: 
 
@@ -87,6 +111,11 @@ date: 2026-05-07
 
 ## 关闭语义
 
+<CheetTable
+  title="关闭和 action 语义"
+  description="只有按钮 action 才可能触发 loading。X 和 overlay 永远只是关闭。"
+>
+
 | 操作 | 语义 | 触发 loading |
 | --- | --- | --- |
 | `X` | 只关闭弹窗 | 否 |
@@ -94,6 +123,8 @@ date: 2026-05-07
 | cancel 按钮 | 关闭后执行 `onCancel` | 由 `loadingActions.includes('cancel')` 控制 |
 | confirm/apply 按钮 | 关闭后执行 `onConfirm` | 由 `loadingActions.includes('confirm')` 控制 |
 | undo 按钮 | 关闭后执行 `onUndo` | 由 `loadingActions.includes('undo')` 控制 |
+
+</CheetTable>
 
 ## UndoableConfirmDialog 特殊规则
 

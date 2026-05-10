@@ -82,8 +82,8 @@ const previewTestLinks: SiteMenuLeafConfig[] = [
     className: 'lg:col-start-3 lg:row-start-2',
   },
   {
-    text: 'BeamFrame',
-    description: 'Border frame animation playground.',
+    text: 'Beam Frame',
+    description: 'Border beam animation playground.',
     path: '/test/ana',
     prefetch: false,
     icon: <PanelsTopLeftIcon />,
