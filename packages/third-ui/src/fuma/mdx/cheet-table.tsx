@@ -7,13 +7,14 @@ import {
   EyeOffIcon,
 } from '@windrun-huaiin/base-ui/icons';
 import {
-  themeBorderColor,
   themeIconColor,
   themeRingColor,
+  themeSvgIconColor,
 } from '@windrun-huaiin/base-ui/lib';
 import { cn } from '@windrun-huaiin/lib/utils';
 import {
   Children,
+  type CSSProperties,
   isValidElement,
   type HTMLAttributes,
   type ReactElement,
@@ -27,6 +28,8 @@ import { InfoTooltip } from '../../main/info-tooltip';
 
 const DEFAULT_COLUMN_WIDTH = 180;
 const MIN_COLUMN_WIDTH = 140;
+const CHEET_TABLE_BORDER_COLOR = `color-mix(in srgb, ${themeSvgIconColor} 35%, transparent)`;
+const CHEET_TABLE_BORDER_CLASS = 'border-[color:var(--cheet-table-border-color)]';
 
 type ParsedCheetCell = {
   text: string;
@@ -271,11 +274,13 @@ function CheetCellContent({
   force,
   copied,
   copyable,
+  onCopy,
 }: {
   cell: CheetTableCell;
   force: boolean;
   copied?: boolean;
   copyable?: boolean;
+  onCopy?: () => void;
 }) {
   return (
     <span className="flex min-w-0 items-center gap-0.5">
@@ -295,9 +300,26 @@ function CheetCellContent({
         />
       ) : null}
       {copyable ? (
-        <span className={cn('inline-flex size-4 shrink-0 items-center justify-center', themeIconColor)}>
-          {copied ? <CheckIcon className="size-3.5" /> : <CopyIcon className="size-3.5 opacity-0 transition-opacity group-hover:opacity-100" />}
-        </span>
+        <button
+          type="button"
+          aria-label={copied ? 'Copied' : 'Copy cell content'}
+          className={cn(
+            'not-prose inline-flex size-6 shrink-0 touch-manipulation items-center justify-center rounded text-fd-muted-foreground transition',
+            'hover:bg-fd-accent hover:text-fd-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950',
+            copied && themeIconColor,
+            themeRingColor,
+          )}
+          onClick={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            onCopy?.();
+          }}
+          onPointerDown={(event) => {
+            event.stopPropagation();
+          }}
+        >
+          {copied ? <CheckIcon className="size-3.5" /> : <CopyIcon className="size-3.5" />}
+        </button>
       ) : null}
     </span>
   );
@@ -314,6 +336,7 @@ export function CheetTable({
   emptyText = 'No data',
   className,
   children,
+  style,
   ...props
 }: CheetTableProps) {
   const [mounted, setMounted] = useState(false);
@@ -420,9 +443,13 @@ export function CheetTable({
 
   const shellClassName = cn(
     'not-prose my-6 overflow-hidden rounded-lg border bg-fd-card text-fd-card-foreground shadow-sm',
-    themeBorderColor,
+    CHEET_TABLE_BORDER_CLASS,
     className,
   );
+  const shellStyle = {
+    '--cheet-table-border-color': CHEET_TABLE_BORDER_COLOR,
+    ...style,
+  } as CSSProperties;
 
   const titleBar = title || description || collapsible ? (
     <div className="grid min-w-0 grid-cols-[minmax(0,90%)_minmax(2rem,10%)] items-center bg-fd-muted/35 px-4 py-2">
@@ -464,6 +491,7 @@ export function CheetTable({
       <section
         data-cheet-table
         className={shellClassName}
+        style={shellStyle}
         {...props}
       >
         {titleBar}
@@ -479,6 +507,7 @@ export function CheetTable({
       <section
         data-cheet-table
         className={shellClassName}
+        style={shellStyle}
         {...props}
       >
         {titleBar}
@@ -524,7 +553,7 @@ export function CheetTable({
                 className={cn(
                   'relative border-t border-b bg-fd-muted/80 px-3 py-2.5 align-middle text-xs font-semibold uppercase tracking-normal text-fd-muted-foreground first:pl-4 last:pr-4',
                   index > 0 && 'border-l',
-                  themeBorderColor,
+                  CHEET_TABLE_BORDER_CLASS,
                   'text-left',
                 )}
                 scope="col"
@@ -571,22 +600,24 @@ export function CheetTable({
                       'group px-3 py-2.5 align-top text-fd-foreground first:pl-4 last:pr-4',
                       rowIndex < model.rows.length - 1 && 'border-b',
                       columnIndex > 0 && 'border-l',
-                      copyable && 'select-text',
                       'text-left',
-                      themeBorderColor,
+                      CHEET_TABLE_BORDER_CLASS,
                     )}
-                    onDoubleClick={
-                      copyable
-                        ? () => handleCopy(cell.text, cellId)
-                        : undefined
-                    }
-                    title={copyable ? 'Double click to copy' : undefined}
+                    onDoubleClick={(event) => {
+                      event.preventDefault();
+                      event.stopPropagation();
+                    }}
                   >
                     <CheetCellContent
                       cell={cell}
                       force={header.force || cell.force}
                       copyable={copyable}
                       copied={copiedCell === cellId}
+                      onCopy={
+                        copyable
+                          ? () => handleCopy(cell.text, cellId)
+                          : undefined
+                      }
                     />
                   </td>
                 );
@@ -606,6 +637,7 @@ export function CheetTable({
     <section
       data-cheet-table
       className={shellClassName}
+      style={shellStyle}
       {...props}
     >
       {titleBar}

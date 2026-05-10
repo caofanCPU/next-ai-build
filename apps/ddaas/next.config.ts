@@ -13,6 +13,7 @@ const nextConfig: NextConfig = {
     '@windrun-huaiin/fumadocs-local-md',
   ],
   
+  allowedDevOrigins: ['ddaas-clerk-dev.d8ger.com', 'diaomao-clerk-dev.d8ger.com'],
   // mdx config
   reactStrictMode: true,
 
