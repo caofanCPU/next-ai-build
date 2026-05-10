@@ -38,10 +38,15 @@
       "import": "./dist/main/buttons/index.mjs",
       "require": "./dist/main/buttons/index.js"
     },
-    "./main/beam-frame": {
-      "types": "./dist/main/beam-frame/index.d.ts",
-      "import": "./dist/main/beam-frame/index.mjs",
-      "require": "./dist/main/beam-frame/index.js"
+    "./main/motion": {
+      "types": "./dist/main/motion/index.d.ts",
+      "import": "./dist/main/motion/index.mjs",
+      "require": "./dist/main/motion/index.js"
+    },
+    "./main/anime": {
+      "types": "./dist/main/anime/index.d.ts",
+      "import": "./dist/main/anime/index.mjs",
+      "require": "./dist/main/anime/index.js"
     },
     "./main/calendar": {
       "types": "./dist/main/calendar/index.d.ts",

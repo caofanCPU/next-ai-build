@@ -23,11 +23,11 @@ import {
 } from '@base-ui/lib/theme-util';
 import { cn } from '@lib/utils';
 import {
-  AnimeBeamFrame,
   MotionBeamFrame,
   type BeamFrameProps,
   type BeamFrameTone,
-} from '@third-ui/main/beam-frame';
+} from '@third-ui/main/motion';
+import { AnimeBeamFrame } from '@third-ui/main/anime';
 import { XToggleButton } from '@third-ui/main/buttons';
 
 type BeamFrameComponent = (props: BeamFrameProps) => React.ReactElement;

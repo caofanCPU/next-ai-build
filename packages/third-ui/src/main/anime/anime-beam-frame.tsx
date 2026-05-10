@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useId, useRef } from 'react';
-import { animate, useReducedMotion } from 'motion/react';
+import { type WAAPIAnimation, waapi } from 'animejs';
+import { useReducedMotion } from 'motion/react';
 import {
   BASE_DURATION_SECONDS,
   BeamFrameShell,
@@ -11,16 +12,11 @@ import {
   useMeasuredFrameSize,
   type BeamFrameProps,
   type FrameSize,
-} from './share-config';
+} from '../beam-frame-config';
 
-type PlaybackControls = {
-  speed: number;
-  play: () => void;
-  pause: () => void;
-  stop: () => void;
-};
+export type { BeamFrameProps, BeamFrameTone } from '../beam-frame-config';
 
-function MotionAroundBeam({
+function AnimeBeamLayer({
   isRunning,
   duration,
   radius,
@@ -31,14 +27,14 @@ function MotionAroundBeam({
   radius?: number;
   size: FrameSize;
 }) {
+  const aroundBeamRef = useRef<SVGGElement | null>(null);
+  const animationRef = useRef<WAAPIAnimation | null>(null);
+  const hasStartedRef = useRef(false);
   const auraGradientId = useId().replace(/:/g, '');
   const softGlowFilterId = useId().replace(/:/g, '');
-  const beamGroupRef = useRef<SVGGElement | null>(null);
-  const controlsRef = useRef<PlaybackControls | null>(null);
-  const hasStartedRef = useRef(false);
 
   useEffect(() => {
-    const node = beamGroupRef.current;
+    const node = aroundBeamRef.current;
 
     if (!node) {
       return undefined;
@@ -51,40 +47,37 @@ function MotionAroundBeam({
     node.style.opacity = isRunning || hasStartedRef.current ? 'var(--beam-frame-beam-opacity)' : '0';
 
     if (!isRunning) {
-      controlsRef.current?.pause();
+      animationRef.current?.pause();
       return undefined;
     }
 
-    if (controlsRef.current) {
-      controlsRef.current.speed = BASE_DURATION_SECONDS / duration;
-      controlsRef.current.play();
+    if (animationRef.current) {
+      animationRef.current.speed = BASE_DURATION_SECONDS / duration;
+      animationRef.current.play();
       return undefined;
     }
 
-    controlsRef.current = animate(
-      node,
-      { strokeDashoffset: [0, -1] },
-      {
-        duration: BASE_DURATION_SECONDS,
-        repeat: Infinity,
-        ease: 'linear',
-      },
-    );
-    controlsRef.current.speed = BASE_DURATION_SECONDS / duration;
+    animationRef.current = waapi.animate(node, {
+      strokeDashoffset: [0, -1],
+      loop: true,
+      duration: BASE_DURATION_SECONDS * 1000,
+      ease: 'linear',
+    });
+    animationRef.current.speed = BASE_DURATION_SECONDS / duration;
 
     return undefined;
   }, [duration, isRunning]);
 
   useEffect(() => {
     return () => {
-      controlsRef.current?.stop();
-      controlsRef.current = null;
+      animationRef.current?.revert();
+      animationRef.current = null;
     };
   }, []);
 
   return (
     <BeamSvgLayer
-      beamRef={beamGroupRef}
+      beamRef={aroundBeamRef}
       auraGradientId={auraGradientId}
       softGlowFilterId={softGlowFilterId}
       radius={radius}
@@ -93,7 +86,7 @@ function MotionAroundBeam({
   );
 }
 
-export function MotionBeamFrame(props: BeamFrameProps) {
+export function AnimeBeamFrame(props: BeamFrameProps) {
   const {
     children,
     active = false,
@@ -121,7 +114,7 @@ export function MotionBeamFrame(props: BeamFrameProps) {
       interactionProps={interactionProps}
       rootRef={ref}
       renderBeam={() => (
-        <MotionAroundBeam
+        <AnimeBeamLayer
           isRunning={shouldRun}
           duration={normalizedDuration}
           radius={radius}

@@ -25,12 +25,13 @@ export function DelayedImg({
   wrapperClassName,
   placeholderClassName,
   className,
+  onError,
   onLoad,
   ...imageProps
 }: DelayedImgProps) {
   const shouldDelay = ENV_DELAY_ENABLED && ENV_DELAY_MS > 0
   const [isMounted, setIsMounted] = useState(!shouldDelay)
-  const [isLoaded, setIsLoaded] = useState(false)
+  const [isSettled, setIsSettled] = useState(false)
 
   useEffect(() => {
     if (!shouldDelay || isMounted) {
@@ -46,7 +47,7 @@ export function DelayedImg({
 
   return (
     <div className={cn("relative", wrapperClassName)}>
-      {(!isMounted || !isLoaded) && (
+      {(!isMounted || !isSettled) && (
         <SnakeLoadingFrame
           shape="rounded-rect"
           loading
@@ -68,13 +69,17 @@ export function DelayedImg({
         <Image
           {...imageProps}
           alt={alt}
+          onError={(event) => {
+            setIsSettled(true)
+            onError?.(event)
+          }}
           onLoad={(event) => {
-            setIsLoaded(true)
+            setIsSettled(true)
             onLoad?.(event)
           }}
           className={cn(
             "transition duration-300",
-            isLoaded ? "opacity-100" : "opacity-0",
+            isSettled ? "opacity-100" : "opacity-0",
             className,
           )}
         />

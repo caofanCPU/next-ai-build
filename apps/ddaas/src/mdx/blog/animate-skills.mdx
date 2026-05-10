@@ -13,7 +13,7 @@ date: 2026-05-10
 
 ## 核心设计
 
-两套组件共享 `share-config.tsx` 的视觉层, 只在动画驱动上不同: 
+两套组件共享 `beam-frame-config.tsx` 的视觉层, 只在动画驱动上不同: 
 
 - `MotionBeamFrame` 使用 `motion/react` 的 `animate`
 - `AnimeBeamFrame` 使用 `animejs` 的 `waapi.animate`
@@ -31,10 +31,10 @@ date: 2026-05-10
 
 ```tsx title="导入依赖"
 import {
-  AnimeBeamFrame,
   MotionBeamFrame,
   type BeamFrameTone,
-} from '@third-ui/main/beam-frame';
+} from '@third-ui/main/motion';
+import { AnimeBeamFrame } from '@third-ui/main/anime';
 ```
 
 ## 组件参数
@@ -59,7 +59,7 @@ import {
 
 ## 视觉参数
 
-这些参数集中在 `packages/third-ui/src/main/beam-frame/share-config.tsx` 的 `BEAM_FRAME_STYLE`
+这些参数集中在 `packages/third-ui/src/main/beam-frame-config.tsx` 的 `BEAM_FRAME_STYLE`
 
 <CheetTable
   title="BEAM_FRAME_STYLE 参数"
@@ -105,7 +105,7 @@ import {
 价格卡片应该由内容区自己控制边框、背景、阴影和状态, Frame 只负责动画光效
 
 ```tsx title="MotionBeamFrame示例"
-import { MotionBeamFrame } from '@third-ui/main/beam-frame';
+import { MotionBeamFrame } from '@third-ui/main/motion';
 
 export function AnimatedPriceCard() {
   return (
@@ -136,7 +136,7 @@ export function AnimatedPriceCard() {
 搜索框适合 `interactive` 模式: 用户 hover 或 focus 时自动运行动画
 
 ```tsx title="MotionBeamFrame搜索框"
-import { MotionBeamFrame } from '@third-ui/main/beam-frame';
+import { MotionBeamFrame } from '@third-ui/main/motion';
 
 export function AnimatedSearchBox() {
   return (
@@ -165,7 +165,7 @@ Icon 按钮要控制好 `radius`, 让 SVG 轨道和按钮圆角一致
 
 ```tsx title="MotionBeamFrame图标控制按钮"
 import { ArrowUpIcon } from '@base-ui/icons';
-import { MotionBeamFrame } from '@third-ui/main/beam-frame';
+import { MotionBeamFrame } from '@third-ui/main/motion';
 
 export function AnimatedIconButton() {
   return (
@@ -187,6 +187,133 @@ export function AnimatedIconButton() {
   );
 }
 ```
+
+## Motion 和 Anime 对等实现
+
+在本项目里 `MotionBeamFrame` 和 `AnimeBeamFrame` 是同一种 Frame 能力, 只依赖两套不同的底层动画框架
+
+应用层使用方式保持一致, 需要切到 `animejs` 生态时只替换组件名, 其它参数和内容结构不需要变化
+
+### Anime 价格卡片
+
+价格卡片的 Anime 版本和 Motion 版本一样使用 `active`, 适合默认就需要持续展示光效的重点卡片
+
+```tsx title="AnimeBeamFrame价格卡片"
+import { AnimeBeamFrame } from '@third-ui/main/anime';
+
+export function AnimatedPriceCardWithAnime() {
+  return (
+    <AnimeBeamFrame
+      active
+      tone="warm"
+      duration={4.2}
+      radius={20}
+      className="w-full max-w-sm"
+    >
+      <article className="rounded-[19px] border border-border/70 bg-background p-5 shadow-sm">
+        <div className="mb-4">
+          <h3 className="text-lg font-semibold">Pro</h3>
+          <p className="text-sm text-muted-foreground">For growing teams</p>
+        </div>
+        <div className="text-3xl font-semibold">$29</div>
+        <button className="mt-5 h-10 w-full rounded-md bg-primary text-primary-foreground">
+          Upgrade
+        </button>
+      </article>
+    </AnimeBeamFrame>
+  );
+}
+```
+
+### Anime 搜索框
+
+搜索框的 Anime 版本同样适合 `interactive` 模式, 用户 hover 或 focus 时才启动光效, 避免输入区常驻动画带来干扰
+
+```tsx title="AnimeBeamFrame搜索框"
+import { AnimeBeamFrame } from '@third-ui/main/anime';
+
+export function AnimatedSearchBoxWithAnime() {
+  return (
+    <AnimeBeamFrame
+      interactive
+      tone="cool"
+      duration={3.2}
+      radius={18}
+      className="w-full max-w-xl"
+    >
+      <label className="flex h-12 items-center gap-3 rounded-[17px] border border-border/70 bg-background px-4">
+        <span className="text-muted-foreground">Search</span>
+        <input
+          className="min-w-0 flex-1 bg-transparent outline-none"
+          placeholder="Ask anything..."
+        />
+      </label>
+    </AnimeBeamFrame>
+  );
+}
+```
+
+### Anime Icon 按钮
+
+Icon 按钮的 Anime 版本也需要让 `radius` 和按钮圆角一致, 圆形按钮直接使用 `radius={999}`
+
+```tsx title="AnimeBeamFrame图标控制按钮"
+import { ArrowUpIcon } from '@base-ui/icons';
+import { AnimeBeamFrame } from '@third-ui/main/anime';
+
+export function AnimatedIconButtonWithAnime() {
+  return (
+    <AnimeBeamFrame
+      interactive
+      tone="theme"
+      duration={2.8}
+      radius={999}
+      className="inline-flex"
+    >
+      <button
+        type="button"
+        className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border/70 bg-background"
+        aria-label="Send"
+      >
+        <ArrowUpIcon className="h-5 w-5" />
+      </button>
+    </AnimeBeamFrame>
+  );
+}
+```
+
+### 底层动画驱动差异
+
+内部实现也保持同一套结构: `BeamFrameShell` 负责 props、交互状态和主题变量, `BeamSvgLayer` 负责 SVG 视觉层, Motion/Anime 只负责驱动同一个 `<g>` 的 `strokeDashoffset`
+
+```tsx title="MotionBeamFrame动画驱动"
+import { animate } from 'motion/react';
+
+controlsRef.current = animate(
+  node,
+  { strokeDashoffset: [0, -1] },
+  {
+    duration: BASE_DURATION_SECONDS,
+    repeat: Infinity,
+    ease: 'linear',
+  },
+);
+controlsRef.current.speed = BASE_DURATION_SECONDS / duration;
+```
+
+```tsx title="AnimeBeamFrame动画驱动 packages/third-ui/src/main/anime/anime-beam-frame.tsx"
+import { waapi } from 'animejs';
+
+animationRef.current = waapi.animate(node, {
+  strokeDashoffset: [0, -1],
+  loop: true,
+  duration: BASE_DURATION_SECONDS * 1000,
+  ease: 'linear',
+});
+animationRef.current.speed = BASE_DURATION_SECONDS / duration;
+```
+
+因此两个组件的视觉表现、参数语义、交互触发和 `prefers-reduced-motion` 行为应该保持一致; 后续调整光效时优先改 `beam-frame-config.tsx`, 不要只改其中一个动画实现
 
 ## 调参准则
 
@@ -214,4 +341,3 @@ export function AnimatedIconButton() {
 - 运动线段和光圈应使用同一条开放双圈 path, 避免闭合路径 seam
 - 如果左右边和圆角看不见运动, 优先检查 gradient stop 的透明度, 不要先增加线宽
 - `prefers-reduced-motion` 会关闭 Motion/Anime 动画, 组件会尊重系统设置
-

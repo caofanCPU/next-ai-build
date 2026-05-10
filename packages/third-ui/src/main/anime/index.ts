@@ -2,8 +2,6 @@
 
 export {
   AnimeBeamFrame,
-  BeamFrame,
-  MotionBeamFrame,
   type BeamFrameProps,
   type BeamFrameTone,
-} from './beam-frame';
+} from './anime-beam-frame';
