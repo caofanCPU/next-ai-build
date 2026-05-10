@@ -9,6 +9,8 @@ date: 2026-05-07
 - 弹窗按交互语义选择, 不按业务文案新建组件
 - 弹窗组件只负责结构、视觉、关闭语义、按钮 action 语义, 不理解业务接口
 - 文案由业务传入, 基础组件只提供英文 fallback
+- 标题文案要尽量短, 移动端最多保留两行, 过长标题应优先精简措辞
+- 正文内容允许正常换行, 不要强行截断业务说明
 - `X` 和 overlay 都是 close-only 语义, 不触发业务 action
 - `cancel` 是取消 action, `confirm` 是确认/应用 action, `undo` 是撤回 action
 - 异步 loading 绑定按钮 action, 不绑定弹窗整体
@@ -45,7 +47,7 @@ date: 2026-05-07
 
 业务只需要记住: `loadingActions` 里填哪个 key, 就表示执行对应 `onXxx` 回调时显示 `Loading`
 
-```tsx
+```tsx title="ConfirmDialog Apply"
 <ConfirmDialog
   open={open}
   onOpenChange={setOpen}
@@ -74,7 +76,7 @@ date: 2026-05-07
 
 需要强阻断页面操作时, 传 `loadingFullPage={true}`:
 
-```tsx
+```tsx title="ConfirmDialog Apply Loding"
 <ConfirmDialog
   open={open}
   onOpenChange={setOpen}
@@ -137,7 +139,7 @@ date: 2026-05-07
 
 `confirm` 在 `UndoableConfirmDialog` 里表示: 倒计时结束后真正执行 `onConfirm` 的动作
 
-```tsx
+```tsx title="UndoableConfirmDialog Loading"
 <UndoableConfirmDialog
   open={open}
   onOpenChange={setOpen}
@@ -192,6 +194,8 @@ date: 2026-05-07
 - 只有一个 confirm 按钮
 - 不要用 `InfoDialog` 做二选一决策
 - 如果 OK 后要等待异步操作, 使用 `loadingActions={['confirm']}`
+- 标题尽量控制在简短表达内, 超长标题会在移动端占用更多垂直空间
+- 正文可以正常换行, 适合承载补充说明和结果反馈
 
 ```tsx
 <InfoDialog
@@ -219,6 +223,8 @@ date: 2026-05-07
 - `type="danger"`: 危险确认, confirm 按钮使用红色危险语义
 - `emphasis="confirm"`: 默认, confirm 是重点按钮
 - `emphasis="cancel"`: cancel 是重点按钮, 适合“放弃结果/丢弃内容”这类取消语义更危险的场景
+- 标题尽量简短, 建议不要写过长的复合句
+- 正文可以完整说明动作后果, 不需要为了适配标题去压缩内容
 
 ```tsx
 <ConfirmDialog
@@ -265,6 +271,9 @@ date: 2026-05-07
 - 点击外部不关闭
 - `X` 仍然只关闭, 不触发 `onCancel`
 - 不负责监听路由跳转、关闭 tab、刷新页面；那些应该由 guard/hook 层处理
+- 弹框尺寸应和 `InfoDialog` 保持一致
+- footer 按钮应贴近弹框底部, 不要额外制造底部留白
+- 标题和正文遵循同一套文本规则：标题简短优先, 正文自由换行
 
 ```tsx
 <HighPriorityConfirmDialog

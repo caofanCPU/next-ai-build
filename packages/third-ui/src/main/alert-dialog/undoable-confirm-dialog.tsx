@@ -19,6 +19,7 @@ import {
   dialogHeaderClass,
   dialogThemedOverlayClass,
   dialogTitleClass,
+  dialogTitleTextClass,
   secondaryButtonClass,
 } from './dialog-styles';
 import type { ConfirmDialogEmphasis } from './confirm-dialog';
@@ -163,7 +164,7 @@ export function UndoableConfirmDialog({
                 <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-red-100 text-red-600 ring-1 ring-red-200 dark:bg-red-950 dark:text-red-300 dark:ring-red-900">
                   {pending ? <Trash2Icon className="size-5" /> : <CircleAlertIcon className="size-5" />}
                 </span>
-                <span className="min-w-0 truncate">{displayTitle}</span>
+                <span className={dialogTitleTextClass}>{displayTitle}</span>
               </div>
             </AlertDialogTitle>
             <button
@@ -199,7 +200,7 @@ export function UndoableConfirmDialog({
                 onClick={() => {
                   void handleUndo();
                 }}
-                className={secondaryButtonClass}
+                className={cn(secondaryButtonClass, 'w-full sm:w-auto')}
                 disabled={confirming}
               >
                 <Undo2Icon className="mr-1.5 size-4" />
@@ -207,21 +208,21 @@ export function UndoableConfirmDialog({
               </button>
             ) : (
               <>
-                <button
-                  type="button"
-                  onClick={handleCancel}
-                  className={cancelButtonClass}
-                >
-                  {cancelText}
-                </button>
-                <button
-                  type="button"
-                  onClick={startCountdown}
-                  className={confirmButtonClass}
-                >
-                  {confirmText}
-                </button>
-              </>
+              <button
+                type="button"
+                onClick={handleCancel}
+                className={cn(cancelButtonClass, 'w-full sm:w-auto')}
+              >
+                {cancelText}
+              </button>
+              <button
+                type="button"
+                onClick={startCountdown}
+                className={cn(confirmButtonClass, 'w-full sm:w-auto')}
+              >
+                {confirmText}
+              </button>
+            </>
             )}
           </div>
         </AlertDialogContent>

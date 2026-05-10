@@ -1,9 +1,10 @@
 import { getTranslations } from 'next-intl/server';
 import { GradientButton } from "./buttons";
 import { cn } from '@windrun-huaiin/lib/utils';
-import { themeIconColor } from '@windrun-huaiin/base-ui/lib';
+import { themeIconColor, themeName, themeSvgIconColor } from '@windrun-huaiin/base-ui/lib';
 import { richText } from './rich-text-expert';
 import { responsiveSection } from './section-layout';
+import type { CSSProperties } from 'react';
 
 interface CTAData {
   title: string;
@@ -12,6 +13,29 @@ interface CTAData {
   description2: string;
   button: string;
   url: string;
+}
+
+type CTAThemePalette = {
+  b: string;
+  c: string;
+};
+
+const CTA_THEME_PALETTES: Record<string, CTAThemePalette> = {
+  purple: { b: '#EC4899', c: '#6366F1' },
+  orange: { b: '#F59E0B', c: '#EF4444' },
+  indigo: { b: '#3B82F6', c: '#06B6D4' },
+  emerald: { b: '#14B8A6', c: '#22C55E' },
+  rose: { b: '#EC4899', c: '#FB7185' },
+};
+
+function createCTAStyle(): CSSProperties {
+  const palette = CTA_THEME_PALETTES[themeName] ?? CTA_THEME_PALETTES.purple;
+
+  return {
+    '--cta-color-a': themeSvgIconColor,
+    '--cta-color-b': palette.b,
+    '--cta-color-c': palette.c,
+  } as CSSProperties;
 }
 
 export async function CTA({ 
@@ -34,26 +58,31 @@ export async function CTA({
 
   return (
     <section id="cta" className={cn(responsiveSection, sectionClassName)}>
-      <div className="
-        py-3 sm:py-6 md:8
-        bg-linear-to-r from-[#f7f8fa] via-[#e0c3fc] to-[#b2fefa]
-        dark:bg-linear-to-r dark:from-[#2d0b4e] dark:via-[#6a3fa0] dark:to-[#3a185a]
-        rounded-2xl text-center
-        bg-size[200%_auto] animate-cta-gradient-wave
-        ">
-        <h2 className="text-3xl md:text-4xl font-bold mb-6">
-          {data.title} <span className={themeIconColor}>{data.eyesOn}</span>?
-        </h2>
-        <p className="text-base sm:text-xl mx-auto mb-8 max-w-3xl">
-          {data.description1}
-          <br />
-          <span className={cn(themeIconColor, "text-xl sm:text-2xl")}>{data.description2}</span>
-        </p>
-        <GradientButton
-          title={data.button}
-          href={data.url}
-          align="center"
-        />
+      <div
+        className="
+          third-ui-cta-surface
+          relative overflow-hidden rounded-2xl border border-black/5 py-3 text-center shadow-sm
+          animate-cta-gradient-wave
+          sm:py-6 md:py-8
+          dark:border-white/10 dark:shadow-none
+        "
+        style={createCTAStyle()}
+      >
+        <div className="relative z-10 px-4 sm:px-6">
+          <h2 className="mb-6 text-3xl font-bold text-neutral-950 md:text-4xl dark:text-neutral-50">
+            {data.title} <span className={themeIconColor}>{data.eyesOn}</span>?
+          </h2>
+          <p className="mx-auto mb-8 max-w-3xl text-base text-neutral-700 sm:text-xl dark:text-neutral-300">
+            {data.description1}
+            <br />
+            <span className={cn(themeIconColor, "text-xl sm:text-2xl")}>{data.description2}</span>
+          </p>
+          <GradientButton
+            title={data.button}
+            href={data.url}
+            align="center"
+          />
+        </div>
       </div>
     </section>
   )

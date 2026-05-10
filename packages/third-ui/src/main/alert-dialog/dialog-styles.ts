@@ -35,10 +35,13 @@ export const dialogLoadingContentClass = cn(
 export const dialogHeaderClass = 'flex items-start justify-between gap-4';
 
 export const dialogTitleClass =
-  'flex min-w-0 items-center gap-2 text-lg font-bold leading-tight text-neutral-950 dark:text-neutral-50';
+  'flex min-w-0 flex-1 items-center gap-2 text-lg font-bold leading-tight text-neutral-950 dark:text-neutral-50';
+
+export const dialogTitleTextClass =
+  'min-w-0 flex-1 line-clamp-2 break-words';
 
 export const dialogDescriptionClass =
-  'mt-3 text-sm font-medium leading-relaxed text-neutral-600 dark:text-neutral-300';
+  'mt-3 break-words text-sm font-medium leading-relaxed text-neutral-600 dark:text-neutral-300';
 
 export const dialogFooterClass = 'mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end';
 
@@ -73,6 +76,7 @@ export const highPriorityTitleClass = cn(
 
 export const highPrioritySurfaceClass = cn(
   dialogSurfaceClass,
+  'flex flex-col',
   'backdrop-blur-md ring-4 animate-in zoom-in-95 duration-300',
   themeBorderColor,
   themeRingColor

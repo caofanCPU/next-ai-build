@@ -11,6 +11,7 @@ import {
   dialogHeaderClass,
   highPrioritySurfaceClass,
   highPriorityTitleClass,
+  dialogTitleTextClass,
   primaryButtonClass,
   secondaryButtonClass,
 } from "./dialog-styles";
@@ -71,7 +72,7 @@ export function HighPriorityConfirmDialog({
                 <span className={cn('inline-flex size-9 shrink-0 items-center justify-center rounded-full ring-1', themeBgColor, themeBorderColor)}>
                   <FAQSIcon className={cn('size-5', themeIconColor)} />
                 </span>
-                <span className="min-w-0 truncate">{title}</span>
+                <span className={dialogTitleTextClass}>{title}</span>
               </h3>
               <button
                 type="button"
@@ -82,28 +83,30 @@ export function HighPriorityConfirmDialog({
                 <XIcon className="size-4" />
               </button>
             </div>
-            <div className={dialogDescriptionClass}>
-              {description}
-            </div>
-            <div className={dialogFooterClass}>
-              <button
-                type="button"
-                onClick={() => {
-                  void runDialogAction('cancel', onCancel);
-                }}
-                className={secondaryButtonClass}
-              >
-                {cancelText}
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  void runDialogAction('confirm', onConfirm);
-                }}
-                className={cn(primaryButtonClass, "hover:scale-105 active:scale-95")}
-              >
-                {confirmText}
-              </button>
+            <div className="flex min-h-0 flex-1 flex-col">
+              <div className={dialogDescriptionClass}>
+                {description}
+              </div>
+              <div className={cn(dialogFooterClass, 'mt-auto')}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    void runDialogAction('cancel', onCancel);
+                  }}
+                  className={secondaryButtonClass}
+                >
+                  {cancelText}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    void runDialogAction('confirm', onConfirm);
+                  }}
+                  className={cn(primaryButtonClass, "hover:scale-105 active:scale-95")}
+                >
+                  {confirmText}
+                </button>
+              </div>
             </div>
           </div>
         </div>,

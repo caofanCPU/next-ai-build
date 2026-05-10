@@ -63,7 +63,7 @@ export function useDialogLoadingAction({
             <Loading
               compact
               label="Loading"
-              className="min-h-[220px] w-full rounded-none bg-transparent px-0 py-0 dark:bg-transparent"
+              className="min-h-[220px] w-fit max-w-full rounded-none bg-transparent px-0 py-0 dark:bg-transparent"
               labelClassName="text-foreground"
             />
           </div>

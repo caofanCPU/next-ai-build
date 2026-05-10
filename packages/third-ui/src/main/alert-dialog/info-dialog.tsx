@@ -24,6 +24,7 @@ import {
   dialogHeaderClass,
   dialogThemedOverlayClass,
   dialogTitleClass,
+  dialogTitleTextClass,
 } from './dialog-styles';
 import { DialogLoadingAction, DialogActionHandler, useDialogLoadingAction } from './dialog-loading-action';
 
@@ -109,7 +110,7 @@ export function InfoDialog({
                 <span className={cn('inline-flex size-9 shrink-0 items-center justify-center rounded-full ring-1', typeClass.iconWrap)}>
                   <Icon className={cn('size-5', typeClass.icon)} />
                 </span>
-                <span className="min-w-0 truncate">{title}</span>
+                <span className={dialogTitleTextClass}>{title}</span>
               </div>
             </AlertDialogTitle>
             <button
