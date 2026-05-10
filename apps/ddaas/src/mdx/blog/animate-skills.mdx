@@ -1,0 +1,217 @@
+---
+title: Animate Frame Skills
+description: MotionBeamFrame 和 AnimeBeamFrame 的设计说明、参数速查与应用模板
+icon: MonitorPlayIcon
+date: 2026-05-10
+---
+
+## 目标
+
+`MotionBeamFrame` 和 `AnimeBeamFrame` 用于给任意内容外层增加"围绕内容边界运行"的光效它们不负责业务内容的边框、背景和布局, 只负责动画光束、头部光圈和主题配色
+
+应用方优先使用 `MotionBeamFrame`只有需要和 `animejs` 生态保持一致时, 再使用 `AnimeBeamFrame`
+
+## 核心设计
+
+两套组件共享 `share-config.tsx` 的视觉层, 只在动画驱动上不同: 
+
+- `MotionBeamFrame` 使用 `motion/react` 的 `animate`
+- `AnimeBeamFrame` 使用 `animejs` 的 `waapi.animate`
+- 二者都动画同一个 SVG `<g>` 的 `strokeDashoffset: [0, -1]`
+- 轨道使用开放的双圈 rounded path, 避免闭合 SVG path 起点产生跳变
+- 内容区真实边框交给 `children` 自己绘制, Frame 只绘制运动光效
+
+视觉层分为三类: 
+
+- 静态 ambient glow: 整圈柔光, 提供氛围, 不作为内容边框
+- 移动 aura: 短光圈, 位于运动线头部
+- 移动 trace: 较长线段, 明确表现"线条围绕内容边界运行"
+
+## 导入
+
+```tsx title="导入依赖"
+import {
+  AnimeBeamFrame,
+  MotionBeamFrame,
+  type BeamFrameTone,
+} from '@third-ui/main/beam-frame';
+```
+
+## 组件参数
+
+<CheetTable
+  title="BeamFrame Props"
+  description="MotionBeamFrame 和 AnimeBeamFrame 共享同一组 props"
+  copyableColumns={['参数']}
+>
+
+| 参数 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| !!`children` | `ReactNode` | 必填 | 被光效包裹的实际内容 |
+| `active` | `boolean` | `false` | 是否主动运行动画 |
+| `interactive` | `boolean` | `true` | 是否在 hover/focus 时自动运行动画 |
+| `tone` | `BeamFrameTone` | `'theme'` | 光效配色, 支持 `theme`、`rainbow`、`mono`、`warm`、`cool` |
+| `duration` | `number` | `3.6` | 跑完整圈的基础时长, 数值越小越快 |
+| `radius` | `number` | `24` | 外层圆角半径, 需要和内容圆角接近 |
+| `className` | `string` | - | Frame 根容器样式, 通常设置宽度或布局 |
+
+</CheetTable>
+
+## 视觉参数
+
+这些参数集中在 `packages/third-ui/src/main/beam-frame/share-config.tsx` 的 `BEAM_FRAME_STYLE`
+
+<CheetTable
+  title="BEAM_FRAME_STYLE 参数"
+  description="修改这些值即可调整光圈、运动线条和环境光"
+  copyableColumns={['参数']}
+>
+
+| 参数 | 当前值 | 影响范围 | 调整建议 |
+| --- | --- | --- | --- |
+| !!`ambientGlowOpacity` | `0.24` | 静态整圈柔光透明度 | 暗色背景弱时增大, 亮色背景脏时减小 |
+| `beamOpacity` | `1.0` | 移动 trace 的透明度 | 通常保持 `1` |
+| `auraOpacity` | `0.86` | 头部光圈透明度 | 光圈太抢眼时降到 `0.7` 左右 |
+| `auraLength` | `0.08` | 头部光圈长度 | 越大光圈拖得越长, 建议 `0.06 ~ 0.14` |
+| `traceLength` | `0.42` | 运动线段长度 | 主要决定"线条在跑"的可见程度, 建议 `0.32 ~ 0.55` |
+| `traceWidth` | `1.15` | 运动线段宽度 | 线条太弱时增大, 太粗时降到 `0.9` |
+| `ambientGlowWidth` | `7` | 静态柔光范围 | 性能敏感时优先减小 |
+| `auraWidth` | `8.5` | 头部光圈范围 | 光圈太大时降到 `7` 左右 |
+
+</CheetTable>
+
+## 颜色策略
+
+配色由 `BeamFrameTone` 决定`tone="theme"` 会读取全局主题色名, 其它 tone 使用固定 palette
+
+<CheetTable
+  title="Tone 配色"
+  description="光效颜色由三个 CSS 变量注入 SVG"
+  copyableColumns={['Tone']}
+>
+
+| Tone | 颜色来源 | 适用场景 |
+| --- | --- | --- |
+| !!`theme` | `themeName` 对应的主题 palette | 默认推荐, 跟随站点主题 |
+| `rainbow` | 红、蓝、绿 | 展示型卡片、强调入口 |
+| `mono` | 灰、蓝灰、白 | 安静、专业、低干扰场景 |
+| `warm` | 橙、黄、红 | 促销、价格、CTA |
+| `cool` | 青、靛、绿 | 搜索、AI、数据工具 |
+
+</CheetTable>
+
+## 价格卡片
+
+价格卡片应该由内容区自己控制边框、背景、阴影和状态, Frame 只负责动画光效
+
+```tsx title="MotionBeamFrame示例"
+import { MotionBeamFrame } from '@third-ui/main/beam-frame';
+
+export function AnimatedPriceCard() {
+  return (
+    <MotionBeamFrame
+      active
+      tone="warm"
+      duration={4.2}
+      radius={20}
+      className="w-full max-w-sm"
+    >
+      <article className="rounded-[19px] border border-border/70 bg-background p-5 shadow-sm">
+        <div className="mb-4">
+          <h3 className="text-lg font-semibold">Pro</h3>
+          <p className="text-sm text-muted-foreground">For growing teams</p>
+        </div>
+        <div className="text-3xl font-semibold">$29</div>
+        <button className="mt-5 h-10 w-full rounded-md bg-primary text-primary-foreground">
+          Upgrade
+        </button>
+      </article>
+    </MotionBeamFrame>
+  );
+}
+```
+
+## 搜索框
+
+搜索框适合 `interactive` 模式: 用户 hover 或 focus 时自动运行动画
+
+```tsx title="MotionBeamFrame搜索框"
+import { MotionBeamFrame } from '@third-ui/main/beam-frame';
+
+export function AnimatedSearchBox() {
+  return (
+    <MotionBeamFrame
+      interactive
+      tone="cool"
+      duration={3.2}
+      radius={18}
+      className="w-full max-w-xl"
+    >
+      <label className="flex h-12 items-center gap-3 rounded-[17px] border border-border/70 bg-background px-4">
+        <span className="text-muted-foreground">Search</span>
+        <input
+          className="min-w-0 flex-1 bg-transparent outline-none"
+          placeholder="Ask anything..."
+        />
+      </label>
+    </MotionBeamFrame>
+  );
+}
+```
+
+## Icon 按钮
+
+Icon 按钮要控制好 `radius`, 让 SVG 轨道和按钮圆角一致
+
+```tsx title="MotionBeamFrame图标控制按钮"
+import { ArrowUpIcon } from '@base-ui/icons';
+import { MotionBeamFrame } from '@third-ui/main/beam-frame';
+
+export function AnimatedIconButton() {
+  return (
+    <MotionBeamFrame
+      interactive
+      tone="theme"
+      duration={2.8}
+      radius={999}
+      className="inline-flex"
+    >
+      <button
+        type="button"
+        className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border/70 bg-background"
+        aria-label="Send"
+      >
+        <ArrowUpIcon className="h-5 w-5" />
+      </button>
+    </MotionBeamFrame>
+  );
+}
+```
+
+## 调参准则
+
+<CheetTable
+  title="常见调整"
+  description="应用方优先通过这些参数做小步调整"
+  copyableColumns={['目标']}
+>
+
+| 目标 | 修改参数 | 建议 |
+| --- | --- | --- |
+| !!运动线更明显 | `traceLength`、`traceWidth` | 先把 `traceWidth` 加到 `1.3`, 再考虑加长 `traceLength` |
+| 光圈更克制 | `auraWidth`、`auraOpacity` | 先降 `auraWidth`, 不要直接删 filter |
+| 暗色主题光圈太弱 | `auraOpacity`、`ambientGlowOpacity` | 小幅增加, 避免整圈染色 |
+| 亮色主题边线发白 | `auraGradientId` stops | 避免使用纯白高光, 优先用 palette 色 |
+| 性能压力大 | `ambientGlowWidth`、`auraWidth` | 先减宽度, 再减少移动层数量 |
+| 圆角轨迹不贴合 | `radius` | Frame 的 `radius` 应接近内容容器圆角 |
+
+</CheetTable>
+
+## 实现注意事项
+
+- 不要让 Frame 负责内容边框；内容边框由 `children` 自己写
+- 不要用整圈 dash gap 模拟运动线, 否则会出现断裂感
+- 运动线段和光圈应使用同一条开放双圈 path, 避免闭合路径 seam
+- 如果左右边和圆角看不见运动, 优先检查 gradient stop 的透明度, 不要先增加线宽
+- `prefers-reduced-motion` 会关闭 Motion/Anime 动画, 组件会尊重系统设置
+
