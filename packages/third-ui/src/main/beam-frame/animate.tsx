@@ -28,8 +28,6 @@ function AnimeBeamLayer({
   const aroundBeamRef = useRef<SVGGElement | null>(null);
   const animationRef = useRef<WAAPIAnimation | null>(null);
   const hasStartedRef = useRef(false);
-  const gradientId = useId().replace(/:/g, '');
-  const haloGradientId = useId().replace(/:/g, '');
   const auraGradientId = useId().replace(/:/g, '');
   const softGlowFilterId = useId().replace(/:/g, '');
 
@@ -79,8 +77,6 @@ function AnimeBeamLayer({
     <BeamSvgLayer
       beamRef={aroundBeamRef}
       auraGradientId={auraGradientId}
-      gradientId={gradientId}
-      haloGradientId={haloGradientId}
       softGlowFilterId={softGlowFilterId}
       radius={radius}
       size={size}

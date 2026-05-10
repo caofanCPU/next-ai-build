@@ -31,8 +31,6 @@ function MotionAroundBeam({
   radius?: number;
   size: FrameSize;
 }) {
-  const gradientId = useId().replace(/:/g, '');
-  const haloGradientId = useId().replace(/:/g, '');
   const auraGradientId = useId().replace(/:/g, '');
   const softGlowFilterId = useId().replace(/:/g, '');
   const beamGroupRef = useRef<SVGGElement | null>(null);
@@ -88,8 +86,6 @@ function MotionAroundBeam({
     <BeamSvgLayer
       beamRef={beamGroupRef}
       auraGradientId={auraGradientId}
-      gradientId={gradientId}
-      haloGradientId={haloGradientId}
       softGlowFilterId={softGlowFilterId}
       radius={radius}
       size={size}

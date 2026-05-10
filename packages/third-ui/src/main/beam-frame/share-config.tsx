@@ -42,29 +42,26 @@ const THEME_PALETTES: Record<string, BeamPalette> = {
 };
 
 const TONE_PALETTES: Record<Exclude<BeamFrameTone, 'theme'>, BeamPalette> = {
-  rainbow: { a: '#22D3EE', b: '#A855F7', c: '#F97316' },
+  rainbow: { a: '#FF3D77', b: '#3388FF', c: '#00FF88' },
   mono: { a: '#E5E7EB', b: '#94A3B8', c: '#FFFFFF' },
   warm: { a: '#F97316', b: '#FBBF24', c: '#EF4444' },
   cool: { a: '#06B6D4', b: '#6366F1', c: '#14B8A6' },
 };
 
 const BEAM_FRAME_STYLE = {
-  beamOpacity: 0.86,
-  glowOpacity: 0.18,
-  coreOpacity: 0.36,
-  auraOpacity: 0.12,
-  beamLength: 0.24,
-  coreLength: 0.3,
-  auraLength: 0.38,
-  beamWidth: 2.2,
-  glowWidth: 5,
-  haloWidth: 7,
-  auraWidth: 12,
+  ambientGlowOpacity: 0.24,
+  beamOpacity: 1.0,
+  auraOpacity: 0.86,
+  auraLength: 0.08,
+  traceLength: 0.42,
+  traceWidth: 1.15,
+  ambientGlowWidth: 7,
+  auraWidth: 8.5,
 };
 
 const BASE_BORDER_OPACITY = 0.18;
 
-export const BASE_DURATION_SECONDS = 1.8;
+export const BASE_DURATION_SECONDS = 3.6;
 export const DEFAULT_RADIUS = 24;
 
 function getPalette(tone: BeamFrameTone): BeamPalette {
@@ -139,40 +136,26 @@ function createRootStyle({
 }: Pick<BeamFrameRenderProps, 'tone' | 'radius'>): CSSProperties {
   const palette = getPalette(tone);
   const frameRadius = radius ?? DEFAULT_RADIUS;
-  const svgRadius = Math.max(0, Math.min(49, frameRadius));
 
   return {
     '--beam-frame-radius': `${frameRadius}px`,
-    '--beam-frame-svg-radius': svgRadius,
     '--beam-frame-color-a': palette.a,
     '--beam-frame-color-b': palette.b,
     '--beam-frame-color-c': palette.c,
     '--beam-frame-border-opacity': BASE_BORDER_OPACITY,
+    '--beam-frame-ambient-glow-opacity': BEAM_FRAME_STYLE.ambientGlowOpacity,
     '--beam-frame-beam-opacity': BEAM_FRAME_STYLE.beamOpacity,
-    '--beam-frame-glow-opacity': BEAM_FRAME_STYLE.glowOpacity,
-    '--beam-frame-core-opacity': BEAM_FRAME_STYLE.coreOpacity,
     '--beam-frame-aura-opacity': BEAM_FRAME_STYLE.auraOpacity,
-    '--beam-frame-beam-length': BEAM_FRAME_STYLE.beamLength,
-    '--beam-frame-core-length': BEAM_FRAME_STYLE.coreLength,
     '--beam-frame-aura-length': BEAM_FRAME_STYLE.auraLength,
-    '--beam-frame-beam-width': BEAM_FRAME_STYLE.beamWidth,
-    '--beam-frame-glow-width': BEAM_FRAME_STYLE.glowWidth,
-    '--beam-frame-halo-width': BEAM_FRAME_STYLE.haloWidth,
+    '--beam-frame-aura-dash-pattern':
+      'var(--beam-frame-aura-length) calc(1 - var(--beam-frame-aura-length))',
+    '--beam-frame-trace-length': BEAM_FRAME_STYLE.traceLength,
+    '--beam-frame-trace-dash-pattern':
+      'var(--beam-frame-trace-length) calc(1 - var(--beam-frame-trace-length))',
+    '--beam-frame-trace-width': BEAM_FRAME_STYLE.traceWidth,
+    '--beam-frame-ambient-glow-width': BEAM_FRAME_STYLE.ambientGlowWidth,
     '--beam-frame-aura-width': BEAM_FRAME_STYLE.auraWidth,
   } as CSSProperties;
-}
-
-function createBaseBorderBackground() {
-  return 'rgba(148, 163, 184, var(--beam-frame-border-opacity))';
-}
-
-function createBorderRingMask(): CSSProperties {
-  return {
-    WebkitMask: 'linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)',
-    WebkitMaskComposite: 'xor',
-    maskComposite: 'exclude',
-    padding: '1px',
-  };
 }
 
 export function BeamFrameShell({
@@ -197,23 +180,17 @@ export function BeamFrameShell({
     <div
       ref={rootRef}
       className={cn(
-        'group/beam-frame relative isolate overflow-hidden rounded-[var(--beam-frame-radius)] p-px',
+        'group/beam-frame relative isolate overflow-hidden rounded-(--beam-frame-radius) p-px',
         className,
       )}
       data-beam-running={isRunning ? 'true' : 'false'}
       style={createRootStyle({ tone, radius })}
       {...interactionProps}
     >
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 z-0 rounded-[inherit]"
-        style={{
-          background: createBaseBorderBackground(),
-          ...createBorderRingMask(),
-        }}
-      />
       {renderBeam()}
-      <div className="relative z-10 rounded-[calc(var(--beam-frame-radius)-1px)]">{children}</div>
+      <div className="relative z-10 rounded-[calc(var(--beam-frame-radius)-1px)]">
+        {children}
+      </div>
     </div>
   );
 }
@@ -232,6 +209,19 @@ export function createBeamGeometry({
   const rectWidth = Math.max(1, width - strokeWidth);
   const rectHeight = Math.max(1, height - strokeWidth);
   const rectRadius = Math.max(0, Math.min(radius ?? DEFAULT_RADIUS, rectWidth / 2, rectHeight / 2));
+  const rectRight = rectOffset + rectWidth;
+  const rectBottom = rectOffset + rectHeight;
+  const roundedPathLap = [
+    `H ${rectRight - rectRadius}`,
+    `A ${rectRadius} ${rectRadius} 0 0 1 ${rectRight} ${rectOffset + rectRadius}`,
+    `V ${rectBottom - rectRadius}`,
+    `A ${rectRadius} ${rectRadius} 0 0 1 ${rectRight - rectRadius} ${rectBottom}`,
+    `H ${rectOffset + rectRadius}`,
+    `A ${rectRadius} ${rectRadius} 0 0 1 ${rectOffset} ${rectBottom - rectRadius}`,
+    `V ${rectOffset + rectRadius}`,
+    `A ${rectRadius} ${rectRadius} 0 0 1 ${rectOffset + rectRadius} ${rectOffset}`,
+  ].join(' ');
+  const extendedRoundedPath = `M ${rectOffset + rectRadius} ${rectOffset} ${roundedPathLap} ${roundedPathLap}`;
 
   return {
     width,
@@ -240,27 +230,36 @@ export function createBeamGeometry({
     rectWidth,
     rectHeight,
     rectRadius,
+    rectRight,
+    rectBottom,
+    extendedRoundedPath,
   };
 }
 
 export function BeamSvgLayer({
   beamRef,
   auraGradientId,
-  gradientId,
-  haloGradientId,
   softGlowFilterId,
   radius,
   size,
 }: {
   beamRef: RefObject<SVGGElement | null>;
   auraGradientId: string;
-  gradientId: string;
-  haloGradientId: string;
   softGlowFilterId: string;
   radius?: number;
   size: FrameSize;
 }) {
-  const { width, height, rectOffset, rectWidth, rectHeight, rectRadius } = createBeamGeometry({
+  const {
+    width,
+    height,
+    rectOffset,
+    rectWidth,
+    rectHeight,
+    rectRadius,
+    rectRight,
+    rectBottom,
+    extendedRoundedPath,
+  } = createBeamGeometry({
     radius,
     size,
   });
@@ -272,7 +271,7 @@ export function BeamSvgLayer({
       preserveAspectRatio="none"
       viewBox={`0 0 ${width} ${height}`}
     >
-      <g ref={beamRef} opacity="0">
+      <g ref={beamRef} opacity="0" style={{ mixBlendMode: 'plus-lighter' }}>
         <rect
           x={rectOffset}
           y={rectOffset}
@@ -284,98 +283,57 @@ export function BeamSvgLayer({
           fill="none"
           stroke={`url(#${auraGradientId})`}
           strokeLinecap="round"
+          strokeWidth="var(--beam-frame-ambient-glow-width)"
+          vectorEffect="non-scaling-stroke"
+          filter={`url(#${softGlowFilterId})`}
+          opacity="var(--beam-frame-ambient-glow-opacity)"
+        />
+        <path
+          d={extendedRoundedPath}
+          pathLength="2"
+          fill="none"
+          stroke={`url(#${auraGradientId})`}
+          strokeLinecap="round"
           strokeWidth="var(--beam-frame-aura-width)"
           vectorEffect="non-scaling-stroke"
           filter={`url(#${softGlowFilterId})`}
           style={{
-            strokeDasharray:
-              'var(--beam-frame-aura-length) calc(1 - var(--beam-frame-aura-length))',
+            strokeDasharray: 'var(--beam-frame-aura-dash-pattern)',
           }}
           opacity="var(--beam-frame-aura-opacity)"
         />
-        <rect
-          x={rectOffset}
-          y={rectOffset}
-          width={rectWidth}
-          height={rectHeight}
-          rx={rectRadius}
-          ry={rectRadius}
-          pathLength="1"
+        <path
+          d={extendedRoundedPath}
+          pathLength="2"
           fill="none"
-          stroke={`url(#${haloGradientId})`}
+          stroke={`url(#${auraGradientId})`}
           strokeLinecap="round"
-          strokeWidth="var(--beam-frame-halo-width)"
+          strokeWidth="var(--beam-frame-trace-width)"
           vectorEffect="non-scaling-stroke"
           style={{
-            strokeDasharray:
-              'var(--beam-frame-aura-length) calc(1 - var(--beam-frame-aura-length))',
+            strokeDasharray: 'var(--beam-frame-trace-dash-pattern)',
           }}
-          opacity="var(--beam-frame-glow-opacity)"
-        />
-        <rect
-          x={rectOffset}
-          y={rectOffset}
-          width={rectWidth}
-          height={rectHeight}
-          rx={rectRadius}
-          ry={rectRadius}
-          pathLength="1"
-          fill="none"
-          stroke={`url(#${gradientId})`}
-          strokeLinecap="round"
-          strokeWidth="var(--beam-frame-glow-width)"
-          vectorEffect="non-scaling-stroke"
-          style={{
-            strokeDasharray:
-              'var(--beam-frame-core-length) calc(1 - var(--beam-frame-core-length))',
-          }}
-          opacity="var(--beam-frame-core-opacity)"
-        />
-        <rect
-          x={rectOffset}
-          y={rectOffset}
-          width={rectWidth}
-          height={rectHeight}
-          rx={rectRadius}
-          ry={rectRadius}
-          pathLength="1"
-          fill="none"
-          stroke={`url(#${gradientId})`}
-          strokeLinecap="round"
-          strokeWidth="var(--beam-frame-beam-width)"
-          vectorEffect="non-scaling-stroke"
-          style={{
-            strokeDasharray: 'var(--beam-frame-beam-length) calc(1 - var(--beam-frame-beam-length))',
-          }}
+          opacity="var(--beam-frame-beam-opacity)"
         />
       </g>
       <defs>
-        <filter id={softGlowFilterId} x="-12%" y="-12%" width="124%" height="124%">
-          <feGaussianBlur stdDeviation="2.25" />
+        <filter id={softGlowFilterId} x="-40%" y="-40%" width="180%" height="180%">
+          <feGaussianBlur stdDeviation="8" />
         </filter>
-        <linearGradient id={auraGradientId} x1="0%" x2="100%" y1="0%" y2="100%">
-          <stop offset="0%" stopColor="var(--beam-frame-color-a)" stopOpacity="0" />
-          <stop offset="18%" stopColor="var(--beam-frame-color-b)" stopOpacity="0.28" />
-          <stop offset="42%" stopColor="var(--beam-frame-color-c)" stopOpacity="0.76" />
-          <stop offset="58%" stopColor="white" stopOpacity="0.48" />
-          <stop offset="78%" stopColor="var(--beam-frame-color-a)" stopOpacity="0.32" />
-          <stop offset="100%" stopColor="var(--beam-frame-color-b)" stopOpacity="0" />
-        </linearGradient>
-        <linearGradient id={haloGradientId} x1="0%" x2="100%" y1="0%" y2="100%">
-          <stop offset="0%" stopColor="var(--beam-frame-color-a)" stopOpacity="0" />
-          <stop offset="22%" stopColor="var(--beam-frame-color-b)" stopOpacity="0.42" />
-          <stop offset="48%" stopColor="var(--beam-frame-color-c)" stopOpacity="0.94" />
-          <stop offset="62%" stopColor="white" stopOpacity="0.58" />
-          <stop offset="80%" stopColor="var(--beam-frame-color-a)" stopOpacity="0.5" />
-          <stop offset="100%" stopColor="var(--beam-frame-color-b)" stopOpacity="0" />
-        </linearGradient>
-        <linearGradient id={gradientId} x1="0%" x2="100%" y1="0%" y2="100%">
-          <stop offset="0%" stopColor="var(--beam-frame-color-a)" stopOpacity="0.18" />
-          <stop offset="26%" stopColor="var(--beam-frame-color-b)" stopOpacity="0.82" />
-          <stop offset="46%" stopColor="white" stopOpacity="1" />
-          <stop offset="56%" stopColor="var(--beam-frame-color-c)" stopOpacity="1" />
-          <stop offset="74%" stopColor="var(--beam-frame-color-a)" stopOpacity="0.8" />
-          <stop offset="100%" stopColor="var(--beam-frame-color-c)" stopOpacity="0.2" />
+        <linearGradient
+          id={auraGradientId}
+          x1={rectOffset}
+          x2={rectRight}
+          y1={rectOffset}
+          y2={rectBottom}
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop offset="0%" stopColor="var(--beam-frame-color-a)" stopOpacity="0.58" />
+          <stop offset="22%" stopColor="var(--beam-frame-color-b)" stopOpacity="0.78" />
+          <stop offset="44%" stopColor="var(--beam-frame-color-c)" stopOpacity="0.96" />
+          <stop offset="58%" stopColor="var(--beam-frame-color-b)" stopOpacity="1" />
+          <stop offset="78%" stopColor="var(--beam-frame-color-a)" stopOpacity="0.82" />
+          <stop offset="100%" stopColor="var(--beam-frame-color-c)" stopOpacity="0.58" />
         </linearGradient>
       </defs>
     </svg>
