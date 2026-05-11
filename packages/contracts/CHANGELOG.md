@@ -1,5 +1,11 @@
 # @windrun-huaiin/contracts
 
+## 30.0.0
+
+### Major Changes
+
+- feat(upgrade): version uniform
+
 ## 29.0.0
 
 ### Major Changes

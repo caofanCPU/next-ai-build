@@ -1,5 +1,11 @@
 # @windrun-huaiin/dev-scripts
 
+## 30.0.0
+
+### Major Changes
+
+- feat(upgrade): version uniform
+
 ## 29.0.1
 
 ### Patch Changes

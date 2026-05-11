@@ -1,5 +1,11 @@
 # @windrun-huaiin/fumadocs-local-md
 
+## 30.0.0
+
+### Major Changes
+
+- feat(upgrade): version uniform
+
 ## 29.0.0
 
 ### Major Changes

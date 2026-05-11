@@ -1,5 +1,20 @@
 # @windrun-huaiin/ddaas-website
 
+## 30.0.0
+
+### Major Changes
+
+- feat(upgrade): version uniform
+
+### Patch Changes
+
+- Updated dependencies
+  - @windrun-huaiin/lib@30.0.0
+  - @windrun-huaiin/base-ui@30.0.0
+  - @windrun-huaiin/third-ui@30.0.0
+  - @windrun-huaiin/backend-core@30.0.0
+  - @windrun-huaiin/fumadocs-local-md@30.0.0
+
 ## 29.2.0
 
 ### Minor Changes

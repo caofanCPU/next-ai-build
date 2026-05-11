@@ -1,5 +1,18 @@
 # @windrun-huaiin/backend-core
 
+## 30.0.0
+
+### Major Changes
+
+- feat(upgrade): version uniform
+
+### Patch Changes
+
+- Updated dependencies
+  - @windrun-huaiin/lib@30.0.0
+  - @windrun-huaiin/contracts@30.0.0
+  - @windrun-huaiin/third-ui@30.0.0
+
 ## 29.0.3
 
 ### Patch Changes

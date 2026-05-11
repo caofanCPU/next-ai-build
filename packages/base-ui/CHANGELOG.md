@@ -1,5 +1,16 @@
 # @windrun-huaiin/base-ui
 
+## 30.0.0
+
+### Major Changes
+
+- feat(upgrade): version uniform
+
+### Patch Changes
+
+- Updated dependencies
+  - @windrun-huaiin/lib@30.0.0
+
 ## 29.0.2
 
 ### Patch Changes
