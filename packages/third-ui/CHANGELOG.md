@@ -1,5 +1,16 @@
 # @windrun-huaiin/third-ui
 
+## 30.1.0
+
+### Minor Changes
+
+- feat(ui): upgrade 404-page
+
+### Patch Changes
+
+- Updated dependencies
+  - @windrun-huaiin/base-ui@30.1.0
+
 ## 30.0.0
 
 ### Major Changes
