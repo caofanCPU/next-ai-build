@@ -23,6 +23,7 @@ import {
 } from '@third-ui/fuma/base/site-layout-shared';
 import { getAsNeededLocalizedUrl } from '@lib/utils';
 import { defaultLocale, localePrefixAsNeeded } from '@/lib/appConfig';
+import { NotFoundIcon } from '@base-ui/components/global-icon';
 
 function renderMenuBanner() {
   return (
@@ -88,6 +89,14 @@ const previewTestLinks: SiteMenuLeafConfig[] = [
     prefetch: false,
     icon: <PanelsTopLeftIcon />,
     className: 'lg:col-start-4 lg:row-start-1',
+  },
+  {
+    text: '404 Island',
+    description: 'The page you want is unknown.',
+    path: '/test/404',
+    prefetch: false,
+    icon: <NotFoundIcon />,
+    className: 'lg:col-start-4 lg:row-start-2',
   },
 ];
 

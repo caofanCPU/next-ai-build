@@ -1,16 +1,37 @@
 'use client';
 
-import { themeBgColor, themeButtonGradientClass, themeIconColor, themeSvgIconColor } from '@windrun-huaiin/base-ui/lib';
+import {
+  THEME_BUTTON_GRADIENT_CLASS_MAP,
+  themeBgColor,
+  themeButtonGradientClass,
+  themeIconColor,
+  themeSvgIconColor,
+  type SupportedThemeColor,
+} from '@windrun-huaiin/base-ui/lib';
 import { cn } from '@windrun-huaiin/lib/utils';
 import { animate, createTimeline, stagger, type JSAnimation, type Timeline } from 'animejs';
 import { useReducedMotion } from 'motion/react';
-import { useEffect, useMemo, useRef, type ReactNode } from 'react';
+import { useCallback, useEffect, useMemo, useRef, type ReactNode } from 'react';
 
 export interface AnimeNotFoundPageProps {
   siteIcon: ReactNode;
   homeUrl?: string;
   className?: string;
+  compact?: boolean;
+  themeClass?: SupportedThemeColor;
+  themeColor?: string;
+  ambientAnimated?: boolean;
+  doorOpen?: boolean;
+  onDoorOpenChange?: (open: boolean) => void;
 }
+
+const THEME_BG_CLASS_MAP: Record<SupportedThemeColor, string> = {
+  'text-purple-500': 'bg-purple-500/20',
+  'text-orange-500': 'bg-orange-500/20',
+  'text-indigo-500': 'bg-indigo-500/20',
+  'text-emerald-500': 'bg-emerald-500/20',
+  'text-rose-500': 'bg-rose-500/20',
+};
 
 const dust = Array.from({ length: 10 }, (_, index) => ({
   id: index,
@@ -23,6 +44,12 @@ export function AnimeNotFoundPage({
   siteIcon,
   homeUrl = process.env.NEXT_PUBLIC_BASE_URL || '/',
   className,
+  compact = false,
+  themeClass,
+  themeColor,
+  ambientAnimated = true,
+  doorOpen,
+  onDoorOpenChange,
 }: AnimeNotFoundPageProps) {
   const rootRef = useRef<HTMLDivElement | null>(null);
   const timelineRef = useRef<Timeline | null>(null);
@@ -31,13 +58,16 @@ export function AnimeNotFoundPage({
   const lightAnimationRef = useRef<JSAnimation | null>(null);
   const handleAnimationRef = useRef<JSAnimation | null>(null);
   const messageAnimationRef = useRef<JSAnimation | null>(null);
-  const isDoorOpenRef = useRef(true);
+  const isDoorOpenRef = useRef(doorOpen ?? false);
   const prefersReducedMotion = useReducedMotion();
+  const activeThemeClass = themeClass ?? themeIconColor;
+  const activeGradientClass = themeClass ? THEME_BUTTON_GRADIENT_CLASS_MAP[themeClass] : themeButtonGradientClass;
+  const activeBgClass = themeClass ? THEME_BG_CLASS_MAP[themeClass] : themeBgColor;
   const doorStyle = useMemo(
     () => ({
-      '--not-found-theme': themeSvgIconColor,
+      '--not-found-theme': themeColor ?? themeSvgIconColor,
     }) as React.CSSProperties,
-    []
+    [themeColor]
   );
 
   useEffect(() => {
@@ -58,47 +88,52 @@ export function AnimeNotFoundPage({
       return undefined;
     }
 
-    door.style.transform = 'rotateY(-62deg) translateX(-10px)';
-    light.style.opacity = '0.74';
-    light.style.transform = 'scaleX(1.2)';
+    door.style.transform = 'rotateY(-2deg) translateX(0)';
+    light.style.opacity = '0.2';
+    light.style.transform = 'scaleX(0.78)';
     if (message) {
-      message.style.opacity = '1';
-      message.style.transform = 'translateY(0)';
+      message.style.opacity = '0';
+      message.style.transform = 'translateY(8px)';
     }
 
     timelineRef.current?.revert();
-    timelineRef.current = createTimeline({ loop: true })
-      .add(plate, {
-        translateY: [0, -3, 0],
-        scale: [1, 1.025, 1],
-        duration: 1400,
-        ease: 'inOutSine',
-      })
-      .add(plate, {
-        translateY: [0, -3, 0],
-        scale: [1, 1.025, 1],
-        duration: 1400,
-        ease: 'inOutSine',
-      }, '+=900')
-      .add(dustNodes, {
-        opacity: [0, 0.72, 0],
-        translateY: [14, -18],
-        translateX: (_target: unknown, index: number) => (index % 2 === 0 ? 10 : -10),
-        scale: [0.4, 1, 0.6],
-        duration: 1800,
-        delay: stagger(80),
-        ease: 'outSine',
-      }, '<+=200');
-
     shimmerRef.current?.revert();
-    shimmerRef.current = animate(root.querySelectorAll<HTMLElement>('[data-not-found-shimmer]'), {
-      translateX: ['-120%', '120%'],
-      opacity: [0, 0.8, 0],
-      duration: 2400,
-      delay: stagger(160),
-      ease: 'inOutSine',
-      loop: true,
-    });
+    timelineRef.current = null;
+    shimmerRef.current = null;
+
+    if (ambientAnimated) {
+      timelineRef.current = createTimeline({ loop: true })
+        .add(plate, {
+          translateY: [0, -3, 0],
+          scale: [1, 1.025, 1],
+          duration: 1400,
+          ease: 'inOutSine',
+        })
+        .add(plate, {
+          translateY: [0, -3, 0],
+          scale: [1, 1.025, 1],
+          duration: 1400,
+          ease: 'inOutSine',
+        }, '+=900')
+        .add(dustNodes, {
+          opacity: [0, 0.72, 0],
+          translateY: [14, -18],
+          translateX: (_target: unknown, index: number) => (index % 2 === 0 ? 10 : -10),
+          scale: [0.4, 1, 0.6],
+          duration: 1800,
+          delay: stagger(80),
+          ease: 'outSine',
+        }, '<+=200');
+
+      shimmerRef.current = animate(root.querySelectorAll<HTMLElement>('[data-not-found-shimmer]'), {
+        translateX: ['-120%', '120%'],
+        opacity: [0, 0.8, 0],
+        duration: 2400,
+        delay: stagger(160),
+        ease: 'inOutSine',
+        loop: true,
+      });
+    }
 
     return () => {
       timelineRef.current?.revert();
@@ -114,9 +149,9 @@ export function AnimeNotFoundPage({
       messageAnimationRef.current?.revert();
       messageAnimationRef.current = null;
     };
-  }, [prefersReducedMotion]);
+  }, [ambientAnimated, prefersReducedMotion]);
 
-  const toggleDoor = () => {
+  const setDoorOpen = useCallback((nextOpen: boolean) => {
     const root = rootRef.current;
 
     if (!root) {
@@ -132,7 +167,6 @@ export function AnimeNotFoundPage({
       return;
     }
 
-    const nextOpen = !isDoorOpenRef.current;
     isDoorOpenRef.current = nextOpen;
 
     doorAnimationRef.current?.pause();
@@ -182,12 +216,32 @@ export function AnimeNotFoundPage({
         ease: nextOpen ? 'outCubic' : 'inOutSine',
       });
     }
+  }, [prefersReducedMotion]);
+
+  useEffect(() => {
+    if (doorOpen === undefined || doorOpen === isDoorOpenRef.current) {
+      return;
+    }
+
+    setDoorOpen(doorOpen);
+  }, [doorOpen, setDoorOpen]);
+
+  const toggleDoor = () => {
+    const nextOpen = !isDoorOpenRef.current;
+
+    if (doorOpen !== undefined) {
+      onDoorOpenChange?.(nextOpen);
+      return;
+    }
+
+    setDoorOpen(nextOpen);
+    onDoorOpenChange?.(nextOpen);
   };
 
   return (
     <div
       ref={rootRef}
-      className={cn('relative flex min-h-dvh w-full items-center justify-center overflow-hidden px-4 py-8', className)}
+      className={cn('relative flex w-full items-center justify-center overflow-hidden px-4 py-8', compact ? 'h-full min-h-full' : 'min-h-dvh', className)}
       style={doorStyle}
     >
       <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_50%_20%,rgba(255,255,255,0.75),transparent_34%),linear-gradient(180deg,rgba(250,250,250,0.96),rgba(244,244,245,0.72))] dark:bg-[radial-gradient(circle_at_50%_20%,rgba(255,255,255,0.08),transparent_34%),linear-gradient(180deg,rgba(24,24,27,0.96),rgba(9,9,11,0.92))]" />
@@ -195,7 +249,7 @@ export function AnimeNotFoundPage({
 
       <div className="flex w-full max-w-3xl flex-col items-center gap-5">
         <section className="text-center">
-          <h3 className={cn('whitespace-nowrap text-[clamp(2.15rem,8vw,3.4rem)] font-black leading-none tracking-normal bg-linear-to-r bg-clip-text text-transparent', themeButtonGradientClass)}>
+          <h3 className={cn('whitespace-nowrap text-[clamp(2.15rem,8vw,3.4rem)] font-black leading-none tracking-normal bg-linear-to-r bg-clip-text text-transparent', activeGradientClass)}>
             Page Not Found
           </h3>
         </section>
@@ -237,7 +291,7 @@ export function AnimeNotFoundPage({
                     {siteIcon}
                     <span>Woops!</span>
                   </span>
-                  <span className={cn('text-xs font-semibold underline underline-offset-4', themeIconColor, 'decoration-current')}>
+                  <span className={cn('text-xs font-semibold underline underline-offset-4', activeThemeClass, 'decoration-current')}>
                     Back to Homepage
                   </span>
                 </a>
@@ -248,7 +302,7 @@ export function AnimeNotFoundPage({
                 className="absolute left-1/2 top-[18%] flex h-[88px] w-[156px] -translate-x-1/2 items-center justify-center overflow-hidden rounded-2xl border border-black/10 bg-white/86 shadow-lg shadow-black/10 dark:border-white/10 dark:bg-black/30"
               >
                 <div data-not-found-shimmer="" className="absolute inset-y-0 w-1/2 -skew-x-12 bg-white/60 blur-md dark:bg-white/15" />
-                <span className={cn('relative text-5xl font-black tabular-nums bg-linear-to-r bg-clip-text text-transparent', themeButtonGradientClass)}>
+                <span className={cn('relative text-5xl font-black tabular-nums bg-linear-to-r bg-clip-text text-transparent', activeGradientClass)}>
                   404
                 </span>
               </div>
@@ -273,7 +327,7 @@ export function AnimeNotFoundPage({
               <span
                 key={dot.id}
                 data-not-found-dust=""
-                className="absolute rounded-full bg-(--not-found-theme) opacity-0"
+                className={cn('absolute rounded-full opacity-0', activeBgClass)}
                 style={{
                   left: dot.left,
                   top: dot.top,
