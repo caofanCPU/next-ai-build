@@ -1,60 +1,58 @@
 'use client';
 
-import { NotFoundIcon } from "@base-ui/components/global-icon";
-import { useEffect, useState, type ReactNode } from "react";
-import { themeBgColor, themeViaColor, themeButtonGradientClass } from "@base-ui/lib";
-import { cn } from "@windrun-huaiin/lib/utils"; 
+import { NotFoundIcon } from '@windrun-huaiin/base-ui/components/shared';
+import { themeBgColor, themeButtonGradientClass, themeIconColor, themeViaColor } from '@windrun-huaiin/base-ui/lib';
+import { cn } from '@windrun-huaiin/lib/utils';
+import { useEffect, useState, type ReactNode } from 'react';
 
 interface NotFoundPageProps {
   siteIcon: ReactNode;
 }
 
 export function NotFoundPage({ siteIcon }: NotFoundPageProps) {
-  const [glitchText, setGlitchText] = useState("404");
+  const [glitchText, setGlitchText] = useState('404');
+  const homeUrl = process.env.NEXT_PUBLIC_BASE_URL || '/';
 
-  // glitch effect
   useEffect(() => {
-    const glitchChars = ["4", "0", "4", "?", "#", "!", "*", "&", "%", "$"];
+    const glitchChars = ['4', '0', '4', '?', '#', '!', '*', '&', '%', '$'];
 
     const interval = setInterval(() => {
-      // 80% probability to display "404", 20% probability to display random characters
       if (Math.random() < 0.5) {
-        setGlitchText("404");
+        setGlitchText('404');
       } else {
         const randomChars = Array.from(
           { length: 3 },
           () => glitchChars[Math.floor(Math.random() * glitchChars.length)]
-        ).join("");
+        ).join('');
         setGlitchText(randomChars);
       }
-    }, 600); // every 1.5 seconds
+    }, 600);
 
     return () => clearInterval(interval);
   }, []);
 
   return (
     <div className="flex min-h-dvh w-full flex-col items-center justify-center px-4 py-8">
-      {/* main content area */}
       <div className="text-center space-y-8 max-w-2xl">
-        {/* 404 number - glitch effect */}
         <div className="relative flex justify-center">
           <h1
-            className={cn("text-8xl md:text-9xl font-bold bg-linear-to-r bg-clip-text text-transparent select-none", themeButtonGradientClass)}
+            className={cn(
+              'text-8xl md:text-9xl font-bold bg-linear-to-r bg-clip-text text-transparent select-none',
+              themeButtonGradientClass
+            )}
             style={{
-              fontFamily: "Montserrat, monospace",
-              textShadow: "0 0 30px rgba(172, 98, 253, 0.3)",
-              letterSpacing: "0.1em",
+              fontFamily: 'Montserrat, monospace',
+              textShadow: '0 0 30px rgba(172, 98, 253, 0.3)',
+              letterSpacing: '0.1em',
             }}
           >
             {glitchText}
           </h1>
-          {/* scan line effect */}
           <div className="absolute inset-0 pointer-events-none">
-            <div className={cn("h-full w-full bg-linear-to-b from-transparent to-transparent animate-pulse", themeViaColor)} />
+            <div className={cn('h-full w-full bg-linear-to-b from-transparent to-transparent animate-pulse', themeViaColor)} />
           </div>
         </div>
 
-        {/* error message */}
         <div className="space-y-4">
           <h2 className="text-2xl md:text-3xl font-semibold text-foreground">
             Page Not Found
@@ -62,15 +60,27 @@ export function NotFoundPage({ siteIcon }: NotFoundPageProps) {
           <p className="text-lg text-muted-foreground max-w-md mx-auto leading-relaxed">
             The page you&#39;re looking for doesn&#39;t exist
           </p>
+          <a
+            href={homeUrl}
+            className={cn(
+              'inline-flex text-sm font-medium underline underline-offset-4 transition-opacity hover:opacity-80',
+              themeIconColor,
+              'decoration-current'
+            )}
+          >
+            Back to Homepage
+          </a>
         </div>
 
-        {/* decorative elements */}
         <div className="flex justify-center items-center gap-8 pt-8 opacity-60">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <a
+            href={homeUrl}
+            className="flex items-center gap-2 text-sm text-muted-foreground transition-opacity hover:opacity-80"
+          >
             {siteIcon}
             <span>Woops!</span>
-          </div>
-          <div className={cn("w-2 h-2 rounded-full animate-ping", themeBgColor)} />
+          </a>
+          <div className={cn('w-2 h-2 rounded-full animate-ping', themeBgColor)} />
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <NotFoundIcon />
             <span>Error Code: 404</span>
@@ -78,9 +88,7 @@ export function NotFoundPage({ siteIcon }: NotFoundPageProps) {
         </div>
       </div>
 
-      {/* background decoration */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
-        {/* grid background */}
         <div
           className="absolute inset-0 opacity-[0.02] dark:opacity-[0.05]"
           style={{
@@ -88,15 +96,14 @@ export function NotFoundPage({ siteIcon }: NotFoundPageProps) {
                 linear-gradient(rgba(172, 98, 253, 0.1) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(172, 98, 253, 0.1) 1px, transparent 1px)
               `,
-            backgroundSize: "50px 50px",
+            backgroundSize: '50px 50px',
           }}
         />
 
-        {/* floating particles */}
         {Array.from({ length: 6 }).map((_, i) => (
           <div
             key={i}
-            className={cn("absolute w-2 h-2 rounded-full animate-bounce", themeBgColor)}
+            className={cn('absolute w-2 h-2 rounded-full animate-bounce', themeBgColor)}
             style={{
               left: `${20 + i * 15}%`,
               top: `${30 + (i % 3) * 20}%`,

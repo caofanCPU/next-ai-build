@@ -2,6 +2,7 @@
 
 // Lightweight common client components.
 export * from './go-to-top';
+export * from './404-page';
 export * from './loading';
 export * from './nprogress-bar';
 export * from './rich-text-expert'

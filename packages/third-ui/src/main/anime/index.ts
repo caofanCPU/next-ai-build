@@ -7,3 +7,4 @@ export {
 } from './anime-beam-frame';
 
 export { AnimeSpiralLoading, type AnimeSpiralLoadingProps } from './anime-spiral-loading';
+export { AnimeNotFoundPage, type AnimeNotFoundPageProps } from './anime-not-found-page';

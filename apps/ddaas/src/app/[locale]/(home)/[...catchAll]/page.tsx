@@ -1,8 +1,5 @@
-import { NotFoundPage } from '@base-ui/components';
-import { SiteIcon } from '@/lib/site-config';
+import { notFound } from 'next/navigation';
 
-export default function NotFound() {
-  return (  
-    <NotFoundPage siteIcon={<SiteIcon />} />
-  );
-} 
+export default function CatchAllPage() {
+  notFound();
+}

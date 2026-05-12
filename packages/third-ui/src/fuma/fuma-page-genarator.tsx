@@ -3,6 +3,7 @@ import { ReactNode, ReactElement, cloneElement, type CSSProperties } from 'react
 import { TocFooterWrapper } from './mdx/toc-footer-wrapper';
 import type { LLMCopyButtonProps, LLMCopyButton } from './mdx/toc-base';
 import { getAsNeededLocalizedUrl } from '@windrun-huaiin/lib/utils';
+import { notFound } from 'next/navigation';
 import { PortableClerkTOC, PortableClerkTOCTitle } from './mdx/toc-clerk-portable';
 import { themeSvgIconColor } from '@windrun-huaiin/base-ui/lib';
 
@@ -36,14 +37,6 @@ interface FumaPageParams {
    * The copy button component, must be LLMCopyButton
    */
   copyButtonComponent?: ReactElement<LLMCopyButtonProps, typeof LLMCopyButton>;
-  /* 
-   * The site icon component to use in NotFoundPage
-   */
-  siteIcon: ReactNode;
-  /* 
-   * The fallback page component to use when the page is not found
-   */
-  FallbackPage: React.ComponentType<{ siteIcon: ReactNode }>;
   /*
    * Supported locales for generating alternates metadata, defaults to ['en']
    */
@@ -89,8 +82,6 @@ export function createFumaPage({
   mdxSourceDir,
   githubBaseUrl,
   copyButtonComponent,
-  siteIcon,
-  FallbackPage,
   supportedLocales = ['en'],
   showBreadcrumb = true,
   showTableOfContent = true,
@@ -138,18 +129,7 @@ export function createFumaPage({
       totalElapsedMs: durationMs(pageStartedAt),
     });
     if (!page) {
-      return (
-        <DocsPage
-          full
-          breadcrumb={{ enabled: false }}
-          footer={{ enabled: false }}
-          tableOfContent={{ enabled: false }}
-          tableOfContentPopover={{ enabled: false }}
-          className="max-w-none px-0 py-0"
-        >
-          <FallbackPage siteIcon={siteIcon} />
-        </DocsPage>
-      );
+      notFound();
     }
 
     const path = githubBaseUrl ? `${mdxSourceDir}/${page.path}` : undefined;

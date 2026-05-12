@@ -134,7 +134,6 @@ MIT
 - Full TypeScript support
 
 ### Base Components (components/)
-- 404-page: 404 error page component
 - cta: Call-to-Action component
 - features: Feature showcase component
 - footer: Footer component
@@ -153,15 +152,12 @@ MIT
 ## Usage Example
 
 ```tsx
-import { Button, NotFoundPage, LanguageSwitcher } from '@windrun-huaiin/base-ui';
+import { Button, LanguageSwitcher } from '@windrun-huaiin/base-ui';
 
 // Use UI components
 <Button variant="default" size="lg">
   Click me
 </Button>
-
-// Use base components
-<NotFoundPage />
 
 // Use language switcher component (need to pass in configuration)
 <LanguageSwitcher 
