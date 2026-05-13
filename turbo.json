@@ -7,14 +7,8 @@
     "TURBO_TEAM"
   ],
   "tasks": {
-    "copy-shared-assets": {
-      "cache": true,
-      "inputs": ["packages/shared-assets/public/**", "packages/shared-assets/scripts/**"],
-      "outputs": ["../../apps/*/public/shared/**"],
-      "env": ["NODE_ENV"]
-    },
     "build": {
-      "dependsOn": ["^build", "@windrun-huaiin/shared-assets#copy-shared-assets"],
+      "dependsOn": ["^build"],
       "outputs": [".next/**", "!.next/cache/**", "dist/**"],
       "env": [
         "NODE_ENV",
@@ -37,7 +31,7 @@
       ]
     },
     "build:prod": {
-      "dependsOn": ["^build:prod", "@windrun-huaiin/shared-assets#copy-shared-assets"],
+      "dependsOn": ["^build:prod"],
       "outputs": [".next/**", "!.next/cache/**", "dist/**"],
       "env": [
         "NODE_ENV",
@@ -75,17 +69,6 @@
         "LOCAL_MD_*",
         "NEXT_PUBLIC_*"
       ]
-    },
-    "@windrun-huaiin/shared-assets#build": {
-      "cache": false,
-      "outputs": [],
-      "env": ["NODE_ENV"]
-    },
-    "@windrun-huaiin/shared-assets#copy-shared-assets": {
-      "cache": true,
-      "inputs": ["packages/shared-assets/public/**", "packages/shared-assets/scripts/**"],
-      "outputs": ["../../apps/*/public/shared/**"],
-      "env": ["NODE_ENV"]
     },
     "@windrun-huaiin/dev-scripts#build": {
       "outputs": ["dist/**", "src/core-prisma/**"],
@@ -233,13 +216,7 @@
         "QSTASH_*"
       ]
     },
-    "@windrun-huaiin/shared-assets#build:prod": {
-      "cache": false,
-      "outputs": [],
-      "env": ["NODE_ENV"]
-    },
     "dev": {
-      "dependsOn": ["copy-shared-assets"],
       "cache": false,
       "persistent": true,
       "env": [

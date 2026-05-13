@@ -1,185 +1,151 @@
 # @windrun-huaiin/third-ui
 
-This README currently documents only the Fuma/MDX component design in `third-ui`.
+Shared React and Next.js UI integrations for product websites, documentation systems, authentication flows, pricing pages, credit displays, AI interfaces, and Fuma-based MDX rendering.
 
-Other modules in this package, such as Clerk, main application UI, AI UI, fingerprint, SEO helpers, and shared layout utilities, are intentionally not covered here.
+This package is organized around public subpath exports. Use the smallest entry point that matches the feature you need so that application code can keep client, server, and heavy-renderer boundaries explicit.
 
-## MDX Component Layer
+## Feature Areas
 
-The Fuma/MDX part of `third-ui` provides the rendering component map used by application MDX pages.
+### Main Application UI
 
-It is not responsible for reading files or compiling MDX. That belongs to `@windrun-huaiin/fumadocs-local-md`.
+The main UI layer provides reusable building blocks for product-facing pages and application surfaces:
 
-The split is:
+- Hero sections, gallery sections, CTA blocks, feature sections, FAQ sections, footer sections, tips, usage blocks, and SEO-oriented content blocks.
+- Standard application states such as 404 pages, loading indicators, loading frames, and navigation progress feedback.
+- Interaction components such as alert dialogs, buttons, pill selects, calendars, motion helpers, and animation helpers.
+- Home-page and server-side helpers for composing localized, content-driven page sections.
 
-- `local-md`: content source, frontmatter/meta parsing, Markdown/MDX compilation, render execution safety.
-- `third-ui`: React components used when MDX is rendered.
-- application: chooses which compiler features and renderer features are imported.
+Primary entry points:
 
-## Design Goals
-
-- Keep the base MDX component map useful but small.
-- Make heavyweight rendering features explicit imports.
-- Avoid old aggregate component entries that import every renderer feature at module load time.
-- Let application code be the capability declaration.
-- Preserve a safe fallback path when disabled or unknown MDX components appear in content.
-- Keep renderer-only capabilities separate from compiler-only capabilities.
-
-## Current Entry Model
-
-New applications should use the base site MDX entry:
-
-```ts
-@windrun-huaiin/third-ui/fuma/server/site-mdx/base
-```
-
-Optional renderer features live behind physical subpath entries:
-
-```ts
-@windrun-huaiin/third-ui/fuma/server/site-mdx/features/code
-@windrun-huaiin/third-ui/fuma/server/site-mdx/features/math
-@windrun-huaiin/third-ui/fuma/server/site-mdx/features/mermaid
-@windrun-huaiin/third-ui/fuma/server/site-mdx/features/type-table
-```
-
-The old aggregate entries have been removed. There is no supported `site-mdx-components` entry and no `optional-features` aggregate entry.
-
-## Base Components
-
-The base entry is the minimum component set for normal documentation content.
-
-It includes:
-
-- Fuma UI basics: `Card`, `Cards`, `Callout`, `File`, `Folder`, `Files`, `Accordion`, `Accordions`, `Tab`, `Tabs`.
-- Markdown element renderers: headings, links, blockquote, lists, table, inline code, pre, image, and related primitive tags.
-- Site-level lightweight components: `SiteX`, `TrophyCard`, `ZiaCard`, `GradientButton`, `ZiaFile`, `ZiaFolder`, `SunoEmbed`.
-- Image rendering integration with image fallback and CDN-related options.
-- Feature-specific fallback components for disabled math, Mermaid, type table, and code-tab style components.
-
-It intentionally does not include heavyweight renderer implementations such as Mermaid, KaTeX rendering, Fuma codeblock rendering, or type-table rendering.
-
-## Renderer Feature Matrix
-
-| Capability | Renderer Entry | Compiler Entry Required | Notes |
-| --- | --- | --- | --- |
-| `base` | `site-mdx/base` | `local-md/presets/fuma-docs/base` | Required for normal MDX rendering |
-| `code` | `site-mdx/features/code` | `local-md/presets/fuma-docs/features/code` | Enables Fuma codeblock UI and built-in language icon mapping |
-| `math` | `site-mdx/features/math` | `local-md/presets/fuma-docs/features/math` | Enables `MathBlock` and `InlineMath` rendering |
-| `mermaid` | `site-mdx/features/mermaid` | Not required | Renderer-only component capability |
-| `type-table` | `site-mdx/features/type-table` | Not required | Renderer-only component capability |
-| `npm` | Not required | `local-md/presets/fuma-docs/features/npm` | Compiler-only content transform |
-
-This table is the main rule for application integration.
-
-`code` and `math` need both compiler and renderer support. `npm` is compiler-only. `mermaid` and `type-table` are renderer-only.
-
-## Bundle Cropping Rule
-
-Renderer pruning is based on import boundaries.
-
-If an application does not import `site-mdx/features/mermaid`, Mermaid renderer code should not be pulled into the base renderer entry. The same rule applies to code, math, and type-table renderer features.
-
-Do not reintroduce a file that imports all renderer features and then chooses one at runtime. That pattern defeats bundle cropping because static imports run before configuration checks.
-
-Correct model:
-
-- base entry imports only base renderers and lightweight fallback components.
-- each optional feature entry imports only its own renderer implementation.
-- application code imports the feature entries it wants.
-
-## Fallback Design
-
-There are two fallback layers.
-
-The first layer lives in `third-ui`.
-
-It provides feature-aware fallbacks for known but disabled MDX capabilities:
-
-- `MathBlock`
-- `InlineMath`
-- `Mermaid`
-- `TypeTable`
-- `CodeBlockTab`
-- `CodeBlockTabs`
-- `CodeBlockTabsList`
-- `CodeBlockTabsTrigger`
-
-These fallbacks render visible warning blocks instead of silently dropping content.
-
-The second layer lives in `local-md`.
-
-It is the final safety net for arbitrary unknown PascalCase components, such as:
-
-```mdx
-<CalloutXXX />
-```
-
-`local-md` detects missing component references from the compiled MDX output and injects generic fallback components before rendering. This prevents unknown MDX components from crashing the page.
-
-The priority order is:
-
-- application-provided MDX components
-- enabled `third-ui` renderer feature components
-- `third-ui` known disabled-feature fallbacks
-- `local-md` generic unknown-component fallback
-
-## Heavy Renderer Boundary
-
-Heavy renderers are isolated under dedicated feature paths or heavy modules.
-
-Examples:
-
-- Mermaid rendering is behind the Mermaid feature entry.
-- Math rendering uses the math feature entry and lazy heavy math renderer.
-- Type table rendering is behind the type-table feature entry.
-- Fuma codeblock rendering is behind the code feature entry.
-
-The code renderer owns its programming-language icon map internally. Applications should not pass a global icon map into `createCodeMdxComponents()`.
-
-This keeps `site-mdx/base` from becoming a hidden dependency sink.
-
-## Application Rules
-
-Applications should treat their MDX integration files as the capability declaration.
-
-For `apps/ddaas`, the important files are:
-
-- `src/lib/content-source.ts`: compiler/source capabilities.
-- `src/components/mdx-components.tsx`: renderer/component capabilities.
-
-When enabling a capability:
-
-- import the compiler feature only if the capability needs compiler support.
-- import the renderer feature only if the capability needs renderer support.
-- add the imported feature to the matching `features` list.
-- do not import unused feature entries “just in case”.
-
-If an application creates its own MDX component and that component imports a heavy package directly, the package can still enter the bundle. That is expected and belongs to the application layer.
-
-## Styling
-
-MDX components assume the application includes the package styles and Tailwind source scanning for `third-ui`.
-
-The exact global CSS setup is application-specific, but MDX pages need the same base styles used by the rest of the Fuma UI integration.
-
-## Export Map
-
-MDX-related exports currently relevant to this design:
-
-| Export | Purpose |
+| Entry | Purpose |
 | --- | --- |
-| `./fuma/server/site-mdx/base` | Recommended base MDX component factory |
-| `./fuma/server/site-mdx/features/code` | Optional code renderer components |
-| `./fuma/server/site-mdx/features/math` | Optional math renderer components |
-| `./fuma/server/site-mdx/features/mermaid` | Optional Mermaid renderer components |
-| `./fuma/server/site-mdx/features/type-table` | Optional type-table renderer components |
-| `./fuma/mdx` | Shared MDX building blocks used by pages and widgets |
-| `./fuma/heavy` | Heavy renderer exports; avoid importing from app base paths unless intentionally needed |
-| `./fuma/share` | Shared markdown component utilities |
+| `@windrun-huaiin/third-ui/main` | General application UI components and shared main-page building blocks |
+| `@windrun-huaiin/third-ui/main/server` | Server-side helpers for main UI composition |
+| `@windrun-huaiin/third-ui/main/home/server` | Server-side home-page helpers |
+| `@windrun-huaiin/third-ui/main/hero` | Hero section components |
+| `@windrun-huaiin/third-ui/main/alert-dialog` | Alert dialog components |
+| `@windrun-huaiin/third-ui/main/buttons` | Button components |
+| `@windrun-huaiin/third-ui/main/calendar` | Calendar components |
+| `@windrun-huaiin/third-ui/main/pill-select` | Pill select components |
+| `@windrun-huaiin/third-ui/main/loading` | Loading components |
+| `@windrun-huaiin/third-ui/main/loading-frame` | Loading frame components |
+| `@windrun-huaiin/third-ui/main/motion` | Motion helpers and components |
+| `@windrun-huaiin/third-ui/main/anime` | Animation helpers and components |
 
-## Non-Goals
+### Pricing, Credits, and Commerce UI
 
-- This README does not document Clerk, main UI, AI UI, fingerprint, or SEO helpers.
-- The base MDX entry should not become an all-features preset.
-- Runtime feature flags should not be used as the primary pruning mechanism.
-- Unknown MDX components should not crash the page.
+The pricing and credit layer covers UI and server utilities for product plans, credit balances, money-price displays, and purchase-oriented controls.
+
+Primary entry points:
+
+| Entry | Purpose |
+| --- | --- |
+| `@windrun-huaiin/third-ui/main/money-price` | Money-price UI components, interactive pricing controls, and pricing configuration helpers |
+| `@windrun-huaiin/third-ui/main/money-price/server` | Server-side money-price helpers |
+| `@windrun-huaiin/third-ui/main/credit` | Credit UI components, credit types, and credit display helpers |
+| `@windrun-huaiin/third-ui/main/credit/server` | Server-side credit helpers |
+
+### AI UI
+
+The AI layer provides ready-to-compose interface pieces for chat and prompt-driven product experiences:
+
+- Prompt textarea and composer components.
+- Message bubbles, message content, message metadata, message actions, and message lists.
+- Markdown rendering support for AI responses.
+- Status indicators and conversation state hooks.
+
+Primary entry point:
+
+| Entry | Purpose |
+| --- | --- |
+| `@windrun-huaiin/third-ui/ai` | AI chat, prompt, message, markdown, status, and conversation UI utilities |
+
+### Clerk and Fingerprint Integration
+
+The Clerk layer provides authentication UI integration for applications that use Clerk, including appearance configuration, provider components, user and organization components, and sign-in or sign-up flows that can be combined with fingerprint-aware behavior.
+
+The fingerprint layer is split into client and server entry points so applications can keep browser collection, provider state, hooks, and server-side fingerprint handling separated.
+
+Primary entry points:
+
+| Entry | Purpose |
+| --- | --- |
+| `@windrun-huaiin/third-ui/clerk` | Clerk UI integration, auth components, providers, page helpers, and fingerprint-aware auth components |
+| `@windrun-huaiin/third-ui/clerk/server` | Server-side Clerk helpers |
+| `@windrun-huaiin/third-ui/fingerprint` | Client-side fingerprint components, provider, hooks, shared types, and debug utilities |
+| `@windrun-huaiin/third-ui/fingerprint/server` | Server-side fingerprint helpers |
+
+### Fuma Layouts, Docs, and MDX
+
+The Fuma layer provides site layouts, documentation layouts, navigation configuration, docs root providers, MDX component maps, shared markdown components, and optional heavy renderer boundaries.
+
+It is designed for applications that want to compose documentation pages without mixing content compilation, layout composition, and renderer feature selection into one entry.
+
+Primary layout and docs entry points:
+
+| Entry | Purpose |
+| --- | --- |
+| `@windrun-huaiin/third-ui/fuma/base` | Base Fuma layout and navigation exports |
+| `@windrun-huaiin/third-ui/fuma/base/docs-root-provider` | Docs root provider |
+| `@windrun-huaiin/third-ui/fuma/base/nav-config` | Navigation configuration helpers |
+| `@windrun-huaiin/third-ui/fuma/base/site-docs-layout` | Documentation layout components |
+| `@windrun-huaiin/third-ui/fuma/base/site-home-layout` | Home layout components |
+| `@windrun-huaiin/third-ui/fuma/base/site-layout-shared` | Shared site layout utilities |
+| `@windrun-huaiin/third-ui/fuma/server` | Server-side Fuma helpers |
+| `@windrun-huaiin/third-ui/fuma/server/page-generator` | Documentation page generation helpers |
+| `@windrun-huaiin/third-ui/fuma/server/llm-copy-handler` | LLM copy handler helpers |
+| `@windrun-huaiin/third-ui/fuma/fuma-translate-util` | Fuma translation utilities |
+
+### MDX Renderer Boundaries
+
+The MDX renderer layer is intentionally split into a base entry and optional feature entries.
+
+Use the base entry for ordinary documentation content. Add feature entries only when an application needs the corresponding renderer capability.
+
+| Capability | Renderer Entry | Typical Purpose |
+| --- | --- | --- |
+| Base MDX | `@windrun-huaiin/third-ui/fuma/server/site-mdx/base` | Standard MDX component map for documentation pages |
+| Code | `@windrun-huaiin/third-ui/fuma/server/site-mdx/features/code` | Code block rendering components |
+| Math | `@windrun-huaiin/third-ui/fuma/server/site-mdx/features/math` | Math block and inline math rendering components |
+| Mermaid | `@windrun-huaiin/third-ui/fuma/server/site-mdx/features/mermaid` | Mermaid diagram rendering components |
+| Type Table | `@windrun-huaiin/third-ui/fuma/server/site-mdx/features/type-table` | Type table rendering components |
+| Shared MDX | `@windrun-huaiin/third-ui/fuma/mdx` | Shared MDX building blocks |
+| Shared Markdown | `@windrun-huaiin/third-ui/fuma/share` | Shared markdown component utilities |
+| Heavy Renderers | `@windrun-huaiin/third-ui/fuma/heavy` | Heavy renderer exports for intentional, explicit imports |
+
+The base MDX entry should stay lightweight. Heavy capabilities such as code, math, Mermaid, and type-table rendering should be imported through their dedicated entries only when the application enables them.
+
+### Server and SEO Utilities
+
+Shared server and SEO helpers are exposed separately from UI component entries.
+
+Primary entry points:
+
+| Entry | Purpose |
+| --- | --- |
+| `@windrun-huaiin/third-ui/lib/server` | Shared server utilities |
+| `@windrun-huaiin/third-ui/lib/seo-metadata` | SEO metadata helpers |
+
+### Styles
+
+The package exposes a shared stylesheet for components that depend on the package-level visual system.
+
+| Entry | Purpose |
+| --- | --- |
+| `@windrun-huaiin/third-ui/styles/third-ui.css` | Shared third-ui styles |
+
+## Usage Notes
+
+- Prefer specific subpath imports over broad imports when the feature area is known.
+- Use server entries only from server-side application code.
+- Keep optional Fuma MDX renderer features explicit in the application integration layer.
+- Import heavy renderer entries only when the page or feature intentionally needs them.
+- Include the shared stylesheet in the application when using components that rely on package styles.
+
+## Installation
+
+```bash
+pnpm add @windrun-huaiin/third-ui
+```
+
+This package is intended for React and Next.js applications. Peer framework setup, styling setup, localization setup, and authentication setup are provided by the consuming application.

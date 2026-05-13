@@ -6,7 +6,6 @@
   "scripts": {
     "build": "turbo build",
     "build:prod": "turbo build:prod",
-    "build:nocache": "turbo run copy-shared-assets --force",
     "dev": "turbo dev --parallel",
     "start": "pnpm -r start",
     "lint": "turbo lint",
@@ -17,7 +16,6 @@
     "dj": "pnpm run easy-changeset && pnpm changeset status",
     "djv": "pnpm changeset version",
     "djvp": "pnpm changeset publish",
-    "copy-shared-assets": "turbo copy-shared-assets",
     "ddaas:dev": "turbo dev --filter=@windrun-huaiin/ddaas-website",
     "ddaas:md-build": "turbo build-local-md --filter=@windrun-huaiin/ddaas-website",
     "ddaas:build": "turbo build --filter=@windrun-huaiin/ddaas-website",
@@ -28,7 +26,6 @@
     "third:build": "turbo build --filter=@windrun-huaiin/third-ui",
     "core:build": "turbo build --filter=@windrun-huaiin/backend-core",
     "cli:build": "turbo build --filter=@windrun-huaiin/dev-scripts",
-    "source:build": "turbo build --filter=@windrun-huaiin/shared-assets",
     "md:build": "turbo build --filter=@windrun-huaiin/fumadocs-local-md"
   },
   "devDependencies": {

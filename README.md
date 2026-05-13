@@ -17,8 +17,7 @@ graph TD
 
     subgraph Support
         direction TB
-        S1["@windrun-huaiin/shared-assets"]
-        S2["@windrun-huaiin/dev-scripts"]
+        S1["@windrun-huaiin/dev-scripts"]
     end
 
     A["@windrun-huaiin/ddaas-website"]
