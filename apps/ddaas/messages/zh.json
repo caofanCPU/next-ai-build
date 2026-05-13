@@ -2,84 +2,84 @@
   "home": {
     "title": "Re8ger",
     "banner": "再思·再议·再构",
-    "webTitle": "Reve Image Directory - 展示优美图片和生图技巧",
-    "webDescription": "探索精美的AI图片, 学习使用Reve Image强大的文生图算法创建优美的图片。",
-    "keywords": "AI 图像生成, 文本转图像, Reve Image, 免费图像生成"
+    "webTitle": "DDaaS - 更快上线可收费的产品官网",
+    "webDescription": "用一套成熟的网站底座搭建产品官网，覆盖价格页、Stripe 支付、登录、文档、博客、SEO 内容和移动端体验。",
+    "keywords": "SaaS 官网, 产品官网模板, Stripe 支付, 订阅网站, 文档网站, AI 产品官网, 响应式网站, SEO 官网"
   },
   "hero": {
-    "mainTitle": "使用",
-    "mainEyesOn": "Reve Image",
-    "description": "通过 Reve Image 的 AI 驱动的图像生成, 将您的想法转化为令人惊叹的视觉效果。释放您的创造力, 体验尖端技术。",
-    "button": "立即开始",
-    "about": "使用 Reve Image 每天享受 20 张免费图片",
+    "mainTitle": "搭建 AI时代的网站利器",
+    "mainEyesOn": "DDaaS",
+    "description": "为现代 SaaS 和 AI 产品准备的完整官网底座。展示产品、售卖套餐、发布文档、承接用户，并始终兼顾移动端体验。",
+    "button": "了解 DDaaS",
+    "about": "适合付费产品、文档门户和快速验证的新项目",
     "heroImageUrl": "https://r2.d8ger.com/Reve-Image/00.webp",
-    "heroImageAlt": "Reve Image AI 生成的艺术作品展示平台的强大功能"
+    "heroImageAlt": "DDaaS 产品官网预览"
   },
   "usage": {
-    "title": "如何使用",
-    "eyesOn": "Reve Image",
-    "description": "",
+    "title": "如何帮助你",
+    "eyesOn": "更快上线",
+    "description": "从想法到可信、可收费、可增长的网站，用更清晰的路径完成。",
     "steps": [
       {
-        "title": "选择一个模板",
-        "description": "点击左侧的模板开始。",
+        "title": "建立品牌第一印象",
+        "description": "配置产品名称、导航、主题色、页面区块和核心卖点，让访问者快速理解你在提供什么。",
         "iconKey": "MousePointerClick"
       },
       {
-        "title": "自定义内容",
-        "description": "直接在文本区域编辑文本, 将鼠标悬停在图像上以上传新图像。",
+        "title": "接入商业转化",
+        "description": "通过用户熟悉的 Stripe 支付流程，展示订阅套餐、积分包和升级路径。",
         "iconKey": "Pencil"
       },
       {
-        "title": "下载 & 分享",
-        "description": "下载为图像、PDF 或分享到 X、Instagram 等。",
+        "title": "放心发布上线",
+        "description": "带着响应式页面、SEO 内容、文档、博客、法务页面和账号入口一起上线。",
         "iconKey": "Download"
       }
     ]
   },
   "faq": {
     "title": "常见问题",
-    "description": "",
+    "description": "为正在评估 DDaaS 的创始人、团队和独立开发者准备的说明。",
     "items":[
       {
-        "question": "这是什么网站？",
-        "answer": "这个网站允许你使用简单的模板创建和定制专业外观的报纸。你可以编辑文本、上传图像并下载或分享你的创作。"
+        "question": "DDaaS 是什么？",
+        "answer": "DDaaS 是一套面向产品官网的基础系统，适合 SaaS、AI 工具、文档站和付费数字产品。它把首页、价格页、支付、登录、文档、博客、法务页面和响应式界面组合在一起。"
       },
       {
-        "question": "这个网站是免费的吗？",
-        "answer": "是的, 我们的网站是完全免费的! 访问所有功能——模板、编辑工具和无水印下载——无需任何费用或隐藏费用。非常适合商业使用!"
+        "question": "DDaaS 适合谁使用？",
+        "answer": "适合创始人、出海团队、独立开发者、AI 产品团队和服务型团队。只要你需要一个专业官网，并且要承载套餐、账号、文档和 SEO 内容，DDaaS 就能节省大量准备时间。"
       },
       {
-        "question": "如何编辑文本和图像？",
-        "answer": "要编辑文本, 只需点击文本字段并开始输入内容。要更改图像, 将鼠标悬停在图像占位符上并选择上传新图像的选项。"
+        "question": "它可以用于付费产品吗？",
+        "answer": "可以。DDaaS 面向商业化场景设计，支持 Stripe 支付、订阅套餐、一次性积分包、用户账号入口、价格页和转化按钮。"
       },
       {
-        "question": "我需要设计经验才能使用这个网站吗？",
-        "answer": "不需要设计经验! 我们的直观界面和预设计模板使任何人都可以轻松创建精美的报纸。"
+        "question": "我能自定义品牌和导航吗？",
+        "answer": "可以。你可以调整菜单、下拉导航、重点入口、页面区块、主题色、动画风格、价格展示和多语言文案，让网站贴合自己的产品。"
       },
       {
-        "question": "我可以预览我的报纸吗？",
-        "answer": "是的, 你可以看到实时更新。预览功能允许你查看报纸以确保它在保存或分享之前看起来完美。"
+        "question": "移动端体验怎么样？",
+        "answer": "DDaaS 从桌面、平板到手机都做了响应式适配。导航、按钮、内容区块和关键操作会尽量保持清晰、顺手、易转化。"
       },
       {
-        "question": "我可以下载我的报纸吗？",
-        "answer": "是的, 你可以下载你的报纸作为高质量的PDF、PNG、JPG、WEBP或SVG, 适合打印或数字分享。"
+        "question": "可以发布文档和博客吗？",
+        "answer": "可以。DDaaS 包含文档、博客和法务内容区域，方便你解释功能、承接搜索流量、建立信任，并持续支持用户。"
       },
       {
-        "question": "我可以保存我的工作并稍后回来吗？",
-        "answer": "目前, 你可以在一个会话中完成你的报纸。未来更新可能包括保存功能。"
+        "question": "它对 SEO 友好吗？",
+        "answer": "是的。DDaaS 适合承载产品介绍、功能页、文档、博客、FAQ、元信息和面向搜索需求的长内容，帮助用户和搜索引擎更好理解你的产品。"
       },
       {
-        "question": "我可以创建多少个报纸？",
-        "answer": "没有限制! 你可以创建任意数量的报纸, 全部免费。"
+        "question": "DDaaS 适合 AI 产品吗？",
+        "answer": "适合。AI SaaS、提示词工具、生成类产品、积分制服务都可以使用 DDaaS 来展示产品、售卖套餐、说明功能并承接登录用户。"
       },
       {
-        "question": "我可以使用自己的字体或颜色吗？",
-        "answer": "你可以使用我们免费的在线报纸模板中的预设字体和颜色方案来获得专业外观。未来更新可能包括自定义字体上传。"
+        "question": "每个新产品都要重新设计一遍吗？",
+        "answer": "不需要。DDaaS 以配置为核心，你可以替换品牌、文案、主题、价格、导航和内容，同时保留稳定的网站结构。"
       },
       {
-        "question": "如何分享我的报纸？",
-        "answer": "完成你的报纸后, 你可以下载为PDF、PNG、JPG、WEBP或SVG, 并通过电子邮件、社交媒体或打印进行物理分发。"
+        "question": "它和普通落地页模板有什么不同？",
+        "answer": "普通落地页模板通常只解决展示问题。DDaaS 还覆盖价格页、Stripe 支付、登录、文档、博客、法务页面、积分、移动端体验和产品化结构。"
       }
     ]
   },
@@ -246,34 +246,34 @@
   },
   "features": {
     "title": "为什么选择",
-    "eyesOn": "Reve Image",
-    "description": "使用 Reve Image 的 AI 驱动的图像生成, 将您的想法转化为令人惊叹的视觉效果。释放您的创造力, 体验尖端技术。",
+    "eyesOn": "DDaaS",
+    "description": "现代付费产品官网需要的关键能力，汇总成一套清晰、可配置、可落地的体验。",
     "items": [
       {
-        "title": "高质量输出",
-        "description": "Reve Image 生成令人惊叹的、细节丰富的图像, 可与专业艺术作品媲美。",
+        "title": "更快上线",
+        "description": "从专业首页、价格页、登录、文档、博客和法务页面开始，不必从空白页面重新搭建。",
         "iconKey": "Sparkles"
       },
       {
-        "title": "每日20张免费图片",
-        "description": "使用您的 Reve Image 账户, 享受每天慷慨的20张免费图片配额。",
+        "title": "面向收入",
+        "description": "通过 Stripe 支付流程售卖订阅和积分包，让用户更自然地理解、选择和升级。",
         "iconKey": "Gift"
       },
       {
-        "title": "直观的提示系统",
-        "description": "先进的 AI 能理解自然语言, 让您轻松描述您的愿景。",
+        "title": "贴合你的品牌",
+        "description": "按产品定位调整导航、主题色、动画风格、页面区块和多语言文案。",
         "iconKey": "MessageCircleMore"
       }
     ]
   },
   "gallery": {
-    "titleL": "Reve Image",
-    "eyesOn": "画廊",
-    "titleR": "作品展示",
-    "description": "探索 Reve Image 带来的无限可能。以下每张图片都是使用 AI 技术根据相应提示生成。",
+    "titleL": "产品页面",
+    "eyesOn": "即刻",
+    "titleR": "开始配置",
+    "description": "用 DDaaS 组合完整的产品官网：首页、价格页、文档、博客、法务页面和账号入口都可以围绕同一品牌展开。",
     "button": {
-      "title": "创建您自己的图片",
-      "href": "https://preview.reve.art/",
+      "title": "开始搭建",
+      "href": "https://diaomao.d8ger.com/",
       "align": "center"
     },
     "defaultImgUrl": "https://r2.d8ger.com/default.webp",
@@ -306,75 +306,75 @@
     ]
   },
   "tips": {
-    "title": "获得最佳效果的技巧 - ",
-    "eyesOn": "Reve Image",
+    "title": "如何更好使用",
+    "eyesOn": "DDaaS",
     "sections": [
       {
-        "title": "提示要具体",
-        "description": "使用 Reve Image 时, 提示越具体, 效果越好。包含风格、光线、情绪和构图的细节, 引导 AI 实现您的愿景。"
+        "title": "先讲清楚你的产品承诺",
+        "description": "首页第一屏要让用户快速明白：这是给谁用的、解决什么问题、为什么值得继续看。"
       },
       {
-        "title": "尝试不同风格",
-        "description": "Reve Image 可以生成各种艺术风格的图像。尝试在提示中添加风格描述符, 如\"油画\"、\"数字艺术\"、\"写实\"或\"水彩\"。"
+        "title": "把价格页当成转化页面",
+        "description": "使用清晰的套餐名称、明确的升级路径、利益导向的功能点，以及用户熟悉的 Stripe 支付入口。"
       },
       {
-        "title": "参考艺术家风格",
-        "description": "在 Reve Image 提示中提到特定艺术家可以帮助实现特定的美学效果。例如, \"梵高风格\"或\"像韦斯·安德森电影\"。"
+        "title": "用文档建立信任",
+        "description": "把功能说明、使用指南、政策条款和常见问题放到用户容易找到的位置，减少购买前的不确定感。"
       },
       {
-        "title": "迭代和改进",
-        "description": "不要害怕使用 Reve Image 生成多张图像并根据结果改进您的提示。每次迭代都会让您更接近完美的图像。"
+        "title": "缩短移动端路径",
+        "description": "在手机上优先保证阅读顺畅、导航清晰、按钮可见、表单易用，让转化动作不要被隐藏。"
       },
       {
-        "title": "考虑构图元素",
-        "description": "在 Reve Image 提示中包含构图细节, 如\"特写\"、\"广角\"、\"俯视\"或\"对称构图\"来控制画面构图。"
+        "title": "让内容承接搜索需求",
+        "description": "用博客、对比页、产品指南和 SEO 内容回答用户正在搜索的问题，为官网持续带来高意向流量。"
       },
       {
-        "title": "充分利用每日配额",
-        "description": "有了 Reve Image 每天慷慨的20张免费图片, 规划您的创作会话以充分利用这个配额。保存您最好的作品来建立个人灵感库。"
+        "title": "个性化，但不推倒重来",
+        "description": "替换主题、文案、菜单布局、价格方案和动画风格，同时保留经过验证的产品官网结构。"
       }
     ]
   },
   "seoContent": {
-    "title": "掌握 AI 图像生成 - ",
-    "eyesOn": "Reve Image",
-    "description": "在线、免费、可编辑、专业",
-    "intro": "Reve Image 代表着 AI 图像生成技术的前沿, 为用户提供将文本描述转换为令人惊叹的视觉内容的能力。无论您是寻求灵感的设计师、创作内容的营销人员, 还是探索新媒介的艺术家, Reve Image 都能为您提供将想象力变为现实的工具。",
+    "title": "搭建真正能",
+    "eyesOn": "转化",
+    "description": "快速上线、Stripe 支付、产品文档、SEO 内容和响应式体验",
+    "intro": "DDaaS 面向的不只是漂亮落地页，而是完整的产品官网。它帮助 SaaS 创始人、AI 产品团队、服务商和数字产品团队更快搭建一个能说明价值、承接转化、处理支付、支持用户并通过搜索增长的网站。",
     "sections": [
       {
-        "title": "测试所有HTML标签",
-        "content": "This paragraph demonstrates all possible tag combinations. <strong><em>Important emphasized text</em></strong> shows the most common pattern. <strong><u>Important underlined text</u></strong> highlights key steps. <strong><mark>Important highlighted text</mark></strong> marks critical information. <em><u>Emphasized underlined text</u></em> draws attention to notes. <em><mark>Emphasized highlighted text</mark></em> emphasizes key points. <u><mark>Underlined highlighted text</mark></u> creates special markers. <strong><del>Important deleted text</del></strong> shows deprecated features. <em><del>Emphasized deleted text</del></em> indicates obsolete content. Chemical formulas like H<strong><sub>2</sub></strong>O use subscript. Mathematical expressions like X<strong><sup>2</sup></strong> use superscript. <em><sub>Emphasized subscript</sub></em> for variables. <em><sup>Emphasized superscript</sup></em> for annotations. Three-tag combinations: <strong><em><u>Important emphasized underlined</u></em></strong> for critical concepts. <strong><em><mark>Important emphasized highlighted</mark></em></strong> for core content. <strong><u><mark>Important underlined highlighted</mark></u></strong> for key identifiers. <em><u><mark>Emphasized underlined highlighted</mark></u></em> for special emphasis. Scientific notation: H<strong><em><sub>2</sub></em></strong>O and X<strong><em><sup>2</sup></em></strong>. Version identifiers: v<strong><u><sup>2.0</sup></u></strong> and v<strong><u><sub>0</sub></u></strong>. This comprehensive test covers all supported tag combinations."
+        "title": "为付费产品准备的完整官网",
+        "content": "DDaaS 覆盖用户期待的关键页面和流程：清晰的首页、价格页、Stripe 支付入口、登录、文档、博客、法务页面和客户可理解的导航。它帮助你的产品在第一次演示、销售沟通或付款前就显得足够可信。"
       },
       {
-        "title": "了解 Reve Image 的工作原理",
-        "content": "当您输入提示时, Reve Image 会分析语义含义并生成与您描述相匹配的图像。这个过程在几秒钟内完成, 允许快速迭代和实验。"
+        "title": "适合 SaaS、AI 工具和数字产品",
+        "content": "无论你售卖订阅、AI 工具、积分制服务，还是文档驱动的产品，DDaaS 都能提供清楚表达价值、引导访问者和推动行动的官网结构。"
       },
       {
-        "title": "制作有效的 Reve Image 提示",
-        "content": "从 Reve Image 获得卓越结果的关键在于如何构建您的提示。从清晰的主题开始, 然后添加风格、情绪、光线和构图的修饰语。例如, 不要简单地写\"一座山\", 而是尝试\"一座雄伟的雪峰在黄金时段, 配有戏剧性的云彩, 写实风格。\" Reve Image AI 对描述性形容词和具体的视觉参考特别敏感。"
+        "title": "让价格页真正帮助用户决策",
+        "content": "好的价格页不只是展示数字。DDaaS 支持订阅、年度优惠、一次性积分包、推荐套餐、功能对比和直接购买动作，让用户更容易选择适合自己的方案。"
       },
       {
-        "title": "利用 Reve Image 满足不同创意需求",
-        "content": "Reve Image 在各种用例中表现出色。对于营销专业人员, 它可以生成引人注目的社交媒体图片或概念产品可视化。设计师可以使用 Reve Image 快速制作原型或创建情绪板。作家和故事讲述者可能会使用 Reve Image 来可视化角色和场景。Reve Image 的多功能性使其成为跨创意领域的宝贵工具。"
+        "title": "同时服务用户和搜索引擎",
+        "content": "文档、博客、FAQ、法务页面和 SEO 内容可以回答用户真正关心的问题。DDaaS 将这些内容区纳入产品体验，让用户可以学习、比较、信任并回访。"
       },
       {
-        "title": "最大化利用 Reve Image 的免费每日图片",
-        "content": "随着 Reve Image 每天提供20次免费图像生成, 制定战略性的创作过程变得重要。考虑从更广泛的概念开始, 然后根据结果逐步完善您的提示。保存有前途的图像并记录提示中的有效元素。这种系统方法帮助您充分利用 Reve Image 的慷慨免费额度, 同时不断改进您的结果。"
+        "title": "每个屏幕都保持统一品牌感",
+        "content": "用户会从很多细节判断产品是否专业：菜单、移动端布局、加载状态、按钮、图标、颜色和页面节奏。DDaaS 保持这些体验统一，同时允许你按品牌调整。"
       },
       {
-        "title": "将 Reve Image 与其他创意工具结合",
-        "content": "虽然 Reve Image 产生令人印象深刻的独立图像, 但其输出也可以作为进一步改进的起点。许多创作者使用 Reve Image 生成初始概念, 然后将这些图像导入编辑软件进行额外的自定义。这种混合工作流程将 Reve Image AI 的想象力与人工引导编辑的精确性相结合。"
+        "title": "减少重复准备，专注产品增长",
+        "content": "与其反复准备同一套官网基础能力，不如把时间放在定位、卖点、内容、价格、用户引导和客户反馈上。DDaaS 提供一个更接近可销售状态的起点。"
       }
     ],
-    "conclusion": "随着 AI 图像生成的不断发展, Reve Image 始终保持在前沿, 不断改进其功能, 为用户提供表达创造力的新方式。通过了解如何通过精心制作的提示与 Reve Image AI 进行有效沟通, 您可以解锁非凡的视觉可能性, 改变您处理创意项目的方式。"
+    "conclusion": "现代产品官网不能只追求好看。它还要说明价值、建立信任、适配移动端、支持搜索、承接支付，并在用户登录后继续服务他们。DDaaS 正是为这条完整路径而设计。"
   },
   "cta": {
-    "title": "准备好使用",
-    "eyesOn": "Reve Image",
-    "description1": "今天就开始生成美丽的图像, 享受每日20次免费创作。",
-    "description2": "无需信用卡。",
-    "button": "立即开始",
-    "url": "https://preview.reve.art/"
+    "title": "准备好用",
+    "eyesOn": "DDaaS",
+    "description1": "从一套面向付费产品的网站底座开始，覆盖 Stripe 支付、产品文档和响应式用户路径。",
+    "description2": "替换品牌内容，保留成熟结构，更稳地上线。",
+    "button": "搭建产品官网",
+    "url": "https://diaomao.d8ger.com/"
   },
   "languageDetection": {
     "title": "语言检测",

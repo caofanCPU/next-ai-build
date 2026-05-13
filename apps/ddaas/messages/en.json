@@ -2,84 +2,84 @@
   "home": {
     "title": "Re8ger",
     "banner": "Rethink | Redefine | Rebuild",
-    "webTitle": "Reve Image Directory - Showcase Beautiful Images & Tips",
-    "webDescription": "Discover stunning AI-generated images and learn expert tips for creating beautiful visuals with Reve Image's powerful text-to-image technology.",
-    "keywords": "AI image generation, text-to-image, digital art, creative tools, Reve Image, free image generation"
+    "webTitle": "DDaaS - Launch a Paid Product Website Faster",
+    "webDescription": "Build a polished product website with ready-to-use pages for pricing, Stripe payments, sign-in, docs, blog, SEO content, and mobile-friendly UI.",
+    "keywords": "SaaS website builder, product website template, Stripe payments, subscription website, documentation website, AI SaaS website, responsive web design, SEO website"
   },
   "hero": {
-    "mainTitle": "Create Stunning Images with",
-    "mainEyesOn": "Reve Image",
-    "description": "Transform your ideas into breathtaking visuals with Reve Image's AI-powered image generation. Unleash your creativity with the cutting-edge technology.",
-    "button": "Get Started",
-    "about": "Enjoy 20 free images daily with Reve Image",
+    "mainTitle": "Launch Your Website",
+    "mainEyesOn": "with DDaaS",
+    "description": "A complete website foundation for modern SaaS and AI products. Present your product, sell plans with Stripe, publish docs, support users, and stay ready for mobile from day one.",
+    "button": "Explore DDaaS",
+    "about": "Designed for paid products, and fast-moving teams",
     "heroImageUrl": "https://r2.d8ger.com/Reve-Image/00.webp",
-    "heroImageAlt": "Reve Image AI-generated artwork showcasing the power of the platform"
+    "heroImageAlt": "DDaaS product website preview"
   },
   "usage": {
-    "title": "How to use",
-    "eyesOn": "Newspaper Template",
-    "description": "",
+    "title": "How It Helps",
+    "eyesOn": "Your Product Launch",
+    "description": "Move from idea to a credible, payment-ready website with a focused setup path.",
     "steps": [
       {
-        "title": "Select a Template",
-        "description": "Click on your favorite template on the left side to get started.",
+        "title": "Shape Your Brand",
+        "description": "Set your product name, navigation, theme color, page sections, and core message for a consistent first impression.",
         "iconKey": "MousePointerClick"
       },
       {
-        "title": "Customize Your Content",
-        "description": "Edit text directly in the text area and hover over images to upload new ones.",
+        "title": "Connect Revenue",
+        "description": "Offer subscriptions, credit packs, and upgrade paths with familiar Stripe-powered checkout flows.",
         "iconKey": "Pencil"
       },
       {
-        "title": "Download & Share",
-        "description": "Download as an image, PDF, or share to X, Instagram, etc",
+        "title": "Publish With Confidence",
+        "description": "Launch with responsive pages, SEO-friendly content, docs, blog, legal pages, and user-ready account flows.",
         "iconKey": "Download"
       }
     ]
   },
   "faq": {
     "title": "Frequently Asked Questions",
-    "description": "",
+    "description": "Clear answers for founders, teams, and makers evaluating DDaaS.",
     "items":[
       {
-        "question": "What is this newspaper template website?",
-        "answer": "This newspaper template website allows you to create and customize professional-looking newspapers using easy-to-use templates. You can edit text, upload images, and download or share your creations."
+        "question": "What is DDaaS?",
+        "answer": "DDaaS is a product website foundation for teams that want to launch a professional SaaS, AI tool, documentation site, or paid digital product faster. It combines marketing pages, pricing, payments, sign-in, docs, blog, legal pages, and responsive UI in one system."
       },
       {
-        "question": "Is the newspaper template website free to use?",
-        "answer": "Yes, our newspaper template website is completely free! Access all features—templates, editing tools, and watermark-free downloads—without any cost or hidden fees. Perfect for commercial use!"
+        "question": "Who is DDaaS built for?",
+        "answer": "It is built for founders, agencies, indie hackers, AI product teams, and software businesses that need a polished website with paid plans, account flows, documentation, and SEO content without starting from a blank page."
       },
       {
-        "question": "How do I edit the text and images?",
-        "answer": "To edit text, simply click into the text field and start typing your content. To change images, hover over the image placeholder and select the option to upload a new image from your device."
+        "question": "Can I use DDaaS for a paid product?",
+        "answer": "Yes. DDaaS is designed for commercial websites. It supports Stripe checkout, subscriptions, one-time credit packs, customer account flows, pricing pages, and conversion-focused calls to action."
       },
       {
-        "question": "Do I need design experience to use the newspaper template website?",
-        "answer": "No design experience is required! Our intuitive interface and pre-designed templates make it easy for anyone to create a polished newspaper."
+        "question": "Can I customize the look and navigation?",
+        "answer": "Yes. You can tailor menus, dropdowns, featured links, page sections, theme colors, animation style, pricing presentation, and multilingual content to match your product brand."
       },
       {
-        "question": "Can I preview my newspaper before downloading?",
-        "answer": "Yes, you can see real-time updates as you edit. The preview feature lets you review your newspaper to ensure it looks perfect before saving or sharing."
+        "question": "Does DDaaS support mobile users?",
+        "answer": "Yes. The experience is designed for desktop, tablet, and mobile visitors, with responsive layouts, mobile-friendly navigation, and interface patterns that keep important actions easy to reach."
       },
       {
-        "question": "What file formats can I download my newspaper in?",
-        "answer": "You can download your newspaper as a high-quality PDF, PNG, JPG, WEBP, or SVG, suitable for printing or digital sharing."
+        "question": "Can I publish documentation and a blog?",
+        "answer": "Yes. DDaaS includes documentation, blog, and legal content areas, so your product can explain features, answer search intent, build trust, and support users after launch."
       },
       {
-        "question": "Can I save my work and come back to it later?",
-        "answer": "Currently, you can complete your newspaper in one session. Future updates may include a save feature."
+        "question": "Is the content SEO-friendly?",
+        "answer": "Yes. DDaaS is structured for product SEO, landing-page content, documentation discovery, blog publishing, metadata, and clear page sections that search engines and visitors can understand."
       },
       {
-        "question": "Are there limits to how many newspapers I can create?",
-        "answer": "No limits! You can create as many newspapers as you like, all for free."
+        "question": "Does DDaaS work for AI products?",
+        "answer": "Yes. It is a strong fit for AI SaaS websites, prompt tools, generation products, and credit-based services that need user accounts, pricing, docs, and a clean product interface."
       },
       {
-        "question": "Can I use my own fonts or colors?",
-        "answer": "You can use pre-set fonts and color schemes in our free online newspaper templates for a professional look. Custom font uploads may be available in future updates."
+        "question": "Do I need to redesign everything for each product?",
+        "answer": "No. DDaaS is built around reusable configuration. You can change brand, copy, theme, pricing, navigation, and content while keeping a stable website foundation."
       },
       {
-        "question": "How can I share my finished newspaper?",
-        "answer": "After completing your newspaper, you can download it as a PDF, PNG, JPG, WEBP, or SVG and share it via email, social media, or print it for physical distribution."
+        "question": "What makes DDaaS different from a landing page template?",
+        "answer": "A landing page template usually stops at presentation. DDaaS goes further with pricing, Stripe payment flows, authentication, documentation, blog, legal pages, credits, responsive UI, and product-ready structure."
       }
     ]
   },
@@ -259,34 +259,34 @@
   },
   "features": {
     "title": "Why Choose",
-    "eyesOn": "Reve Image",
-    "description": "Create stunning newspapers with our <strong>newspaper template website</strong>! Here's why you'll love it.",
+    "eyesOn": "DDaaS",
+    "description": "Everything a modern paid product website needs, packaged into a clean, configurable experience.",
     "items": [
       {
-        "title": "High-Quality Output",
-        "description": "Reve Image produces stunning, detailed images that rival professional artwork.",
+        "title": "Launch Faster",
+        "description": "Start with polished product pages, pricing, sign-in, docs, blog, and legal content instead of building every screen from scratch.",
         "iconKey": "Sparkles"
       },
       {
-        "title": "20 Free Images Daily",
-        "description": "Enjoy a generous daily allowance of 20 free images with your Reve Image account.",
+        "title": "Built For Revenue",
+        "description": "Sell subscriptions and credit packs through Stripe-ready pricing flows that make upgrades clear and familiar.",
         "iconKey": "Gift"
       },
       {
-        "title": "Intuitive Prompting",
-        "description": "The advanced AI understands natural language, making it easy to describe your vision.",
+        "title": "Brand It Your Way",
+        "description": "Adjust navigation, theme colors, animation tone, page sections, and multilingual content to fit your product.",
         "iconKey": "MessageCircleMore"
       }
     ]
   },
   "gallery": {
-    "titleL": "Gallery of",
-    "eyesOn": "Reve Image",
-    "titleR": "Creations",
-    "description": "Explore the incredible possibilities with Reve Image. Each image below was generated using the AI technology with the accompanying prompt.",
+    "titleL": "Product Pages",
+    "eyesOn": "Ready",
+    "titleR": "To Customize",
+    "description": "Use DDaaS to assemble a complete product website: landing pages, pricing, documentation, blog content, legal pages, and account entry points.",
     "button": {
-      "title": "Create Your Own Images",
-      "href": "https://preview.reve.art/",
+      "title": "Start Building",
+      "href": "https://diaomao.d8ger.com/",
       "align": "center"
     },
     "defaultImgUrl": "https://r2.d8ger.com/default.webp",
@@ -319,75 +319,75 @@
     ]
   },
   "tips": {
-    "title": "Tips for Getting the Best Results with",
-    "eyesOn": "Reve Image",
+    "title": "How To Get More Value From",
+    "eyesOn": "DDaaS",
     "sections": [
       {
-        "title": "Be Specific in Your Prompts",
-        "description": "When using Reve Image, the more specific your prompt, the better the results. Include details about style, lighting, mood, and composition to guide the AI toward your vision."
+        "title": "Lead With A Clear Offer",
+        "description": "Make the hero section explain who the product is for, what outcome it delivers, and why visitors should care within the first few seconds."
       },
       {
-        "title": "Experiment with Different Styles",
-        "description": "Reve Image can generate images in various artistic styles. Try adding style descriptors like \"oil painting,\" \"digital art,\" \"photorealistic,\" or \"watercolor\" to your prompts."
+        "title": "Treat Pricing As A Product Page",
+        "description": "Use simple plan names, clear upgrade paths, benefit-led features, and Stripe checkout actions that feel natural to customers."
       },
       {
-        "title": "Use Reference Artists",
-        "description": "Mentioning specific artists in your Reve Image prompts can help achieve particular aesthetics. For example, \"in the style of Van Gogh\" or \"like a Wes Anderson film.\""
+        "title": "Use Docs To Build Trust",
+        "description": "Publish documentation, guides, policies, and FAQs so buyers can understand the product before they commit."
       },
       {
-        "title": "Iterate and Refine",
-        "description": "Don't be afraid to generate multiple images with Reve Image and refine your prompt based on the results. Each iteration brings you closer to your perfect image."
+        "title": "Keep The Mobile Path Short",
+        "description": "Prioritize fast reading, clear navigation, visible calls to action, and forms that remain comfortable on smaller screens."
       },
       {
-        "title": "Consider Composition Elements",
-        "description": "Include composition details in your Reve Image prompts, such as \"close-up,\" \"wide shot,\" \"from above,\" or \"symmetrical composition\" to control the framing."
+        "title": "Turn Content Into Search Demand",
+        "description": "Use blog posts, comparison pages, product guides, and SEO sections to answer the questions your customers already search for."
       },
       {
-        "title": "Maximize Your Daily Allowance",
-        "description": "With Reve Image's generous 20 free images per day, plan your creative sessions to make the most of this allowance. Save your best results to build a personal inspiration library."
+        "title": "Personalize Without Starting Over",
+        "description": "Change theme, copy, menu layout, pricing, and animation style while keeping the same proven product website structure."
       }
     ]
   },
   "seoContent": {
-    "title": "Mastering AI Image Generation with",
-    "eyesOn": "Reve Image",
-    "description": "Online & Free & Editable & Professional",
-    "intro": "Reve Image represents the cutting edge of AI image generation technology, offering users the ability to transform text descriptions into stunning visual content. Whether you're a designer seeking inspiration, a marketer creating content, or an artist exploring new mediums, Reve Image provides the tools to bring your imagination to life.",
+    "title": "Build A Product Website That Can",
+    "eyesOn": "Sell",
+    "description": "Fast launch, Stripe payments, product docs, SEO content, and responsive design",
+    "intro": "DDaaS is built for teams that need more than a beautiful landing page. It gives SaaS founders, AI product builders, agencies, and digital-product teams a focused way to launch a website that can explain the product, convert visitors, collect payments, support customers, and grow through search.",
     "sections": [
       {
-        "title": "Testing All HTML Tag Combinations",
-        "content": "This paragraph demonstrates all possible tag combinations. <strong><em>Important emphasized text</em></strong> shows the most common pattern. <strong><u>Important underlined text</u></strong> highlights key steps. <strong><mark>Important highlighted text</mark></strong> marks critical information. <em><u>Emphasized underlined text</u></em> draws attention to notes. <em><mark>Emphasized highlighted text</mark></em> emphasizes key points. <u><mark>Underlined highlighted text</mark></u> creates special markers. <strong><del>Important deleted text</del></strong> shows deprecated features. <em><del>Emphasized deleted text</del></em> indicates obsolete content. Chemical formulas like H<strong><sub>2</sub></strong>O use subscript. Mathematical expressions like X<strong><sup>2</sup></strong> use superscript. <em><sub>Emphasized subscript</sub></em> for variables. <em><sup>Emphasized superscript</sup></em> for annotations. Three-tag combinations: <strong><em><u>Important emphasized underlined</u></em></strong> for critical concepts. <strong><em><mark>Important emphasized highlighted</mark></em></strong> for core content. <strong><u><mark>Important underlined highlighted</mark></u></strong> for key identifiers. <em><u><mark>Emphasized underlined highlighted</mark></u></em> for special emphasis. Scientific notation: H<strong><em><sub>2</sub></em></strong>O and X<strong><em><sup>2</sup></em></strong>. Version identifiers: v<strong><u><sup>2.0</sup></u></strong> and v<strong><u><sub>0</sub></u></strong>. This comprehensive test covers all supported tag combinations."
+        "title": "A Complete Website For Paid Products",
+        "content": "DDaaS brings together the pages and flows buyers expect from a serious product: a clear home page, pricing, Stripe payment actions, sign-in, documentation, blog content, legal pages, and customer-ready navigation. It helps your product look credible before the first sales call, demo request, or checkout session."
       },
       {
-        "title": "Understanding How Reve Image Works",
-        "content": "When you enter a prompt, <strong><u>Reve Image</u></strong> analyzes the semantic meaning and generates corresponding imagery that matches your description. This process happens in seconds, allowing for rapid iteration and experimentation."
+        "title": "Designed For SaaS, AI Tools, And Digital Products",
+        "content": "Whether you sell a subscription, an AI tool, a credit-based service, or a documentation-heavy product, DDaaS gives you the essential structure for explaining value, guiding visitors, and turning interest into action."
       },
       {
-        "title": "Crafting Effective Prompts for Reve Image",
-        "content": "The key to getting exceptional results from Reve Image lies in how you structure your prompts. Begin with a clear subject, then add modifiers for style, mood, lighting, and composition. For example, instead of simply writing \"a mountain,\" try \"a majestic snow-capped mountain at golden hour, with dramatic clouds, photorealistic style.\" The Reve Image AI responds particularly well to descriptive adjectives and specific visual references."
+        "title": "Pricing That Supports Real Buying Decisions",
+        "content": "A strong pricing page does more than list numbers. DDaaS supports subscriptions, yearly discounts, one-time credit packs, highlighted plans, feature comparisons, and direct checkout flows so visitors can choose the right path with less hesitation."
       },
       {
-        "title": "Leveraging Reve Image for Different Creative Needs",
-        "content": "Reve Image excels across various use cases. For marketing professionals, it can generate eye-catching social media graphics or conceptual product visualizations. Designers can use Reve Image to quickly prototype ideas or create mood boards. Writers and storytellers might employ Reve Image to visualize characters and settings. The versatility of Reve Image makes it an invaluable tool across creative disciplines."
+        "title": "Content That Works For Users And Search",
+        "content": "Documentation, blog posts, FAQs, legal pages, and SEO sections help your website answer real questions. DDaaS makes those content areas part of the product experience, so visitors can learn, compare, trust, and return."
       },
       {
-        "title": "Maximizing Your Free Daily Images with Reve Image",
-        "content": "With Reve Image offering 20 free image generations daily, developing a strategic approach to your creative process becomes important. Consider starting with broader concepts and gradually refining your prompts based on the results. Save promising images and note the effective elements in your prompts. This methodical approach helps you make the most of Reve Image's generous free tier while continuously improving your results."
+        "title": "A Consistent Brand Across Every Screen",
+        "content": "Visitors judge your product through many small signals: menu behavior, mobile layout, loading states, buttons, icons, colors, and page rhythm. DDaaS keeps those details consistent while still letting you personalize the brand."
       },
       {
-        "title": "Combining Reve Image with Other Creative Tools",
-        "content": "While Reve Image produces impressive standalone images, its output can also serve as a starting point for further refinement. Many creators use Reve Image to generate initial concepts, then bring these images into editing software for additional customization. This hybrid workflow combines the imaginative power of Reve Image's AI with the precision of human-guided editing."
+        "title": "Less Setup, More Product Momentum",
+        "content": "Instead of spending weeks assembling the same website basics, teams can focus on positioning, offers, content, pricing, onboarding, and customer feedback. DDaaS gives you a strong starting point for a website that is ready to sell."
       }
     ],
-    "conclusion": "As AI image generation continues to evolve, Reve Image remains at the forefront, constantly improving its capabilities and offering users new ways to express their creativity. By understanding how to effectively communicate with the Reve Image AI through well-crafted prompts, you can unlock extraordinary visual possibilities and transform how you approach creative projects."
+    "conclusion": "A modern product website must do more than look attractive. It needs to explain value, earn trust, work on mobile, support search, handle payments, and guide users after they sign in. DDaaS is designed for that full journey."
   },
   "cta": {
-    "title": "Ready to Create with",
-    "eyesOn": "Reve Image",
-    "description1": "Start generating beautiful images today with your 20 free daily creations.",
-    "description2": "No credit card required.",
-    "button": "Get Started Now",
-    "url": "https://preview.reve.art/"
+    "title": "Ready To Launch With",
+    "eyesOn": "DDaaS",
+    "description1": "Start from a website foundation built for paid products, Stripe checkout, product docs, and responsive user journeys.",
+    "description2": "Customize the brand. Keep the structure. Launch with confidence.",
+    "button": "Build Your Product Site",
+    "url": "https://diaomao.d8ger.com/"
   },
   "languageDetection": {
     "title": "Language Detection",

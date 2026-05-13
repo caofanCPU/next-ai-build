@@ -21,7 +21,7 @@ export async function Hero({ locale }: { locale: string }) {
           </p>
           <GradientButton
             title={t('button')}
-            href="https://preview.reve.art/"
+            href="https://diaomao.d8ger.com/"
             align="center"
             className="md:w-full"
           />
