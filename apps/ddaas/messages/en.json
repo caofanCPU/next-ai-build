@@ -128,6 +128,11 @@
         {
           "key": "P2",
           "title": "Pro",
+          "animeTone": "cool",
+          "strictDiffAnime": {
+            "monthly": "theme",
+            "yearly": "rainbow"
+          },
           "showBillingSubTitle": true,
           "features": [
             {
@@ -145,6 +150,11 @@
         {
           "key": "U3",
           "title": "Ultra",
+          "animeTone": "rainbow",
+          "strictDiffAnime": {
+            "monthly": "rainbow",
+            "yearly": "cool"
+          },
           "showBillingSubTitle": true,
           "titleTags": ["Most Popular"],
           "features": [
@@ -171,6 +181,7 @@
         {
           "key": "F1",
           "title": "Starter",
+          "animeTone": "mono",
           "subtitle": "5 Credits",
           "showBillingSubTitle": true,
           "features": [
@@ -183,6 +194,7 @@
         {
           "key": "P2",
           "title": "Popular",
+          "animeTone": "theme",
           "subtitle": "10 Credits",
           "showBillingSubTitle": true,
           "titleTags": ["Preferred"],
@@ -197,6 +209,7 @@
         {
           "key": "U3",
           "title": "Power",
+          "animeTone": "rainbow",
           "subtitle": "20 Credits",
           "showBillingSubTitle": true,
           "features": [

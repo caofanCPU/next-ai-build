@@ -19,6 +19,7 @@ import {
 } from './money-price-types';
 import { redirectToCustomerPortal } from './customer-portal';
 import { themeButtonGradientClass, themeButtonGradientHoverClass, themeIconColor } from '@windrun-huaiin/base-ui/lib';
+import { AnimeBeamFrame } from '../anime';
 
 type BillingType = string;
 type ProcessingTarget = {
@@ -442,18 +443,36 @@ export function MoneyPriceInteractive({
 
           const showBillingSubtitle = plan.showBillingSubTitle !== false;
           const hasDiscount = !!pricing.discountPercent && !!pricing.originalAmount;
+          const hasStrictDiffAnime = Object.prototype.hasOwnProperty.call(
+            plan.strictDiffAnime ?? {},
+            billingType
+          );
+          const animeTone = hasStrictDiffAnime
+            ? plan.strictDiffAnime?.[billingType]
+            : plan.animeTone;
+          const hasAnimeTone = !!animeTone;
 
-          // 移动端宽度样式
           return (
+            <AnimeBeamFrame
+              key={`${billingType}-${plan.key}-${animeTone ?? 'none'}`}
+              active={false}
+              interactive={hasAnimeTone}
+              tone={animeTone ?? 'theme'}
+              radius={16}
+              className={cn(
+                'h-full w-[85vw] max-w-[360px]',
+                'md:w-[clamp(280px,32vw,360px)] md:max-w-[360px] md:shrink-0',
+              )}
+            >
             <div
-              key={plan.key}
               data-price-plan={planKey}
               className={cn(
-                'flex flex-col bg-white dark:bg-gray-800/60 rounded-2xl border border-gray-300 dark:border-[#7c3aed40] transition p-5 md:p-8 h-full shadow-sm dark:shadow-none w-[85vw] max-w-[360px]',
-                'md:w-[clamp(280px,32vw,360px)] md:max-w-[360px] md:shrink-0',
-                'hover:border-2 hover:border-current', 
-                'focus-within:border-2 focus-within:border-current',
-                themeIconColor
+                'flex flex-col bg-white dark:bg-gray-800/60 rounded-2xl border border-gray-300 dark:border-[#7c3aed40] transition p-5 md:p-8 h-full shadow-sm dark:shadow-none',
+                !hasAnimeTone && [
+                  'hover:border-current',
+                  'focus-within:border-current',
+                  themeIconColor,
+                ]
               )}
               style={{ minHeight: maxFeaturesCount * (isTouchDevice ? 86 : 100) }}
             >
@@ -570,6 +589,7 @@ export function MoneyPriceInteractive({
                 enableSubscriptionUpgrade={enableSubscriptionUpgrade}
               />
             </div>
+            </AnimeBeamFrame>
           );
         })}
         </div>

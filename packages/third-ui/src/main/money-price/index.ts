@@ -5,6 +5,8 @@ export { MoneyPriceButton } from './money-price-button';
 export type {
   MoneyPriceConfig,
   MoneyPriceData,
+  MoneyPriceAnimeTone,
+  MoneyPriceStrictDiffAnime,
   InitUserContext,
   MoneyPriceInteractiveProps,
   MoneyPriceButtonProps,

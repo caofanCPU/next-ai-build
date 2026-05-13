@@ -30,7 +30,7 @@ export default async function Pricing({
   return (
     <>
       { (forceShow || isDev) && <FingerprintStatus />}
-      <section id="money-pricing" className={cn("px-4 py-4 md:px-16 md:py-8 mx-auto max-w-7xl scroll-mt-10", 'mt-12')}>
+      <section id="money-pricing" className={cn("min-h-screen px-4 py-4 md:px-16 md:py-8 mx-auto max-w-7xl scroll-mt-10", 'mt-12')}>
         <h2 className="text-3xl md:text-4xl font-bold text-center mb-3">
           {data.title}
         </h2>

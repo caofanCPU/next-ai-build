@@ -32,6 +32,8 @@ export type {
   MoneyPriceInteractiveProps,
   MoneyPriceButtonProps,
   MoneyPriceData,
+  MoneyPriceAnimeTone,
+  MoneyPriceStrictDiffAnime,
   InitUserContext,
   PaymentProvider,
   PaymentProviderConfig,

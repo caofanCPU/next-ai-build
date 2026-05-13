@@ -181,6 +181,41 @@ PaymentProviderConfig {
 
 **智能选择逻辑**：服务端组件根据 `enabledBillingTypes` 参数自动选择合适的翻译配置。
 
+#### 5.2.1 ✅ 卡片个性化动画配置
+价格卡片支持在计划配置中声明动画边框。动画属于展示配置，放在 `subscription.plans` / `credits.plans` 的单个 plan 上，不放入支付产品配置。
+
+最小配置只需要 `animeTone`：
+
+```json
+{
+  "key": "P2",
+  "title": "Pro",
+  "animeTone": "cool"
+}
+```
+
+支持的 tone：`theme`、`rainbow`、`mono`、`warm`、`cool`。未配置 `animeTone` 时，卡片不启用动画，悬浮态使用当前皮肤主题色边框。
+
+如果同一张订阅卡在不同 billing type 下需要严格区分动画，使用 `strictDiffAnime` 覆盖：
+
+```json
+{
+  "key": "P2",
+  "title": "Pro",
+  "animeTone": "cool",
+  "strictDiffAnime": {
+    "monthly": null,
+    "yearly": "rainbow"
+  }
+}
+```
+
+解析规则：
+- `strictDiffAnime` 中显式配置了当前 billing type 时，严格使用该值。
+- 值为 `null` 表示当前 billing type 禁用动画。
+- 未配置当前 billing type 时，回退到 `animeTone`。
+- `subscription.plans` 与 `credits.plans` 是两组独立卡片配置，可分别声明不同动画。
+
 ### 5.3. ✅ 使用模式
 - ✅ `money-price-types.ts`：从硬编码联合类型改为动态字符串类型
 - ✅ 新增 `enabledBillingTypes` 和 `mode` 属性支持灵活配置

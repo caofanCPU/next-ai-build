@@ -143,6 +143,9 @@ export interface MoneyPriceButtonProps {
   enableSubscriptionUpgrade?: boolean;
 }
 
+export type MoneyPriceAnimeTone = 'theme' | 'rainbow' | 'mono' | 'warm' | 'cool';
+export type MoneyPriceStrictDiffAnime = Record<string, MoneyPriceAnimeTone | null | undefined>;
+
 // 数据结构
 export interface MoneyPriceData {
   title: string;
@@ -160,6 +163,8 @@ export interface MoneyPriceData {
   subscriptionPlans: Array<{
     key: string;
     title: string;
+    animeTone?: MoneyPriceAnimeTone;
+    strictDiffAnime?: MoneyPriceStrictDiffAnime;
     showBillingSubTitle?: boolean;
     titleTags?: string[];
     features?: Array<{
@@ -173,6 +178,8 @@ export interface MoneyPriceData {
     key: string;
     title: string;
     subtitle?: string;
+    animeTone?: MoneyPriceAnimeTone;
+    strictDiffAnime?: MoneyPriceStrictDiffAnime;
     showBillingSubTitle?: boolean;
     titleTags?: string[];
     features?: Array<{
