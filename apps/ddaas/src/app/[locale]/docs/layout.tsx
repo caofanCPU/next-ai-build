@@ -28,7 +28,7 @@ async function docsOptions(locale: string): Promise<SiteDocsLayoutConfig> {
       },
     ],
     sidebar: {
-      // 禁用侧边栏Link组件预加载, 降低服务端负荷, 并尽可能降低触发云平台限流规则的概率
+      // Disable sidebar Link prefetching to reduce server load and lower the chance of triggering cloud platform rate limits.
       prefetch: false,
     },
   };

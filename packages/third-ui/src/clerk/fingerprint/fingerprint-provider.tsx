@@ -109,7 +109,7 @@ function useFingerprintStatusTranslations(): FingerprintStatusTranslations {
 
 /**
  * Fingerprint Provider Component
- * 为应用提供fingerprint和匿名用户管理功能
+ * Provides fingerprint and anonymous user management for the application.
  */
 export function FingerprintProvider({ 
   children,
@@ -137,7 +137,7 @@ export function useFingerprintContext(): FingerprintContextType {
 
 /**
  * Safe hook to use fingerprint context - returns null if no provider
- * 安全版本的fingerprint context hook - 如果没有Provider则返回null
+ * Returns null when no provider is available.
  */
 export function useFingerprintContextSafe(): FingerprintContextType | null {
   const context = useContext(FingerprintContext);
@@ -162,7 +162,7 @@ export function withFingerprint<P extends object>(
 }
 
 /**
- * 组件：显示用户状态和积分信息（用于调试）
+ * Component for displaying user status and credit information for debugging.
  */
 export function FingerprintStatus() {
   const translations = useFingerprintStatusTranslations();
@@ -400,7 +400,7 @@ export function FingerprintStatus() {
 
   return (
     <>
-      {/* 灯泡按钮 */}
+      {/* Lightbulb button */}
       {!isOpen && (
         <button
           onClick={handleToggle}
@@ -417,7 +417,7 @@ export function FingerprintStatus() {
         </button>
       )}
 
-      {/* 面板 */}
+      {/* Panel */}
       {isOpen && (
         <>
           <div onClick={handleBackdropClick} className="fixed inset-0 z-9998 bg-black/60 backdrop-blur-sm" />
@@ -622,9 +622,9 @@ export function FingerprintStatus() {
 }
 
 
-/* ==================== 新增辅助组件 ==================== */
+/* ==================== Helper Components ==================== */
 
-// 标题行：左侧图标+标题，右侧信息（右对齐）
+// Header row with icon and title on the left, right-aligned metadata on the right.
 function PanelHeader({ icon, title, rightInfo }: { icon: React.ReactNode; title: string; rightInfo: React.ReactNode }) {
   return (
     <div className="flex items-center justify-between mb-3">
@@ -643,7 +643,7 @@ function PanelHeader({ icon, title, rightInfo }: { icon: React.ReactNode; title:
   );
 }
 
-// 复用：普通 PanelSection 支持右侧信息
+// Reusable PanelSection with optional right-side metadata.
 interface PanelSectionProps {
   icon: React.ReactNode;
   title: string;
@@ -727,19 +727,19 @@ function StatusTag({
   const normalized = value.toLowerCase();
 
   const colorMap: Record<string, string> = {
-    // 绿色：正常/活跃
+    // Green: normal or active.
     registered: 'bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-300',
     active: 'bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-300',
     trialing: 'bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-300',
 
-    // 灰色：失效/删除
+    // Gray: inactive or deleted.
     canceled: 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-400',
     frozen: 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-400',
     deleted: 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-400',
     expired: 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-400',
     past_due: 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-400',
 
-    // 橙色：待处理/异常
+    // Amber: pending or exceptional states.
     pending: 'bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300',
     failed: 'bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300',
     unpaid: 'bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300',

@@ -16,7 +16,7 @@ export function SignUpButtonWithFingerprint({
 }: SignUpButtonWithFingerprintProps) {
   if (mode === 'redirect') {
     return (
-      // 重定向模式则直接跳转到自定义注册页面
+      // Redirect mode navigates directly to the custom sign-up page.
       <SignUpButton>
         <button 
           className="w-16 sm:w-20 h-8 sm:h-9 px-1.5 sm:px-2 border border-gray-300 rounded-full hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-800 text-center text-xs sm:text-sm whitespace-nowrap"
@@ -27,10 +27,10 @@ export function SignUpButtonWithFingerprint({
     )
   }
 
-  // 弹框模式则需要自定义注册按钮
+  // Modal mode requires a custom sign-up button.
   const fingerprintContext = useFingerprintContextSafe();
 
-  // 如果没有fingerprint context，使用默认值
+  // Use defaults when fingerprint context is unavailable.
   const { 
     fingerprintId = null, 
     xUser = null, 
@@ -44,7 +44,7 @@ export function SignUpButtonWithFingerprint({
     fingerprint_id: fingerprintId || null,
   };
 
-  // 确保匿名用户已初始化
+  // Ensure the anonymous user has been initialized.
   useEffect(() => {
     if (!isInitialized && fingerprintId) {
       initializeAnonymousUser();

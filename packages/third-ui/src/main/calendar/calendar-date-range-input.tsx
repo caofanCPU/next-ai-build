@@ -29,7 +29,7 @@ export type CalendarDateRangeInputProps = {
 
 type DateRangeInputPressKey = 'clear';
 
-const DEFAULT_PLACEHOLDER = '滑动窗口日期';
+const DEFAULT_PLACEHOLDER = 'Slide pick Date';
 const DEFAULT_RANGE_DAYS = 7;
 const CLEAR_PRESS_FEEDBACK_MS = 180;
 

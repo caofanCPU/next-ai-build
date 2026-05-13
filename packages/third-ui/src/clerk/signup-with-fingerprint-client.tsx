@@ -7,13 +7,13 @@ import { useFingerprintContextSafe } from './fingerprint/fingerprint-provider';
 
 /**
  * SignUp component with fingerprint awareness
- * 如果没有FingerprintProvider，会优雅降级为普通SignUp组件
- * 如果有FingerprintProvider，会处理fingerprint相关逻辑
+ * Falls back to the standard SignUp component when FingerprintProvider is absent.
+ * Handles fingerprint-related metadata when FingerprintProvider is available.
  */
 export function SignUpWithFingerprint() {
   const fingerprintContext = useFingerprintContextSafe();
   
-  // 如果没有fingerprint context，使用默认值
+  // Use defaults when fingerprint context is unavailable.
   const { 
     fingerprintId = null, 
     xUser = null, 
@@ -21,13 +21,13 @@ export function SignUpWithFingerprint() {
     initializeAnonymousUser = async () => {}
   } = fingerprintContext || {};
 
-  // 准备传递给Clerk的metadata，包含匿名用户信息
+  // Prepare Clerk metadata with anonymous user information.
   const unsafeMetadata = {
     user_id: xUser?.userId || null,
     fingerprint_id: fingerprintId || null,
   };
 
-  // 确保匿名用户已初始化
+  // Ensure the anonymous user has been initialized.
   useEffect(() => {
     if (!isInitialized && fingerprintId) {
       initializeAnonymousUser();

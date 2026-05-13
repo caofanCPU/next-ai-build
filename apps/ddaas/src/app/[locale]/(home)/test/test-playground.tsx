@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useState, useTransition } from 'react';
+import { useTranslations } from 'next-intl';
 import type { UpstashActionResult, UpstashSnapshot } from './actions';
 import { runUpstashAction } from './actions';
 
@@ -11,6 +12,7 @@ type Props = {
 const formatJson = (value: unknown): string => JSON.stringify(value, null, 2);
 
 export function TestPlayground({ initialSnapshot }: Props) {
+  const t = useTranslations('test.upstash');
   const [isPending, startTransition] = useTransition();
   const [result, setResult] = useState<UpstashActionResult | null>(null);
   const [stringValue, setStringValue] = useState('hello-nextai');
@@ -33,7 +35,7 @@ export function TestPlayground({ initialSnapshot }: Props) {
 
   const snapshot = result?.snapshot ?? initialSnapshot;
 
-  const statusText = useMemo(() => (snapshot.redisAvailable ? '可用' : '不可用'), [snapshot.redisAvailable]);
+  const statusText = useMemo(() => (snapshot.redisAvailable ? t('available') : t('unavailable')), [snapshot.redisAvailable, t]);
 
   const runAction = (action: Parameters<typeof runUpstashAction>[0]) => {
     startTransition(async () => {
@@ -71,7 +73,7 @@ export function TestPlayground({ initialSnapshot }: Props) {
         <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
           <div>
             <h1 className="text-2xl font-semibold tracking-tight text-foreground md:text-3xl">Upstash Redis Playground</h1>
-            <p className="mt-1 text-sm text-muted-foreground">固定前缀：{snapshot.prefix}</p>
+            <p className="mt-1 text-sm text-muted-foreground">{t('fixedPrefix', { prefix: snapshot.prefix })}</p>
           </div>
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:flex">
             <button
@@ -80,7 +82,7 @@ export function TestPlayground({ initialSnapshot }: Props) {
               onClick={() => runAction({ type: 'check' })}
               disabled={isPending}
             >
-              连接检查
+              {t('connectionCheck')}
             </button>
             <button
               type="button"
@@ -88,20 +90,20 @@ export function TestPlayground({ initialSnapshot }: Props) {
               onClick={() => runAction({ type: 'clearAll' })}
               disabled={isPending}
             >
-              清空数据
+              {t('clearData')}
             </button>
           </div>
         </div>
 
         <div className="mt-4 flex flex-wrap gap-2 text-sm">
           <span className="rounded-full border border-indigo-300/70 bg-indigo-100 px-3 py-1 font-medium text-indigo-800 dark:border-indigo-800 dark:bg-indigo-950/40 dark:text-indigo-300">
-            环境：{snapshot.env}
+            {t('environment', { env: snapshot.env })}
           </span>
           <span className="rounded-full border border-emerald-300/70 bg-emerald-100 px-3 py-1 font-medium text-emerald-800 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300">
-            Redis 状态：{statusText}
+            {t('redisStatus', { status: statusText })}
           </span>
           <span className="rounded-full border border-amber-300/70 bg-amber-100 px-3 py-1 font-medium text-amber-800 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-300">
-            缓存 TTL：除锁外均 1 小时
+            {t('cacheTtl')}
           </span>
         </div>
       </section>
@@ -109,9 +111,9 @@ export function TestPlayground({ initialSnapshot }: Props) {
       <section className={panelClass}>
         <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <h2 className="text-base font-semibold text-foreground">JSON 缓存测试</h2>
+            <h2 className="text-base font-semibold text-foreground">{t('jsonCacheTest')}</h2>
             <p className="mt-1 text-sm text-muted-foreground">
-              固定 key：{snapshot.jsonKey}
+              {t('fixedKey', { key: snapshot.jsonKey })}
             </p>
           </div>
           <button
@@ -120,16 +122,16 @@ export function TestPlayground({ initialSnapshot }: Props) {
             onClick={() => runAction({ type: 'getJson' })}
             disabled={isPending}
           >
-            查询 JSON
+            {t('queryJson')}
           </button>
         </div>
 
         <div className="mt-4 grid gap-4 lg:grid-cols-2">
           <div className="rounded-xl border border-border/60 bg-background/70 p-3">
             <div className="mb-2 flex items-center justify-between gap-2">
-              <h3 className="text-sm font-semibold text-foreground">写入 JSON</h3>
+              <h3 className="text-sm font-semibold text-foreground">{t('writeJson')}</h3>
               <span className="rounded-full border border-amber-300/70 bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-300">
-                TTL 1 小时
+                {t('ttlOneHour')}
               </span>
             </div>
             <textarea
@@ -137,7 +139,7 @@ export function TestPlayground({ initialSnapshot }: Props) {
               value={jsonValue}
               onChange={(event) => setJsonValue(event.target.value)}
               spellCheck={false}
-              placeholder="输入合法 JSON"
+              placeholder={t('jsonPlaceholder')}
             />
             <div className="mt-3 flex flex-col gap-2 sm:flex-row">
               <button
@@ -146,7 +148,7 @@ export function TestPlayground({ initialSnapshot }: Props) {
                 onClick={() => runAction({ type: 'setJson', value: jsonValue })}
                 disabled={isPending}
               >
-                存 JSON
+                {t('saveJson')}
               </button>
               <button
                 type="button"
@@ -154,14 +156,14 @@ export function TestPlayground({ initialSnapshot }: Props) {
                 onClick={() => runAction({ type: 'getJson' })}
                 disabled={isPending}
               >
-                读 JSON
+                {t('readJson')}
               </button>
             </div>
           </div>
 
           <div className="rounded-xl border border-border/60 bg-muted/40 p-3">
             <div className="mb-2 flex items-center justify-between gap-2">
-              <h3 className="text-sm font-semibold text-foreground">Redis 读出 JSON</h3>
+              <h3 className="text-sm font-semibold text-foreground">{t('redisJsonOutput')}</h3>
               <span className="rounded-full border border-cyan-300/70 bg-cyan-100 px-2 py-0.5 text-xs font-medium text-cyan-800 dark:border-cyan-800 dark:bg-cyan-950/40 dark:text-cyan-300">
                 getJson / mgetJson
               </span>
@@ -174,7 +176,7 @@ export function TestPlayground({ initialSnapshot }: Props) {
                 </pre>
               </div>
               <div>
-                <p className="mb-1 text-xs font-medium text-muted-foreground">mgetJson([key]) 第 1 项</p>
+                <p className="mb-1 text-xs font-medium text-muted-foreground">{t('mgetFirstItem')}</p>
                 <pre className="min-h-28 overflow-x-auto rounded-lg border border-border/60 bg-background/80 p-3 text-xs text-foreground">
 {formatJson(snapshot.jsonMgetValue)}
                 </pre>
@@ -224,14 +226,14 @@ export function TestPlayground({ initialSnapshot }: Props) {
             onClick={() => setActiveTab('lock')}
             disabled={isPending}
           >
-            分布式锁
+            {t('distributedLock')}
           </button>
         </div>
 
         <div className="mt-4 min-h-[120px] space-y-3">
           {activeTab === 'string' ? (
             <>
-              <p className="text-sm text-muted-foreground">测试字符串写入与覆盖(缓存 TTL 1 小时)</p>
+              <p className="text-sm text-muted-foreground">{t('stringDescription')}</p>
               <div className="grid gap-2 sm:grid-cols-2">
                 <input
                   className={inputClass}
@@ -246,7 +248,7 @@ export function TestPlayground({ initialSnapshot }: Props) {
                   onClick={() => runAction({ type: 'setString', value: stringValue })}
                   disabled={isPending}
                 >
-                  写入 String
+                  {t('writeString')}
                 </button>
                 <div className="hidden sm:block" />
               </div>
@@ -255,7 +257,7 @@ export function TestPlayground({ initialSnapshot }: Props) {
 
           {activeTab === 'hash' ? (
             <>
-              <p className="text-sm text-muted-foreground">测试 Hash 字段写入(缓存 TTL 1 小时)</p>
+              <p className="text-sm text-muted-foreground">{t('hashDescription')}</p>
               <div className="grid gap-2 sm:grid-cols-2">
                 <input
                   className={inputClass}
@@ -275,7 +277,7 @@ export function TestPlayground({ initialSnapshot }: Props) {
                   onClick={() => runAction({ type: 'setHashField', field: hashField, value: hashValue })}
                   disabled={isPending}
                 >
-                  写入 Hash 字段
+                  {t('writeHashField')}
                 </button>
                 <div className="hidden sm:block" />
               </div>
@@ -284,7 +286,7 @@ export function TestPlayground({ initialSnapshot }: Props) {
 
           {activeTab === 'list' ? (
             <>
-              <p className="text-sm text-muted-foreground">测试 List 入队和出队(缓存 TTL 1 小时)</p>
+              <p className="text-sm text-muted-foreground">{t('listDescription')}</p>
               <div className="grid gap-2 sm:grid-cols-2">
                 <input
                   className={inputClass}
@@ -299,7 +301,7 @@ export function TestPlayground({ initialSnapshot }: Props) {
                   onClick={() => runAction({ type: 'pushList', value: listValue, direction: 'right' })}
                   disabled={isPending}
                 >
-                  右侧入队
+                  {t('pushRight')}
                 </button>
                 <button
                   type="button"
@@ -307,7 +309,7 @@ export function TestPlayground({ initialSnapshot }: Props) {
                   onClick={() => runAction({ type: 'popList', direction: 'left' })}
                   disabled={isPending}
                 >
-                  左侧出队
+                  {t('popLeft')}
                 </button>
               </div>
             </>
@@ -315,7 +317,7 @@ export function TestPlayground({ initialSnapshot }: Props) {
 
           {activeTab === 'counter' ? (
             <>
-              <p className="text-sm text-muted-foreground">测试 Counter 自增/自减(缓存 TTL 1 小时)</p>
+              <p className="text-sm text-muted-foreground">{t('counterDescription')}</p>
               <div className="grid gap-2 sm:grid-cols-2">
                 <input
                   type="number"
@@ -331,7 +333,7 @@ export function TestPlayground({ initialSnapshot }: Props) {
                   onClick={() => runAction({ type: 'incrCounter', delta: counterDelta })}
                   disabled={isPending}
                 >
-                  更新 Counter
+                  {t('updateCounter')}
                 </button>
                 <div className="hidden sm:block" />
               </div>
@@ -340,7 +342,7 @@ export function TestPlayground({ initialSnapshot }: Props) {
 
           {activeTab === 'lock' ? (
             <>
-              <p className="text-sm text-muted-foreground">并发抢同一把锁，观察成功进入临界区次数</p>
+              <p className="text-sm text-muted-foreground">{t('lockDescription')}</p>
               <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
                 <input
                   type="number"
@@ -348,7 +350,7 @@ export function TestPlayground({ initialSnapshot }: Props) {
                   className={inputClass}
                   value={lockConcurrency}
                   onChange={(event) => setLockConcurrency(Number(event.target.value))}
-                  placeholder="并发数"
+                  placeholder={t('concurrencyPlaceholder')}
                 />
                 <input
                   type="number"
@@ -364,30 +366,30 @@ export function TestPlayground({ initialSnapshot }: Props) {
                   onClick={() => runAction({ type: 'runLockTest', concurrency: lockConcurrency, ttlMs: lockTtlMs })}
                   disabled={isPending}
                 >
-                  开始抢锁测试
+                  {t('startLockTest')}
                 </button>
               </div>
             {result?.lockReport ? (
               <div className="grid gap-2 text-sm sm:grid-cols-2 lg:grid-cols-4">
                 <div className="rounded-full border border-indigo-300/70 bg-indigo-100 px-3 py-1 font-medium text-indigo-800 dark:border-indigo-800 dark:bg-indigo-950/40 dark:text-indigo-300">
-                  并发数：{result.lockReport.concurrency}
+                  {t('concurrency', { value: result.lockReport.concurrency })}
                 </div>
                 <div className="rounded-full border border-emerald-300/70 bg-emerald-100 px-3 py-1 font-medium text-emerald-800 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300">
-                  成功：{result.lockReport.successCount}
+                  {t('success', { value: result.lockReport.successCount })}
                 </div>
                 <div className="rounded-full border border-rose-300/70 bg-rose-100 px-3 py-1 font-medium text-rose-800 dark:border-rose-800 dark:bg-rose-950/40 dark:text-rose-300">
-                  失败：{result.lockReport.failedCount}
+                  {t('failed', { value: result.lockReport.failedCount })}
                 </div>
                 <div className="rounded-full border border-amber-300/70 bg-amber-100 px-3 py-1 font-medium text-amber-800 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-300">
-                  耗时：{result.lockReport.elapsedMs}ms
+                  {t('duration', { value: result.lockReport.elapsedMs })}
                 </div>
               </div>
             ) : (
               <div className="grid gap-2 text-sm sm:grid-cols-2 lg:grid-cols-4">
-                  <div className="rounded-full border border-dashed border-indigo-300/70 bg-indigo-50 px-3 py-1 text-indigo-600 dark:border-indigo-900 dark:bg-indigo-950/20 dark:text-indigo-300">并发数：-</div>
-                  <div className="rounded-full border border-dashed border-emerald-300/70 bg-emerald-50 px-3 py-1 text-emerald-600 dark:border-emerald-900 dark:bg-emerald-950/20 dark:text-emerald-300">成功：-</div>
-                  <div className="rounded-full border border-dashed border-rose-300/70 bg-rose-50 px-3 py-1 text-rose-600 dark:border-rose-900 dark:bg-rose-950/20 dark:text-rose-300">失败：-</div>
-                  <div className="rounded-full border border-dashed border-amber-300/70 bg-amber-50 px-3 py-1 text-amber-600 dark:border-amber-900 dark:bg-amber-950/20 dark:text-amber-300">耗时：-</div>
+                  <div className="rounded-full border border-dashed border-indigo-300/70 bg-indigo-50 px-3 py-1 text-indigo-600 dark:border-indigo-900 dark:bg-indigo-950/20 dark:text-indigo-300">{t('concurrencyEmpty')}</div>
+                  <div className="rounded-full border border-dashed border-emerald-300/70 bg-emerald-50 px-3 py-1 text-emerald-600 dark:border-emerald-900 dark:bg-emerald-950/20 dark:text-emerald-300">{t('successEmpty')}</div>
+                  <div className="rounded-full border border-dashed border-rose-300/70 bg-rose-50 px-3 py-1 text-rose-600 dark:border-rose-900 dark:bg-rose-950/20 dark:text-rose-300">{t('failedEmpty')}</div>
+                  <div className="rounded-full border border-dashed border-amber-300/70 bg-amber-50 px-3 py-1 text-amber-600 dark:border-amber-900 dark:bg-amber-950/20 dark:text-amber-300">{t('durationEmpty')}</div>
               </div>
             )}
           </>
@@ -397,7 +399,7 @@ export function TestPlayground({ initialSnapshot }: Props) {
 
       <section className={panelClass}>
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-          <h2 className="text-base font-semibold text-foreground">最近操作结果</h2>
+          <h2 className="text-base font-semibold text-foreground">{t('latestResult')}</h2>
           {result?.message ? (
             <span className="text-sm text-muted-foreground">
               {result.message}
@@ -408,20 +410,20 @@ export function TestPlayground({ initialSnapshot }: Props) {
           <div className="mt-3 space-y-3">
             <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
               <div className={resultBadgeClass}>
-                状态：{result?.ok ? '成功' : '失败'}
+                {t('status', { status: result?.ok ? t('resultOk') : t('resultFailed') })}
               </div>
               <div className="rounded-full border border-cyan-300/70 bg-cyan-100 px-3 py-1 text-sm font-medium text-cyan-800 dark:border-cyan-800 dark:bg-cyan-950/40 dark:text-cyan-300">
-                时间：{result?.timestamp ? new Date(result.timestamp).toLocaleString() : '-'}
+                {t('time', { time: result?.timestamp ? new Date(result.timestamp).toLocaleString() : '-' })}
               </div>
               <div className="rounded-full border border-emerald-300/70 bg-emerald-100 px-3 py-1 text-sm font-medium text-emerald-800 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300">
-                Redis：{result?.snapshot.redisAvailable ? '可用' : '不可用'}
+                {t('redis', { status: result?.snapshot.redisAvailable ? t('available') : t('unavailable') })}
               </div>
               <div className="rounded-full border border-indigo-300/70 bg-indigo-100 px-3 py-1 text-sm font-medium text-indigo-800 dark:border-indigo-800 dark:bg-indigo-950/40 dark:text-indigo-300">
-                锁成功累计：{result?.snapshot.lockSuccessCount ?? 0}
+                {t('lockSuccessTotal', { value: result?.snapshot.lockSuccessCount ?? 0 })}
               </div>
             </div>
             <details className="rounded-lg border border-border/60 bg-muted/20 p-2">
-              <summary className="cursor-pointer text-sm text-muted-foreground">查看原始结果 JSON</summary>
+              <summary className="cursor-pointer text-sm text-muted-foreground">{t('viewRawJson')}</summary>
               <pre className="mt-2 overflow-x-auto rounded-lg border border-border/60 bg-background/80 p-3 text-xs text-foreground">
 {formatJson(result)}
               </pre>
@@ -429,21 +431,21 @@ export function TestPlayground({ initialSnapshot }: Props) {
           </div>
         ) : (
           <div className="mt-3 rounded-lg border border-dashed border-border/70 bg-muted/20 px-3 py-4 text-sm text-muted-foreground">
-            暂无操作记录，请先执行一次测试操作
+            {t('noOperation')}
           </div>
         )}
       </section>
 
       <section className={panelClass}>
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-          <h2 className="text-base font-semibold text-foreground">测试数据总览</h2>
+          <h2 className="text-base font-semibold text-foreground">{t('snapshotOverview')}</h2>
           <button
             type="button"
             className={infoBtnClass}
             onClick={() => runAction({ type: 'refresh' })}
             disabled={isPending}
           >
-            实时刷新
+            {t('refresh')}
           </button>
         </div>
 

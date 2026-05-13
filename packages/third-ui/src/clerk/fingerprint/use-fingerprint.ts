@@ -21,7 +21,7 @@ import { FINGERPRINT_SOURCE_REFER, isDebugFingerprintId, isValidFingerprintId } 
  * Accepts configuration to customize API endpoint and behavior
  */
 export function useFingerprint(config: FingerprintConfig): UseFingerprintResult {
-  // 服务端渲染检查
+  // Server-side rendering guard.
   if (typeof window === 'undefined') {
     return {
       fingerprintId: null,
@@ -51,7 +51,7 @@ export function useFingerprint(config: FingerprintConfig): UseFingerprintResult 
   }, []);
 
   /**
-   * 第一阶段：初始化fingerprint ID
+   * Phase 1: initialize fingerprint ID.
    */
   const initializeFingerprintId = useCallback(async () => {
     try {
@@ -68,7 +68,7 @@ export function useFingerprint(config: FingerprintConfig): UseFingerprintResult 
   }, []);
 
   /**
-   * 第二阶段：初始化匿名用户
+   * Phase 2: initialize anonymous user.
    */
   const initializeAnonymousUser = useCallback(async () => {
     if (!fingerprintId) {
@@ -140,7 +140,7 @@ export function useFingerprint(config: FingerprintConfig): UseFingerprintResult 
   }, [fingerprintId, config.apiEndpoint, isInitialized]);
 
   /**
-   * 刷新用户数据 - 使用POST请求（后端支持upsert逻辑）
+   * Refresh user data with a POST request; the backend supports upsert semantics.
    */
   const refreshUserData = useCallback(async () => {
     if (!fingerprintId) {
@@ -180,7 +180,7 @@ export function useFingerprint(config: FingerprintConfig): UseFingerprintResult 
     }
   }, [fingerprintId, config.apiEndpoint]);
 
-  // 第一阶段：页面加载完成后生成指纹ID
+  // Phase 1: generate fingerprint ID after page load.
   useEffect(() => {
     const initFingerprint = async () => {
       setIsLoading(true);
@@ -191,11 +191,11 @@ export function useFingerprint(config: FingerprintConfig): UseFingerprintResult 
     initFingerprint();
   }, [initializeFingerprintId]);
 
-  // 第二阶段：有指纹ID后直接初始化用户（后端支持upsert逻辑）
+  // Phase 2: initialize the user once a fingerprint ID is available; the backend supports upsert semantics.
   useEffect(() => {
     if (!fingerprintId || isInitialized || isLoading || error || config.autoInitialize === false) return;
     
-    // 直接使用 POST 请求，后端会处理查询-不存在则创建的逻辑
+    // Use POST directly; the backend handles lookup and create-if-missing behavior.
     initializeAnonymousUser();
   }, [fingerprintId, isInitialized, isLoading, error, initializeAnonymousUser, config.autoInitialize]);
 

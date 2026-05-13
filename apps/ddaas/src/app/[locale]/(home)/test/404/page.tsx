@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { BugIcon, CirclePauseIcon, EyeClosedIcon, EyeIcon, MonitorPlayIcon } from '@base-ui/icons';
 import {
   __SUPPORTED_THEME_COLORS,
@@ -93,6 +94,7 @@ function IconToggleButton({
 }
 
 export default function NotFoundTestPage() {
+  const t = useTranslations('test.notFound');
   const [themeName, setThemeName] = useState<keyof typeof THEME_COLOR_NAME_TO_CLASS_MAP>('purple');
   const [animeAmbientAnimated, setAnimeAmbientAnimated] = useState(false);
   const [animeDoorOpen, setAnimeDoorOpen] = useState(false);
@@ -110,7 +112,7 @@ export default function NotFoundTestPage() {
         <header className="rounded-2xl border border-neutral-200 bg-neutral-50/90 p-4 shadow-sm backdrop-blur-sm dark:border-neutral-800 dark:bg-neutral-950/60 sm:p-6">
           <p className="text-xs font-medium uppercase tracking-[0.16em] text-neutral-500 dark:text-neutral-400">Theme Color Switch Preview</p>
           <p className="mt-2 text-sm leading-6 text-neutral-600 dark:text-neutral-300">
-            快速查看 404 页面在亮暗主题下的视觉效果。当前主题：{themeLabel} / {themeClass} / {themeHex}
+            {t('description', { themeLabel, themeClass, themeHex })}
           </p>
 
           <div className="mt-5 grid grid-cols-3 gap-2 sm:flex sm:flex-wrap">

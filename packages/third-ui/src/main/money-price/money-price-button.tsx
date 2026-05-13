@@ -44,9 +44,9 @@ export function MoneyPriceButton({
     return 0;
   };
 
-  // OneTime 模式的按钮配置
+  // Button configuration for one-time mode.
   const getOnetimeButtonConfig = () => {
-    // 匿名用户：所有卡片都显示登录按钮
+    // Anonymous users: show the sign-in button on every card.
     if (!isAuthenticated) {
       return {
         text: texts.getStarted,
@@ -57,12 +57,12 @@ export function MoneyPriceButton({
     }
 
     if (subscriptionStatus === UserState.Anonymous) {
-        // 已登录但状态未知 → 视为 FreeUser
+        // Signed in but status unknown: treat as FreeUser.
         console.warn('Clerk is authed OK but user is anonymous!');
         return { text: '', disabled: true, hidden: true };
     }
 
-    // 登录用户：OneTime 模式下所有卡片都显示购买积分按钮
+    // Signed-in users: show the buy-credits button on every card in one-time mode.
     return {
       text: texts.buyCredits || texts.upgrade,
       onClick: () => onAction(planKey, billingType),
@@ -71,9 +71,9 @@ export function MoneyPriceButton({
     };
   };
 
-  // 订阅模式的按钮配置
+  // Button configuration for subscription mode.
   const getSubscriptionButtonConfig = () => {
-    // 匿名用户
+    // Anonymous users.
     if (!isAuthenticated) {
       const getButtonText = () => {
         switch (planKey) {
@@ -96,7 +96,7 @@ export function MoneyPriceButton({
       };
     }
 
-    // 已登录用户
+    // Signed-in users.
     switch (subscriptionStatus) {
       case UserState.FreeUser: {
         if (planTier === 'F1') {
@@ -115,7 +115,7 @@ export function MoneyPriceButton({
       }
 
       case UserState.ProUser: {
-        // 不允许降级到 Free
+        // Do not allow downgrades to Free.
         if (planTier === 'F1') {
           return { hidden: true };
         }
@@ -209,13 +209,13 @@ export function MoneyPriceButton({
       }
 
       default:
-        // 已登录但状态未知 → 视为 FreeUser
+        // Signed in but status unknown: treat as FreeUser.
         console.warn('Clerk is authed OK but user is anonymous!');
         return { text: '', disabled: true, hidden: true };
     }
   };
 
-  // 主要的按钮配置函数
+  // Main button configuration function.
   const getButtonConfig = () => {
     if (billingType === 'onetime') {
       return getOnetimeButtonConfig();

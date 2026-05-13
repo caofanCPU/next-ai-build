@@ -33,10 +33,10 @@ export async function Gallery({ locale, sectionClassName, button }: GalleryProps
       </h2>
       <p className="text-center max-w-2xl mx-auto mb-16">{data.description}</p>
 
-      {/* 移动端轮播 */}
+      {/* Mobile swiper */}
       <GalleryMobileSwiper items={data.items} />
 
-      {/* 桌面端网格 */}
+      {/* Desktop grid */}
       <GalleryDesktopGrid items={data.items} />
 
       {button && <div className="text-center mx-auto mt-12 max-w-[85vw]">{button}</div>}

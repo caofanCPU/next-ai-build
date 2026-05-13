@@ -2,10 +2,10 @@ import type { XCredit, XSubscription, XUser } from '../../clerk/fingerprint/type
 
 /**
  * Money Price Component Types
- * 价格组件类型定义
+ * Pricing component type definitions.
  */
 
-// 用户状态枚举
+// User status enum.
 export enum UserState {
   Anonymous = 'anonymous',
   FreeUser = 'free',
@@ -13,7 +13,7 @@ export enum UserState {
   UltraUser = 'ultra'
 }
 
-// 用户上下文
+// User context.
 export interface UserContext {
   isAuthenticated: boolean;
   subscriptionStatus: UserState;
@@ -29,10 +29,10 @@ export interface InitUserContext {
   isClerkAuthenticated?: boolean;
 }
 
-// 支付供应商类型
+// Payment provider type.
 export type PaymentProvider = 'stripe' | 'apple' | 'paypal' | 'wechat' | 'alipay'  ;
 
-// 价格计划
+// Price plan.
 export interface EnhancePricePlan {
   priceId: string;
   amount: number;
@@ -42,13 +42,13 @@ export interface EnhancePricePlan {
   credits?: number;
 }
 
-// 订阅产品配置
+// Subscription product configuration.
 export interface SubscriptionProductConfig {
   key: string;
   plans: Record<string, EnhancePricePlan>;
 }
 
-// 积分包产品配置
+// Credit pack product configuration.
 export interface CreditPackProductConfig {
   key: string;
   priceId: string;
@@ -57,7 +57,7 @@ export interface CreditPackProductConfig {
   credits: number;
 }
 
-// 支付供应商配置
+// Payment provider configuration.
 export interface PaymentProviderConfig {
   provider: PaymentProvider;
   enabled: boolean;
@@ -71,7 +71,7 @@ export interface PaymentProviderConfig {
     P2: CreditPackProductConfig;
     U3: CreditPackProductConfig;
   };
-  // 兼容旧结构
+  // Backward-compatible legacy shape.
   products?: {
     F1: SubscriptionProductConfig;
     P2: SubscriptionProductConfig;
@@ -79,7 +79,7 @@ export interface PaymentProviderConfig {
   };
 }
 
-// 主配置
+// Main configuration.
 export interface MoneyPriceConfig {
   paymentProviders: {
     [provider: string]: PaymentProviderConfig;
@@ -92,7 +92,7 @@ export interface MoneyPriceConfig {
   };
 }
 
-// 组件属性
+// Component props.
 export interface MoneyPriceProps {
   locale: string;
   config: MoneyPriceConfig;
@@ -107,7 +107,7 @@ export interface MoneyPriceProps {
   initialBillingType?: string;
 }
 
-// 交互组件属性
+// Interactive component props.
 export interface MoneyPriceInteractiveProps {
   data: MoneyPriceData;
   config: MoneyPriceConfig;
@@ -122,7 +122,7 @@ export interface MoneyPriceInteractiveProps {
   isInitLoading?: boolean;
 }
 
-// 按钮组件属性
+// Button component props.
 export interface MoneyPriceButtonProps {
   planKey: 'F1' | 'P2' | 'U3';
   userContext: UserContext;
@@ -146,7 +146,7 @@ export interface MoneyPriceButtonProps {
 export type MoneyPriceAnimeTone = 'theme' | 'rainbow' | 'mono' | 'warm' | 'cool';
 export type MoneyPriceStrictDiffAnime = Record<string, MoneyPriceAnimeTone | null | undefined>;
 
-// 数据结构
+// Data structures.
 export interface MoneyPriceData {
   title: string;
   subtitle: string;

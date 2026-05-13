@@ -9,7 +9,6 @@
 - `@windrun-huaiin/fumadocs-local-md`: MDX docs as pages, a moudle for mdx files build
 - `@windrun-huaiin/ddaas-website`: Main website as example
 - `@windrun-huaiin/dev-scripts`: CLI util for dev or build scripts
-- `@windrun-huaiin/shared-assets`: For expand, current useless
 
 
 ```mermaid

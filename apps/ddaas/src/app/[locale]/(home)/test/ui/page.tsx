@@ -1,6 +1,7 @@
 'use client';
 
 import { type ComponentType, type ReactNode, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import type { LucideProps } from 'lucide-react';
 import {
   AlbumIcon,
@@ -132,14 +133,6 @@ const createExpandedSections = (expanded: boolean): ExpandedSections =>
     },
     {} as ExpandedSections
   );
-
-const pillOptions: XPillOption[] = [
-  { label: '产品设计', value: 'design' },
-  { label: '前端开发', value: 'frontend' },
-  { label: '后端接口', value: 'backend' },
-  { label: 'AI 自动化', value: 'ai' },
-  { label: '增长运营', value: 'growth' },
-];
 
 const randomCalendarSavedDates = ['2026-05-03', '2026-05-07', '2026-05-18', '2026-05-29'];
 const randomCalendarPlannedDates = ['2026-05-10', '2026-05-11', '2026-05-12', '2026-05-13'];
@@ -307,6 +300,8 @@ type CollapsibleSectionProps = {
   description?: string;
   isExpanded: boolean;
   onToggle: () => void;
+  collapseLabel: string;
+  expandLabel: string;
   children: ReactNode;
   className?: string;
   headerExtra?: ReactNode;
@@ -317,6 +312,8 @@ function CollapsibleSection({
   description,
   isExpanded,
   onToggle,
+  collapseLabel,
+  expandLabel,
   children,
   className,
   headerExtra,
@@ -339,7 +336,7 @@ function CollapsibleSection({
           {headerExtra}
           <span className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-background/80 px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-accent">
             <ChevronIcon className="h-4 w-4" />
-            {isExpanded ? '折叠内容' : '展开内容'}
+            {isExpanded ? collapseLabel : expandLabel}
           </span>
         </div>
       </button>
@@ -350,7 +347,15 @@ function CollapsibleSection({
 }
 
 export default function TestComponentsPage() {
-  const [actionText, setActionText] = useState('点击任意按钮查看交互记录');
+  const t = useTranslations('test.ui');
+  const pillOptions: XPillOption[] = [
+    { label: t('pillOptions.design'), value: 'design' },
+    { label: t('pillOptions.frontend'), value: 'frontend' },
+    { label: t('pillOptions.backend'), value: 'backend' },
+    { label: t('pillOptions.ai'), value: 'ai' },
+    { label: t('pillOptions.growth'), value: 'growth' },
+  ];
+  const [actionText, setActionText] = useState(t('initialAction'));
   const [activeDialogDemo, setActiveDialogDemo] = useState<ActiveDialogDemo>(null);
   const [copiedIconName, setCopiedIconName] = useState<string | null>(null);
   const [copyToastText, setCopyToastText] = useState<string | null>(null);
@@ -382,9 +387,9 @@ export default function TestComponentsPage() {
   });
 
   const handleAction = async (label: string) => {
-    setActionText(`执行中: ${label}`);
+    setActionText(t('running', { label }));
     await sleep(900);
-    setActionText(`最近一次操作: ${label}`);
+    setActionText(t('latestAction', { label }));
   };
 
   const handleCopyIconUsage = async (iconName: string) => {
@@ -398,18 +403,18 @@ export default function TestComponentsPage() {
       }
 
       setCopiedIconName(iconName);
-      setCopyToastText(`已复制: ${iconName}`);
-      setActionText(`已复制图标用法: ${usageText}`);
+      setCopyToastText(t('copied', { name: iconName }));
+      setActionText(t('copiedIconUsage', { usage: usageText }));
       window.setTimeout(() => {
         setCopiedIconName((current) => (current === iconName ? null : current));
       }, 1600);
       window.setTimeout(() => {
-        setCopyToastText((current) => (current === `已复制: ${iconName}` ? null : current));
+        setCopyToastText((current) => (current === t('copied', { name: iconName }) ? null : current));
       }, 1800);
     } catch (error) {
       console.error('Copy icon usage failed:', error);
-      setActionText(`复制失败: ${usageText}`);
-      setCopyToastText('复制失败，请手动重试');
+      setActionText(t('copyFailed', { usage: usageText }));
+      setCopyToastText(t('copyFailedRetry'));
     }
   };
 
@@ -450,43 +455,44 @@ export default function TestComponentsPage() {
         >
           <div className="max-w-3xl">
             <div className="mb-3 inline-flex rounded-full border border-primary/15 bg-primary/8 px-3 py-1 text-xs font-semibold text-primary">
-              组件测试页
+              {t('badge')}
             </div>
-            <h1 className="text-3xl font-semibold tracking-tight text-foreground md:text-4xl">按钮与图标效果展示</h1>
+            <h1 className="text-3xl font-semibold tracking-tight text-foreground md:text-4xl">{t('title')}</h1>
             <p className="mt-3 max-w-2xl text-sm leading-7 text-muted-foreground md:text-base">
-              这个页面专门用来集中查看通用组件效果当前包含 Random Calendar、Global Icon、GradientButton、XButton 等组件，
-              后续可以继续按 section 往下追加
+              {t('description')}
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2 self-start md:justify-end">
             <span className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-background/80 px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-accent">
               {allSectionsExpanded ? <ChevronUpIcon className="h-4 w-4" /> : <ChevronDownIcon className="h-4 w-4" />}
-              {allSectionsExpanded ? '全部折叠' : '全部展开'}
+              {allSectionsExpanded ? t('collapseAll') : t('expandAll')}
             </span>
           </div>
         </button>
         <div className="mt-5 flex flex-wrap gap-2 text-sm">
           <span className="rounded-full border border-emerald-300/70 bg-emerald-100 px-3 py-1 font-medium text-emerald-800 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300">
-            图标总数: {iconEntries.length}
+            {t('iconTotal', { count: iconEntries.length })}
           </span>
           <span className="rounded-full border border-sky-300/70 bg-sky-100 px-3 py-1 font-medium text-sky-800 dark:border-sky-800 dark:bg-sky-950/40 dark:text-sky-300">
-            已接入按钮变体: default / soft / subtle
+            {t('buttonVariants')}
           </span>
         </div>
       </section>
 
       <CollapsibleSection
-        title="Random Calendar 展示"
-        description="覆盖独立滑动窗口、独立日历状态视图，以及日历入口打开滑动窗口并回写 planned 状态三种场景"
+        title={t('randomCalendar.title')}
+        description={t('randomCalendar.description')}
         isExpanded={expandedSections['random-calendar']}
         onToggle={() => handleToggleSection('random-calendar')}
+        collapseLabel={t('collapse')}
+        expandLabel={t('expand')}
         className="relative z-30"
       >
         <div className="mt-5 grid gap-4 xl:grid-cols-3">
           <div className={compareCardClass}>
-            <div className="mb-3 text-sm font-medium text-foreground">单独滑动窗口</div>
+            <div className="mb-3 text-sm font-medium text-foreground">{t('randomCalendar.rangeOnlyTitle')}</div>
             <p className="mb-4 text-xs leading-6 text-muted-foreground">
-              滑动选择日期范围
+              {t('randomCalendar.rangeOnlyDescription')}
             </p>
             <CalendarDateRangeInput
               value={rangeOnlyValue}
@@ -494,7 +500,7 @@ export default function TestComponentsPage() {
                 setRangeOnlyValue(range);
                 setActionText(`CalendarDateRangeInput: ${getRangeSummary(range)}`);
               }}
-              placeholder="点击选择起止日期"
+              placeholder={t('randomCalendar.rangePlaceholder')}
               defaultRangeDays={10}
               showDayCount={true}
               dayCountUnit='D'
@@ -504,9 +510,9 @@ export default function TestComponentsPage() {
           </div>
 
           <div className={cn(compareCardClass, 'xl:col-span-2')}>
-            <div className="mb-3 text-sm font-medium text-foreground">单独日历视图</div>
+            <div className="mb-3 text-sm font-medium text-foreground">{t('randomCalendar.calendarOnlyTitle')}</div>
             <p className="mb-4 text-xs leading-6 text-muted-foreground">
-              只测试月历的日期迁移、今日定位、已保存/计划/警告状态点，以及选中日期变化
+              {t('randomCalendar.calendarOnlyDescription')}
             </p>
             <div className="grid gap-4 lg:grid-cols-[minmax(0,24rem)_minmax(0,1fr)]">
               <CalendarStatusView
@@ -519,13 +525,13 @@ export default function TestComponentsPage() {
                   <div className="text-xs font-semibold uppercase text-muted-foreground">Selected Date</div>
                   <div className="mt-2 text-2xl font-semibold text-foreground">{calendarOnlySelectedDate}</div>
                   <div className="mt-2 text-sm text-muted-foreground">
-                    当前状态: <span className="font-medium text-foreground">{calendarOnlySelectedState?.key ?? 'empty'}</span>
+                    {t('randomCalendar.currentState', { state: calendarOnlySelectedState?.key ?? 'empty' })}
                   </div>
                   <div className="mt-4 grid grid-cols-2 gap-2">
                     {([
-                      { key: 'saved', tone: 'saved', label: '设为 Saved' },
-                      { key: 'planned', tone: 'planned', label: '设为 Planned' },
-                      { key: 'warning', tone: 'warning', label: '设为 Warning' },
+                      { key: 'saved', tone: 'saved', label: t('randomCalendar.setSaved') },
+                      { key: 'planned', tone: 'planned', label: t('randomCalendar.setPlanned') },
+                      { key: 'warning', tone: 'warning', label: t('randomCalendar.setWarning') },
                     ] as const).map((item) => (
                       <button
                         key={item.key}
@@ -549,11 +555,11 @@ export default function TestComponentsPage() {
                       type="button"
                       onClick={() => {
                         setCalendarOnlyDayStates((current) => setCalendarDateState(current, calendarOnlySelectedDate, null));
-                        setActionText(`CalendarStatusView: 清空 ${calendarOnlySelectedDate}`);
+                        setActionText(t('randomCalendar.clearAction', { date: calendarOnlySelectedDate }));
                       }}
                       className="rounded-2xl border border-border/60 bg-background/80 px-3 py-2 text-xs font-medium text-muted-foreground transition hover:bg-accent"
                     >
-                      清空状态
+                      {t('randomCalendar.clearStatus')}
                     </button>
                   </div>
                   <div className="mt-4 grid gap-2 text-sm text-muted-foreground">
@@ -570,9 +576,9 @@ export default function TestComponentsPage() {
           </div>
 
           <div className={cn(compareCardClass, 'xl:col-span-3')}>
-            <div className="mb-3 text-sm font-medium text-foreground">日历视图和滑动结合</div>
+            <div className="mb-3 text-sm font-medium text-foreground">{t('randomCalendar.combinedTitle')}</div>
             <p className="mb-4 text-xs leading-6 text-muted-foreground">
-              从日历头部入口打开范围规划，Apply 后将区间写回为 planned 状态；日历只展示结果状态，不保留拖动过程
+              {t('randomCalendar.combinedDescription')}
             </p>
             <div className="grid gap-4 lg:grid-cols-[minmax(0,24rem)_minmax(0,1fr)]">
               <CalendarStatusView
@@ -603,7 +609,7 @@ export default function TestComponentsPage() {
                   <div className="text-xs font-semibold uppercase text-muted-foreground">Review Focus</div>
                   <div className="mt-2 text-2xl font-semibold text-foreground">{combinedSelectedDate}</div>
                   <div className="mt-2 text-sm text-muted-foreground">
-                    当前状态: <span className="font-medium text-foreground">{combinedSelectedState?.key ?? 'empty'}</span>
+                    {t('randomCalendar.currentState', { state: combinedSelectedState?.key ?? 'empty' })}
                   </div>
                   <div className="mt-4 flex flex-wrap gap-2">
                     <button
@@ -616,21 +622,21 @@ export default function TestComponentsPage() {
                             title: `${combinedSelectedDate}: saved after review`,
                           })
                         );
-                        setActionText(`Random Calendar: 保存 ${combinedSelectedDate}`);
+                        setActionText(t('randomCalendar.saveAction', { date: combinedSelectedDate }));
                       }}
                       className="rounded-2xl border border-emerald-300/70 bg-emerald-50 px-3 py-2 text-xs font-medium text-emerald-800 transition hover:bg-emerald-100 dark:border-emerald-800 dark:bg-emerald-950/30 dark:text-emerald-300"
                     >
-                      保存当前日
+                      {t('randomCalendar.saveCurrentDay')}
                     </button>
                     <button
                       type="button"
                       onClick={() => {
                         setCombinedDayStates((current) => setCalendarDateState(current, combinedSelectedDate, null));
-                        setActionText(`Random Calendar: 清空 ${combinedSelectedDate}`);
+                        setActionText(t('randomCalendar.clearAction2', { date: combinedSelectedDate }));
                       }}
                       className="rounded-2xl border border-border/60 bg-background/80 px-3 py-2 text-xs font-medium text-muted-foreground transition hover:bg-accent"
                     >
-                      清空当前日
+                      {t('randomCalendar.clearCurrentDay')}
                     </button>
                   </div>
                   <div className="mt-4 rounded-2xl border border-dashed border-border/70 bg-background/70 px-3 py-2 text-xs leading-5 text-muted-foreground">
@@ -658,7 +664,7 @@ export default function TestComponentsPage() {
                     </div>
                   ) : (
                     <div className="mt-4 rounded-2xl border border-dashed border-border/70 bg-background/70 px-3 py-6 text-center text-xs text-muted-foreground">
-                      当前范围内没有待处理的 planned 日期
+                      {t('randomCalendar.noPlannedDates')}
                     </div>
                   )}
                 </div>
@@ -672,17 +678,19 @@ export default function TestComponentsPage() {
       </CollapsibleSection>
 
       <CollapsibleSection
-        title="Alert Dialog 展示"
-        description="快速打开广告、信息提示、确认和高优先级确认弹窗，便于检查主题色、暗色模式、关闭按钮和按钮语义"
+        title={t('alert.title')}
+        description={t('alert.description')}
         isExpanded={expandedSections['alert-dialog']}
         onToggle={() => handleToggleSection('alert-dialog')}
+        collapseLabel={t('collapse')}
+        expandLabel={t('expand')}
         className="relative z-20"
       >
         <div className="mt-5 grid gap-4 lg:grid-cols-2">
           <div className={compareCardClass}>
             <div className="mb-3 text-sm font-medium text-foreground">AdsAlertDialog</div>
             <p className="mb-4 text-xs leading-6 text-muted-foreground">
-              图片、链接、右上角关闭、可选取消/确认按钮图片使用 R2 测试地址
+              {t('alert.adsDescription')}
             </p>
             <XButton
               type="single"
@@ -691,7 +699,7 @@ export default function TestComponentsPage() {
               className={dialogDemoButtonClass}
               button={{
                 icon: <BellIcon />,
-                text: '打开广告弹窗',
+                text: t('alert.openAds'),
                 onClick: () => setActiveDialogDemo('ads'),
               }}
             />
@@ -700,7 +708,7 @@ export default function TestComponentsPage() {
           <div className={compareCardClass}>
             <div className="mb-3 text-sm font-medium text-foreground">InfoDialog</div>
             <p className="mb-4 text-xs leading-6 text-muted-foreground">
-              单确认按钮，按 info / warn / success / error 区分提示语义和视觉状态
+              {t('alert.infoDescription')}
             </p>
             <div className="flex flex-wrap gap-2">
               <XButton
@@ -735,9 +743,9 @@ export default function TestComponentsPage() {
           </div>
 
           <div className={compareCardClass}>
-            <div className="mb-3 text-sm font-medium text-foreground">ConfirmDialog 基础样式</div>
+            <div className="mb-3 text-sm font-medium text-foreground">{t('alert.confirmBaseTitle')}</div>
             <p className="mb-4 text-xs leading-6 text-muted-foreground">
-              双按钮确认弹窗，normal 跟随主题色，danger 使用红色危险语义，倒计时弹窗展示二阶段确认
+              {t('alert.confirmBaseDescription')}
             </p>
             <div className="flex flex-wrap gap-2">
               <XButton
@@ -745,21 +753,21 @@ export default function TestComponentsPage() {
                 variant="subtle"
                 minWidth="min-w-0"
                 className={dialogDemoButtonClass}
-                button={{ icon: <CircleQuestionMarkIcon />, text: '普通确认', onClick: () => setActiveDialogDemo('confirm-normal') }}
+                button={{ icon: <CircleQuestionMarkIcon />, text: t('alert.normalConfirm'), onClick: () => setActiveDialogDemo('confirm-normal') }}
               />
               <XButton
                 type="single"
                 variant="subtle"
                 minWidth="min-w-0"
                 className={dialogDangerDemoButtonClass}
-                button={{ icon: <CircleQuestionMarkIcon />, text: '反转确认应用', onClick: () => setActiveDialogDemo('confirm-normal-reversed') }}
+                button={{ icon: <CircleQuestionMarkIcon />, text: t('alert.reversedConfirm'), onClick: () => setActiveDialogDemo('confirm-normal-reversed') }}
               />
               <XButton
                 type="single"
                 variant="subtle"
                 minWidth="min-w-0"
                 className={dialogDangerDemoButtonClass}
-                button={{ icon: <CircleAlertIcon />, text: '危险确认', onClick: () => setActiveDialogDemo('confirm-danger') }}
+                button={{ icon: <CircleAlertIcon />, text: t('alert.dangerConfirm'), onClick: () => setActiveDialogDemo('confirm-danger') }}
               />
               <XButton
                 type="single"
@@ -768,7 +776,7 @@ export default function TestComponentsPage() {
                 className={dialogDangerDemoButtonClass}
                 button={{
                   icon: <CircleAlertIcon />,
-                  text: '倒计时删除',
+                  text: t('alert.countdownDelete'),
                   onClick: () => setActiveDialogDemo('undoable-confirm'),
                 }}
               />
@@ -776,9 +784,9 @@ export default function TestComponentsPage() {
           </div>
 
           <div className={compareCardClass}>
-            <div className="mb-3 text-sm font-medium text-foreground">HighPriorityConfirmDialog 基础样式</div>
+            <div className="mb-3 text-sm font-medium text-foreground">{t('alert.highPriorityTitle')}</div>
             <p className="mb-4 text-xs leading-6 text-muted-foreground">
-              强遮罩、高层级、必须决策，适合流程中断、离开页面、丢失状态这类高优先级场景
+              {t('alert.highPriorityDescription')}
             </p>
             <XButton
               type="single"
@@ -787,16 +795,16 @@ export default function TestComponentsPage() {
               className={cn(dialogDemoButtonClass, themeIconColor, 'border-current bg-primary/5 hover:bg-primary/10')}
               button={{
                 icon: <FAQSIcon />,
-                text: '打开高优先级确认',
+                text: t('alert.openHighPriority'),
                 onClick: () => setActiveDialogDemo('high-priority'),
               }}
             />
           </div>
 
           <div className={cn(compareCardClass, 'lg:col-span-2')}>
-            <div className="mb-3 text-sm font-medium text-foreground">Loading Action 展示</div>
+            <div className="mb-3 text-sm font-medium text-foreground">{t('alert.loadingTitle')}</div>
             <p className="mb-4 text-xs leading-6 text-muted-foreground">
-              按钮动作关闭弹窗后执行异步回调；只有 `loadingActions` 命中的 action 会展示全屏 Loading
+              {t('alert.loadingDescription')}
             </p>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               <XButton
@@ -840,7 +848,7 @@ export default function TestComponentsPage() {
           <div className={cn(compareCardClass, 'lg:col-span-2')}>
             <div className="mb-3 text-sm font-medium text-foreground">UndoableConfirmDialog Loading Action</div>
             <p className="mb-4 text-xs leading-6 text-muted-foreground">
-              首屏按钮只进入倒计时，不展示 Loading；倒计时完成触发 `confirm`，或等待期点击 `undo` 时才按配置展示 Loading
+              {t('alert.undoableLoadingDescription')}
             </p>
             <div className="grid gap-3 md:grid-cols-3">
               <XButton
@@ -850,7 +858,7 @@ export default function TestComponentsPage() {
                 className={dialogDangerDemoButtonClass}
                 button={{
                   icon: <CircleAlertIcon />,
-                  text: '倒计时确认 Loading',
+                  text: t('alert.countdownConfirmLoading'),
                   onClick: () => setActiveDialogDemo('undoable-loading-confirm'),
                 }}
               />
@@ -861,7 +869,7 @@ export default function TestComponentsPage() {
                 className={dialogDemoButtonClass}
                 button={{
                   icon: <CircleAlertIcon />,
-                  text: '倒计时撤回 Loading',
+                  text: t('alert.countdownUndoLoading'),
                   onClick: () => setActiveDialogDemo('undoable-loading-undo'),
                 }}
               />
@@ -872,23 +880,25 @@ export default function TestComponentsPage() {
                 className={dialogDangerDemoButtonClass}
                 button={{
                   icon: <CircleAlertIcon />,
-                  text: '倒计时双路径 Loading',
+                  text: t('alert.countdownBothLoading'),
                   onClick: () => setActiveDialogDemo('undoable-loading-both'),
                 }}
               />
             </div>
             <div className={codeHintClass}>
-              {`Undoable: loadingActions={['confirm']} 表示倒计时后的 onConfirm；loadingActions={['undo']} 表示等待期 Undo；两者都需要就传 ['confirm', 'undo']`}
+              {t('alert.undoableHint')}
             </div>
           </div>
         </div>
       </CollapsibleSection>
 
       <CollapsibleSection
-        title="Global Icon 全量展示"
-        description="支持按图标名做前后模糊匹配，点击卡片可复制 `XxxIcon` 用法"
+        title={t('icons.title')}
+        description={t('icons.description')}
         isExpanded={expandedSections['global-icon']}
         onToggle={() => handleToggleSection('global-icon')}
+        collapseLabel={t('collapse')}
+        expandLabel={t('expand')}
       >
         <div className="mt-5 flex flex-col gap-4">
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
@@ -900,7 +910,7 @@ export default function TestComponentsPage() {
                 type="text"
                 value={iconSearchValue}
                 onChange={(event) => setIconSearchValue(event.target.value)}
-                placeholder="搜索图标名，如 search / arrow / chevron"
+                placeholder={t('icons.placeholder')}
                 className={cn(
                   'h-11 w-full rounded-2xl border border-border/60 bg-background/80 pl-10 pr-4 text-sm text-foreground outline-none transition focus-visible:ring-2',
                   themeIconColor,
@@ -909,7 +919,7 @@ export default function TestComponentsPage() {
               />
             </label>
             <div className="text-sm text-muted-foreground">
-              匹配结果: <span className="font-medium text-foreground">{filteredIconEntries.length}</span> / {iconEntries.length}
+              {t('icons.matches', { count: filteredIconEntries.length, total: iconEntries.length })}
             </div>
           </div>
 
@@ -925,7 +935,7 @@ export default function TestComponentsPage() {
                     copiedIconName === iconName && cn(themeIconColor, 'border-current bg-primary/5 shadow-[0_0_0_2px_currentColor]')
                   )}
                   onClick={() => handleCopyIconUsage(iconName)}
-                  title={`点击复制 ${iconName}`}
+                  title={t('icons.copyTitle', { name: iconName })}
                 >
                   <div
                     className={cn(
@@ -935,7 +945,7 @@ export default function TestComponentsPage() {
                         : 'border-border/70 bg-background/90 text-muted-foreground opacity-100 sm:opacity-0 sm:group-hover:opacity-100'
                     )}
                   >
-                    {copiedIconName === iconName ? '已复制' : '点击复制'}
+                    {copiedIconName === iconName ? t('icons.copied') : t('icons.clickToCopy')}
                   </div>
                   <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-border/60 bg-linear-to-br from-background to-muted/60">
                     <Icon className="h-6 w-6" />
@@ -948,104 +958,106 @@ export default function TestComponentsPage() {
             </div>
           ) : (
             <div className="rounded-2xl border border-dashed border-border/70 bg-background/60 px-4 py-10 text-center text-sm text-muted-foreground">
-              没有匹配到图标: <span className="font-medium text-foreground">{iconSearchValue}</span>
+              {t('icons.empty', { value: iconSearchValue })}
             </div>
           )}
         </div>
       </CollapsibleSection>
 
       <CollapsibleSection
-        title="GradientButton 展示"
-        description="保留默认渐变风格，同时展示 `soft`、`subtle`、链接态、点击态、禁用态、对齐差异和按压反馈"
+        title={t('gradient.title')}
+        description={t('gradient.description')}
         isExpanded={expandedSections['gradient-button']}
         onToggle={() => handleToggleSection('gradient-button')}
+        collapseLabel={t('collapse')}
+        expandLabel={t('expand')}
       >
         <div className="mt-5 grid gap-4 lg:grid-cols-2">
           <div className="rounded-2xl border border-border/60 bg-background/70 p-4">
-            <div className="mb-3 text-sm font-medium text-foreground">三种视觉层级</div>
+            <div className="mb-3 text-sm font-medium text-foreground">{t('gradient.levels')}</div>
             <div className="flex flex-col gap-3">
-              <GradientButton className={gradientButtonDemoClass} title="默认渐变按钮" onClick={() => handleAction('GradientButton 默认渐变按钮')} />
-              <GradientButton className={gradientButtonDemoClass} title="低调主题按钮" variant="soft" onClick={() => handleAction('GradientButton soft 按钮')} />
-              <GradientButton className={gradientButtonDemoClass} title="更低调 subtle 按钮" variant="subtle" onClick={() => handleAction('GradientButton subtle 按钮')} />
-              <GradientButton className={gradientButtonDemoClass} title="链接跳转按钮" href="#" openInNewTab={false} />
-              <GradientButton className={gradientButtonDemoClass} title="soft 链接按钮" href="#" openInNewTab={false} variant="soft" />
-              <GradientButton className={gradientButtonDemoClass} title="subtle 链接按钮" href="#" openInNewTab={false} variant="subtle" />
-              <GradientButton className={gradientButtonCustomClass} title="subtle普通点击按钮" onClick={() => handleAction('GradientButton Subtle个性化按钮')}  variant="subtle" icon={false} />
+              <GradientButton className={gradientButtonDemoClass} title={t('gradient.default')} onClick={() => handleAction('GradientButton default gradient button')} />
+              <GradientButton className={gradientButtonDemoClass} title={t('gradient.soft')} variant="soft" onClick={() => handleAction('GradientButton soft button')} />
+              <GradientButton className={gradientButtonDemoClass} title={t('gradient.subtle')} variant="subtle" onClick={() => handleAction('GradientButton subtle button')} />
+              <GradientButton className={gradientButtonDemoClass} title={t('gradient.link')} href="#" openInNewTab={false} />
+              <GradientButton className={gradientButtonDemoClass} title={t('gradient.softLink')} href="#" openInNewTab={false} variant="soft" />
+              <GradientButton className={gradientButtonDemoClass} title={t('gradient.subtleLink')} href="#" openInNewTab={false} variant="subtle" />
+              <GradientButton className={gradientButtonCustomClass} title={t('gradient.customSubtle')} onClick={() => handleAction('GradientButton custom subtle button')}  variant="subtle" icon={false} />
             </div>
           </div>
 
           <div className="rounded-2xl border border-border/60 bg-background/70 p-4">
-            <div className="mb-3 text-sm font-medium text-foreground">图标、对齐与禁用</div>
+            <div className="mb-3 text-sm font-medium text-foreground">{t('gradient.iconAlignDisabled')}</div>
             <div className="space-y-4">
               <GradientButton
-                title="左对齐带图标"
+                title={t('gradient.leftIcon')}
                 align="left"
                 className={gradientButtonDemoClass}
                 icon={<RocketIcon />}
-                onClick={() => handleAction('GradientButton 左对齐带图标')}
+                onClick={() => handleAction('GradientButton left aligned with icon')}
               />
               <GradientButton
-                title="居中 soft 按钮"
+                title={t('gradient.centerSoft')}
                 align="center"
                 variant="soft"
                 className={gradientButtonDemoClass}
                 icon={<SparklesIcon />}
-                onClick={() => handleAction('GradientButton 居中 soft')}
+                onClick={() => handleAction('GradientButton centered soft')}
               />
               <GradientButton
-                title="居中 subtle 按钮"
+                title={t('gradient.centerSubtle')}
                 align="center"
                 variant="subtle"
                 className={gradientButtonDemoClass}
                 icon={<AlbumIcon />}
-                onClick={() => handleAction('GradientButton 居中 subtle')}
+                onClick={() => handleAction('GradientButton centered subtle')}
               />
               <GradientButton
-                title="右对齐禁用按钮"
+                title={t('gradient.rightDisabled')}
                 align="right"
                 disabled
                 className={gradientButtonDemoClass}
                 icon={<ShieldIcon />}
-                onClick={() => handleAction('GradientButton 禁用态')}
+                onClick={() => handleAction('GradientButton disabled state')}
               />
             </div>
           </div>
 
           <div className="rounded-2xl border border-border/60 bg-background/70 p-4 lg:col-span-2">
-            <div className="mb-3 text-sm font-medium text-foreground">Press Feedback 按压反馈</div>
+            <div className="mb-3 text-sm font-medium text-foreground">{t('gradient.pressFeedback')}</div>
             <p className="mb-4 text-xs leading-6 text-muted-foreground">
-              轻点、快点按钮，观察 180ms pressed flash按压样式只改变 transform / brightness / shadow，不覆盖主题底色
+              {t('gradient.pressDescription')}
             </p>
             <div className="grid gap-3 md:grid-cols-3">
               <GradientButton
                 className={gradientButtonDemoClass}
-                title="默认 subtle 反馈"
-                onClick={() => handleAction('GradientButton pressFeedback 默认 subtle')}
+                title={t('gradient.defaultSubtleFeedback')}
+                onClick={() => handleAction('GradientButton pressFeedback default subtle')}
               />
               <GradientButton
                 className={gradientButtonDemoClass}
-                title="solid 强反馈"
+                title={t('gradient.solidFeedback')}
                 pressFeedback="solid"
                 variant="soft"
                 onClick={() => handleAction('GradientButton pressFeedback solid')}
               />
               <GradientButton
                 className={gradientButtonDemoClass}
-                title="none 关闭反馈"
+                title={t('gradient.noneFeedback')}
                 pressFeedback="none"
                 variant="subtle"
                 onClick={() => handleAction('GradientButton pressFeedback none')}
               />
               <GradientButton
                 className={gradientButtonDemoClass}
-                title="链接 subtle 反馈"
+                title={t('gradient.linkSubtleFeedback')}
                 href="#"
                 openInNewTab={false}
                 variant="subtle"
               />
               <GradientButton
                 className={gradientButtonDemoClass}
-                title="链接 solid 反馈"
+                title={t('gradient.linkSolidFeedback')}
                 href="#"
                 openInNewTab={false}
                 pressFeedback="solid"
@@ -1053,11 +1065,11 @@ export default function TestComponentsPage() {
               />
               <GradientButton
                 className={gradientButtonDemoClass}
-                title="禁用无反馈"
+                title={t('gradient.disabledNoFeedback')}
                 disabled
                 pressFeedback="solid"
                 icon={<ShieldIcon />}
-                onClick={() => handleAction('GradientButton 禁用无反馈')}
+                onClick={() => handleAction('GradientButton disabled no feedback')}
               />
             </div>
             <div className={codeHintClass}>
@@ -1068,22 +1080,24 @@ export default function TestComponentsPage() {
       </CollapsibleSection>
 
       <CollapsibleSection
-        title="XButton 展示"
-        description="这里集中展示 `single` 和 `split` 两种模式，方便确认默认、soft、subtle 三种层级和按压反馈"
+        title={t('xbutton.title')}
+        description={t('xbutton.description')}
         isExpanded={expandedSections['x-button']}
         onToggle={() => handleToggleSection('x-button')}
+        collapseLabel={t('collapse')}
+        expandLabel={t('expand')}
         className="relative z-10"
       >
         <div className="mt-5 grid gap-4 lg:grid-cols-2">
           <div className="rounded-2xl border border-border/60 bg-background/70 p-4">
-            <div className="mb-3 text-sm font-medium text-foreground">Single 模式</div>
+            <div className="mb-3 text-sm font-medium text-foreground">{t('xbutton.singleMode')}</div>
             <div className="flex flex-col gap-3">
               <XButton
                 type="single"
                 button={{
                   icon: <DownloadIcon />,
-                  text: '默认单按钮',
-                  onClick: () => handleAction('XButton 默认 single'),
+                  text: t('xbutton.defaultSingle'),
+                  onClick: () => handleAction('XButton default single'),
                 }}
                 className={xButtonSingleDemoClass}
               />
@@ -1092,7 +1106,7 @@ export default function TestComponentsPage() {
                 variant="soft"
                 button={{
                   icon: <BadgeQuestionMarkIcon />,
-                  text: 'soft 单按钮',
+                  text: t('xbutton.softSingle'),
                   onClick: () => handleAction('XButton soft single'),
                 }}
                 className={xButtonSingleDemoClass}
@@ -1102,7 +1116,7 @@ export default function TestComponentsPage() {
                 variant="subtle"
                 button={{
                   icon: <AlbumIcon />,
-                  text: 'subtle 单按钮',
+                  text: t('xbutton.subtleSingle'),
                   onClick: () => handleAction('XButton subtle single'),
                 }}
                 className={xButtonSingleDemoClass}
@@ -1111,8 +1125,8 @@ export default function TestComponentsPage() {
                 type="single"
                 button={{
                   icon: <ShieldIcon />,
-                  text: '禁用单按钮',
-                  onClick: () => handleAction('XButton 禁用 single'),
+                  text: t('xbutton.disabledSingle'),
+                  onClick: () => handleAction('XButton disabled single'),
                   disabled: true,
                 }}
                 className={xButtonSingleDemoClass}
@@ -1121,34 +1135,34 @@ export default function TestComponentsPage() {
           </div>
 
           <div className="rounded-2xl border border-border/60 bg-background/70 p-4">
-            <div className="mb-3 text-sm font-medium text-foreground">Split 模式</div>
+            <div className="mb-3 text-sm font-medium text-foreground">{t('xbutton.splitMode')}</div>
             <div className="flex flex-col gap-3">
               <XButton
                 type="split"
                 mainButton={{
                   icon: <RocketIcon />,
-                  text: '默认分体按钮',
-                  onClick: () => handleAction('XButton 默认 split 主按钮'),
+                  text: t('xbutton.defaultSplit'),
+                  onClick: () => handleAction('XButton default split main button'),
                 }}
                 mainButtonClassName={xButtonSplitMainDemoClass}
                 dropdownButtonClassName={xButtonSplitDropdownDemoClass}
                 menuItems={[
                   {
                     icon: <CopyIcon className="mr-2 h-4 w-4" />,
-                    text: '复制链接',
-                    onClick: () => handleAction('XButton 默认 split 复制链接'),
+                    text: t('xbutton.copyLink'),
+                    onClick: () => handleAction('XButton default split copy link'),
                   },
                   {
                     icon: <ExternalLinkIcon className="mr-2 h-4 w-4" />,
-                    text: '打开详情页',
-                    onClick: () => handleAction('XButton 默认 split 打开详情页'),
+                    text: t('xbutton.openDetails'),
+                    onClick: () => handleAction('XButton default split open details'),
                   },
                   {
                     icon: <ShieldIcon className="mr-2 h-4 w-4" />,
-                    text: '受保护操作',
-                    onClick: () => handleAction('XButton 默认 split 受保护操作'),
+                    text: t('xbutton.protectedAction'),
+                    onClick: () => handleAction('XButton default split protected action'),
                     splitTopBorder: true,
-                    tag: { text: '推荐' },
+                    tag: { text: t('xbutton.recommended') },
                   },
                 ]}
               />
@@ -1157,27 +1171,27 @@ export default function TestComponentsPage() {
                 variant="soft"
                 mainButton={{
                   icon: <SparklesIcon />,
-                  text: 'soft 分体按钮',
-                  onClick: () => handleAction('XButton soft split 主按钮'),
+                  text: t('xbutton.softSplit'),
+                  onClick: () => handleAction('XButton soft split main button'),
                 }}
                 mainButtonClassName={xButtonSplitMainDemoClass}
                 dropdownButtonClassName={xButtonSplitDropdownDemoClass}
                 menuItems={[
                   {
                     icon: <MailIcon className="mr-2 h-4 w-4" />,
-                    text: '发送通知',
-                    onClick: () => handleAction('XButton soft split 发送通知'),
+                    text: t('xbutton.sendNotification'),
+                    onClick: () => handleAction('XButton soft split send notification'),
                   },
                   {
                     icon: <SettingsIcon className="mr-2 h-4 w-4" />,
-                    text: '进入设置',
-                    onClick: () => handleAction('XButton soft split 进入设置'),
+                    text: t('xbutton.openSettings'),
+                    onClick: () => handleAction('XButton soft split open settings'),
                   },
                   {
                     icon: <BugIcon className="mr-2 h-4 w-4" />,
-                    text: '调试入口',
-                    onClick: () => handleAction('XButton soft split 调试入口'),
-                    tag: { text: '测试', color: '#0EA5E9' },
+                    text: t('xbutton.debugEntry'),
+                    onClick: () => handleAction('XButton soft split debug entry'),
+                    tag: { text: t('xbutton.testTag'), color: '#0EA5E9' },
                   },
                 ]}
               />
@@ -1186,21 +1200,21 @@ export default function TestComponentsPage() {
                 variant="subtle"
                 mainButton={{
                   icon: <AlbumIcon />,
-                  text: 'subtle 分体按钮',
-                  onClick: () => handleAction('XButton subtle split 主按钮'),
+                  text: t('xbutton.subtleSplit'),
+                  onClick: () => handleAction('XButton subtle split main button'),
                 }}
                 mainButtonClassName={xButtonSplitMainDemoClass}
                 dropdownButtonClassName={xButtonSplitDropdownDemoClass}
                 menuItems={[
                   {
                     icon: <MailIcon className="mr-2 h-4 w-4" />,
-                    text: '发送邮件',
-                    onClick: () => handleAction('XButton subtle split 发送邮件'),
+                    text: t('xbutton.sendEmail'),
+                    onClick: () => handleAction('XButton subtle split send email'),
                   },
                   {
                     icon: <SettingsIcon className="mr-2 h-4 w-4" />,
-                    text: '调整配置',
-                    onClick: () => handleAction('XButton subtle split 调整配置'),
+                    text: t('xbutton.adjustConfig'),
+                    onClick: () => handleAction('XButton subtle split adjust config'),
                   },
                 ]}
               />
@@ -1208,9 +1222,9 @@ export default function TestComponentsPage() {
           </div>
 
           <div className="rounded-2xl border border-border/60 bg-background/70 p-4 lg:col-span-2">
-            <div className="mb-3 text-sm font-medium text-foreground">Press Feedback 按压反馈</div>
+            <div className="mb-3 text-sm font-medium text-foreground">{t('gradient.pressFeedback')}</div>
             <p className="mb-4 text-xs leading-6 text-muted-foreground">
-              single、split main、dropdown trigger 使用独立 pressed key菜单项当前点击后立即关闭，暂不做 flash 展示
+              {t('xbutton.pressDescription')}
             </p>
             <div className="grid gap-4 xl:grid-cols-2">
               <div className="grid gap-3 sm:grid-cols-3">
@@ -1219,8 +1233,8 @@ export default function TestComponentsPage() {
                   variant="subtle"
                   button={{
                     icon: <HandHeartIcon />,
-                    text: '默认 subtle',
-                    onClick: () => handleAction('XButton pressFeedback 默认 subtle'),
+                    text: t('xbutton.defaultSubtle'),
+                    onClick: () => handleAction('XButton pressFeedback default subtle'),
                   }}
                   className={xButtonSingleDemoClass}
                 />
@@ -1230,7 +1244,7 @@ export default function TestComponentsPage() {
                   pressFeedback="solid"
                   button={{
                     icon: <ZapIcon />,
-                    text: 'solid 强反馈',
+                    text: t('xbutton.solidStrong'),
                     onClick: () => handleAction('XButton pressFeedback solid'),
                   }}
                   className={xButtonSingleDemoClass}
@@ -1240,7 +1254,7 @@ export default function TestComponentsPage() {
                   pressFeedback={false}
                   button={{
                     icon: <ShieldIcon />,
-                    text: '关闭反馈',
+                    text: t('xbutton.feedbackOff'),
                     onClick: () => handleAction('XButton pressFeedback false'),
                   }}
                   className={xButtonSingleDemoClass}
@@ -1253,21 +1267,21 @@ export default function TestComponentsPage() {
                 pressFeedback="solid"
                 mainButton={{
                   icon: <RocketIcon />,
-                  text: 'solid 分体反馈',
-                  onClick: () => handleAction('XButton pressFeedback solid split 主按钮'),
+                  text: t('xbutton.solidSplitFeedback'),
+                  onClick: () => handleAction('XButton pressFeedback solid split main button'),
                 }}
                 mainButtonClassName={xButtonSplitMainDemoClass}
                 dropdownButtonClassName={xButtonSplitDropdownDemoClass}
                 menuItems={[
                   {
                     icon: <CopyIcon className="mr-2 h-4 w-4" />,
-                    text: '复制当前状态',
-                    onClick: () => handleAction('XButton pressFeedback solid split 复制当前状态'),
+                    text: t('xbutton.copyCurrentState'),
+                    onClick: () => handleAction('XButton pressFeedback solid split copy current state'),
                   },
                   {
                     icon: <ExternalLinkIcon className="mr-2 h-4 w-4" />,
-                    text: '打开测试说明',
-                    onClick: () => handleAction('XButton pressFeedback solid split 打开测试说明'),
+                    text: t('xbutton.openTestNotes'),
+                    onClick: () => handleAction('XButton pressFeedback solid split open test notes'),
                   },
                 ]}
               />
@@ -1280,15 +1294,17 @@ export default function TestComponentsPage() {
       </CollapsibleSection>
 
       <CollapsibleSection
-        title="XToggleButton 展示"
-        description="这一组用来测试单选切换、floating badge，以及切换后联动展示纯 icon 按钮、纯文本按钮、强调按钮、链接按钮四种按钮形态"
+        title={t('toggle.title')}
+        description={t('toggle.description')}
         isExpanded={expandedSections['x-toggle-button']}
         onToggle={() => handleToggleSection('x-toggle-button')}
+        collapseLabel={t('collapse')}
+        expandLabel={t('expand')}
         className="relative z-10"
       >
         <div className="mt-5 flex flex-col gap-4">
           <div className={compareCardClass}>
-            <div className="mb-3 text-sm font-medium text-foreground">Billing 风格 Toggle</div>
+            <div className="mb-3 text-sm font-medium text-foreground">{t('toggle.billingStyle')}</div>
             <div className="flex justify-center">
               <XToggleButton
                 value={toggleDemoValue}
@@ -1312,7 +1328,7 @@ export default function TestComponentsPage() {
           </div>
 
           <div className={compareCardClass}>
-            <div className="mb-3 text-sm font-medium text-foreground">切换结果预览</div>
+            <div className="mb-3 text-sm font-medium text-foreground">{t('toggle.preview')}</div>
             <div className="rounded-2xl border border-border/60 bg-background/80 p-4">
               <div className="mb-3 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                 Active: {toggleDemoValue}
@@ -1325,7 +1341,7 @@ export default function TestComponentsPage() {
                     button={{
                       icon: <SearchIcon />,
                       text: '',
-                      onClick: () => handleAction('Toggle / 纯 icon 搜索按钮'),
+                      onClick: () => handleAction('Toggle / icon-only search button'),
                     }}
                     className={iconButtonDemoClass}
                     minWidth="min-w-0"
@@ -1335,7 +1351,7 @@ export default function TestComponentsPage() {
                     button={{
                       icon: <HandHeartIcon />,
                       text: '',
-                      onClick: () => handleAction('Toggle / 纯 icon 喜欢按钮'),
+                      onClick: () => handleAction('Toggle / icon-only like button'),
                     }}
                     className={iconButtonDemoClass}
                     minWidth="min-w-0"
@@ -1345,7 +1361,7 @@ export default function TestComponentsPage() {
                     button={{
                       icon: <ShieldUserIcon />,
                       text: '',
-                      onClick: () => handleAction('Toggle / 纯 icon 分享按钮'),
+                      onClick: () => handleAction('Toggle / icon-only share button'),
                     }}
                     className={iconButtonDemoClass}
                     minWidth="min-w-0"
@@ -1361,7 +1377,7 @@ export default function TestComponentsPage() {
                     button={{
                       icon: null,
                       text: 'Cancel',
-                      onClick: () => handleAction('Toggle / 文本 Cancel 按钮'),
+                      onClick: () => handleAction('Toggle / text Cancel button'),
                     }}
                     className="border border-slate-300 text-slate-700 dark:border-slate-600 dark:text-slate-300"
                     minWidth="min-w-0"
@@ -1372,7 +1388,7 @@ export default function TestComponentsPage() {
                     button={{
                       icon: false,
                       text: 'Forgot password?',
-                      onClick: () => handleAction('Toggle / 文本 Forgot password 按钮'),
+                      onClick: () => handleAction('Toggle / text Forgot password button'),
                     }}
                     className="border border-blue-300 text-blue-700 dark:border-blue-600 dark:text-blue-300"
                     minWidth="min-w-0"
@@ -1383,7 +1399,7 @@ export default function TestComponentsPage() {
                     button={{
                       icon: null,
                       text: 'View details',
-                      onClick: () => handleAction('Toggle / 文本 View details 按钮'),
+                      onClick: () => handleAction('Toggle / text View details button'),
                     }}
                     className="border border-emerald-300 text-emerald-700 dark:border-emerald-600 dark:text-emerald-300"
                     minWidth="min-w-0"
@@ -1397,7 +1413,7 @@ export default function TestComponentsPage() {
                     title="Upgrade Now"
                     icon={<RocketIcon />}
                     className="min-w-[150px]"
-                    onClick={() => handleAction('Toggle / 强调 Upgrade Now 按钮')}
+                    onClick={() => handleAction('Toggle / accent Upgrade Now button')}
                   />
                   <XButton
                     type="single"
@@ -1405,7 +1421,7 @@ export default function TestComponentsPage() {
                     button={{
                       icon: <SparklesIcon />,
                       text: 'Try Pro',
-                      onClick: () => handleAction('Toggle / 强调 Try Pro 按钮'),
+                      onClick: () => handleAction('Toggle / accent Try Pro button'),
                     }}
                     className="w-auto bg-emerald-500 text-white hover:bg-emerald-600 border border-emerald-600"
                     minWidth="min-w-[140px]"
@@ -1440,8 +1456,8 @@ export default function TestComponentsPage() {
           </div>
 
           <div className={compareCardClass}>
-            <div className="mb-3 text-sm font-medium text-foreground">Web 风格 Toggle - 带 mobileIcon</div>
-            <p className="mb-4 text-xs text-muted-foreground">移动端显示图标，web端显示文本</p>
+            <div className="mb-3 text-sm font-medium text-foreground">{t('toggle.webStyle')}</div>
+            <p className="mb-4 text-xs text-muted-foreground">{t('toggle.mobileIconDescription')}</p>
             <div className="flex justify-center">
               <XToggleButton
                 value={toggleDemoValue}
@@ -1466,15 +1482,17 @@ export default function TestComponentsPage() {
       </CollapsibleSection>
 
       <CollapsibleSection
-        title="Pill Select 展示"
-        description="这里按组件分组，把 `default` 和 `compact` 放在同一组内直接对照，方便一眼看出尺寸和布局差异"
+        title={t('pill.title')}
+        description={t('pill.description')}
         isExpanded={expandedSections['pill-select']}
         onToggle={() => handleToggleSection('pill-select')}
+        collapseLabel={t('collapse')}
+        expandLabel={t('expand')}
         className="relative z-0"
       >
         <div className="mt-5 grid gap-4">
           <div className={fieldCardClass}>
-            <div className="mb-3 text-sm font-medium text-foreground">下拉单选</div>
+            <div className="mb-3 text-sm font-medium text-foreground">{t('pill.single')}</div>
             <div className="grid gap-3 lg:grid-cols-2">
               <div className={compareCardClass}>
                 <div className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Default</div>
@@ -1483,7 +1501,7 @@ export default function TestComponentsPage() {
                   value={singleValue}
                   onChange={setSingleValue}
                   options={pillOptions}
-                  emptyLabel="请选择一个方向"
+                  emptyLabel={t('pill.chooseDirection')}
                   allowClear
                 />
                 <div className={codeHintClass}>
@@ -1498,7 +1516,7 @@ export default function TestComponentsPage() {
                   value={singleCompactValue}
                   onChange={setSingleCompactValue}
                   options={pillOptions}
-                  emptyLabel="紧凑单选"
+                  emptyLabel={t('pill.compactSingle')}
                   allowClear
                 />
                 <div className={codeHintClass}>
@@ -1509,7 +1527,7 @@ export default function TestComponentsPage() {
           </div>
 
           <div className={fieldCardClass}>
-            <div className="mb-3 text-sm font-medium text-foreground">下拉多选</div>
+            <div className="mb-3 text-sm font-medium text-foreground">{t('pill.multiple')}</div>
             <div className="grid gap-3 xl:grid-cols-3">
               <div className={compareCardClass}>
                 <div className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Default / Full Pills</div>
@@ -1518,12 +1536,12 @@ export default function TestComponentsPage() {
                   value={multiPlainValue}
                   onChange={setMultiPlainValue}
                   options={pillOptions}
-                  emptyLabel="不限制显示数量"
-                  allSelectedLabel="全部方向"
+                  emptyLabel={t('pill.unlimited')}
+                  allSelectedLabel={t('pill.allDirections')}
                   allowClear
                 />
                 <div className={codeHintClass}>
-                  {`<XPillSelect mode="multiple" allSelectedLabel="全部方向" />`}
+                  {`<XPillSelect mode="multiple" allSelectedLabel="${t('pill.allDirections')}" />`}
                 </div>
               </div>
               <div className={compareCardClass}>
@@ -1533,13 +1551,13 @@ export default function TestComponentsPage() {
                   value={multiValue}
                   onChange={setMultiValue}
                   options={pillOptions}
-                  emptyLabel="请选择多个标签"
-                  allSelectedLabel="全部方向"
+                  emptyLabel={t('pill.chooseTags')}
+                  allSelectedLabel={t('pill.allDirections')}
                   maxVisiblePills={2}
                   allowClear
                 />
                 <div className={codeHintClass}>
-                  {`<XPillSelect mode="multiple" allSelectedLabel="全部方向" maxVisiblePills={2} />`}
+                  {`<XPillSelect mode="multiple" allSelectedLabel="${t('pill.allDirections')}" maxVisiblePills={2} />`}
                 </div>
               </div>
               <div className={compareCardClass}>
@@ -1550,46 +1568,46 @@ export default function TestComponentsPage() {
                   value={multiCompactValue}
                   onChange={setMultiCompactValue}
                   options={pillOptions}
-                  emptyLabel="紧凑多选"
-                  allSelectedLabel="全部方向"
+                  emptyLabel={t('pill.compactMultiple')}
+                  allSelectedLabel={t('pill.allDirections')}
                   maxVisiblePills={1}
                   allowClear
                 />
                 <div className={codeHintClass}>
-                  {`<XPillSelect mode="multiple" size="compact" allSelectedLabel="全部方向" maxVisiblePills={1} />`}
+                  {`<XPillSelect mode="multiple" size="compact" allSelectedLabel="${t('pill.allDirections')}" maxVisiblePills={1} />`}
                 </div>
               </div>
             </div>
           </div>
 
           <div className={fieldCardClass}>
-            <div className="mb-3 text-sm font-medium text-foreground">表单/筛选封装</div>
+            <div className="mb-3 text-sm font-medium text-foreground">{t('pill.formFilter')}</div>
             <div className="grid gap-3 lg:grid-cols-2">
               <div className={compareCardClass}>
                 <div className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">XFormPills</div>
                 <XFormPills
-                  label="所属模块"
+                  label={t('pill.moduleLabel')}
                   value={formValue}
                   options={pillOptions}
                   onChange={setFormValue}
-                  emptyLabel="请选择模块"
+                  emptyLabel={t('pill.chooseModule')}
                   allowClear
                 />
                 <div className={codeHintClass}>
-                  {`<XFormPills label="所属模块" allowClear />`}
+                  {`<XFormPills label="${t('pill.moduleLabel')}" allowClear />`}
                 </div>
               </div>
               <div className={compareCardClass}>
                 <div className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">XFilterPills</div>
                 <XFilterPills
-                  label="筛选方向"
+                  label={t('pill.filterDirection')}
                   value={filterValue}
                   options={pillOptions}
                   onChange={setFilterValue}
-                  allLabel="全部"
+                  allLabel={t('pill.all')}
                 />
                 <div className={codeHintClass}>
-                  {`<XFilterPills label="筛选方向" allLabel="全部" />`}
+                  {`<XFilterPills label="${t('pill.filterDirection')}" allLabel="${t('pill.all')}" />`}
                 </div>
               </div>
             </div>
@@ -1603,11 +1621,11 @@ export default function TestComponentsPage() {
                 <XTokenInput
                   value={tokenValue}
                   onChange={setTokenValue}
-                  placeholder="输入标签后回车"
-                  emptyLabel="还没有输入任何 token"
+                  placeholder={t('pill.tokenPlaceholder')}
+                  emptyLabel={t('pill.tokenEmpty')}
                 />
                 <div className={codeHintClass}>
-                  {`<XTokenInput size="default" placeholder="输入标签后回车" />`}
+                  {`<XTokenInput size="default" placeholder="${t('pill.tokenPlaceholder')}" />`}
                 </div>
               </div>
               <div className={compareCardClass}>
@@ -1616,11 +1634,11 @@ export default function TestComponentsPage() {
                   size="compact"
                   value={tokenCompactValue}
                   onChange={setTokenCompactValue}
-                  placeholder="紧凑模式 token 输入"
-                  emptyLabel="紧凑模式下可快速录入"
+                  placeholder={t('pill.tokenCompactPlaceholder')}
+                  emptyLabel={t('pill.tokenCompactEmpty')}
                 />
                 <div className={codeHintClass}>
-                  {`<XTokenInput size="compact" placeholder="紧凑模式 token 输入" />`}
+                  {`<XTokenInput size="compact" placeholder="${t('pill.tokenCompactPlaceholder')}" />`}
                 </div>
               </div>
             </div>
@@ -1631,16 +1649,16 @@ export default function TestComponentsPage() {
       <section className={cn(panelClass, 'relative z-0')}>
         <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
           <div>
-            <h2 className={sectionTitleClass}>交互记录</h2>
-            <p className={sectionDescClass}>按钮点击后会在这里展示最近一次操作，方便确认 loading 与事件是否正常</p>
+            <h2 className={sectionTitleClass}>{t('interaction.title')}</h2>
+            <p className={sectionDescClass}>{t('interaction.description')}</p>
           </div>
           <div className="rounded-full border border-amber-300/70 bg-amber-100 px-3 py-1 text-xs font-medium text-amber-800 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-300">
-            当前状态: {actionText}
+            {t('currentStatus', { status: actionText })}
           </div>
         </div>
 
         <div className="mt-4 rounded-2xl border border-dashed border-border/70 bg-background/60 p-4 text-sm leading-7 text-muted-foreground">
-          后续如果继续扩展这个页面，建议按 section 增加，例如: `Card`、`Badge`、`Dialog`、`Loading`、`Pricing`
+          {t('interaction.extensionNote')}
         </div>
       </section>
 
@@ -1656,13 +1674,13 @@ export default function TestComponentsPage() {
         open={activeDialogDemo === 'ads'}
         onOpenChange={(open) => setActiveDialogDemo(open ? 'ads' : null)}
         title="R2 Image Promotion"
-        description="用于测试广告弹窗的图片展示、图片点击链接、关闭按钮和主题按钮样式"
+        description={t('dialogs.adsDescription')}
         imgSrc="https://r2.d8ger.com/default.webp"
         imgHref="https://r2.d8ger.com/default.webp"
         cancelText="Later"
         confirmText="View Image"
-        onCancel={() => setActionText('广告弹窗: 点击 Later')}
-        onConfirm={() => setActionText('广告弹窗: 点击 View Image')}
+        onCancel={() => setActionText(t('dialogs.adsCancelAction'))}
+        onConfirm={() => setActionText(t('dialogs.adsConfirmAction'))}
       />
 
       <InfoDialog
@@ -1670,49 +1688,49 @@ export default function TestComponentsPage() {
         onOpenChange={(open) => setActiveDialogDemo(open ? 'info-info' : null)}
         type="info"
         title="Information"
-        description="这是一条普通信息提示，用来测试 info 类型的图标、边框、背景和确认按钮"
+        description={t('dialogs.infoDescription')}
         confirmText="Got it"
-        onConfirm={() => setActionText('InfoDialog: info 确认')}
+        onConfirm={() => setActionText(t('dialogs.infoConfirm'))}
       />
       <InfoDialog
         open={activeDialogDemo === 'info-warn'}
         onOpenChange={(open) => setActiveDialogDemo(open ? 'info-warn' : null)}
         type="warn"
         title="Warning"
-        description="这是一条警告提示，用来测试 warn 类型在浅色和暗色主题下的可读性"
+        description={t('dialogs.warnDescription')}
         confirmText="I understand"
-        onConfirm={() => setActionText('InfoDialog: warn 确认')}
+        onConfirm={() => setActionText(t('dialogs.warnConfirm'))}
       />
       <InfoDialog
         open={activeDialogDemo === 'info-success'}
         onOpenChange={(open) => setActiveDialogDemo(open ? 'info-success' : null)}
         type="success"
         title="Success"
-        description="操作已经完成这个弹窗用于检查 success 类型的语义色和单按钮确认交互"
+        description={t('dialogs.successDescription')}
         confirmText="Done"
-        onConfirm={() => setActionText('InfoDialog: success 确认')}
+        onConfirm={() => setActionText(t('dialogs.successConfirm'))}
       />
       <InfoDialog
         open={activeDialogDemo === 'info-error'}
         onOpenChange={(open) => setActiveDialogDemo(open ? 'info-error' : null)}
         type="error"
         title="Error"
-        description="操作失败，请稍后重试这个弹窗用于检查 error 类型的红色提示样式"
+        description={t('dialogs.errorDescription')}
         confirmText="Close"
-        onConfirm={() => setActionText('InfoDialog: error 确认')}
+        onConfirm={() => setActionText(t('dialogs.errorConfirm'))}
       />
       <InfoDialog
         open={activeDialogDemo === 'info-loading'}
         onOpenChange={(open) => setActiveDialogDemo(open ? 'info-loading' : null)}
         type="info"
         title="Run loading demo?"
-        description="点击 Got it 后会立即关闭弹窗，并展示全屏 Loading，持续 2 秒后结束"
+        description={t('dialogs.infoLoadingDescription')}
         confirmText="Got it"
         loadingActions={['confirm']}
         onConfirm={async () => {
-          setActionText('InfoDialog: confirm loading 开始');
+          setActionText(t('dialogs.loadingStart', { source: 'InfoDialog: confirm' }));
           await sleep(DIALOG_LOADING_DEMO_DELAY_MS);
-          setActionText('InfoDialog: confirm loading 完成');
+          setActionText(t('dialogs.loadingDone', { source: 'InfoDialog: confirm' }));
         }}
       />
 
@@ -1721,49 +1739,49 @@ export default function TestComponentsPage() {
         onOpenChange={(open) => setActiveDialogDemo(open ? 'confirm-normal' : null)}
         type="normal"
         title="Apply changes?"
-        description="这是一个普通确认弹窗，用来测试取消、确认、右上角关闭以及主题色确认按钮"
+        description={t('dialogs.normalDescription')}
         cancelText="Cancel"
         confirmText="Apply"
-        onCancel={() => setActionText('ConfirmDialog: normal 取消')}
-        onConfirm={() => setActionText('ConfirmDialog: normal 确认')}
+        onCancel={() => setActionText(t('dialogs.normalCancel'))}
+        onConfirm={() => setActionText(t('dialogs.normalConfirm'))}
       />
       <ConfirmDialog
         open={activeDialogDemo === 'confirm-danger'}
         onOpenChange={(open) => setActiveDialogDemo(open ? 'confirm-danger' : null)}
         type="danger"
         title="Delete this item?"
-        description="这是一个危险确认弹窗，用来测试删除、清空、重置等破坏性操作的红色警醒样式"
+        description={t('dialogs.dangerDescription')}
         cancelText="Cancel"
         confirmText="Delete"
-        onCancel={() => setActionText('ConfirmDialog: danger 取消')}
-        onConfirm={() => setActionText('ConfirmDialog: danger 确认')}
+        onCancel={() => setActionText(t('dialogs.dangerCancel'))}
+        onConfirm={() => setActionText(t('dialogs.dangerConfirm'))}
       />
       <ConfirmDialog
         open={activeDialogDemo === 'confirm-normal-reversed'}
         onOpenChange={(open) => setActiveDialogDemo(open ? 'confirm-normal-reversed' : null)}
         type="normal"
         title="Apply generated result?"
-        description="这是一个反转重点按钮的普通确认弹窗Apply 是正常流程，但 Cancel 代表放弃已经消耗资源生成的数据，因此左侧取消按钮被重点着色"
+        description={t('dialogs.reversedDescription')}
         cancelText="Discard Result"
         confirmText="Apply"
         emphasis="cancel"
-        onCancel={() => setActionText('ConfirmDialog: reversed 取消并放弃结果')}
-        onConfirm={() => setActionText('ConfirmDialog: reversed 应用结果')}
+        onCancel={() => setActionText(t('dialogs.reversedCancel'))}
+        onConfirm={() => setActionText(t('dialogs.reversedConfirm'))}
       />
       <ConfirmDialog
         open={activeDialogDemo === 'confirm-loading-confirm'}
         onOpenChange={(open) => setActiveDialogDemo(open ? 'confirm-loading-confirm' : null)}
         type="normal"
         title="Apply changes with loading?"
-        description="点击 Apply 后会关闭弹窗并展示 Loading；Cancel 仍是普通关闭和回调"
+        description={t('dialogs.confirmLoadingDescription')}
         cancelText="Cancel"
         confirmText="Apply"
         loadingActions={['confirm']}
-        onCancel={() => setActionText('ConfirmDialog: confirm loading 示例取消')}
+        onCancel={() => setActionText(t('dialogs.confirmLoadingCancel'))}
         onConfirm={async () => {
-          setActionText('ConfirmDialog: confirm loading 开始');
+          setActionText(t('dialogs.loadingStart', { source: 'ConfirmDialog: confirm' }));
           await sleep(DIALOG_LOADING_DEMO_DELAY_MS);
-          setActionText('ConfirmDialog: confirm loading 完成');
+          setActionText(t('dialogs.loadingDone', { source: 'ConfirmDialog: confirm' }));
         }}
       />
       <ConfirmDialog
@@ -1771,100 +1789,100 @@ export default function TestComponentsPage() {
         onOpenChange={(open) => setActiveDialogDemo(open ? 'confirm-loading-cancel' : null)}
         type="normal"
         title="Discard generated result?"
-        description="点击 Discard Result 后会关闭弹窗并展示 Loading；Apply 不触发 loading"
+        description={t('dialogs.cancelLoadingDescription')}
         cancelText="Discard Result"
         confirmText="Apply"
         emphasis="cancel"
         loadingActions={['cancel']}
         onCancel={async () => {
-          setActionText('ConfirmDialog: cancel loading 开始');
+          setActionText(t('dialogs.loadingStart', { source: 'ConfirmDialog: cancel' }));
           await sleep(DIALOG_LOADING_DEMO_DELAY_MS);
-          setActionText('ConfirmDialog: cancel loading 完成');
+          setActionText(t('dialogs.loadingDone', { source: 'ConfirmDialog: cancel' }));
         }}
-        onConfirm={() => setActionText('ConfirmDialog: cancel loading 示例应用')}
+        onConfirm={() => setActionText(t('dialogs.cancelLoadingApply'))}
       />
 
       <UndoableConfirmDialog
         open={activeDialogDemo === 'undoable-confirm'}
         onOpenChange={(open) => setActiveDialogDemo(open ? 'undoable-confirm' : null)}
         title="Delete this record?"
-        description="点击删除后会进入等待期等待期内可以撤回，倒计时结束后才会执行删除"
+        description={t('dialogs.deleteDescription')}
         pendingTitle="Delete scheduled"
-        pendingDescription="删除操作即将执行倒计时结束前点击 Undo 可以撤回"
+        pendingDescription={t('dialogs.deletePending')}
         countdownSeconds={5}
         cancelText="Cancel"
         confirmText="Delete"
         undoText="Undo"
-        onCancel={() => setActionText('UndoableConfirmDialog: 取消')}
-        onUndo={() => setActionText('UndoableConfirmDialog: 已撤回')}
+        onCancel={() => setActionText(t('dialogs.undoCancel'))}
+        onUndo={() => setActionText(t('dialogs.undoDone'))}
         onConfirm={async () => {
-          setActionText('UndoableConfirmDialog: 倒计时结束，开始删除');
+          setActionText(t('dialogs.deleteStart'));
           await sleep(400);
-          setActionText('UndoableConfirmDialog: 删除已执行');
+          setActionText(t('dialogs.deleteDone'));
         }}
       />
       <UndoableConfirmDialog
         open={activeDialogDemo === 'undoable-loading-confirm'}
         onOpenChange={(open) => setActiveDialogDemo(open ? 'undoable-loading-confirm' : null)}
         title="Archive this record?"
-        description="点击 Archive 只进入倒计时，不展示 Loading倒计时结束执行 onConfirm 时才展示 Loading"
+        description={t('dialogs.archiveDescription')}
         pendingTitle="Archive scheduled"
-        pendingDescription="倒计时结束后会执行归档动作这个阶段仍可点击 Undo 撤回"
+        pendingDescription={t('dialogs.archivePending')}
         countdownSeconds={3}
         cancelText="Cancel"
         confirmText="Archive"
         undoText="Undo"
         loadingActions={['confirm']}
-        onCancel={() => setActionText('UndoableConfirmDialog: confirm loading 示例取消')}
-        onUndo={() => setActionText('UndoableConfirmDialog: confirm loading 示例撤回')}
+        onCancel={() => setActionText(t('dialogs.undoConfirmCancel'))}
+        onUndo={() => setActionText(t('dialogs.undoConfirmUndo'))}
         onConfirm={async () => {
-          setActionText('UndoableConfirmDialog: confirm loading 开始');
+          setActionText(t('dialogs.loadingStart', { source: 'UndoableConfirmDialog: confirm' }));
           await sleep(DIALOG_LOADING_DEMO_DELAY_MS);
-          setActionText('UndoableConfirmDialog: confirm loading 完成');
+          setActionText(t('dialogs.loadingDone', { source: 'UndoableConfirmDialog: confirm' }));
         }}
       />
       <UndoableConfirmDialog
         open={activeDialogDemo === 'undoable-loading-undo'}
         onOpenChange={(open) => setActiveDialogDemo(open ? 'undoable-loading-undo' : null)}
         title="Replace saved set?"
-        description="点击 Replace 只进入倒计时倒计时期间点击 Undo 会关闭弹窗并展示 Loading"
+        description={t('dialogs.replaceDescription')}
         pendingTitle="Replace scheduled"
-        pendingDescription="点击 Undo 将模拟恢复已暂存的业务状态，并展示 Loading"
+        pendingDescription={t('dialogs.replacePending')}
         countdownSeconds={5}
         cancelText="Cancel"
         confirmText="Replace"
         undoText="Undo"
         loadingActions={['undo']}
-        onCancel={() => setActionText('UndoableConfirmDialog: undo loading 示例取消')}
+        onCancel={() => setActionText(t('dialogs.undoLoadingCancel'))}
         onUndo={async () => {
-          setActionText('UndoableConfirmDialog: undo loading 开始');
+          setActionText(t('dialogs.loadingStart', { source: 'UndoableConfirmDialog: undo' }));
           await sleep(DIALOG_LOADING_DEMO_DELAY_MS);
-          setActionText('UndoableConfirmDialog: undo loading 完成');
+          setActionText(t('dialogs.loadingDone', { source: 'UndoableConfirmDialog: undo' }));
         }}
-        onConfirm={() => setActionText('UndoableConfirmDialog: undo loading 示例倒计时完成')}
+        onConfirm={() => setActionText(t('dialogs.undoLoadingConfirm'))}
       />
       <UndoableConfirmDialog
         open={activeDialogDemo === 'undoable-loading-both'}
         onOpenChange={(open) => setActiveDialogDemo(open ? 'undoable-loading-both' : null)}
         title="Publish scheduled changes?"
-        description="点击 Publish 只进入倒计时；等待倒计时完成或点击 Undo 都会关闭弹窗并展示 Loading"
+        description={t('dialogs.publishDescription')}
         pendingTitle="Publish scheduled"
-        pendingDescription="不操作会在倒计时结束后发布；点击 Undo 会撤回发布两条路径都会展示 Loading"
+        pendingDescription={t('dialogs.publishPending')}
         countdownSeconds={5}
         cancelText="Cancel"
         confirmText="Publish"
         undoText="Undo"
         loadingActions={['confirm', 'undo']}
-        onCancel={() => setActionText('UndoableConfirmDialog: 双路径 loading 示例取消')}
+        onCancel={() => setActionText(t('dialogs.bothLoadingCancel'))}
         onUndo={async () => {
-          setActionText('UndoableConfirmDialog: 双路径 undo loading 开始');
+          setActionText(t('dialogs.loadingStart', { source: 'UndoableConfirmDialog: dual-path undo' }));
           await sleep(DIALOG_LOADING_DEMO_DELAY_MS);
-          setActionText('UndoableConfirmDialog: 双路径 undo loading 完成');
+          setActionText(t('dialogs.loadingDone', { source: 'UndoableConfirmDialog: dual-path undo' }));
         }}
         onConfirm={async () => {
-          setActionText('UndoableConfirmDialog: 双路径 confirm loading 开始');
+          setActionText(t('dialogs.loadingStart', { source: 'UndoableConfirmDialog: dual-path confirm' }));
           await sleep(DIALOG_LOADING_DEMO_DELAY_MS);
-          setActionText('UndoableConfirmDialog: 双路径 confirm loading 完成');
+          setActionText(t('dialogs.loadingDone', { source: 'UndoableConfirmDialog: dual-path confirm' }));
         }}
       />
 
@@ -1872,31 +1890,31 @@ export default function TestComponentsPage() {
         open={activeDialogDemo === 'high-priority'}
         onOpenChange={(open) => setActiveDialogDemo(open ? 'high-priority' : null)}
         title="Leave this flow?"
-        description="这是一个高优先级确认弹窗，用来测试强遮罩、高 z-index、关闭按钮和二选一决策"
+        description={t('dialogs.highPriorityDescription')}
         cancelText="Stay"
         confirmText="Leave"
         onCancel={() => {
           closeActiveDialog();
-          setActionText('HighPriorityConfirmDialog: 取消');
+          setActionText(t('dialogs.highPriorityCancel'));
         }}
         onConfirm={() => {
           closeActiveDialog();
-          setActionText('HighPriorityConfirmDialog: 确认');
+          setActionText(t('dialogs.highPriorityConfirm'));
         }}
       />
       <HighPriorityConfirmDialog
         open={activeDialogDemo === 'high-priority-loading'}
         onOpenChange={(open) => setActiveDialogDemo(open ? 'high-priority-loading' : null)}
         title="Leave and save draft?"
-        description="点击 Leave 会关闭高优先级弹窗，并展示 Loading，直到模拟保存草稿完成"
+        description={t('dialogs.highPriorityLoadingDescription')}
         cancelText="Stay"
         confirmText="Leave"
         loadingActions={['confirm']}
-        onCancel={() => setActionText('HighPriorityConfirmDialog: loading 示例取消')}
+        onCancel={() => setActionText(t('dialogs.highPriorityLoadingCancel'))}
         onConfirm={async () => {
-          setActionText('HighPriorityConfirmDialog: confirm loading 开始');
+          setActionText(t('dialogs.loadingStart', { source: 'HighPriorityConfirmDialog: confirm' }));
           await sleep(DIALOG_LOADING_DEMO_DELAY_MS);
-          setActionText('HighPriorityConfirmDialog: confirm loading 完成');
+          setActionText(t('dialogs.loadingDone', { source: 'HighPriorityConfirmDialog: confirm' }));
         }}
       />
       <ConfirmDialog
@@ -1904,7 +1922,7 @@ export default function TestComponentsPage() {
         onOpenChange={setCombinedBatchDialogOpen}
         type="normal"
         title="Handle planned dates?"
-        description={`当前有 ${combinedPlannedDates.length} 个 planned 日期Clear 会清除这些 planned 状态，Save 会把它们批量改成 saved`}
+        description={t('randomCalendar.batchDescription', { count: combinedPlannedDates.length })}
         cancelText="Clear Planned"
         confirmText="Save All"
         emphasis="cancel"
@@ -1918,7 +1936,7 @@ export default function TestComponentsPage() {
             targetDates.forEach((date) => nextStates.delete(date));
             return nextStates;
           });
-          setActionText(`Random Calendar: 批量清除 ${targetDates.size} 个 planned 日期`);
+          setActionText(t('randomCalendar.batchClearAction', { count: targetDates.size }));
         }}
         onConfirm={async () => {
           await sleep(DIALOG_LOADING_DEMO_DELAY_MS);
@@ -1937,7 +1955,7 @@ export default function TestComponentsPage() {
 
             return nextStates;
           });
-          setActionText(`Random Calendar: 批量保存 ${targetDates.length} 个 planned 日期`);
+          setActionText(t('randomCalendar.batchSaveAction', { count: targetDates.length }));
         }}
       />
       <RandomDateRangeDialog
@@ -1966,7 +1984,7 @@ export default function TestComponentsPage() {
           if (range.startDate) {
             setCombinedSelectedDate(range.startDate);
           }
-          setActionText(`Random Calendar: 生成 planned 范围 ${getRangeSummary(range)}`);
+          setActionText(t('randomCalendar.generateRangeAction', { range: getRangeSummary(range) }));
         }}
       />
     </div>

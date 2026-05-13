@@ -1,51 +1,51 @@
 # `@windrun-huaiin/fumadocs-local-md`
 
-`local-md` 现在的定位很明确:
+The positioning of `local-md` is now clearly defined:
 
-- 对接 `fumadocs-core` 的内容源能力
-- 支持两种内容源模式: `runtime` 和 `build`
-- 以 `.source` 作为构建产物目录
-- 对应用层暴露统一的取数接口与一个官方 CLI
+- Integrate with the content source capabilities of `fumadocs-core`
+- Support two content source modes: `runtime` and `build`
+- Use `.source` as the build output directory
+- Expose unified data-fetching interfaces and an official CLI to the application layer
 
-它不再要求应用自己维护一套 MDX 构建脚本，也不要求应用直接感知内部的 MDX 构建实现。
+It no longer requires applications to maintain a custom MDX build script, nor does it require applications to directly perceive the internal MDX build implementation.
 
-## 设计目标
+## Design Goals
 
-- 生产环境默认使用构建后的静态内容源，避免请求期重新解析 MD/MDX
-- 开发环境默认也走构建产物，保证本地与线上行为一致
-- 只有在开发期显式开启时，才回退到 `runtime` 模式，以减少频繁 build 的等待时间
-- 保持组件注入发生在渲染期，由上层应用自行决定启用哪些组件能力
-- `local-md` 负责“内容源处理”，`third-ui` 或应用层负责“组件渲染”
+- Use built static content sources by default in production to avoid re-parsing MD/MDX during requests
+- Use build artifacts by default in development to ensure consistent behavior between local and production environments
+- Fall back to `runtime` mode **only when explicitly enabled in development** to reduce wait time from frequent builds
+- Keep component injection at the render phase, letting the upper application decide which component capabilities to enable
+- `local-md` handles "content source processing"; `third-ui` or the application layer handles "component rendering"
 
-## 新架构
+## New Architecture
 
-### 1. `runtime` 模式
+### 1. `runtime` Mode
 
-`runtime` 模式会直接读取 `src/mdx` 下的源文件，并在运行期完成:
+`runtime` mode directly reads source files under `src/mdx` and completes the following **at runtime**:
 
-- 文件扫描
-- frontmatter 解析
-- remark / rehype 处理
-- MDX 编译
-- 页面树与页面数据组装
+- File scanning
+- Frontmatter parsing
+- Remark / rehype processing
+- MDX compilation
+- Page tree and page data assembly
 
-这个模式适合本地快速开发，但不适合线上长期承载文档访问流量。
+This mode is suitable for fast local development but **not recommended for production** to serve long-term documentation traffic.
 
-### 2. `build` 模式
+### 2. `build` Mode
 
-`build` 模式会先执行一次构建，把文档内容处理为 `.source` 产物。
+`build` mode first runs a build process to process documentation content into `.source` artifacts.
 
-请求期只负责:
+During requests, it only handles:
 
-- 读取 `.source`
-- 组装 `fumadocs-core` 需要的 source 结构
-- 在真正渲染页面时按需注入组件
+- Reading `.source` files
+- Assembling the source structure required by `fumadocs-core`
+- Injecting components on demand during actual page rendering
 
-也就是说，MDX 的重解析、remark/rehype/shiki 等重活已经前置到了构建阶段。
+In short, heavy operations like MDX re-parsing, remark/rehype/shiki processing are **pre-executed at build time**.
 
-### 3. `.source` 目录
+### 3. `.source` Directory
 
-应用根目录下会生成:
+Generated in the application root:
 
 ```text
 .source/
@@ -55,13 +55,13 @@
   legal.source.config.mjs
 ```
 
-约定说明:
+Conventions:
 
-- `.source/index.ts` 是总索引
-- 每个一级内容源目录对应一个 `.source/<sourceKey>.source.config.mjs`
-- `sourceKey` 来自 `src/mdx/*` 的一级子目录名
+- `.source/index.ts` is the main entry
+- Each top-level content source directory maps to `.source/<sourceKey>.source.config.mjs`
+- `sourceKey` is derived from the top-level subdirectory names under `src/mdx/*`
 
-例如:
+Example:
 
 ```text
 src/mdx/
@@ -70,134 +70,119 @@ src/mdx/
   legal/
 ```
 
-那么 CLI 会自动识别出 `docs`、`blog`、`legal` 三个内容源。
+The CLI will automatically detect three content sources: `docs`, `blog`, and `legal`.
 
 ## CLI
 
-对应用层，推荐的唯一构建入口就是:
+The **only recommended build entry** for the application layer:
 
 ```bash
 pnpm exec local-md build
 ```
 
-CLI 约定:
+CLI Conventions:
 
-- 当前工作目录视为应用根目录
-- 内容根目录固定为 `src/mdx`
-- 自动扫描 `src/mdx` 下的一级子目录作为 source keys
-- 输出固定写入应用根目录的 `.source`
+- Current working directory = application root
+- Fixed content root: `src/mdx`
+- Auto-scan top-level subdirectories under `src/mdx` as source keys
+- Output written **fixed** to `.source` in the application root
 
-这意味着应用层不需要再自己写一套“扫描目录并生成 source”的脚本。
+This means the application layer no longer needs custom scripts for "scanning directories and generating sources".
 
-## 应用层如何接入
+## Application Layer Integration
 
-应用层通常只需要两部分:
+The application layer typically only needs two parts:
 
-- 定义一份统一的 `local-md` source 配置
-- 在取内容源时决定当前使用 `build` 还是 `runtime`
+- Define a unified `local-md` source configuration
+- Choose between `build` or `runtime` mode when fetching content sources
 
-推荐策略:
+**Recommended Strategy**:
+- Production: always use `build`
+- Development: use `build` by default
+- Use `runtime` **only when the development flag is explicitly turned on**
 
-- 生产环境始终使用 `build`
-- 开发环境默认也使用 `build`
-- 仅当显式打开开发期开关时，才使用 `runtime`
+Example (used in `ddaas`):
+- Use `runtime` when `LOCAL_MD_DEV_RUNTIME=true` **and** non-production
+- Use `build` in all other cases
 
-例如 `ddaas` 当前采用的是:
+This guarantees:
+- Static content sources in production
+- Local behavior matches production by default
+- Switch to runtime mode explicitly for fast documentation edits
 
-- `LOCAL_MD_DEV_RUNTIME=true` 且非生产环境时走 `runtime`
-- 其他情况全部走 `build`
+## Component & Dependency Boundaries
 
-这样可以保证:
+Two distinct responsibilities in this design:
+- "Parsing & compiling" documentation content
+- "Component injection & rendering" of documentation pages
 
-- 线上一定是静态内容源
-- 本地默认与线上一致
-- 需要快速改文档时，再显式切换到运行时模式
+`local-md` handles the former; the application layer or `third-ui` handles the latter.
 
-## 组件与依赖边界
+Therefore:
+- `.source` stores fully processed content results
+- Component injection still happens at the page render phase
+- Unused component capabilities in the app are **not forced** in the render layer
 
-这套设计里要区分两件事:
+Important note:
+- The `local-md` package itself still depends on the full MDX compilation chain to correctly parse and process MDX
+- This is **separate** from whether a component is actually rendered on the page
 
-- 文档内容的“解析与编译”
-- 文档页面的“组件注入与渲染”
+In short: `build` solves request-time performance and stability; component enablement remains controlled by the upper layer.
 
-`local-md` 负责前者，应用层或 `third-ui` 负责后者。
+## Caching
 
-因此:
+Even in `build` mode, a runtime cache layer is retained.
 
-- `.source` 保存的是已经处理好的内容结果
-- 组件注入仍然发生在页面渲染阶段
-- 应用没有启用的组件能力，不需要在渲染层被强制使用
+Cached objects (**not** recompiled MDX):
+- `.source` file read results
+- Assembled source results from `fumadocs-core` loader
+- Renderer instances for some pages
 
-但需要注意:
+Purpose:
+- Avoid repeated disk reads on every request
+- Avoid repeated assembly of the same source data on every request
 
-- `local-md` 包本身为了完整识别和处理 MDX，内部仍会依赖相应的 MDX 编译链
-- 这和“页面最终是否真的渲染某个组件”是两件不同的事
-
-换句话说，`build` 解决的是请求期性能与稳定性问题，组件能力是否启用仍由上层控制。
-
-## 缓存说明
-
-即使走 `build` 模式，运行期仍然保留一层缓存。
-
-缓存的对象不是“重新编译后的 MDX”，而是:
-
-- `.source` 文件读取结果
-- `fumadocs-core` loader 组装后的 source 结果
-- 部分页面的 renderer 实例
-
-目的很简单:
-
-- 避免每次请求都重复读磁盘
-- 避免每次请求都重复组装同一份 source 数据
-
-如果设置:
-
+If set:
 ```bash
 LOCAL_MD_CACHE_DISABLE=true
 ```
 
-则每次都会重新读取并重建这些运行时对象。
+All runtime objects will be re-read and re-created on every request.
 
-## 对外边界
+## Public API Boundary
 
-当前对外推荐使用的能力只有两类:
-
-- 包运行时接口
+Only two types of capabilities are recommended for external use:
+- Package runtime interfaces
 - `local-md build` CLI
 
-内部的 `src/md-build/*` 是 `local-md` 自己使用的实现细节，不应该由应用层直接导入。
+Internal code under `src/md-build/*` is implementation detail for `local-md` itself and **should not be imported directly** by the application layer.
 
-也就是说:
+In short:
+- Application layer **should not** depend on `./md-build`
+- Application layer **should not** call internal build APIs directly
+- Application layer only needs to execute the CLI and read `.source` at runtime
 
-- 应用层不应该依赖 `./md-build`
-- 应用层不应该直接调用内部 build API
-- 应用层只需要执行 CLI，并在运行期读取 `.source`
+## Recommended Workflow
 
-## 推荐工作流
-
-开发期:
-
+Development:
 ```bash
 pnpm exec local-md build
 pnpm dev
 ```
 
-如果只想快速改文档、临时跳过 build:
-
+For fast edits (temporarily skip build):
 ```bash
 LOCAL_MD_DEV_RUNTIME=true pnpm dev
 ```
 
-上线前:
-
+Before deployment:
 ```bash
 pnpm exec local-md build
 pnpm build
 ```
 
-部署时可以选择两种方式:
+Two deployment options:
+- Commit/include `.source` as part of the repository/build input
+- Run `local-md build` before the application's formal build
 
-- 将 `.source` 作为仓库/构建输入的一部分提交或带入构建
-- 在应用正式打包前先执行一次 `local-md build`
-
-无论哪种方式，生产环境都应读取 `.source`，不应回退到 `runtime`。
+In all cases, production **must read from `.source`** and **must not fall back to `runtime`**.

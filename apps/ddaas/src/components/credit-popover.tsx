@@ -51,12 +51,12 @@ export async function CreditPopover({ locale }: CreditPopoverProps) {
     (credit.balancePaid ?? 0) +
     (credit.balanceOneTimePaid ?? 0);
 
-  // 根据是否订阅，动态调整 buckets 顺序
-  // 已订阅：subscription → onetime → free
-  // 未订阅：onetime → free
-  // 为0的类型积分不展示
+  // Adjust bucket order dynamically based on subscription status.
+  // Subscribed: subscription -> onetime -> free.
+  // Not subscribed: onetime -> free.
+  // Credit types with zero balance are hidden.
 
-  // 直接基于 credit 对象生成 buckets，无需额外传参
+  // Build buckets directly from the credit object without extra parameters.
   const buckets = [
     ...(credit.balancePaid > 0 
       ? [{
@@ -86,7 +86,7 @@ export async function CreditPopover({ locale }: CreditPopoverProps) {
       : [])
   ];
 
-  // 按照项目设置来决定是否带上语言前缀
+  // Apply the project locale-prefix policy.
   const pricingPageBaseUrl = getAsNeededLocalizedUrl(locale, "/pricing",  localePrefixAsNeeded,  defaultLocale);
 
   const data: CreditOverviewData = {

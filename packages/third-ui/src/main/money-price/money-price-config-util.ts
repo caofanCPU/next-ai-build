@@ -1,27 +1,27 @@
 /**
  * Money Price Configuration
- * 价格组件配置文件
+ * Pricing component configuration.
  */
 
 import type { MoneyPriceConfig, PaymentProviderConfig, EnhancePricePlan } from './money-price-types';
 
 /**
- * 获取当前激活的支付供应商配置
+ * Get the currently active payment provider configuration.
  *
- * 🔒 安全设计：
- * - util层负责从config中提取激活的provider配置
- * - 只返回提取的结果，不暴露任何config结构
- * - 调用方（应用层）通过wrapper隐藏config对象
+ * Security design:
+ * - The utility layer extracts the active provider configuration from the config.
+ * - Only the extracted result is returned; the full config structure is not exposed.
+ * - Application-level wrappers hide the config object from callers.
  *
- * @param config - MoneyPriceConfig对象（由应用层提供）
- * @returns 当前激活的支付供应商配置
+ * @param config - MoneyPriceConfig object provided by the application layer.
+ * @returns The currently active payment provider configuration.
  */
 export function getActiveProviderConfigUtil(config: MoneyPriceConfig): PaymentProviderConfig {
   const provider = config.activeProvider;
   return config.paymentProviders[provider];
 }
 
-// 辅助函数：获取特定产品的价格信息
+// Helper: get pricing information for a specific product.
 export function getProductPricing(
   productKey: 'F1' | 'P2' | 'U3',
   billingType: string,
@@ -30,10 +30,10 @@ export function getProductPricing(
 ): EnhancePricePlan {
   const providerConfig = config.paymentProviders[provider];
 
-  // 如果是 onetime 类型，尝试从积分包中获取
+  // For one-time billing, try to resolve pricing from credit packs.
   if (billingType === 'onetime') {
     const creditPacks = providerConfig.creditPackProducts;
-    // 直接使用相同的 key：F1->F1, P2->P2, U3->U3
+    // Use the same product key directly: F1 -> F1, P2 -> P2, U3 -> U3.
     if (creditPacks && creditPacks[productKey]) {
       const pack = creditPacks[productKey];
       return {
@@ -45,7 +45,7 @@ export function getProductPricing(
     }
   }
 
-  // 否则从订阅产品中获取
+  // Otherwise resolve pricing from subscription products.
   const products = providerConfig.subscriptionProducts || providerConfig.products;
   if (products && products[productKey] && products[productKey].plans[billingType]) {
     return products[productKey].plans[billingType];
@@ -54,19 +54,19 @@ export function getProductPricing(
   throw new Error(`Product pricing not found for ${productKey} ${billingType}`);
 }
 
-// ============ 安全的util函数 - 只接收简单的映射表参数，不暴露任何config细节 ============
+// ============ Safe utility functions: accept only simple mapping inputs and do not expose config internals ============
 
 /**
- * 根据 priceId 获取对应的积分数量
+ * Get the credit amount for a price ID.
  *
- * 🔒 安全设计：
- * - util层负责解析config，提取所需数据
- * - 只返回查询结果，不暴露任何config结构
- * - 调用方（应用层）通过wrapper隐藏config对象
+ * Security design:
+ * - The utility layer parses the config and extracts only the required data.
+ * - Only the query result is returned; the full config structure is not exposed.
+ * - Application-level wrappers hide the config object from callers.
  *
- * @param priceId - 查询的价格ID
- * @param config - MoneyPriceConfig对象（由应用层提供）
- * @returns 对应的积分数量，或null
+ * @param priceId - Price ID to query.
+ * @param config - MoneyPriceConfig object provided by the application layer.
+ * @returns The matching credit amount, or null.
  */
 export function getCreditsFromPriceIdUtil(
   priceId: string | undefined,
@@ -76,9 +76,9 @@ export function getCreditsFromPriceIdUtil(
     return null;
   }
 
-  // 遍历所有支付提供商
+  // Iterate through all payment providers.
   for (const provider of Object.values(config.paymentProviders)) {
-    // 遍历订阅产品
+    // Iterate through subscription products.
     const subscriptionProducts = (
       provider.subscriptionProducts || provider.products
     ) as Record<string, any>;
@@ -96,7 +96,7 @@ export function getCreditsFromPriceIdUtil(
       }
     }
 
-    // 遍历积分包产品
+    // Iterate through credit pack products.
     const creditPacks = provider.creditPackProducts as Record<string, any>;
     if (creditPacks) {
       for (const pack of Object.values(creditPacks)) {
@@ -112,23 +112,23 @@ export function getCreditsFromPriceIdUtil(
 }
 
 /**
- * 根据查询参数获取价格配置
+ * Get price configuration by query parameters.
  *
- * 支持三种查询方式：
- * 1. 按 priceId 直接查询
- * 2. 按 plan + billingType 查询
- * 3. 按 plan 查询
+ * Supported query modes:
+ * 1. Query directly by priceId.
+ * 2. Query by plan and billingType.
+ * 3. Query by plan.
  *
- * 🔒 安全设计：
- * - util层负责解析config，提取和匹配数据
- * - 只返回查询结果，不暴露任何config结构
- * - 调用方（应用层）通过wrapper隐藏config对象
+ * Security design:
+ * - The utility layer parses the config and extracts only matching data.
+ * - Only the query result is returned; the full config structure is not exposed.
+ * - Application-level wrappers hide the config object from callers.
  *
- * @param priceId - 查询的价格ID（可选）
- * @param plan - 查询的套餐名称如'P2'、'U3'（可选）
- * @param billingType - 查询的计费类型如'monthly'、'yearly'（可选）
- * @param config - MoneyPriceConfig对象（由应用层提供）
- * @returns 匹配的价格配置，包含计算好的元数据（priceName、description、interval）
+ * @param priceId - Optional price ID to query.
+ * @param plan - Optional plan name, such as 'P2' or 'U3'.
+ * @param billingType - Optional billing type, such as 'monthly' or 'yearly'.
+ * @param config - MoneyPriceConfig object provided by the application layer.
+ * @returns The matching price config with derived metadata: priceName, description, and interval.
  */
 export function getPriceConfigUtil(
   priceId: string | undefined,
@@ -136,9 +136,9 @@ export function getPriceConfigUtil(
   billingType: string | undefined,
   config: MoneyPriceConfig
 ): (EnhancePricePlan & { priceName: string; description: string; interval?: string }) | null {
-  // 遍历所有支付提供商
+  // Iterate through all payment providers.
   for (const provider of Object.values(config.paymentProviders)) {
-    // 遍历订阅产品
+    // Iterate through subscription products.
     const subscriptionProducts = (
       provider.subscriptionProducts || provider.products
     ) as Record<string, any>;
@@ -149,8 +149,8 @@ export function getPriceConfigUtil(
           for (const [billingKey, planConfig] of Object.entries(product.plans)) {
             const plan_config = planConfig as any;
 
-            // 匹配逻辑：按优先级尝试
-            // 1. 按priceId精确匹配（优先级最高）
+            // Matching order by priority.
+            // 1. Exact priceId match with highest priority.
             if (priceId && plan_config.priceId === priceId) {
               return {
                 ...plan_config,
@@ -160,7 +160,7 @@ export function getPriceConfigUtil(
               };
             }
 
-            // 2. 按plan和billingType同时匹配
+            // 2. Match by both plan and billingType.
             if (!priceId && plan && billingType) {
               if (productKey === plan && billingKey === billingType) {
                 return {
@@ -172,7 +172,7 @@ export function getPriceConfigUtil(
               }
             }
 
-            // 3. 按plan匹配（billingType为空时）
+            // 3. Match by plan when billingType is empty.
             if (!priceId && !billingType && plan && productKey === plan) {
               return {
                 ...plan_config,
@@ -186,13 +186,13 @@ export function getPriceConfigUtil(
       }
     }
 
-    // 遍历积分包产品
+    // Iterate through credit pack products.
     const creditPacks = provider.creditPackProducts as Record<string, any>;
     if (creditPacks) {
       for (const [packKey, pack] of Object.entries(creditPacks)) {
         const pack_typed = pack as any;
 
-        // 积分包匹配
+        // Credit pack match.
         if (priceId && pack_typed.priceId === priceId) {
           return {
             priceId: pack_typed.priceId,
@@ -205,7 +205,7 @@ export function getPriceConfigUtil(
           };
         }
 
-        // 按plan和onetime匹配
+        // Match by plan and one-time billing.
         if (!priceId && plan && billingType === 'onetime') {
           if (packKey === plan) {
             return {
@@ -220,7 +220,7 @@ export function getPriceConfigUtil(
           }
         }
 
-        // 按plan匹配（billingType为空时也能找到first积分包）
+        // Match by plan; also resolves the first credit pack when billingType is empty.
         if (!priceId && !billingType && plan && packKey === plan) {
           return {
             priceId: pack_typed.priceId,

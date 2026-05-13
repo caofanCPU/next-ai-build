@@ -1,7 +1,7 @@
 /**
  * Fingerprint Client Utilities
- * 客户端专用的指纹生成和管理逻辑
- * 只能在浏览器环境中使用
+ * Client-only fingerprint generation and management logic.
+ * Must be used only in browser environments.
  */
 
 import FingerprintJS from '@fingerprintjs/fingerprintjs';
@@ -41,24 +41,24 @@ type FirstTouchData = {
 };
 
 /**
- * 检查浏览器存储（localStorage 和 cookie）中的指纹 ID
- * 返回有效的 ID 或 null
+ * Check fingerprint ID in browser storage, including localStorage and cookies.
+ * Returns a valid ID or null.
  */
 function checkStoredFingerprintId(): string | null {
   if (typeof window === 'undefined') {
     return null;
   }
 
-  // 优先检查 localStorage
+  // Prefer localStorage.
   const localStorageId = getLocalStorageValue(FINGERPRINT_STORAGE_KEY);
   if (localStorageId && isValidFingerprintId(localStorageId)) {
     return localStorageId;
   }
 
-  // 检查 cookie
+  // Check cookies.
   const cookieId = getCookieValue(FINGERPRINT_COOKIE_NAME);
   if (cookieId && isValidFingerprintId(cookieId)) {
-    // 同步到 localStorage
+    // Sync back to localStorage.
     setLocalStorageValue(FINGERPRINT_STORAGE_KEY, cookieId);
     return cookieId;
   }
@@ -203,34 +203,34 @@ export function getOrCreateFirstTouchData(): FirstTouchData | null {
 }
 
 /**
- * 生成基于真实浏览器特征的fingerprint ID
- * 使用 FingerprintJS 收集浏览器特征并生成唯一标识
+ * Generate a fingerprint ID from real browser characteristics.
+ * Uses FingerprintJS to collect browser signals and create a stable identifier.
  */
 export async function generateFingerprintId(): Promise<string> {
   if (typeof window === 'undefined') {
     throw new Error('generateFingerprintId can only be used in browser environment');
   }
 
-  // 检查现有 ID
+  // Check for an existing ID.
   const existingId = checkStoredFingerprintId();
   if (existingId) {
     return existingId;
   }
 
   try {
-    // 使用 FingerprintJS 生成指纹
+    // Generate a fingerprint with FingerprintJS.
     const fp = await FingerprintJS.load();
     const result = await fp.get();
     const fingerprintId = `fp_${result.visitorId}`;
 
-    // 存储到 localStorage 和 cookie
+    // Store in localStorage and cookies.
     setLocalStorageValue(FINGERPRINT_STORAGE_KEY, fingerprintId);
     setCookie(FINGERPRINT_COOKIE_NAME, fingerprintId, 365);
 
     return fingerprintId;
   } catch (error) {
     console.warn('Failed to generate fingerprint with FingerprintJS:', error);
-    // 降级方案：生成基于时间戳和随机数的 ID
+    // Fallback: generate an ID from timestamp and randomness.
     const fallbackId = `fp_fallback_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`;
     setLocalStorageValue(FINGERPRINT_STORAGE_KEY, fallbackId);
     setCookie(FINGERPRINT_COOKIE_NAME, fallbackId, 365);
@@ -240,14 +240,14 @@ export async function generateFingerprintId(): Promise<string> {
 }
 
 /**
- * 获取当前的fingerprint ID
+ * Get the current fingerprint ID.
  */
 export function getFingerprintId(): string | null {
   return checkStoredFingerprintId();
 }
 
 /**
- * 设置fingerprint ID到存储
+ * Store a fingerprint ID.
  */
 export function setFingerprintId(fingerprintId: string): void {
   if (typeof window === 'undefined') {
@@ -263,7 +263,7 @@ export function setFingerprintId(fingerprintId: string): void {
 }
 
 /**
- * 清除fingerprint ID
+ * Clear the fingerprint ID.
  */
 export function clearFingerprintId(): void {
   if (typeof window === 'undefined') {
@@ -275,8 +275,8 @@ export function clearFingerprintId(): void {
 }
 
 /**
- * 获取或生成fingerprint ID
- * 如果不存在则自动生成新的
+ * Get or generate a fingerprint ID.
+ * Automatically creates one when none exists.
  */
 export async function getOrGenerateFingerprintId(): Promise<string> {
   const existingId = checkStoredFingerprintId();
@@ -288,7 +288,7 @@ export async function getOrGenerateFingerprintId(): Promise<string> {
 }
 
 /**
- * 创建包含fingerprint ID的fetch headers
+ * Create fetch headers containing the fingerprint ID.
  */
 export async function createFingerprintHeaders(): Promise<Record<string, string>> {
   const fingerprintId = await getOrGenerateFingerprintId();
@@ -330,7 +330,7 @@ export function createFingerprintFetch() {
   };
 }
 
-// Cookie 辅助函数 (私有)
+// Private cookie helpers.
 function getCookieValue(name: string): string | null {
   if (typeof document === 'undefined') {
     return null;

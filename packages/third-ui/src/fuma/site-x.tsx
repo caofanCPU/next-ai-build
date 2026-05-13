@@ -10,7 +10,6 @@ export type SiteXProps = Omit<HTMLAttributes<HTMLSpanElement>, 'type'> & {
 };
 
 export async function SiteX({ locale, type, namespace, tKey, className, ...props }: SiteXProps) {
-  // 默认命名空间和key
   let ns = namespace;
   let key = tKey;
   if (!ns) {

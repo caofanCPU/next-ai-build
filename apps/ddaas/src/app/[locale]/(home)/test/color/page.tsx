@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import NProgress from 'nprogress';
 import { CirclePauseIcon, MonitorPlayIcon } from '@base-ui/icons';
 import { PiIcon } from '@windrun-huaiin/base-ui/icons';
@@ -59,6 +60,7 @@ function TonePreview({
   themeLabel: string;
   onRunNProgress: () => void;
 }) {
+  const t = useTranslations('test.color');
   const buttonBase = THEME_BUTTON_GRADIENT_CLASS_MAP[themeClass];
   const buttonHover = THEME_BUTTON_GRADIENT_HOVER_CLASS_MAP[themeClass];
   const heroEyesOn = THEME_HERO_EYES_ON_CLASS_MAP[themeClass];
@@ -100,7 +102,7 @@ function TonePreview({
 
       <div className="space-y-5">
         <section>
-          <p className="mb-2 text-xs opacity-70">图标 / 进度条 /加载动画</p>
+          <p className="mb-2 text-xs opacity-70">{t('iconProgressLoading')}</p>
           <div
             className={cn(
               'flex flex-col gap-4 rounded-xl border border-current px-3 py-3',
@@ -174,7 +176,7 @@ function TonePreview({
 
         <section>
           <div className="mb-2 flex items-center justify-between gap-3">
-            <p className="text-xs opacity-70">Loading 动画</p>
+            <p className="text-xs opacity-70">{t('loadingAnimation')}</p>
             <button
               type="button"
               onClick={handleLoadingToggle}
@@ -206,7 +208,7 @@ function TonePreview({
         </section>
 
         <section>
-          <p className="mb-2 text-xs opacity-70">按钮</p>
+          <p className="mb-2 text-xs opacity-70">{t('buttons')}</p>
           <button
             type="button"
             className={cn(
@@ -221,7 +223,7 @@ function TonePreview({
         </section>
 
         <section>
-          <p className="mb-2 text-xs opacity-70">文本（Hero标题 / 普通标题 / 着色文本）</p>
+          <p className="mb-2 text-xs opacity-70">{t('textSamples')}</p>
           <h3 className="text-3xl font-bold leading-tight">
             Build Faster with{' '}
             <span className={cn('bg-clip-text text-transparent', heroEyesOn)}>Diaomao AI</span>
@@ -241,6 +243,7 @@ function TonePreview({
 }
 
 export default function ColorTestPage() {
+  const t = useTranslations('test.color');
   const [themeName, setThemeName] = useState<keyof typeof THEME_COLOR_NAME_TO_CLASS_MAP>('purple');
 
   const themeClass = useMemo(() => THEME_COLOR_NAME_TO_CLASS_MAP[themeName], [themeName]);
@@ -275,7 +278,7 @@ export default function ColorTestPage() {
         <header className="rounded-2xl border border-slate-200 bg-white/90 p-4 shadow-sm backdrop-blur-sm dark:border-slate-800 dark:bg-slate-900/90 sm:p-6">
           <p className="text-xs font-medium uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">Theme Color Switch Preview</p>
           <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300">
-            快速查看主题切换后的效果
+            {t('description')}
           </p>
 
           <div className="mt-5 grid grid-cols-3 gap-2 sm:flex sm:flex-wrap">

@@ -19,7 +19,6 @@ const swiperThemeStyle = {
 export function GalleryMobileSwiper({ items }: Props) {
   return (
     <div className="block sm:hidden px-4">
-      {/* 外层容器：强制 maxWidth，防止任何溢出 */}
       <div
         className="w-full overflow-hidden"
         style={{ maxWidth: "min(calc(100vw - 48px), 350px)", margin: "0 auto" }}

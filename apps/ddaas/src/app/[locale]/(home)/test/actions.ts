@@ -18,6 +18,7 @@ import {
   withLock,
   withRedis,
 } from '@core/upstash/server';
+import { getTranslations } from 'next-intl/server';
 
 const TEST_TTL_SECONDS = 60 * 60;
 const RUNTIME_ENV = process.env.NODE_ENV ?? 'development';
@@ -157,16 +158,18 @@ export const getUpstashSnapshot = async (): Promise<UpstashSnapshot> => {
 };
 
 export const runUpstashAction = async (input: UpstashActionInput): Promise<UpstashActionResult> => {
+  const t = await getTranslations('test.upstash.actions');
+
   try {
     switch (input.type) {
       case 'check': {
         const ok = (await withRedis(async () => true)) ?? false;
-        return buildResult(ok, ok ? 'Redis 可用，初始化与单例访问正常' : 'Redis 不可用，请检查 Upstash 环境变量');
+        return buildResult(ok, ok ? t('redisOk') : t('redisUnavailable'));
       }
 
       case 'setString': {
         const ok = await setString(TEST_KEYS.string, input.value, TEST_TTL_SECONDS);
-        return buildResult(ok, ok ? 'String 写入成功(TTL 1 小时)' : 'String 写入失败');
+        return buildResult(ok, ok ? t('stringWriteOk') : t('stringWriteFailed'));
       }
 
       case 'setHashField': {
@@ -174,7 +177,7 @@ export const runUpstashAction = async (input: UpstashActionInput): Promise<Upsta
         if (ok) {
           await withTtl([TEST_KEYS.hash]);
         }
-        return buildResult(ok, ok ? 'Hash 字段写入成功(TTL 1 小时)' : 'Hash 字段写入失败');
+        return buildResult(ok, ok ? t('hashWriteOk') : t('hashWriteFailed'));
       }
 
       case 'setJson': {
@@ -182,16 +185,16 @@ export const runUpstashAction = async (input: UpstashActionInput): Promise<Upsta
         try {
           value = JSON.parse(input.value);
         } catch {
-          return buildResult(false, 'JSON 格式不合法，写入已取消');
+          return buildResult(false, t('jsonInvalid'));
         }
 
         const ok = await setJson(TEST_KEYS.json, value, TEST_TTL_SECONDS);
-        return buildResult(ok, ok ? 'JSON 写入成功(TTL 1 小时)' : 'JSON 写入失败');
+        return buildResult(ok, ok ? t('jsonWriteOk') : t('jsonWriteFailed'));
       }
 
       case 'getJson': {
         const value = await getJson<unknown>(TEST_KEYS.json);
-        return buildResult(value !== null, value !== null ? 'JSON 查询成功' : 'JSON 不存在或 Redis 不可用');
+        return buildResult(value !== null, value !== null ? t('jsonQueryOk') : t('jsonQueryMissing'));
       }
 
       case 'pushList': {
@@ -201,7 +204,7 @@ export const runUpstashAction = async (input: UpstashActionInput): Promise<Upsta
         }
         return buildResult(
           typeof length === 'number',
-          typeof length === 'number' ? `List 写入成功，当前长度 ${length}(TTL 1 小时)` : 'List 写入失败'
+          typeof length === 'number' ? t('listWriteOk', { length }) : t('listWriteFailed')
         );
       }
 
@@ -210,7 +213,7 @@ export const runUpstashAction = async (input: UpstashActionInput): Promise<Upsta
         if (popped !== null) {
           await withTtl([TEST_KEYS.list]);
         }
-        return buildResult(true, popped ? `List 弹出成功，值：${popped}` : 'List 为空或 Redis 不可用');
+        return buildResult(true, popped ? t('listPopOk', { value: popped }) : t('listPopEmpty'));
       }
 
       case 'incrCounter': {
@@ -220,7 +223,7 @@ export const runUpstashAction = async (input: UpstashActionInput): Promise<Upsta
         }
         return buildResult(
           typeof value === 'number',
-          typeof value === 'number' ? `Counter 更新成功，当前值 ${value}(TTL 1 小时)` : 'Counter 更新失败'
+          typeof value === 'number' ? t('counterUpdateOk', { value }) : t('counterUpdateFailed')
         );
       }
 
@@ -247,7 +250,7 @@ export const runUpstashAction = async (input: UpstashActionInput): Promise<Upsta
         const elapsedMs = Date.now() - startedAt;
         await withTtl([TEST_KEYS.lockAudit]);
 
-        return buildResult(true, '分布式锁并发测试完成', {
+        return buildResult(true, t('lockTestDone'), {
           concurrency: input.concurrency,
           ttlMs: input.ttlMs,
           successCount,
@@ -258,19 +261,19 @@ export const runUpstashAction = async (input: UpstashActionInput): Promise<Upsta
 
       case 'clearAll': {
         await Promise.all(Object.values(TEST_KEYS).map((key) => deleteKey(key)));
-        return buildResult(true, '测试数据已清空');
+        return buildResult(true, t('clearDone'));
       }
 
       case 'refresh': {
-        return buildResult(true, '数据已刷新');
+        return buildResult(true, t('refreshDone'));
       }
 
       default: {
-        return buildResult(false, '未知操作');
+        return buildResult(false, t('unknownAction'));
       }
     }
   } catch (error) {
-    const message = error instanceof Error ? error.message : '未知异常';
-    return buildResult(false, `操作异常：${message}`);
+    const message = error instanceof Error ? error.message : t('unknownError');
+    return buildResult(false, t('operationError', { message }));
   }
 };

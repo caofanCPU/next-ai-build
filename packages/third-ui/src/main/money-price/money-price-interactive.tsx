@@ -57,12 +57,12 @@ export function MoneyPriceInteractive({
   const billingOptions = useMemo(() => {
     const options = data.billingSwitch.options as BillingOption[];
 
-    // 如果配置了 enabledBillingTypes，只显示配置的类型
+    // If enabledBillingTypes is configured, show only those billing types.
     if (enabledBillingTypes?.length) {
       return options.filter(option => enabledBillingTypes.includes(option.key));
     }
 
-    // 否则显示所有配置的选项
+    // Otherwise show all configured options.
     return options;
   }, [data.billingSwitch.options, enabledBillingTypes]);
   const billingOptionMap = useMemo(() => {
@@ -74,12 +74,12 @@ export function MoneyPriceInteractive({
   const defaultBilling = useMemo<BillingType>(() => {
     const defaultKey = data.billingSwitch.defaultKey;
 
-    // 如果默认值在可用选项中，使用默认值
+    // Use the default value when it is available.
     if (billingOptions.some(opt => opt.key === defaultKey)) {
       return defaultKey;
     }
 
-    // 否则使用第一个可用选项
+    // Otherwise use the first available option.
     return billingOptions[0]?.key || 'monthly';
   }, [data.billingSwitch.defaultKey, billingOptions]);
 
@@ -96,18 +96,18 @@ export function MoneyPriceInteractive({
   const priceIdsByCycle = useMemo(() => {
     const priceIds: Record<string, string[]> = {};
 
-    // 为每个可用的计费类型创建价格ID数组
+    // Build a price ID list for each available billing type.
     billingOptions.forEach(option => {
       priceIds[option.key] = [];
 
       if (option.key === 'onetime') {
-        // 处理积分包产品
+        // Handle credit pack products.
         const creditPacks = providerConfig.creditPackProducts || {};
         Object.values(creditPacks).forEach((pack: any) => {
           priceIds[option.key].push(pack.priceId);
         });
       } else {
-        // 处理订阅产品
+        // Handle subscription products.
         const products = providerConfig.subscriptionProducts || providerConfig.products || {};
         PLAN_KEYS.forEach(planKey => {
           const product = (products as any)[planKey];
@@ -342,7 +342,7 @@ export function MoneyPriceInteractive({
     enableSubscriptionUpgrade
   ]);
 
-  // 根据当前计费类型动态选择要显示的 plans
+  // Select visible plans dynamically based on the current billing type.
   const currentPlans = useMemo(() => {
     if (billingType === 'onetime') {
       return data.creditsPlans || [];
@@ -375,12 +375,12 @@ export function MoneyPriceInteractive({
   const discountBadgeText = useMemo(() => {
     if (!selectedBillingOption?.discountText) return null;
 
-    // 对于 onetime 模式，直接显示 discountText，不依赖 discountPercent
+    // In one-time mode, show discountText directly without relying on discountPercent.
     if (billingType === 'onetime') {
       return selectedBillingOption.discountText;
     }
 
-    // 对于订阅模式，查找 discountPercent 并替换
+    // In subscription mode, find discountPercent and interpolate it.
     let discountPercent: number | null = null;
     const products = providerConfig.subscriptionProducts || providerConfig.products || {};
 
@@ -395,7 +395,7 @@ export function MoneyPriceInteractive({
     return selectedBillingOption.discountText.replace('{percent}', String(discountPercent));
   }, [selectedBillingOption, providerConfig, billingType]);
 
-  // 配置移动端BillingTypeButton悬浮样式
+  // Configure the mobile floating style for BillingTypeButton.
   return (
     <>
       <div className="flex justify-center mb-6 max-md:sticky max-md:top-30 max-md:z-30 max-md:py-2 max-md:bg-transparent">
@@ -517,7 +517,7 @@ export function MoneyPriceInteractive({
                     data-price-subtitle={planKey}
                   >
                     {showBillingSubtitle && billingType === 'onetime' ? (
-                      // OneTime 模式下的特殊处理：普通文本 + 带样式的产品副标题
+                      // Special one-time mode rendering: plain text plus styled product subtitle.
                       <>
                         {selectedBillingOption?.subTitle && (
                           <span className="text-[11px] md:text-xs text-gray-700 dark:text-gray-300 font-medium">
@@ -531,7 +531,7 @@ export function MoneyPriceInteractive({
                         )}
                       </>
                     ) : (
-                      // 其他模式下保持原逻辑
+                      // Keep the original rendering for other modes.
                       showBillingSubtitle && (
                         <span className="text-[11px] md:text-xs text-gray-700 dark:text-gray-300 font-medium">
                           {selectedBillingOption?.subTitle || ''}

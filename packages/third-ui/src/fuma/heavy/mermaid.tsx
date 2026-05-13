@@ -179,7 +179,7 @@ export function Mermaid({ chart, title, watermarkEnabled, watermarkText, handDra
   // prevent browser-level zoom (touchpad pinch/shortcut) from taking effect when the dialog is open
   useEffect(() => {
     if (!open) return;
-    // 初次打开时，默认放大到 400%
+    // Init default zoom out 400%
     resetTransform();
     const onGlobalWheel = (ev: WheelEvent) => {
       if (ev.ctrlKey || ev.metaKey) {

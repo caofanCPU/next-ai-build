@@ -11,10 +11,10 @@ import {
   type MobileMenuAction,
 } from './custom-header';
 
-// - bannerHeight/headerHeight 换成你项目期望的 rem 值即可（如果没有 Banner 就把 bannerHeight 设成 0）。
-// - layoutStyle 同时把变量传给 HomeLayout 的 main 元素，这样内容整体会往下错开，不需要 has-banner/no-banner class。
-// - CustomHomeHeader 直接接受 HomeLayout 的各类 props（links、nav、searchToggle、themeSwitch、i18n 等），内部会复用 Fumadocs 原本的导航功能。
-// - Banner 部分仍然可以用你现有的 FumaBannerSuit（或者任何自定义 Banner 组件），因为 Header 是固定定位、z-index 也处理好了，开关只影响 bannerHeight。
+// - Set bannerHeight/headerHeight to the rem values expected by the project. Use bannerHeight = 0 when there is no banner.
+// - layoutStyle passes the variables to HomeLayout's main element, offsetting content without has-banner/no-banner classes.
+// - CustomHomeHeader accepts HomeLayout props such as links, nav, searchToggle, themeSwitch, and i18n, then reuses Fumadocs navigation behavior.
+// - The banner can still use FumaBannerSuit or any custom banner component. Header positioning and z-index are already handled; the toggle only affects bannerHeight.
 
 export interface CustomHomeLayoutProps {
   locale: string;

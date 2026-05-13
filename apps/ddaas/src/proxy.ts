@@ -12,7 +12,7 @@ const intlMiddleware = createMiddleware({
   localeDetection: false
 });
 
-// 需要身份认证的路由（页面路由）
+// Page routes that require authentication.
 const protectedPageRoutes = createRouteMatcher(
   buildProtectedPageRoutePatterns(
     ['/dashboard', '/settings', '/profile', '/billing'],
@@ -20,25 +20,25 @@ const protectedPageRoutes = createRouteMatcher(
   )
 );
 
-// 需要身份认证的API路由
+// API routes that require authentication.
 const protectedApiRoutes = createRouteMatcher([
-  // Stripe支付相关API
+  // Stripe payment APIs.
   '/api/stripe(.*)',
-  // 积分相关API  
+  // Credit APIs.
   '/api/credit(.*)',
-  // 交易记录API
+  // Transaction APIs.
   '/api/transaction(.*)'
 ]);
 
-// 免认证的API路由（webhook、匿名用户初始化等）
+// Public API routes such as webhooks and anonymous user initialization.
 const publicApiRoutes = createRouteMatcher([
   // Stripe webhook
   '/api/webhook/stripe',
   // Clerk webhook
   '/api/webhook/clerk/user',
-  // 匿名用户初始化
+  // Anonymous user initialization.
   '/api/user/anonymous/init',
-  // 健康检查等
+  // Health checks and public content APIs.
   '/api/health',
   '/api/legal',
   '/api/docs',
@@ -46,8 +46,8 @@ const publicApiRoutes = createRouteMatcher([
   '/api/blog'
 ]);
 
-// v6 官方推荐写法：直接 export default clerkMiddleware(handler, options)
-// 完全不需要再包一层函数，也不需要手动 (req)
+// Clerk v6 recommended usage: export clerkMiddleware(handler, options) directly.
+// No extra wrapper function or manual request forwarding is needed.
 export default clerkMiddleware(
   async (auth, req: NextRequest) => {
     const { defaultLocale, locales } = appConfig.i18n;
@@ -72,8 +72,8 @@ export default clerkMiddleware(
       return authResponse;
     }
 
-    // 对于无语言前缀的页面请求，根据配置进行处理
-    // 避免落不到 [locale] 路由。
+    // Handle page requests without locale prefixes according to configuration.
+    // This prevents requests from missing the [locale] route.
     if (!hasLocalePrefix && !pathname.startsWith('/api/')) {
       const url = req.nextUrl.clone();
       url.pathname = `/${defaultLocale}${pathname}`;
@@ -85,7 +85,7 @@ export default clerkMiddleware(
       }
     }
 
-    // 5. 其他路由使用默认的国际化中间件处理
+    // Use the default i18n middleware for all other routes.
 
     // handle trailing slash redirect
     if (req.nextUrl.pathname.length > 1 && req.nextUrl.pathname.endsWith("/")) {
@@ -94,7 +94,7 @@ export default clerkMiddleware(
         301
       );
     }
-    // 默认处理其他路由（公开页面路由）
+    // Default handling for other public page routes.
     return intlMiddleware(req);
   },
   { debug: appConfig.clerk.debug }

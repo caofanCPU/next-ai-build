@@ -188,7 +188,7 @@ export function AIPromptTextarea({
     }
   }
 
-  // 渲染标题组件
+  // Render the title component.
   const renderTitle = () => {
     if (!title?.trim()) return null
     
@@ -200,7 +200,7 @@ export function AIPromptTextarea({
     )
   }
 
-  // 渲染textarea组件
+  // Render the textarea component.
   const renderTextarea = (isEmbedded = false) => (
     <textarea
       ref={textareaRef}
@@ -220,7 +220,7 @@ export function AIPromptTextarea({
     />
   )
 
-  // 渲染单词计数
+  // Render the word count.
   const renderWordCount = () => {
     if (!showWordCount) return null
     
@@ -238,7 +238,7 @@ export function AIPromptTextarea({
     )
   }
 
-  // 如果有标题且需要嵌入，则渲染内部标题布局
+  // Render the embedded title layout when a title is present and embedded mode is enabled.
   if (embed && (title)) {
     return (
       <div className="space-y-2">
@@ -256,7 +256,7 @@ export function AIPromptTextarea({
     )
   }
 
-  // 默认布局：外部标题或无标题
+  // Default layout: external title or no title.
   return (
     <div className="space-y-2">
       {renderTitle()}

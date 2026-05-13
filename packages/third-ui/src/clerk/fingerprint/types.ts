@@ -1,6 +1,5 @@
 /**
  * Fingerprint System Types
- * 指纹识别系统的类型定义
  */
 
 export interface XUser {

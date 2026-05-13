@@ -1,7 +1,7 @@
 /**
  * Fingerprint Server Utilities
- * 服务端专用的指纹ID提取和验证逻辑
- * 可以安全地在服务端使用，不依赖浏览器API或FingerprintJS
+ * Server-only fingerprint ID extraction and validation logic.
+ * Safe for server usage without browser APIs or FingerprintJS.
  */
 
 import {
@@ -11,16 +11,16 @@ import {
 } from './fingerprint-shared';
 
 /**
- * 从请求中提取fingerprint ID
- * 优先级：header > cookie > query参数
- * 可以安全地在服务端使用
+ * Extract fingerprint ID from a request.
+ * Priority: header > cookie > query parameter.
+ * Safe to use on the server.
  */
 export function extractFingerprintId(
   headers: Headers | Record<string, string>,
   cookies?: Record<string, string>,
   query?: Record<string, string | undefined>
 ): string | null {
-  // 1. 从header中获取
+  // 1. Read from header.
   const headerValue = headers instanceof Headers 
     ? headers.get(FINGERPRINT_HEADER_NAME)
     : headers[FINGERPRINT_HEADER_NAME];
@@ -29,7 +29,7 @@ export function extractFingerprintId(
     return headerValue;
   }
 
-  // 2. 从cookie中获取
+  // 2. Read from cookie.
   if (cookies) {
     const cookieValue = cookies[FINGERPRINT_COOKIE_NAME];
     if (cookieValue && isValidFingerprintId(cookieValue)) {
@@ -37,7 +37,7 @@ export function extractFingerprintId(
     }
   }
 
-  // 3. 从query参数中获取
+  // 3. Read from query parameters.
   if (query) {
     const queryValue = query.fingerprint_id || query.fp_id;
     if (queryValue && isValidFingerprintId(queryValue)) {
@@ -49,22 +49,22 @@ export function extractFingerprintId(
 }
 
 /**
- * 生成服务端降级fingerprint ID
- * 当客户端无法生成fingerprint时使用
- * 可以安全地在服务端使用
+ * Generate a server-side fallback fingerprint ID.
+ * Used when the client cannot generate a fingerprint.
+ * Safe to use on the server.
  */
 export function generateServerFingerprintId(): string {
   return `fp_server_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`;
 }
 
 /**
- * 从Next.js Request对象中提取fingerprint ID
- * 便捷方法，适用于Next.js API路由
+ * Extract fingerprint ID from a Next.js Request object.
+ * Convenience helper for Next.js API routes.
  */
 export function extractFingerprintFromNextRequest(request: Request): string | null {
   const headers = request.headers;
   
-  // 尝试从cookies获取（需要解析cookie header）
+  // Try cookies by parsing the cookie header.
   const cookieHeader = headers.get('cookie');
   const cookies: Record<string, string> = {};
   
@@ -77,7 +77,7 @@ export function extractFingerprintFromNextRequest(request: Request): string | nu
     });
   }
 
-  // 尝试从URL query参数获取
+  // Try URL query parameters.
   const url = new URL(request.url);
   const query: Record<string, string> = {};
   url.searchParams.forEach((value, key) => {
@@ -93,8 +93,8 @@ type NextCookiesLike = {
 };
 
 /**
- * 从Next.js runtime提供的headers/cookies实例里提取fingerprint ID
- * 供App Router服务端组件和Server Actions直接复用
+ * Extract fingerprint ID from Next.js runtime headers/cookies stores.
+ * Reusable in App Router server components and Server Actions.
  */
 export function extractFingerprintFromNextStores(params: {
   headers: NextHeadersLike;

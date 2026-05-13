@@ -82,7 +82,7 @@ export function XPillSelect(props: XPillSelectProps) {
     props.mode === 'multiple' &&
     allOptionValues.length > 0 &&
     allOptionValues.every((value) => selectedValues.includes(value));
-  const aggregatedSelectedLabel = isAllSelected ? allSelectedLabel?.trim() || '全部' : null;
+  const aggregatedSelectedLabel = isAllSelected ? allSelectedLabel?.trim() || 'All' : null;
   const hasVisiblePillLimit = props.mode === 'multiple' && typeof maxVisiblePills === 'number' && maxVisiblePills >= 0;
   const visibleSelectedValues =
     aggregatedSelectedLabel || !hasVisiblePillLimit
@@ -272,7 +272,7 @@ export function XPillSelect(props: XPillSelectProps) {
                       compact ? 'px-2.5 py-0.5 text-[11px]' : 'px-3 py-1 text-xs',
                       'bg-neutral-200 text-neutral-700 dark:bg-neutral-800 dark:text-white'
                     )}
-                    title={`还有 ${hiddenSelectedCount} 项未展开`}
+                    title={`${hiddenSelectedCount} items remain unexpanded`}
                   >
                     +{hiddenSelectedCount}
                   </span>
