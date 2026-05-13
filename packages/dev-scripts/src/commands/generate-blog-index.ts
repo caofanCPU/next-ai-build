@@ -147,11 +147,10 @@ export async function generateBlogIndex(
       logger.warn(`Could not read or parse ${metaFile}. No articles will be marked as featured.`)
     }
     
-    // 统一提取被隐藏的 slug
     const hiddenSlugs = new Set(
       meta.pages.filter(p => p.startsWith('!')).map(p => p.slice(1))
     )
-    // ioc 相关处理
+    // ioc handle
     const featuredSlugs = meta.pages
       .filter(p => !p.startsWith('!'))
       .map(p => p.endsWith('.mdx') ? p.slice(0, -4) : p)
@@ -161,10 +160,9 @@ export async function generateBlogIndex(
     const allArticles = await getAllBlogArticles(config.blog.mdxDir, cwd, logger)
     logger.log(`Found ${allArticles.length} all articles.`)
 
-    // 过滤所有被隐藏的 slug
     const visibleArticles = allArticles.filter(a => !hiddenSlugs.has(a.slug))
 
-    // ioc article 处理
+    // ioc article
     const iocArticle = visibleArticles.find(a => a.slug === iocSlug)
     const filteredArticles = visibleArticles.filter(a => a.slug !== iocSlug)
 

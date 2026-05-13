@@ -97,7 +97,7 @@ export const createCheckoutSession = async (
 
   // One-time payment specific configuration
   if (isSubscriptionMode) {
-    // 在这里注入订单元数据，以保证后续事件处理能根据订单去匹配处理，只能在订阅模式里设置数据，否则Stripe报错
+    // Attach order metadata for later event matching. Stripe only allows this in subscription mode.
     sessionParams.subscription_data = subscriptionData;
   } else {
     // One-time payments don't create invoices
@@ -129,7 +129,7 @@ export const createCheckoutSession = async (
   }
 };
 
-// 根据发票ID去查支付ID
+// Resolve the payment ID from an invoice ID.
 export const fetchPaymentId = async (invoiceId: string ): Promise<string> => {
   const fullInvoice = await getStripe().invoices.retrieve(invoiceId, {
     expand: ['payments']
@@ -193,7 +193,7 @@ export const createOrGetCustomer = async (params: {
     }
   }
 
-  // 创建新客户
+  // Create a new customer.
   const customerParams: Stripe.CustomerCreateParams = {
     metadata: {
       user_id: userId,

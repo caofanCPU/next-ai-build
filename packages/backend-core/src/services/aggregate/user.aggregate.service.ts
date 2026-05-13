@@ -40,17 +40,17 @@ export class UserAggregateService {
   }
 
   /**
-   * 创建新的注册用户
+   * Create a new registered user
    *
-   * 初始化步骤（与 credit 平行）：
-   * 1. 创建 User 记录
-   * 2. 初始化 Credit 记录（免费积分）
-   * 3. 初始化 Subscription 记录（占位符，status=INCOMPLETE）
-   * 4. 记录 CreditUsage（审计）
+   * Initialization steps (parallel to credit):
+   * 1. Create User record
+   * 2. Initialize Credit record (free credits)
+   * 3. Initialize Subscription record (placeholder, status=INCOMPLETE)
+   * 4. Record CreditUsage (audit)
    *
-   * 后续当用户通过 Stripe 订阅时：
-   * - session.completed 或 invoice.paid 会 UPDATE subscription 记录
-   * - 不需要 CREATE，只需 UPDATE 确保逻辑一致
+   * When the user subscribes via Stripe later:
+   * - session.completed or invoice.paid will UPDATE the subscription record
+   * - No CREATE needed, only UPDATE to ensure logical consistency
    */
   async createNewRegisteredUser(
     clerkUserId: string,
@@ -89,7 +89,7 @@ export class UserAggregateService {
     });
   }
 
-  // 注意积分审查日志的处理
+  // Note: Handle credit review logs
   async upgradeToRegistered(
     userId: string,
     email: string,
@@ -107,9 +107,9 @@ export class UserAggregateService {
         tx
       );
 
-      // 先清空匿名积分并审计日志留痕
+      // Clear anonymous credits first and audit for traceability
       await creditService.purgeFreeCredit(userId, 'user_registered_purge', userId, tx);
-      // 再初始化完成注册获得免费积分
+      // Then initialize free credits upon successful registration
       const credit = await creditService.initializeCreditWithFree(
         {
           userId: updateUser.userId,
@@ -128,21 +128,21 @@ export class UserAggregateService {
 
   async handleUserUnregister(clerkUserId: string): Promise<string | null> { 
     return runInTransaction(async (tx) => {
-      // 根据clerkUserId查找用户
+      // query DB user
       const user = await userService.findByClerkUserId(clerkUserId, tx);
       if (!user) {
         console.log(`User with clerkUserId ${clerkUserId} not found`);
         return null;
       }
       const userId = user.userId;
-      // 更改用户状态，保留user信息尤其是FingerprintId，防止反复注册薅羊毛
+      // Update user status and retain user info (especially FingerprintId) to prevent repeated registration abuse
       await userService.unregister(user.userId, tx);
-      // 清空积分
+      // Clear credits
       await creditService.purgeCredit(userId, 'soft_delete_user', userId, tx);
       
       const subscription = await subscriptionService.getActiveSubscription(userId, tx);
       if (subscription) {
-        // 如果有订阅信息，则要更新
+        // Update subscription info if it exists
         await subscriptionService.cancelSubscription(subscription.id, true, tx);
       }
 

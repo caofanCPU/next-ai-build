@@ -23,9 +23,9 @@ import { finalizeUserContext } from '@core/context/user-context-finalizer';
 import type { CoreJsonObject } from '@core/db/prisma-model-type';
 
 
-// ==================== 类型定义 ====================
+// ==================== Type Definitions ====================
 
-/** 成功响应数据 */
+/** Successful response payload */
 interface XUserResponse {
   success: true;
   xUser: XUser;
@@ -36,14 +36,14 @@ interface XUserResponse {
   hasAnonymousUser?: boolean;
 }
 
-/** 错误响应数据 */
+/** Error response payload */
 interface ErrorResponse {
   error: string;
 }
 
-// ==================== 工具函数 ====================
+// ==================== Utilities ====================
 
-/** 创建成功响应对象 */
+/** Create a successful response payload */
 function createSuccessResponse(params: {
   entities: UserContextEntities;
   isNewUser: boolean;
@@ -64,7 +64,7 @@ function createSuccessResponse(params: {
   return finalizeUserContext(response);
 }
 
-/** 创建错误响应 */
+/** Create an error response */
 function createErrorResponse(message: string, status = 400): NextResponse {
   const errorResponse: ErrorResponse = { error: message };
   return NextResponse.json(errorResponse, { status });
@@ -552,7 +552,7 @@ function finalizeAttribution(sourceRef: SourceRefData) {
   sourceRef.sourceType = 'direct';
 }
 
-// 提取用户首次访问来源
+// Extract the user's first-touch attribution source.
 function extractSourceRef(request: NextRequest): SourceRefData | null {
   const headerRef = request.headers.get('referer') || request.headers.get('referrer');
   const customRef = request.headers.get('x-source-ref');
@@ -603,7 +603,7 @@ function extractSourceRef(request: NextRequest): SourceRefData | null {
 
 
 /**
- * 根据fingerprint_id查询用户并返回响应数据
+ * Query the user by Clerk user ID and return response data.
  */
 async function getUserByClerkId(clerkUserId: string): Promise<XUserResponse | null> {
   const entities = await fetchUserContextByClerkUserId(clerkUserId);
@@ -618,7 +618,7 @@ async function getUserByClerkId(clerkUserId: string): Promise<XUserResponse | nu
 }
 
 /**
- * 根据fingerprint_id查询用户并返回响应数据
+ * Query the user by fingerprint ID and return response data.
  */
 async function getUserByFingerprintId(fingerprintId: string): Promise<XUserResponse | null> {
   const result = await fetchLatestUserContextByFingerprintId(fingerprintId);
@@ -639,12 +639,12 @@ async function getUserByFingerprintId(fingerprintId: string): Promise<XUserRespo
 }
 
 /**
- * 通用的fingerprint处理逻辑
+ * Shared fingerprint request handling logic.
  */
 async function handleFingerprintRequest(request: NextRequest, options: { createIfNotExists?: boolean; } = {}) {
-  // 从请求中提取fingerprint ID
+  // Extract the fingerprint ID from the request.
   const fingerprintId = extractFingerprintFromNextRequest(request);
-  // 验证fingerprint ID
+  // Validate the fingerprint ID.
   if (!fingerprintId) {
     return createErrorResponse('Invalid or missing fingerprint ID');
   }
@@ -653,27 +653,26 @@ async function handleFingerprintRequest(request: NextRequest, options: { createI
   const authIdentity = await getOptionalServerAuthIdentity();
   const clerkUserId = authIdentity?.providerUserId ?? null;
   try {
-    // 优先根据 Clerk ID 查询（如果已登录）
+    // Prefer Clerk user ID lookup when the user is authenticated.
     let existingUserResult: XUserResponse | null = null;
     if (clerkUserId) {
-      // 已登录一律按照clerkUserId去查
+      // Authenticated users are always resolved by clerkUserId.
       existingUserResult = await getUserByClerkId(clerkUserId);
       if (existingUserResult && existingUserResult.xUser.fingerprintId !== fingerprintId) {
-        // 说明当前用户的指纹ID发生了改变，为什么呢？因为它使用同一账号去注册Clerk，Clerk判定是同一用户！
-        // 这个时候一定以登录用户clerkUserId为准
-        // 但是考虑到同一指纹ID本身可以绑定多个账号，所以这里什么都不做
-        // 就是以当前登录用户去查他自己的数据就行！
+        // The authenticated user's fingerprint changed. Clerk still identifies the account as the same user.
+        // Trust clerkUserId as the source of truth and keep resolving the user's own data by login identity.
+        // A single fingerprint can be associated with multiple accounts, so no mutation is needed here.
         console.warn(`Current login user used diff fp_ids: ${clerkUserId}, db_fp_id=${existingUserResult.xUser.fingerprintId}, req_fp_id=${fingerprintId}`);
       }
     } else {
-      // 其次才是检查是否已存在该fingerprint的用户
+      // For anonymous requests, fall back to fingerprint lookup.
       existingUserResult = await getUserByFingerprintId(fingerprintId);
     }
     if (existingUserResult) {
       return NextResponse.json(existingUserResult);
     }
 
-    // 如果不存在用户且不允许创建，返回404
+    // If the user does not exist and creation is disabled, return 404.
     if (!options.createIfNotExists) {
       return createErrorResponse('User not found', 404);
     }
@@ -689,7 +688,7 @@ async function handleFingerprintRequest(request: NextRequest, options: { createI
       console.log(`Created new anonymous user ${anonymousInitResult.user.userId} with fingerprint ${fingerprintId}`);
     }
 
-    // 返回创建结果
+    // Return the created or existing context.
     const response = createSuccessResponse({
       entities: {
         user: anonymousInitResult.user,
@@ -711,7 +710,7 @@ async function handleFingerprintRequest(request: NextRequest, options: { createI
 }
 
 /**
- * 匿名用户初始化API
+ * Anonymous user initialization API.
  * POST /api/user/anonymous/init
  */
 export async function POST(request: NextRequest) {

@@ -300,7 +300,7 @@ export class CreditService {
     this.ensureNonNegative(normalized, 'initializeCredit');
     const client = checkAndFallbackWithNonTCClient(tx);
 
-    // 这里使用upsert语义是为了代码复用，处理匿名初始化和匿名->注册的初始化
+    // Use upsert semantics to share initialization logic for anonymous users and anonymous-to-registered upgrades.
     const credit =  await client.credit.upsert({
       where: {
         userId: init.userId
@@ -636,7 +636,7 @@ export class CreditService {
       data: updateData as Prisma.CreditUpdateInput,
     });
 
-    // 强制留痕，即使是积分变化为0也记录，操作留痕
+    // Always write an audit entry, even when the credit change is zero.
     const usage = await this.recordCreditAuditLog(client, userId, OperationType.PURGE, normalizedDeduction, { feature: reason, operationReferId })
 
     return { credit, usage };

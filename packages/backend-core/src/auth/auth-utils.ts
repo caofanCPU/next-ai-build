@@ -4,9 +4,6 @@ import { userService } from '../services/database/index';
 import { User } from '../services/database/prisma-model-type';
 import { AUTH_ERRORS, AUTH_HEADERS, type AuthProvider, type ProviderIdentity } from './auth-shared';
 
-/**
- * 认证结果类型
- */
 export interface AuthResult {
   userId: string;
   user: User;
@@ -15,7 +12,7 @@ export interface AuthResult {
 }
 
 /**
- * 从中间件设置的 Clerk ID 获取完整用户信息
+ * Fetch User's info from header field by Middleware
  */
 export async function getAuthenticatedUser(req: NextRequest): Promise<AuthResult> {
   try {
@@ -43,7 +40,7 @@ export async function getAuthenticatedUser(req: NextRequest): Promise<AuthResult
 }
 
 /**
- * 要求用户必须已认证，返回用户ID
+ * Require Auth, success back user's id
  */
 export async function requireAuth(req: NextRequest): Promise<string> {
   const auth = await getAuthenticatedUser(req);
@@ -51,15 +48,15 @@ export async function requireAuth(req: NextRequest): Promise<string> {
 }
 
 /**
- * 要求用户必须已认证，返回完整用户信息
+ * Require Auth, success back user's info
  */
 export async function requireAuthWithUser(req: NextRequest): Promise<AuthResult> {
   return await getAuthenticatedUser(req);
 }
 
 /**
- * 服务端场景下获取当前已认证身份（如果存在）
- * 适用于只依赖登录态、不需要查询业务用户的逻辑
+ * Only use in server side
+ * Server Component / Server Action, just need user's login status
  */
 export async function getOptionalServerAuthIdentity(): Promise<ProviderIdentity | null> {
   try {
@@ -79,8 +76,8 @@ export async function getOptionalServerAuthIdentity(): Promise<ProviderIdentity 
 }
 
 /**
- * 服务端场景下获取当前已认证用户（如果存在）
- * 适用于 Server Component / Server Action 中基于登录态控制展示的逻辑
+ * Only use in server side
+ * Server Component / Server Action, need user's login status and user's data, will check db
  */
 export async function getOptionalServerAuthUser(): Promise<AuthResult | null> {
   try {
@@ -107,7 +104,7 @@ export async function getOptionalServerAuthUser(): Promise<AuthResult | null> {
 }
 
 /**
- * API Route版本的认证工具函数
+ * API Route Auth Util
  */
 export class ApiAuthUtils {
   private req: NextRequest;
@@ -116,23 +113,14 @@ export class ApiAuthUtils {
     this.req = req;
   }
 
-  /**
-   * 要求用户必须已认证，返回用户ID
-   */
   async requireAuth(): Promise<string> {
     return await requireAuth(this.req);
   }
 
-  /**
-   * 要求用户必须已认证，返回完整用户信息
-   */
   async requireAuthWithUser(): Promise<AuthResult> {
     return await requireAuthWithUser(this.req);
   }
 
-  /**
-   * 获取用户ID（如果已认证）
-   */
   async getUserId(): Promise<string | null> {
     try {
       const auth = await getAuthenticatedUser(this.req);
@@ -142,9 +130,6 @@ export class ApiAuthUtils {
     }
   }
 
-  /**
-   * 获取完整用户信息（如果已认证）
-   */
   async getUser(): Promise<AuthResult | null> {
     try {
       return await getAuthenticatedUser(this.req);

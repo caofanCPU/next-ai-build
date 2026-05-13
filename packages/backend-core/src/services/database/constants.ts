@@ -2,80 +2,80 @@
 // Keep in sync with DB CHECK constraints
 
 export const UserStatus = {
-  // 匿名用户
+  // Anonymous user
   ANONYMOUS: 'anonymous',
-  // 注册用户
+  // Registered user
   REGISTERED: 'registered',
-  // 管理员介入管控
+  // Frozen by admin intervention
   FROZEN: 'frozen',
-  // 用户注销，数据软删除，用户数据将不可复用
+  // Soft-deleted user data that must not be reused
   DELETED: 'deleted',
 } as const;
 
 export const SubscriptionStatus = {
-  // 初始状态或注销后状态
+  // Initial or post-cancellation state
   INCOMPLETE: 'incomplete',
-  // 订阅试用期
+  // Trial subscription period
   TRIALING: 'trialing',
-  // 有效订阅激活
+  // Active subscription
   ACTIVE: 'active',
-  // 订阅过期
+  // Past-due subscription
   PAST_DUE: 'past_due',
-  // 取消订阅
+  // Canceled subscription
   CANCELED: 'canceled',
 } as const;
 
 export const OrderStatus = {
-  // 初始状态
+  // Initial state
   CREATED: 'created',
-  // 中间状态，待支付，可能是支付失败事件触发
+  // Intermediate state, awaiting payment; may be triggered by a payment failure event
   PENDING_UNPAID: 'pending_unpaid',
-  // 中间状态(也可是最终状态)，支付成功，后续可变为「退款或取消」
+  // Intermediate or final state; payment succeeded and may later become refunded or canceled
   SUCCESS: 'success',
-  // 中间状态(也可是最终状态)，CheckOut失败或者是支付失败，后续可变为「退款或取消」
+  // Intermediate or final state; checkout or payment failed and may later become refunded or canceled
   FAILED: 'failed',
-  // 最终状态，已退款
+  // Final state, refunded
   REFUNDED: 'refunded',
-  // 最终状态，已取消
+  // Final state, canceled
   CANCELED: 'canceled',
 } as const;
 
 export const TransactionType = {
-  // 订阅订单
+  // Subscription order
   SUBSCRIPTION: 'subscription',
-  // 即付订单
+  // One-time payment order
   ONE_TIME: 'one_time',
 } as const;
 
 export const CreditType = {
-  // 订阅积分
+  // Subscription credits
   PAID: 'paid',
-  // 即付积分
+  // One-time paid credits
   ONE_TIME_PAID: 'one_time_paid',
-  // 免费积分
+  // Free credits
   FREE: 'free',
 } as const;
 
 export const OperationType = {
-  // 系统奖励积分
+  // System-granted credits
   SYS_GIFT: 'system_gift',
-  // 用户消费积分
+  // User credit consumption
   CONSUME: 'consume',
-  // 用户充值积分
+  // User credit recharge
   RECHARGE: 'recharge',
-  // 管理员介入冻结积分
+  // Admin credit freeze
   FREEZE: 'freeze',
-  // 管理员介入解冻积分
+  // Admin credit unfreeze
   UNFREEZE: 'unfreeze',
-  // 管理员介入赠送积分
+  // Admin credit increase
   ADJUST_INCREASE: 'adjust_increase',
-  // 管理员介入抹去积分
+  // Admin credit decrease
   ADJUST_DECREASE: 'adjust_decrease',
-  // 清理积分，事件触发或者是积分过期触发
+  // Credit purge triggered by an event or expiration
   PURGE: 'purge',
 } as const;
 
-// 支付厂商类型
+// Payment provider types
 export const PaySupplier = {
   STRIPE: 'Stripe',
   APPLE: 'Apple',
@@ -83,18 +83,18 @@ export const PaySupplier = {
 } as const;
 
 export const BillingReason = {
-  // 首次订阅
+  // Initial subscription
   SUBSCRIPTION_CREATE: 'subscription_create',
-  // 续订
+  // Subscription renewal
   SUBSCRIPTION_CYCLE: 'subscription_cycle',
 } as const;
 
 export const PaymentStatus = {
-  // 已支付
+  // Paid
   PAID: 'paid',
-  // 待支付
+  // Pending payment
   UN_PAID: 'un_paid',
-  // 无需支付
+  // No payment required
   NO_PAYMENT_REQUIRED: 'no_payment_required',
 } as const;
 

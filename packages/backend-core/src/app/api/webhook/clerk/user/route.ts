@@ -11,7 +11,7 @@ import { headers } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 import { Webhook } from 'svix';
 
-// 定义Clerk Webhook事件类型
+// Clerk webhook event type definition
 interface ClerkWebhookEvent {
   data: {
     id: string;
@@ -41,12 +41,12 @@ interface ClerkWebhookEvent {
 }
 export async function POST(request: NextRequest) {
   try {
-    // 获取原始请求体
+    // Read the raw request body.
     const rawBody = await request.text();
 
     let event: ClerkWebhookEvent;
 
-    // 开发环境跳过签名校验
+    // Skip signature verification in development.
     if (process.env.NODE_ENV === 'development') {
       console.log('Development mode: skipping webhook signature verification');
       try {
@@ -59,13 +59,13 @@ export async function POST(request: NextRequest) {
         );
       }
     } else {
-      // 生产环境进行签名校验
+      // Verify the signature in production.
       const headerPayload = await headers();
       const svix_id = headerPayload.get('svix-id');
       const svix_timestamp = headerPayload.get('svix-timestamp');
       const svix_signature = headerPayload.get('svix-signature');
 
-      // 如果缺少必要的header，返回错误
+      // Reject requests missing required headers.
       if (!svix_id || !svix_timestamp || !svix_signature) {
         return NextResponse.json(
           { error: 'Missing webhook headers' },
@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      // 获取webhook signing secret
+      // Load the webhook signing secret.
       const webhookSecret = process.env.CLERK_WEBHOOK_SECRET;
       if (!webhookSecret) {
         console.error('CLERK_WEBHOOK_SECRET is not configured');
@@ -83,7 +83,7 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      // 验证webhook签名
+      // Verify the webhook signature.
       try {
         const wh = new Webhook(webhookSecret);
         event = wh.verify(rawBody, {
@@ -110,7 +110,7 @@ export async function POST(request: NextRequest) {
     let processingResult = { success: true, message: 'Event processed successfully' };
 
     try {
-      // 处理不同的事件类型
+      // Dispatch by event type.
       const { type } = event;
 
       switch (type) {
@@ -155,7 +155,7 @@ export async function POST(request: NextRequest) {
 }
 
 /**
- * 处理用户创建事件
+ * Handle the user.created event.
  */
 async function handleUserCreated(event: ClerkWebhookEvent) {
   const { data } = event;
@@ -174,7 +174,7 @@ async function handleUserCreated(event: ClerkWebhookEvent) {
     userName
   });
 
-  // 检查必要参数
+  // Validate required fields.
   if (!fingerprintId) {
     console.error('Missing fingerprintId in webhook data, process flow error');
     return;
@@ -186,17 +186,17 @@ async function handleUserCreated(event: ClerkWebhookEvent) {
   }
 
   try {
-    // 按fingerprintId查询该设备的所有未注销过的用户记录，注销过的记录相当于是死数据
+    // Find all non-deleted users for this device fingerprint.
     const existingUsers = await userService.findListByFingerprintId(fingerprintId);
     if (!existingUsers || existingUsers.length === 0) {
       console.error('Invalid fingerprintId in webhook data, process flow error');
       return;
     }
 
-    // 查找email相同的记录
+    // Find an existing user with the same email.
     const sameEmailUser = existingUsers.find(user => user.email === email);
     if (sameEmailUser) {
-      // 同一账号，检查是否需要更新clerkUserId
+      // Same account; update clerkUserId if needed.
       if (sameEmailUser.clerkUserId !== clerkUserId) {
         await userService.updateUser(sameEmailUser.userId, { clerkUserId, userName: userName, status: UserStatus.REGISTERED });
         console.log(`Updated clerkUserId for user ${sameEmailUser.userId}`);
@@ -206,16 +206,16 @@ async function handleUserCreated(event: ClerkWebhookEvent) {
       return;
     }
 
-    // 查找匿名用户（email为空且clerkUserId为空）
+    // Find an anonymous user with no email or clerkUserId.
     const anonymousUser = existingUsers.find(user => !user.email && !user.clerkUserId && user.status === UserStatus.ANONYMOUS );
     if (anonymousUser) {
-      // 匿名用户升级
+      // Upgrade the anonymous user.
       await userAggregateService.upgradeToRegistered(anonymousUser.userId, email, clerkUserId, userName);
       console.log(`Successfully upgraded anonymous user ${anonymousUser.userId} to registered user`);
       return;
     }
 
-    // 同设备新账号，创建新用户
+    // New account on the same device; create a new user.
     await userAggregateService.createNewRegisteredUser(clerkUserId, email, fingerprintId, userName);
     console.log(`Created new user for device ${fingerprintId} with email ${email}`);
     
@@ -226,7 +226,7 @@ async function handleUserCreated(event: ClerkWebhookEvent) {
 }
 
 /**
- * 处理用户删除事件
+ * Handle the user.deleted event.
  */
 async function handleUserDeleted(event: ClerkWebhookEvent) {
   const { data } = event;

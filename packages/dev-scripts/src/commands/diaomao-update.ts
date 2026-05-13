@@ -525,7 +525,7 @@ export async function diaomaoUpdate(
   printSkipDetails(skipRows, compactLog)
 
   if (updatedRows.length > 0) {
-    console.log('\n执行 pnpm install中...')
+    console.log('\npnpm installing...')
     execSync('pnpm install', {
       cwd,
       stdio: 'inherit'

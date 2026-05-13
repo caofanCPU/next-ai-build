@@ -35,7 +35,7 @@ type BasicOrderContext = {
 };
 
 type RenewalOrderContext = BasicOrderContext & {
-  // 续订时以Stripe的发票价格为准
+  // Use Stripe invoice price as the source of truth for renewal
   amountPaidCents: number;
   currency: string;
 }
@@ -64,7 +64,7 @@ class BillingAggregateService {
   ): Promise<void> {
     await runInTransaction(async (tx) => {
       const now = new Date();
-      // 订阅截止时间统一为到期日最后1s
+        // Set subscription expiry to the last second of the expiration date
       const originSubPeriodEnd = context.periodEnd;
       const specialEnd = originSubPeriodEnd ? new Date(originSubPeriodEnd.setHours(23, 59, 59, 999)) : originSubPeriodEnd;
       const updatedSubscription = await subscriptionService.updateSubscription(
@@ -237,7 +237,7 @@ class BillingAggregateService {
         },
         tx
       );
-      // 订阅截止时间统一为到期日最后1s
+      // Set subscription expiry to the last second of the expiration date
       const originSubPeriodEnd = context.periodEnd;
       const specialEnd = originSubPeriodEnd ? new Date(originSubPeriodEnd.setHours(23, 59, 59, 999)) : originSubPeriodEnd;
 
@@ -365,7 +365,7 @@ class BillingAggregateService {
   ): Promise<void> {
     await runInTransaction(async (tx) => {
       if (params.isUserCancel) {
-          // 记录用户取消订阅的时间信息
+          // Record the time when the user unsubscribes
           await transactionService.update(
             params.orderId,
             {
@@ -391,7 +391,7 @@ class BillingAggregateService {
     context: SubscriptionCancelContext
   ): Promise<void> {
     await runInTransaction(async (tx) => {
-      // 更新订单, 记录取消信息
+      // Update the order and log cancellation details
       await transactionService.update(
         context.orderId,
         {
@@ -400,10 +400,10 @@ class BillingAggregateService {
         },
         tx
       )
-      // 更新订阅信息
+      // Update subscription information
       await subscriptionService.updateStatus(context.subIdKey, SubscriptionStatus.CANCELED, tx);
 
-      // 清理积分并留痕
+      // Clear credits and keep audit trail
       await creditService.purgePaidCredit(context.userId, 'cancel_subscription_purge', context.orderId, tx);
     })
   }

@@ -43,7 +43,7 @@ export class TransactionService {
         orderId: data.orderId,
         orderStatus: data.orderStatus || OrderStatus.CREATED,
         paymentStatus: data.paymentStatus || PaymentStatus.UN_PAID,
-        orderExpiredAt: data.orderExpiredAt || new Date(Date.now() + 30 * 60 * 1000), // 默认30分钟过期
+        orderExpiredAt: data.orderExpiredAt || new Date(Date.now() + 30 * 60 * 1000), // Default expiration: 30 minutes
         paySupplier: data.paySupplier,
         payTransactionId: data.payTransactionId,
         paySubscriptionId: data.paySubscriptionId,

@@ -83,7 +83,7 @@ export class UserService {
   async findByClerkUserId(clerkUserId: string, tx?: Prisma.TransactionClient): Promise<User | null> {
     const client = checkAndFallbackWithNonTCClient(tx);
 
-    // DB的部分索引与这里的状态查询相对应，因而可以使用findUnique
+    // Partial DB indexes match this status filter, so findUnique is valid here.
     return await client.user.findUnique({
       where: { 
         clerkUserId,
@@ -183,7 +183,7 @@ export class UserService {
     return { users, total };
   }
 
-  // 批量创建匿名用户
+  // Create anonymous users in bulk
   async createBatchAnonymousUsers(
     fingerprintIds: string[],
     tx?: Prisma.TransactionClient

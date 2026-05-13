@@ -1,7 +1,7 @@
 import { getBackendCorePrisma } from './prisma';
 import type { Prisma } from '@core/db/prisma-model-type';
 
-// 事务工具类，回滚时打印回滚日志
+// Transaction helper that logs rollback details on failure.
 export async function runInTransaction<T>(
   fn: (tx: Prisma.TransactionClient) => Promise<T>,
   operationName?: string

@@ -292,7 +292,7 @@ async function handleInvoicePaid(invoice: Stripe.Invoice) {
   });
 
   if (isInitialPayment) {
-    // 首次订阅校验
+    // check
     const nonActiveSubscription = await subscriptionService.getNonActiveSubscription(userId);
     if (!nonActiveSubscription) {
       throw new Error(`Subscription status is ACTIVE for user ${userId}, forbidden to re-active!`);
@@ -324,7 +324,7 @@ async function handleInvoicePaid(invoice: Stripe.Invoice) {
   }
 
   if (isRenewal) {
-    // 续订时，一定要查到订阅记录
+    // must query it's subscription db record
     const subscription = await subscriptionService.findByPaySubscriptionId(subscriptionId);
     if (!subscription) {
       throw new Error(`Subscription not found for renewal: ${subscriptionId}`);
@@ -337,8 +337,8 @@ async function handleInvoicePaid(invoice: Stripe.Invoice) {
     }
 
     // Get credits from current price configuration (handles plan upgrades/downgrades)
-    // 优先从配置中取，取不到就以上个周期的为准作为Fallback，后续有问题再人工补偿，优先保证能用
-    // 只要配置正确，这里就不会出错！
+    // Prefer values from configuration; fall back to the previous cycle value if unavailable. Manual remediation will be applied later if issues occur, prioritizing functional availability
+    // No error occurs here as long as the configuration is correct!
     const creditsForRenewal = subscription.priceId
       ? getCreditsFromPriceId(subscription.priceId)
       : subscription.creditsAllocated;
@@ -467,7 +467,7 @@ async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
   const subscriptionId = parentDetails.subscription;
   const subscriptionMetadata = parentDetails.metadata || {};
 
-  // 支付ID
+  // PaymentIntentId
   const paymentIntentId = await fetchPaymentId(invoice.id)
 
   console.log('Invoice payment failed event key-info:', {

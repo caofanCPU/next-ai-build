@@ -12,7 +12,7 @@ export const moneyPriceConfig: MoneyPriceConfig = {
     stripe: {
       provider: 'stripe',
       enabled: true,
-      // 订阅模式产品
+      // Subscription products
       subscriptionProducts: {
         F1: {
           key: 'F1',
@@ -70,7 +70,7 @@ export const moneyPriceConfig: MoneyPriceConfig = {
           }
         }
       },
-      // 积分包产品
+      // Credit pack products
       creditPackProducts: {
         F1: {
           key: 'F1',
@@ -106,56 +106,56 @@ export const moneyPriceConfig: MoneyPriceConfig = {
   }
 };
 
-// ============ 应用层wrapper - 隐藏moneyPriceConfig细节 ============
+// ============ Application-level wrappers that hide moneyPriceConfig details ============
 
 /**
- * 获取当前激活的支付供应商配置
+ * Get the currently active payment provider configuration.
  *
- * 🔒 安全设计：
- * - wrapper函数隐藏moneyPriceConfig
- * - util层负责从config中提取激活的provider配置
- * - 外部只能通过这个wrapper访问，看不到config对象
+ * Security design:
+ * - Wrapper functions keep moneyPriceConfig private.
+ * - Utility functions extract the active provider configuration from the config.
+ * - External callers can access only this wrapper, not the full config object.
  *
- * @returns 当前激活的支付供应商配置
+ * @returns The currently active payment provider configuration.
  */
 export function getActiveProviderConfig(): PaymentProviderConfig {
   return getActiveProviderConfigUtil(moneyPriceConfig);
 }
 
 /**
- * 根据 priceId 获取对应的积分数量
+ * Get the credit amount for a price ID.
  *
- * 🔒 安全设计：
- * - wrapper函数隐藏moneyPriceConfig
- * - util层负责解析config并提取结果
- * - 外部只能通过这个wrapper访问，看不到config对象
+ * Security design:
+ * - Wrapper functions keep moneyPriceConfig private.
+ * - Utility functions parse the config and extract the result.
+ * - External callers can access only this wrapper, not the full config object.
  *
- * @param priceId - 查询的价格ID
- * @param _provider - 保留参数（向后兼容），暂未使用
- * @returns 对应的积分数量，或null
+ * @param priceId - Price ID to query.
+ * @param _provider - Reserved for backward compatibility; currently unused.
+ * @returns The matching credit amount, or null.
  */
 export function getCreditsFromPriceId(priceId?: string, _provider?: string): number | null {
   return getCreditsFromPriceIdUtil(priceId, moneyPriceConfig);
 }
 
 /**
- * 根据查询参数获取价格配置
+ * Get price configuration by query parameters.
  *
- * 支持三种查询方式：
- * 1. 按 priceId 查询：getPriceConfig(priceId='price_xxx')
- * 2. 按 plan 和 billingType 查询：getPriceConfig(undefined, 'P2', 'monthly')
- * 3. 按 plan 查询：getPriceConfig(undefined, 'P2')
+ * Supported query modes:
+ * 1. By priceId: getPriceConfig(priceId='price_xxx')
+ * 2. By plan and billingType: getPriceConfig(undefined, 'P2', 'monthly')
+ * 3. By plan: getPriceConfig(undefined, 'P2')
  *
- * 🔒 安全设计：
- * - wrapper函数隐藏moneyPriceConfig
- * - util层负责解析config并提取匹配的结果
- * - 外部只能通过这个wrapper访问，看不到config对象
+ * Security design:
+ * - Wrapper functions keep moneyPriceConfig private.
+ * - Utility functions parse the config and extract the matching result.
+ * - External callers can access only this wrapper, not the full config object.
  *
- * @param priceId - 查询的价格ID（可选）
- * @param plan - 查询的套餐名称如'P2'、'U3'（可选）
- * @param billingType - 查询的计费类型如'monthly'、'yearly'（可选）
- * @param _provider - 保留参数（向后兼容），暂未使用
- * @returns 匹配的价格配置，包含计算好的元数据（priceName、description、interval）
+ * @param priceId - Optional price ID to query.
+ * @param plan - Optional plan name, such as 'P2' or 'U3'.
+ * @param billingType - Optional billing type, such as 'monthly' or 'yearly'.
+ * @param _provider - Reserved for backward compatibility; currently unused.
+ * @returns The matching price config with derived metadata: priceName, description, and interval.
  */
 export function getPriceConfig(
   priceId?: string,
@@ -165,4 +165,3 @@ export function getPriceConfig(
 ): (EnhancePricePlan & { priceName: string; description: string; interval?: string }) | null {
   return getPriceConfigUtil(priceId, plan, billingType, moneyPriceConfig);
 }
-
