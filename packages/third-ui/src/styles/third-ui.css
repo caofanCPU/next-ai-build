@@ -76,3 +76,11 @@ body {
   background: var(--gallery-swiper-bullet-active-color, #AC62FD) !important;
   transform: scale(1.5);
 }
+
+.cl-modalBackdrop {
+  background-color: rgb(0 0 0 / 0.8) !important;
+}
+
+.dark .cl-modalBackdrop {
+  background-color: rgb(0 0 0 / 0.8) !important;
+}

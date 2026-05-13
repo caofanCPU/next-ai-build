@@ -2,6 +2,7 @@
 
 import { SignUp } from '@clerk/nextjs';
 import { useEffect } from 'react';
+import { clerkAuthPageAppearance } from './clerk-auth-appearance';
 import { useFingerprintContextSafe } from './fingerprint/fingerprint-provider';
 
 /**
@@ -33,6 +34,5 @@ export function SignUpWithFingerprint() {
     }
   }, [fingerprintId, isInitialized, initializeAnonymousUser]);
 
-  return <SignUp unsafeMetadata={unsafeMetadata} />;
+  return <SignUp appearance={clerkAuthPageAppearance} unsafeMetadata={unsafeMetadata} />;
 }
-

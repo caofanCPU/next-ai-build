@@ -1,0 +1,231 @@
+---
+title: Clerk Skills
+description: Clerk 组件接入、页面模式、弹窗模式和样式配置经验
+---
+
+## 目标
+
+本文记录当前 `third-ui` 中 Clerk 组件的配置方式，以及后续常见个性化配置应该改哪里。
+
+核心原则：
+
+- 登录/注册入口尽量走统一封装，不在业务页面里直接散落 Clerk 组件配置。
+- 页面模式和弹窗模式分开处理，因为它们的布局层级不同。
+- Clerk `appearance` 适合控制 Clerk 组件内部元素；页面整体间距、fixed header 避让、全局 portal 遮罩等问题应放在外层布局或 CSS 中处理。
+
+## 当前入口
+
+主要文件：
+
+- `packages/third-ui/src/clerk/clerk-user-client.tsx`
+- `packages/third-ui/src/clerk/signup-button-with-fingerprint-client.tsx`
+- `packages/third-ui/src/clerk/clerk-page-generator.tsx`
+- `packages/third-ui/src/clerk/clerk-page-context-generator.tsx`
+- `packages/third-ui/src/clerk/signin-with-fingerprint-client.tsx`
+- `packages/third-ui/src/clerk/signup-with-fingerprint-client.tsx`
+- `packages/third-ui/src/clerk/clerk-auth-appearance.ts`
+
+统一配置文件：
+
+```ts
+packages/third-ui/src/clerk/clerk-auth-appearance.ts
+```
+
+当前这个文件负责三类配置：
+
+```ts
+export const clerkAuthModalAppearance = { ... };
+export const clerkAuthPageAppearance = { ... };
+export const clerkAuthPageContainerClassName = '...';
+```
+
+## 弹窗模式
+
+弹窗模式用于导航栏里的登录/注册按钮：
+
+- 登录：`SignInButton mode="modal"`
+- 注册：`useClerk().openSignUp(...)`
+
+统一样式配置：
+
+```ts
+export const clerkAuthModalAppearance = {
+  elements: {
+    modalContent: '!items-start !pt-16 sm:!pt-24',
+    cardBox: '!mt-0',
+  },
+};
+```
+
+这里的含义：
+
+- `modalContent`：控制 Clerk modal 内容容器的位置。目前让弹窗靠上显示，并保留顶部距离。
+- `cardBox`：控制 Clerk 卡片外框，目前去掉默认顶部 margin。
+
+如果弹窗位置太靠上或太靠下，优先调：
+
+```ts
+modalContent: '!items-start !pt-16 sm:!pt-24'
+```
+
+例如：
+
+```ts
+modalContent: '!items-start !pt-20 sm:!pt-28'
+```
+
+## 页面模式
+
+页面模式用于 `/sign-in`、`/sign-up` 这类固定页面。
+
+当前 `ddaas` 使用的是 fingerprint 版本：
+
+```ts
+createSignInPageWithFingerprint()
+createSignUpPageWithFingerprint()
+```
+
+所以不要只改 `clerk-page-generator.tsx`，否则实际页面可能没有变化。现在两个 generator 都统一使用：
+
+```ts
+clerkAuthPageContainerClassName
+```
+
+这个 class 解决两个问题：
+
+- 页面至少接近一屏高度。
+- 避开 `SiteHomeLayout` 中的 floating fixed navbar。
+
+当前配置大致是：
+
+```ts
+export const clerkAuthPageContainerClassName =
+  'flex min-h-[calc(100dvh-var(--fd-banner-height,0px)-var(--fd-header-height,3.5rem))] w-full items-start justify-center px-6 pt-[calc(var(--fd-header-height,3.5rem)+2rem)] pb-6 md:px-8 md:pt-[calc(var(--fd-header-height,3.5rem)+4.5rem)] md:pb-8';
+```
+
+如果页面模式顶部距离不合适，调这里：
+
+```txt
+pt-[calc(var(--fd-header-height,3.5rem)+2rem)]
+md:pt-[calc(var(--fd-header-height,3.5rem)+4.5rem)]
+```
+
+移动端看 `pt-*`，桌面端看 `md:pt-*`。
+
+## Page Appearance
+
+页面模式下 Clerk 卡片自身的 appearance 配置是：
+
+```ts
+export const clerkAuthPageAppearance = {
+  elements: {
+    rootBox: 'w-full',
+    cardBox: 'mx-auto',
+  },
+};
+```
+
+它用于：
+
+- 普通 `<SignIn />` / `<SignUp />`
+- fingerprint 版本 `<SignIn unsafeMetadata={...} />` / `<SignUp unsafeMetadata={...} />`
+
+后续如果要调 Clerk 卡片宽度、卡片居中、卡片圆角、阴影，可以优先放在这里。
+
+## Modal Backdrop
+
+Clerk 弹窗遮罩背景不建议通过 `appearance.elements.modalBackdrop` 控制。当前版本中这个 key 没有命中实际遮罩节点。
+
+现在使用全局 CSS 覆盖 Clerk 实际类名：
+
+```css
+packages/third-ui/src/styles/third-ui.css
+```
+
+```css
+.cl-modalBackdrop {
+  background-color: rgb(0 0 0 / 0.8) !important;
+}
+
+.dark .cl-modalBackdrop {
+  background-color: rgb(0 0 0 / 0.8) !important;
+}
+```
+
+数值说明：
+
+- `0` 完全透明。
+- `0.55` 中等遮罩。
+- `0.8` 很强的遮罩。
+- `0.9` 非常重，接近黑屏。
+
+如果亮色遮罩不够，增大第一处 alpha。
+
+如果暗色遮罩太重，降低 `.dark .cl-modalBackdrop` 的 alpha。
+
+常用范围：
+
+```css
+.cl-modalBackdrop {
+  background-color: rgb(0 0 0 / 0.6) !important;
+}
+
+.dark .cl-modalBackdrop {
+  background-color: rgb(0 0 0 / 0.7) !important;
+}
+```
+
+## Fingerprint Metadata
+
+注册相关组件会把匿名用户和 fingerprint 信息传给 Clerk：
+
+```ts
+const unsafeMetadata = {
+  user_id: userId,
+  fingerprint_id: fingerprintId || null,
+};
+```
+
+弹窗注册使用：
+
+```ts
+openSignUp({
+  appearance: clerkAuthModalAppearance,
+  unsafeMetadata,
+});
+```
+
+页面注册使用：
+
+```tsx
+<SignUp appearance={clerkAuthPageAppearance} unsafeMetadata={unsafeMetadata} />
+```
+
+如果后续要新增来源渠道、活动参数、首次访问信息，应优先扩展这里的 `unsafeMetadata`，不要在业务按钮里重复实现。
+
+## 后续个性化配置点
+
+常见需求和推荐修改点：
+
+- 弹窗位置：改 `clerkAuthModalAppearance.elements.modalContent`
+- 弹窗卡片外框：改 `clerkAuthModalAppearance.elements.cardBox`
+- 固定登录页顶部距离：改 `clerkAuthPageContainerClassName`
+- 固定登录页卡片外观：改 `clerkAuthPageAppearance`
+- 弹窗遮罩背景：改 `packages/third-ui/src/styles/third-ui.css` 里的 `.cl-modalBackdrop`
+- 用户按钮头像：改 `clerk-user-client.tsx` 中 `UserButton.appearance`
+- 组织切换器：改 `clerk-organization-client.tsx` 中 `OrganizationSwitcher.appearance`
+- Clerk 文案和本地化：改 `clerk-provider-client.tsx` 传入的 `localization`
+
+## 注意事项
+
+不要把所有样式都塞进 `appearance`。
+
+页面布局问题，例如 header 避让、页面高度、滚动空间，应由页面容器或 layout 负责。Clerk 卡片内部问题才适合用 `appearance`。
+
+不要同时维护两份页面容器 class。
+
+普通 page generator 和 fingerprint page generator 必须共用 `clerkAuthPageContainerClassName`，否则会出现一个页面改了、另一个页面没变的问题。
+
+不要假设 Clerk 的所有 DOM 节点都能用 `appearance.elements` 命中。
+
+像 modal backdrop 这种 portal 外层节点，必要时用 Clerk 稳定的 `.cl-*` class 做全局 CSS 覆盖。

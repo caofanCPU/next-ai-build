@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { ClerkLoaded, ClerkLoading, SignInButton, UserButton, useAuth } from "@clerk/nextjs";
 import { ReceiptTextIcon, ShieldUserIcon } from '@windrun-huaiin/base-ui/icons';
 import { themeButtonGradientClass } from '@windrun-huaiin/base-ui/lib';
-import { clerkAuthModalAppearance } from './clerk-auth-modal-appearance';
+import { clerkAuthModalAppearance } from './clerk-auth-appearance';
 import { SignUpButtonWithFingerprint } from './signup-button-with-fingerprint-client';
 
 interface ClerkUserData {

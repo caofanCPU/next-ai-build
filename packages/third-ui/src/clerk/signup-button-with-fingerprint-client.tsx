@@ -2,7 +2,7 @@
 
 import { SignUpButton, useClerk } from '@clerk/nextjs';
 import { useEffect } from 'react';
-import { clerkAuthModalAppearance } from './clerk-auth-modal-appearance';
+import { clerkAuthModalAppearance } from './clerk-auth-appearance';
 import { useFingerprintContextSafe } from './fingerprint/fingerprint-provider';
 
 interface SignUpButtonWithFingerprintProps {
