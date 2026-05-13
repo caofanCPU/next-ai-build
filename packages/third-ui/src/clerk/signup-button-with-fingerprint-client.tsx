@@ -2,6 +2,7 @@
 
 import { SignUpButton, useClerk } from '@clerk/nextjs';
 import { useEffect } from 'react';
+import { clerkAuthModalAppearance } from './clerk-auth-modal-appearance';
 import { useFingerprintContextSafe } from './fingerprint/fingerprint-provider';
 
 interface SignUpButtonWithFingerprintProps {
@@ -55,6 +56,7 @@ export function SignUpButtonWithFingerprint({
 
   const handleClick = () => {
     openSignUp({
+      appearance: clerkAuthModalAppearance,
       unsafeMetadata,
     });
   };

@@ -17,11 +17,11 @@ allowBuilds:
 
 catalog:
   "@changesets/cli": ^2.29.8
-  "@clerk/localizations": ^4.2.2
-  "@clerk/nextjs": ^7.0.5
+  "@clerk/localizations": ^4.6.2
+  "@clerk/nextjs": ^7.3.3
   "@clerk/themes": ^2.4.57
-  "@clerk/shared": ^4.3.1
-  "@clerk/react": ^6.1.1
+  "@clerk/shared": ^4.10.2
+  "@clerk/react": ^6.6.2
   "@mdx-js/mdx": ^3.1.1
   "@fingerprintjs/fingerprintjs": ^5.1.0
   "@hookform/resolvers": ^5.2.2

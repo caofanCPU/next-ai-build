@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { ClerkLoaded, ClerkLoading, SignInButton, UserButton, useAuth } from "@clerk/nextjs";
 import { ReceiptTextIcon, ShieldUserIcon } from '@windrun-huaiin/base-ui/icons';
 import { themeButtonGradientClass } from '@windrun-huaiin/base-ui/lib';
+import { clerkAuthModalAppearance } from './clerk-auth-modal-appearance';
 import { SignUpButtonWithFingerprint } from './signup-button-with-fingerprint-client';
 
 interface ClerkUserData {
@@ -51,11 +52,19 @@ export function ClerkUserClient({ data }: { data: ClerkUserData }) {
                 )}
               </div>
             )}
-            <SignInButton mode={data.clerkAuthInModal ? 'modal' : 'redirect'}>
-              <button className="w-16 sm:w-20 h-8 sm:h-9 px-1.5 sm:px-2 border border-gray-300 rounded-full hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-800 text-center text-xs sm:text-sm whitespace-nowrap">
-                {data.signIn}
-              </button>
-            </SignInButton>
+            {data.clerkAuthInModal ? (
+              <SignInButton mode="modal" appearance={clerkAuthModalAppearance}>
+                <button className="w-16 sm:w-20 h-8 sm:h-9 px-1.5 sm:px-2 border border-gray-300 rounded-full hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-800 text-center text-xs sm:text-sm whitespace-nowrap">
+                  {data.signIn}
+                </button>
+              </SignInButton>
+            ) : (
+              <SignInButton mode="redirect">
+                <button className="w-16 sm:w-20 h-8 sm:h-9 px-1.5 sm:px-2 border border-gray-300 rounded-full hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-800 text-center text-xs sm:text-sm whitespace-nowrap">
+                  {data.signIn}
+                </button>
+              </SignInButton>
+            )}
           </>
         )}
 
