@@ -1,5 +1,18 @@
 # @windrun-huaiin/backend-core
 
+## 31.0.0
+
+### Major Changes
+
+- feat(docs): remove ZH text and upgrade
+
+### Patch Changes
+
+- Updated dependencies
+  - @windrun-huaiin/lib@31.0.0
+  - @windrun-huaiin/contracts@31.0.0
+  - @windrun-huaiin/third-ui@31.0.0
+
 ## 30.0.0
 
 ### Major Changes

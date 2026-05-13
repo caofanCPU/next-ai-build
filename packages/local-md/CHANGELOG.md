@@ -1,5 +1,11 @@
 # @windrun-huaiin/fumadocs-local-md
 
+## 31.0.0
+
+### Major Changes
+
+- feat(docs): remove ZH text and upgrade
+
 ## 30.0.0
 
 ### Major Changes
