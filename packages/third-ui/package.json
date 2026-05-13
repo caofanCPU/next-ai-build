@@ -287,5 +287,11 @@
   "license": "MIT",
   "publishConfig": {
     "access": "public"
+  },
+  "homepage": "https://d8ger.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/caofanCPU/next-ai-build.git",
+    "directory": "packages/third-ui"
   }
 }

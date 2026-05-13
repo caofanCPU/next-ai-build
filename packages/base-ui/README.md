@@ -1,198 +1,57 @@
 # Base UI Components
 
-A comprehensive set of UI components built with React, TypeScript, and Tailwind CSS.
+A shared React UI package built with TypeScript and Tailwind CSS. It provides reusable base components, theme-adaptive utilities, common icons, global icon handling, and analytics script components for Windrun Huaiin applications.
 
-## 🚀 Features
+The package focuses on consistent theme adaptation and responsive compatibility across desktop, tablet, and mobile experiences.
 
-- **Built-in Icon System**: 28 commonly used icons are built-in as React components
-- **TypeScript Support**: Full type safety and IntelliSense
-- **Tailwind CSS**: Utility-first CSS framework integration
-- **Radix UI**: Accessible and unstyled UI primitives
-- **Tree Shaking**: Only import what you need
+## Core Features
 
-## 📦 Installation
+### Theme Utilities
 
-```bash
-pnpm add @windrun-huaiin/base-ui
-```
+Theme utility classes and helpers for consistent visual styling across applications.
 
-## TailwindCSS 4.x Config
+The theme system is designed to let components, icons, accents, and interaction states adapt to the selected palette without duplicating style logic in each application.
 
-- Assume you have a project structure like this:
+Supported theme palettes:
 
-```txt
-Your-project/
-├── src/
-│   └── app/
-│       └── globals.css
-├── node_modules/
-│   ├── @windrun-huaiin/
-│   │   ├── third-ui/
-│   │   │   └── src/        # This is third-ui src
-│   │   └── base-ui/
-│   │       └── src/        # This is base-ui src
-└── package.json
-```
+- `purple`: `#AC62FD`
+- `orange`: `#F97316`
+- `indigo`: `#6366F1`
+- `emerald`: `#48C892`
+- `rose`: `#F43F5E`
 
-- Then, in your `globals.css` file, you have to configure Tailwind CSS 4.x like this:
+Core module:
 
-```css
-@import 'tailwindcss';
+- `theme-util`
 
-@source "../node_modules/@windrun-huaiin/third-ui/src/**/*.{js,ts,jsx,tsx}";
-@source "../node_modules/@windrun-huaiin/base-ui/src/**/*.{js,ts,jsx,tsx}";
-@source "./src/**/*.{js,ts,jsx,tsx}";
+### Common Icons
 
-/* Import styles */
-@import '@windrun-huaiin/third-ui/styles/base-ui.css';
-```
+A unified icon set based on `lucide-icons` and commonly used SVG assets.
 
-## 🎨 Built-in Icons
+The icons are designed to work with the supported theme palettes, making it easier to keep product UI, navigation, actions, and status indicators visually consistent across different themes and screen sizes.
 
-This package includes 28 built-in icons as React components. All icons are accessible through the `globalLucideIcons` object.
+### Responsive Multi-Device Compatibility
 
-### Available Icons
+Base components are intended for responsive layouts across common application surfaces, including desktop, tablet, and mobile screens.
 
-**Development Tools:**
-- GitHub, D8, Clerk, Iterm
+The package helps keep spacing, sizing, icons, and interaction patterns predictable across multiple viewport sizes, so shared UI remains consistent when reused by different applications.
 
-**File Types:** 
-- Markdown, MDX, Html, Json, XML, Yaml, CSV, Txt, Java, SQL, Log
+### Global Site Icon Handler
 
-**Technologies:**
-- MAC, BTC, CSS, Mermaid
+A global handler for site icons, intended to centralize favicon and related icon metadata handling across applications.
 
-**Documentation:**
-- LastUpdated, Snippets, Test, Diff
+This keeps browser tab icons, app icons, and shared site icon behavior consistent without repeating setup in every application.
 
-**Business/Legal:**
-- DPA, SubP, T3P
+### Analytics Script Components
 
-**Network:**
-- Http, Scheme
+Reusable script components for integrating common analytics providers.
 
-## Usage
+Supported providers:
 
-### 1. Direct Icon Usage
-```tsx
-import { GitHubIcon,  BTCIcon, MmdIcon} from '@windrun-huaiin/base-ui';
+- Google
+- Microsoft
 
-// Use any built-in icon
-<GitHubIcon className="h-6 w-6" />
-<BTCIcon className="h-4 w-4" />
-<MmdIcon className="h-4 w-4" /> // Auto 16x16 size for Mermaid
-```
-
-### 2. Dynamic Icon Loading
-```tsx
-import { getGlobalIcon } from '@windrun-huaiin/base-ui';
-
-// Get icon component
-const GitHubIcon = getGlobalIcon('GitHub');
-<GitHubIcon className="h-6 w-6" />
-
-// Get icon element (for fumadocs)
-const iconElement = getGlobalIcon('GitHub', true);
-```
-
-### 3. Utility Components
-```tsx
-import { SiteIcon, NotFoundIcon } from '@windrun-huaiin/base-ui';
-
-// Pre-configured site icon
-<SiteIcon />
-
-// Pre-configured 404 icon  
-<NotFoundIcon />
-```
-
-## Benefits
-
-- ✅ **Zero Configuration**: No need to copy SVG files to your project
-- ✅ **Self-contained**: All icons are bundled as React components
-- ✅ **Consistent Styling**: Global icon color configuration
-- ✅ **Type Safety**: Full TypeScript support with auto-completion
-- ✅ **Performance**: No network requests for icon files
-- ✅ **Special Sizing**: Mermaid icon has optimized 16x16 default size
-
-## Environment Variables
-
-```bash
-# Optional: Set global icon color (defaults to text-purple-500)
-NEXT_PUBLIC_STYLE_ICON_COLOR=text-blue-600
-```
+These components provide a consistent way to add analytics scripts to applications while keeping script setup centralized in the shared UI package.
 
 ## License
-
-MIT
-
-## Included Components
-
-### UI Components (ui/)
-- Radix UI base components
-- Unified styles and themes
-- Full TypeScript support
-
-### Base Components (components/)
-- cta: Call-to-Action component
-- features: Feature showcase component
-- footer: Footer component
-- gallery: Image gallery component
-- global-icon: Global icon management
-- go-to-top: Go to top button
-- LanguageDetector: Language detection component
-- LanguageSwitcher: Language switcher component
-- seo-content: SEO content component
-- tips: Tip component
-
-### Script Components (script/)
-- GoogleAnalyticsScript: Google Analytics script
-- MicrosoftClarityScript: Microsoft Clarity script
-
-## Usage Example
-
-```tsx
-import { Button, LanguageSwitcher } from '@windrun-huaiin/base-ui';
-
-// Use UI components
-<Button variant="default" size="lg">
-  Click me
-</Button>
-
-// Use language switcher component (need to pass in configuration)
-<LanguageSwitcher 
-  locales={['en', 'zh']}
-  localeLabels={{ en: 'English', zh: '中文' }}
-/>
-```
-
-## Dependencies
-
-- React 18+
-- Next.js 15+
-- TypeScript
-
-## Development
-
-```bash
-# Build
-pnpm build
-
-# Development mode
-pnpm dev
-
-# Type check
-pnpm type-check
-``` 
-
-
-## Showcase
-
-- [Free Trivia Game](https://freetrivia.info/)
-- [Music Poster](https://musicposter.org/en)
-- [Image Narration](https://imagenarration.com/en)
-- [Describe Yourself](https://describeyourself.org/en)
-- [Newspaper Template](https://newspaper-template.org/en)
-- [breathing exercise](https://breathingexercise.net/en)
-- [ai directory list](https://aidirectorylist.com/en)
-- [reve image directory](https://reveimage.directory/en)
+MIT License

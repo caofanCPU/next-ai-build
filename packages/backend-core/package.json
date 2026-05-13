@@ -179,5 +179,12 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "author": "windrun-huaiin",
+  "homepage": "https://d8ger.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/caofanCPU/next-ai-build.git",
+    "directory": "packages/backend-core"
   }
 }

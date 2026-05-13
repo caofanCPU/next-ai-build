@@ -6,12 +6,12 @@
     "Docs",
     "fumadocs"
   ],
-  "homepage": "https://github.com/caofanCPU/next-ai-build",
+  "homepage": "https://d8ger.com",
   "license": "MIT",
   "author": "windrun-huaiin",
   "repository": {
     "type": "git",
-    "url": "https://github.com/caofanCPU/next-ai-build.git",
+    "url": "git+https://github.com/caofanCPU/next-ai-build.git",
     "directory": "packages/local-md"
   },
   "files": [

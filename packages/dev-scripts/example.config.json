@@ -123,6 +123,6 @@
     "compactLog": true
   },
   "architectureConfig": {
-    ".": "RootProject"
+    ".": "Project Root Dir"
   }
 }

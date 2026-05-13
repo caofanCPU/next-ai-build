@@ -17,5 +17,12 @@
     "@types/node": "catalog:",
     "chokidar": "catalog:",
     "tsx": "catalog:"
+  },
+  "author": "windrun-huaiin",
+  "homepage": "https://d8ger.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/caofanCPU/next-ai-build.git",
+    "directory": "packages/shared-assets"
   }
 }

@@ -1,92 +1,139 @@
 # @windrun-huaiin/lib
 
-通用工具库，包含配置、工具函数、图标和 LLM 相关功能。
+A shared utility package for application configuration, class name composition, date formatting, i18n message handling, server-side locale message loading, and MDX-to-LLM text conversion.
 
-## 安装
+## Features
 
-```bash
-pnpm add @windrun-huaiin/lib
-```
+### Application Configuration
 
-## 使用
+Create consistent runtime configuration for applications that share site settings, i18n behavior, visual preferences, authentication page URLs, and MDX content directory conventions.
 
-### 配置
+Methods:
 
-```typescript
-import { appConfig, iconColor, getValidLocale } from '@windrun-huaiin/lib/config';
+- `createCommonAppConfig`
+- `createI18nHelpers`
 
-// 使用应用配置
-console.log(appConfig.baseUrl);
+Constants:
 
-// 获取有效的语言设置
-const locale = getValidLocale('zh');
-```
+- `LOCALE_PRESETS`
 
-### 工具函数
+`createCommonAppConfig` builds a complete application config from explicit options, environment variables, and sensible defaults. It returns base site metadata, i18n settings, style settings, Clerk page settings, MDX source directory settings, and convenient shortcut fields for frequently used values.
 
-```typescript
-import { cn, formatTimestamp } from '@windrun-huaiin/lib/utils';
+`createI18nHelpers` creates helpers from an i18n config, including locale validation, fallback locale resolution, and generated locale display data.
 
-// 合并 CSS 类名
-const className = cn('text-red-500', 'font-bold');
+`LOCALE_PRESETS` provides ready-made locale sets for common setups such as English-only, English and Chinese, Asian languages, European languages, global language coverage, and no multilingual setup.
 
-// 格式化时间戳
-const formatted = formatTimestamp('1640995200000', 'yyyy-MM-dd HH:mm:ss');
-```
+### Class Name Composition
 
-### 图标
+Compose conditional class names and resolve Tailwind CSS class conflicts in React components.
 
-```typescript
-import { Search, Check, X } from '@windrun-huaiin/lib/icons';
+Method:
 
-// 在 React 组件中使用
-function MyComponent() {
-  return (
-    <div>
-      <Search className="w-4 h-4" />
-      <Check className="w-4 h-4 text-green-500" />
-      <X className="w-4 h-4 text-red-500" />
-    </div>
-  );
-}
-```
+- `cn`
 
-### LLM 功能
+Typical uses:
 
-```typescript
-import { getLLMText } from '@windrun-huaiin/lib/llm';
+- Merge default component styles with a consumer-provided `className`.
+- Add classes conditionally based on component state.
+- Keep the final effective Tailwind class when conflicting utilities are provided.
 
-// 处理 MDX 内容
-const result = await getLLMText(mdxContent, 'Title', 'Description');
-```
+### Date And Time Formatting
 
-## 构建
+Format millisecond timestamps or Date objects into user-facing local time strings.
 
-```bash
-# 开发模式
-pnpm dev
+Methods:
 
-# 构建
-pnpm build
+- `formatTimestamp`
+- `viewLocalTime`
 
-# 类型检查
-pnpm typecheck
-```
+`formatTimestamp` accepts a millisecond timestamp string and a formatting pattern. It returns an empty string for missing values, invalid timestamps, or invalid dates.
 
-## 发布
+`viewLocalTime` accepts a Date object or an empty value and returns local time in the `yyyy-MM-dd HH:mm:ss` format.
 
-```bash
-pnpm publish
-``` 
+### Plain Text Paste Handling
 
+Intercept paste events in editable elements and insert only plain text, preventing external styles, rich text structure, or HTML content from being pasted.
 
-## Showcase
+Method:
 
-- [Free Trivia Game](https://freetrivia.info/)
-- [Music Poster](https://musicposter.org/en)
-- [Image Narration](https://imagenarration.com/en)
-- [Describe Yourself](https://describeyourself.org/en)
-- [Newspaper Template](https://newspaper-template.org/en)
-- [breathing exercise](https://breathingexercise.net/en)
-- [ai directory list](https://aidirectorylist.com/en)
-- [reve image directory](https://reveimage.directory/en)
+- `handlePastePlainText`
+
+Typical uses:
+
+- Restrict pasted content in rich text editing areas.
+- Keep `contenteditable` fields plain-text only.
+- Prevent copied web content from bringing unwanted formatting into the editor.
+
+### Localized URL Generation
+
+Generate localized URLs from the current locale, target path, default locale, and locale prefix strategy.
+
+Method:
+
+- `getAsNeededLocalizedUrl`
+
+Typical uses:
+
+- Omit the locale prefix for the default locale.
+- Add a locale prefix for non-default locales.
+- Force locale prefixes for every locale.
+- Normalize leading and trailing slashes consistently.
+
+Example results:
+
+- Default locale home page: `/`
+- Chinese home page: `/zh`
+- Default locale blog page: `/blog`
+- Chinese blog page: `/zh/blog`
+
+### I18n Message Merging
+
+Identify plain objects and deeply merge multiple i18n message objects. Later values override earlier values, while nested objects are merged recursively.
+
+Methods:
+
+- `isPlainObject`
+- `deepMergeMessages`
+
+Typical uses:
+
+- Merge base messages with feature-specific messages.
+- Combine default copy with page-level copy.
+- Compose messages from multiple modules in a larger application.
+
+### Server-Side Locale Message Loading
+
+Load and merge JSON message files for a locale on the server. It supports both single-file sources and directory sources. Directory sources are collected recursively, filtered by locale-specific file names, sorted, and merged in order.
+
+Method:
+
+- `loadMergedLocaleMessages`
+
+Types:
+
+- `RuntimeMessageSource`
+- `RuntimeMessageFileSource`
+- `RuntimeMessageDirectorySource`
+
+Typical uses:
+
+- Load messages for the active locale in a server-rendered application.
+- Merge shared, page-level, and module-level messages into one object.
+- Split locale messages by directory while exposing a single merged message object at runtime.
+
+### MDX To LLM Text
+
+Convert MDX content into Markdown text that is easier for language models to consume. Frontmatter is removed, while Markdown, MDX, and GFM content structure is preserved. Optional title and description values can be prepended to the output.
+
+Method:
+
+- `getLLMText`
+
+Typical uses:
+
+- Generate LLM-readable text from documentation, blog posts, or MDX pages.
+- Prepare content for search, summarization, question answering, or indexing.
+- Remove frontmatter so models do not read unrelated metadata.
+
+## License
+MIT License
