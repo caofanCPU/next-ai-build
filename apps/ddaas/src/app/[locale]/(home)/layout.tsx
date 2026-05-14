@@ -1,7 +1,7 @@
 import { baseOptions } from '@/app/[locale]/layout.config';
 import { levelNavLinks, primaryNavLinks } from '@/app/[locale]/layout.nav';
 import { homeHeavyItems } from './layout.heavy';
-import { showBanner, localePrefixAsNeeded, defaultLocale } from '@/lib/appConfig';
+import { showBanner, localePrefixAsNeeded, defaultLocale, github } from '@/lib/appConfig';
 import { i18n } from '@/lib/i18n-base';
 import { fingerprintConfig } from '@core/config/fingerprint';
 import { FingerprintProvider } from '@third-ui/clerk/fingerprint';
@@ -31,6 +31,7 @@ export default async function Layout({
   const homeLayoutOptions: SiteHomeLayoutConfig = {
     ...customeOptions,
     i18n,
+    githubUrl: github,
     searchToggle: {
       enabled: false,
     },
