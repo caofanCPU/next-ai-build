@@ -1,6 +1,6 @@
 # CreditOverview 组件使用说明
 
-本组件位于 `packages/third-ui/src/main/credit`，用于在应用中统一展示积分总览信息，包含总余额、积分桶明细、订阅信息与一次性购买入口。组件分为服务端与客户端两层，上层应用只需在服务端准备好数据对象后直接调用。
+本组件位于 `packages/third-ui/src/main/credit`，用于在应用中统一展示积分总览信息，包含总余额、积分桶明细、订阅信息与一次性购买入口。当前推荐入口为 `CreditOverviewNavClient`：鉴权状态、登录退出后的数据清理、下拉按钮与卡片渲染统一下沉在 `third-ui`，应用侧只需要传入当前 `locale` 和积分总览 API 的 `endpoint`。
 
 当前实现遵循最新的视觉与交互规范：
 
@@ -17,23 +17,44 @@
 ## 组件分层总览
 
 ```
-components/                                         # apps/ddaas/src/components，业务侧组件目录
-├── credit-popover.tsx                         # 业务侧组件
+app/[locale]/(home)/layout.heavy.tsx                # 应用侧挂载点，只传 locale + endpoint
+app/api/user/credit-overview/route.ts                # 应用侧 API，返回 CreditOverviewPayload | null
 ---------------------------------------
-credit/                                                       # packages/third-ui/src.main/credit目录，Credit通用封装组件目录
-├── credit-nav-button.tsx                    # 下拉组件按钮
-├── credit-overview-client.tsx        # 下拉详情客户端组件
-├── credit-overview.ts                          # 下拉详情服务端组件
-├── types.ts                                              # 类型定义  
+credit/                                             # packages/third-ui/src/main/credit
+├── credit-overview-nav-client.tsx                   # 登录态感知入口，负责请求 endpoint 与清理旧 payload
+├── credit-nav-button.tsx                            # 下拉触发按钮与弹窗生命周期
+├── credit-overview-client.tsx                       # 下拉详情客户端组件
+├── credit-overview.tsx                              # 下拉详情服务端组件
+├── types.ts                                        # 类型定义
 ```
 
 ### 关键角色与职责
 
 | 组件 | 主要职责 |
 | ---- | ---- |
+| `CreditOverviewNavClient` | 推荐入口。内部使用 Clerk 登录态，未登录时返回 `null` 并清空旧 payload；登录后请求应用传入的 `endpoint`，将返回的 `CreditOverviewPayload` 渲染为 `CreditNavButton + CreditOverviewClient`。 |
 | `CreditNavButton` | 统一管理下拉展开/折叠、移动端滚动锁定、全局价格弹窗的生命周期，并通过 Context 让内部组件在需要时折叠下拉或唤起弹窗。 |
 | `CreditOverviewClient` | 纯展示逻辑 + 行为编排。内部只需调用 `useCreditNavPopover()` 暴露的 `close`/`openPricingModal` 等方法，而不再直接渲染弹窗。 |
-| `CreditOverview` | Server Component，负责获取翻译和拼装 `CreditOverviewClient` 所需的 props。 |
+| `CreditOverview` | Server Component，负责把已准备好的 `data + translations` 拼装为 `CreditOverviewClient`。当前导航场景优先使用 `CreditOverviewNavClient`。 |
+
+### 登录态与数据同步
+
+`CreditOverviewNavClient` 负责监听 Clerk 登录态：
+
+- Clerk 未加载时不请求接口，避免渲染错误账号的旧数据。
+- 未登录时立即 `setPayload(null)`，积分按钮与卡片都不展示。
+- 已登录时请求应用传入的 `endpoint`，并自动追加 `locale` 查询参数。
+- `userId`、`locale`、`endpoint` 或登录态变化时重新同步。
+- 接口返回 `null`、非 2xx 或请求异常时都清空旧 payload，避免退出登录后组件残留。
+
+应用侧 API 路径不固定在 `third-ui` 内，由调用方显式传入：
+
+```tsx
+<CreditOverviewNavClient
+  locale={locale}
+  endpoint="/api/user/credit-overview"
+/>
+```
 
 > ⚠️ 价格弹窗的 UI 现在由 `CreditNavButton` 统一渲染，通过 `MoneyPriceInteractive` 复用计费模块视觉；`CreditOverviewClient` 调用 `navPopover.openPricingModal` 时需传入 `pricingContext` 和按模式处理后的 `moneyPriceData`。
 
@@ -89,8 +110,84 @@ credit/                                                       # packages/third-u
 
 ## 快速上手
 
-- credit-popover.tsx （业务侧 Server Component）
-- 翻译键位credit字段
+应用侧导航挂载：
+
+```tsx
+import { CreditOverviewNavClient } from '@third-ui/main/credit';
+
+<CreditOverviewNavClient
+  locale={locale}
+  endpoint="/api/user/credit-overview"
+/>
+```
+
+应用侧 API 返回结构：
+
+```ts
+interface CreditOverviewPayload {
+  data: CreditOverviewData;
+  totalLabel: string;
+  translations: CreditOverviewTranslations;
+}
+```
+
+未登录或无积分数据时返回 `null`，客户端入口会自动隐藏积分按钮与卡片。
+
+翻译键位使用 `credit` 命名空间。
+
+## 核心时序
+
+```mermaid
+sequenceDiagram
+    participant App as ddaas layout
+    participant Third as third-ui CreditOverviewNavClient
+    participant Clerk as Clerk auth
+    participant Api as ddaas /api/user/credit-overview
+    participant Core as backend-core buildCreditOverviewPayload
+    participant DB as user/credit/subscription services
+    participant UI as CreditNavButton / CreditOverviewClient
+    participant Pay as pricing / customer portal
+
+    App->>Third: render locale + endpoint
+    Third->>Clerk: read isLoaded / isSignedIn / userId
+    alt Clerk not loaded
+        Third-->>App: render null
+    else not signed in
+        Third->>Third: clear payload
+        Third-->>App: render null
+    else signed in
+        Third->>Api: GET endpoint?locale=...
+        Api->>Core: buildCreditOverviewPayload(locale, translations)
+        Core->>Clerk: getOptionalServerAuthUser()
+        alt no server auth or no credit
+            Core-->>Api: null
+            Api-->>Third: JSON null
+            Third->>Third: clear payload
+            Third-->>App: render null
+        else server auth ok
+            Core->>DB: load credit + subscription
+            Core-->>Api: CreditOverviewPayload
+            Api-->>Third: JSON payload
+            Third->>UI: render nav button + overview card
+        end
+    end
+
+    UI->>UI: user opens credit dropdown
+    alt subscribe / onetime on desktop
+        UI->>UI: open MoneyPrice modal
+    else subscribe / onetime on mobile
+        UI->>Pay: redirect to pricing page
+    else manage subscription
+        UI->>Pay: call customer portal API
+        Pay-->>UI: portal URL or sign-in redirect
+        UI->>Pay: window.location.href
+    end
+
+    Clerk-->>Third: sign out / userId changed
+    Third->>Third: clear payload
+    Third-->>App: hide credit nav
+```
+
 `CreditPricingContext` 结构：
 - `moneyPriceData: MoneyPriceData`：调用 `buildMoneyPriceData` 生成的多语言静态内容；`CreditOverviewClient` 会根据按钮模式（订阅 / 一次性）动态设置 `billingSwitch.defaultKey`。
 - `moneyPriceConfig: MoneyPriceConfig`：与 Money Price 主区域共用的支付配置。

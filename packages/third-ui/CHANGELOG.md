@@ -1,5 +1,11 @@
 # @windrun-huaiin/third-ui
 
+## 31.0.1
+
+### Patch Changes
+
+- fix(credit): UI render bugfix with chlerk login status
+
 ## 31.0.0
 
 ### Major Changes
