@@ -1,5 +1,11 @@
 # @windrun-huaiin/dev-scripts
 
+## 31.0.1
+
+### Patch Changes
+
+- fix(cli): `zcy` create-diaomao-app command issue fixed
+
 ## 31.0.0
 
 ### Major Changes

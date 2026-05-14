@@ -7,6 +7,10 @@ type CreateDiaomaoOptions = {
   schema?: string;
 };
 
+const TEMPLATE_SCHEMA_NAME = 'diaomao';
+const TEMPLATE_APP_ROLE_NAME = `${TEMPLATE_SCHEMA_NAME}_app`;
+const PACKAGE_MANAGER = 'pnpm@11.1.2';
+
 function replacePrismaSchemaName(schemaSource: string, schemaName: string): string {
   return schemaSource
     .replace(
@@ -14,6 +18,12 @@ function replacePrismaSchemaName(schemaSource: string, schemaName: string): stri
       `schemas  = ["${schemaName}", "public"]`,
     )
     .replace(/@@schema\("([^"]+)"\)/g, `@@schema("${schemaName}")`);
+}
+
+function replaceSqlSchemaName(sqlSource: string, schemaName: string): string {
+  return sqlSource
+    .replace(new RegExp(`\\b${TEMPLATE_APP_ROLE_NAME}\\b`, 'g'), `${schemaName}_app`)
+    .replace(new RegExp(`\\b${TEMPLATE_SCHEMA_NAME}\\b`, 'g'), schemaName);
 }
 
 export async function createDiaomaoApp(targetDir: string, options: CreateDiaomaoOptions = {}) {
@@ -98,6 +108,28 @@ export async function createDiaomaoApp(targetDir: string, options: CreateDiaomao
     } else {
       console.log('prisma/schema.prisma not found in template, skipping schema replacement');
     }
+
+    // Align template database initialization SQL to the requested host schema name.
+    const databaseDir = path.join(destDir, 'database');
+    const databaseSqlFiles = ['init-schema.sql', 'create.sql'];
+
+    for (const sqlFileName of databaseSqlFiles) {
+      const sqlPath = path.join(databaseDir, sqlFileName);
+
+      if (await pathExists(sqlPath)) {
+        const currentSql = await readFile(sqlPath, 'utf8');
+        const nextSql = replaceSqlSchemaName(currentSql, schemaName);
+
+        if (nextSql !== currentSql) {
+          await writeFile(sqlPath, nextSql, 'utf8');
+          console.log(`🍻🍻Updated database/${sqlFileName} with schema: ${schemaName}`);
+        } else {
+          console.log(`database/${sqlFileName} already matches schema: ${schemaName}`);
+        }
+      } else {
+        console.log(`database/${sqlFileName} not found in template, skipping schema replacement`);
+      }
+    }
     
     // handle .changeset folder if exists
     const changesetDir = path.join(destDir, '.changeset');
@@ -114,6 +146,7 @@ export async function createDiaomaoApp(targetDir: string, options: CreateDiaomao
     pkg.name = path.basename(targetDir);
     pkg.version = "1.0.0";
     pkg.private = true;
+    pkg.packageManager = PACKAGE_MANAGER;
     pkg.devDependencies = pkg.devDependencies || {};
     if (!pkg.devDependencies.dotenv) {
       pkg.devDependencies.dotenv = 'catalog:';
@@ -122,16 +155,6 @@ export async function createDiaomaoApp(targetDir: string, options: CreateDiaomao
     // remove standalone-specific scripts for non-monorepo scenario
     if (pkg.scripts) {
       delete pkg.scripts['djvp'];
-
-      // Repalce 'core-sync-sql' command's '--schema diaomao'
-      const scriptKey = 'core-sync-sql';
-      if (pkg.scripts[scriptKey]) {
-        pkg.scripts[scriptKey] = pkg.scripts[scriptKey].replace(
-          '--schema diaomao',
-          `--schema ${schemaName}`
-        );
-        console.log(`Updated ${scriptKey} script: --schema ${schemaName}`);
-  }
     }
 
     // remove publish related config
@@ -141,32 +164,32 @@ export async function createDiaomaoApp(targetDir: string, options: CreateDiaomao
 
     console.log('Installing dependencies...');
       
-      // auto install dependencies
+    // auto install dependencies
+    try {
+      execSync('corepack pnpm install', { cwd: destDir, stdio: 'inherit' });
+    } catch (corepackError) {
+      console.warn('corepack pnpm failed, trying pnpm...');
       try {
         execSync('pnpm install', { cwd: destDir, stdio: 'inherit' });
       } catch (error) {
-        console.warn('pnpm failed, trying npm...');
-        try {
-          execSync('npm install', { cwd: destDir, stdio: 'inherit' });
-        } catch (npmError) {
-          console.error('Failed to install dependencies. Please run npm install or pnpm install manually.');
-        }
+        console.error('Failed to install dependencies. Please run pnpm install manually.');
       }
+    }
 
-      console.log('🍻🍻Installed dependencies!');
+    console.log('🍻🍻Installed dependencies!');
 
-      console.log('Initializing Git repository...');
+    console.log('Initializing Git repository...');
       
-      // initialize git
-      try {
-        execSync('git init', { cwd: destDir, stdio: 'inherit' });
-        execSync('git add .', { cwd: destDir, stdio: 'inherit' });
-        execSync('git commit -m "feat: initial commit from diaomao template"', { cwd: destDir, stdio: 'inherit' });
-        // just ignore this changeset template file in local, but not affect remote file
-        execSync('git update-index --skip-worktree .changeset/d8-template.mdx', { cwd: destDir, stdio: 'ignore' });
-      } catch (error) {
-        console.warn('Failed to initialize Git repository. Please initialize manually.');
-      }
+    // initialize git
+    try {
+      execSync('git init', { cwd: destDir, stdio: 'inherit' });
+      execSync('git add .', { cwd: destDir, stdio: 'inherit' });
+      execSync('git commit -m "feat: initial commit from diaomao template"', { cwd: destDir, stdio: 'inherit' });
+      // just ignore this changeset template file in local, but not affect remote file
+      execSync('git update-index --skip-worktree .changeset/d8-template.mdx', { cwd: destDir, stdio: 'ignore' });
+    } catch (error) {
+      console.warn('Failed to initialize Git repository. Please initialize manually.');
+    }
 
     console.log(`\n🍻🍻 Project created: ${destDir}`);
     console.log(`\nNext steps:`);
@@ -176,8 +199,6 @@ export async function createDiaomaoApp(targetDir: string, options: CreateDiaomao
     console.log(`  ⚠️⚠️NOTE: please check .env.local file and set your own env!`);
     console.log(`  ⚠️⚠️NOTE: USE 'pnpm core-list-route' for viewing latested api routes`);
     console.log(`  ⚠️⚠️NOTE: USE 'pnpm core-sync-route' for syncing latested api routes`);
-    console.log(`  ⚠️⚠️NOTE: USE 'pnpm core-sync-schema' for appendding basic prisma models`);
-    console.log(`  ⚠️⚠️NOTE: USE 'pnpm core-sync-sql' for initing sql`);
     console.log(`  pnpm build`);
     console.log(`  pnpm dev`);
   } catch (error) {
