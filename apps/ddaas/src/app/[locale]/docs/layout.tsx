@@ -3,7 +3,7 @@ import { siteDocs } from '@/lib/site-docs';
 import type { ReactNode } from 'react';
 import { FumaGithubInfo } from '@third-ui/fuma/mdx/fuma-github-info';
 import { SiteDocsLayout, type SiteDocsLayoutConfig } from '@third-ui/fuma/base/site-docs-layout';
-import { appConfig } from '@/lib/appConfig';
+import { github } from '@/lib/appConfig';
 import { i18n } from '@/lib/i18n-base';
 
 async function docsOptions(locale: string): Promise<SiteDocsLayoutConfig> {
@@ -12,7 +12,7 @@ async function docsOptions(locale: string): Promise<SiteDocsLayoutConfig> {
   return {
     ...options,
     i18n,
-    githubUrl: appConfig.github,
+    githubUrl: github,
     tree: docsSource.getPageTree(locale),
     links: [
       {
@@ -21,7 +21,6 @@ async function docsOptions(locale: string): Promise<SiteDocsLayoutConfig> {
           <FumaGithubInfo 
             owner="caofanCPU" 
             repo="D8gerAutoCode" 
-            token={appConfig.githubInfoToken}
             className="lg:-mx-2" 
           />
         ),

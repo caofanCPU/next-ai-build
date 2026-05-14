@@ -3,9 +3,8 @@ import { fingerprintConfig } from '@core/config/fingerprint';
 import { FingerprintProvider } from '@third-ui/clerk/fingerprint';
 import { SiteHomeLayout, type SiteHomeLayoutConfig } from '@third-ui/fuma/base/site-home-layout';
 import { ReactNode } from 'react';
-import { clerkPageBanner, localePrefixAsNeeded, defaultLocale } from '@/lib/appConfig';
+import { clerkPageBanner, localePrefixAsNeeded, defaultLocale, github } from '@/lib/appConfig';
 import { i18n } from '@/lib/i18n-base';
-import { appConfig } from '@/lib/appConfig';
 
 async function homeOptions(locale: string): Promise<SiteHomeLayoutConfig> {
   const resolvedBaseOptions = await baseOptions(locale);
@@ -27,7 +26,7 @@ export default async function RootLayout({
   const homeLayoutOptions: SiteHomeLayoutConfig = {
     ...customeOptions,
     i18n,
-    githubUrl: appConfig.github,
+    githubUrl: github,
     searchToggle: {
       enabled: false,
     },

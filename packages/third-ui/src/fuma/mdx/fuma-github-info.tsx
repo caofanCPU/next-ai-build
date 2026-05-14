@@ -6,7 +6,6 @@ import { ExternalLinkIcon, StarIcon } from '@windrun-huaiin/base-ui/icons';
 interface FumaGithubInfoProps {
   owner: string;
   repo: string;
-  token?: string;
   className?: string;
 }
 
@@ -16,7 +15,7 @@ interface GitHubRepoData {
 }
 
 // Loading state component
-function GitHubInfoSkeleton({ owner, repo, className }: Pick<FumaGithubInfoProps, 'owner' | 'repo' | 'className'>) {
+function GitHubInfoSkeleton({ className }: Pick<FumaGithubInfoProps, 'owner' | 'repo' | 'className'>) {
   return (
     <div className={`flex flex-col gap-1.5 p-2 rounded-lg text-sm text-fd-foreground/80 lg:flex-row lg:items-center animate-pulse ${className}`}>
       <div className="flex items-center gap-2">
@@ -114,7 +113,7 @@ function humanizeNumber(num: number): string {
  * - 🎨 Three states: loading, success, error
  * - 💯 Not affected by network issues causing page crashes
  */
-export function FumaGithubInfo({ owner, repo, token, className }: FumaGithubInfoProps) {
+export function FumaGithubInfo({ owner, repo, className }: FumaGithubInfoProps) {
   const [data, setData] = useState<GitHubRepoData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -132,10 +131,6 @@ export function FumaGithubInfo({ owner, repo, token, className }: FumaGithubInfo
         const headers = new Headers({
           'Accept': 'application/vnd.github.v3+json',
         });
-
-        if (token) {
-          headers.set('Authorization', `Bearer ${token}`);
-        }
 
         const response = await fetch(`https://api.github.com/repos/${owner}/${repo}`, {
           signal: controller.signal,
@@ -170,7 +165,7 @@ export function FumaGithubInfo({ owner, repo, token, className }: FumaGithubInfo
     };
 
     fetchRepoData();
-  }, [owner, repo, token]);
+  }, [owner, repo]);
 
   // Loading state
   if (loading) {

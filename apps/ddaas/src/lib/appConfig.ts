@@ -9,6 +9,7 @@ export const appConfig = {
 export const { isSupportedLocale, getValidLocale, generatedLocales} = createI18nHelpers(appConfig.i18n);
 
 export const { localePrefixAsNeeded, defaultLocale } = appConfig.i18n;
+export const github = appConfig.github;
 
 // export shortcuts
 export const { iconColor, watermark, showBanner, clerkPageBanner, clerkAuthInModal, placeHolderImage } = appConfig.shortcuts;

@@ -1,8 +1,8 @@
 import { SiteIcon } from '@/lib/site-config';
-import { NotFoundPage } from '@third-ui/main';
+import { AnimeNotFoundPage } from '@third-ui/main/anime';
 
 export default async function D8gerPage() {
   return (
-    <NotFoundPage siteIcon={<SiteIcon />} />
+    <AnimeNotFoundPage siteIcon={<SiteIcon />} />
   );
 }
