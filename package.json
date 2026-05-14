@@ -2,7 +2,7 @@
   "name": "@windrun-huaiin",
   "version": "25.0.0",
   "private": true,
-  "packageManager": "pnpm@11.0.9",
+  "packageManager": "pnpm@11.1.2",
   "scripts": {
     "build": "turbo build",
     "build:prod": "turbo build:prod",
