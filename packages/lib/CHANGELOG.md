@@ -1,5 +1,11 @@
 # @windrun-huaiin/lib
 
+## 31.0.2
+
+### Patch Changes
+
+- refactor(mdx): mdx sourceKey config fixed
+
 ## 31.0.1
 
 ### Patch Changes
