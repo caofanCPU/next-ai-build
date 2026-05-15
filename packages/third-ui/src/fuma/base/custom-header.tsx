@@ -35,9 +35,9 @@ import { Popover, PopoverContent, PopoverTrigger } from 'fumadocs-ui/components/
 import { buttonVariants } from 'fumadocs-ui/components/ui/button';
 import { useI18n } from 'fumadocs-ui/contexts/i18n';
 import { HeaderThemeSwitch } from './header-theme-switch';
+import { useSiteThemeMode } from './site-theme-context';
 import type {
   ExtendedLinkItem,
-  SiteThemeSwitchConfig,
   SiteThemeSwitchMode,
 } from './site-layout-shared';
 
@@ -51,8 +51,7 @@ const PrefetchLinkItem = LinkItem as (
   props: ComponentProps<typeof LinkItem> & { prefetch?: boolean },
 ) => ReactNode;
 
-export interface CustomHomeHeaderProps
-  extends Omit<HomeLayoutProps, 'themeSwitch'> {
+export interface CustomHomeHeaderProps extends HomeLayoutProps {
   /**
    * Banner height in rem units
    *
@@ -97,7 +96,6 @@ export interface CustomHomeHeaderProps
    * Control order of utilities inside the mobile dropdown.
    */
   mobileMenuActionsOrder?: MobileMenuAction[];
-  themeSwitch?: SiteThemeSwitchConfig;
 }
 
 export type DesktopAction =
@@ -137,7 +135,6 @@ export function CustomHomeHeader({
   i18n = false,
   links,
   githubUrl,
-  themeSwitch = {},
   searchToggle = {},
   bannerHeight = 0,
   headerHeight = 2.5,
@@ -148,6 +145,7 @@ export function CustomHomeHeader({
   mobileBarActionsOrder = DEFAULT_MOBILE_BAR_ACTIONS,
   mobileMenuActionsOrder = DEFAULT_MOBILE_MENU_ACTIONS,
 }: CustomHomeHeaderProps) {
+  const themeMode = useSiteThemeMode();
   const finalLinks = useMemo(
     () => resolveLinkItems({ links, githubUrl }),
     [links, githubUrl],
@@ -181,10 +179,10 @@ export function CustomHomeHeader({
         ? searchToggle.components?.lg ?? null
         : null,
     theme:
-      shouldShowThemeSwitch(themeSwitch?.mode)
+      shouldShowThemeSwitch(themeMode)
         ? (
             <HeaderThemeSwitch
-              mode={normalizeThemeSwitchMode(themeSwitch?.mode)}
+              mode={normalizeThemeSwitchMode(themeMode)}
             />
           )
         : null,
@@ -248,10 +246,10 @@ export function CustomHomeHeader({
       </CompactLanguageToggle>
     ) : null,
     theme:
-      shouldShowThemeSwitch(themeSwitch?.mode)
+      shouldShowThemeSwitch(themeMode)
         ? (
             <HeaderThemeSwitch
-              mode={normalizeThemeSwitchMode(themeSwitch?.mode)}
+              mode={normalizeThemeSwitchMode(themeMode)}
             />
           )
         : null,
@@ -371,13 +369,13 @@ export function CustomHomeHeader({
 }
 
 function shouldShowThemeSwitch(mode?: SiteThemeSwitchMode): boolean {
-  return mode === 'light-dark' || mode === 'light-dark-system' || mode == null;
+  return mode === 'light-dark-system' || mode == null;
 }
 
 function normalizeThemeSwitchMode(
   mode?: SiteThemeSwitchMode,
-): 'light-dark' | 'light-dark-system' {
-  return mode === 'light-dark' ? 'light-dark' : 'light-dark-system';
+): 'light-dark-system' {
+  return 'light-dark-system';
 }
 
 interface CustomNavbarProps extends ComponentProps<'div'> {

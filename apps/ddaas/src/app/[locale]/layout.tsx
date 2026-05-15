@@ -1,4 +1,4 @@
-import { appConfig, generatedLocales, localePrefixAsNeeded, defaultLocale } from "@/lib/appConfig";
+import { appConfig, generatedLocales, localePrefixAsNeeded, defaultLocale, themeMode } from "@/lib/appConfig";
 import { getFumaTranslations } from '@third-ui/fuma/fuma-translate-util';
 import { createLocalizedSiteMetadata } from '@third-ui/lib/seo-metadata';
 import { NProgressBar } from '@third-ui/main/nprogress-bar';
@@ -48,6 +48,9 @@ export default async function RootLayout({
           <NProgressBar />
           <ClerkProviderClient locale={locale} localePrefixAsNeeded={localePrefixAsNeeded} defaultLocale={defaultLocale}>
             <DocsRootProvider
+              theme={{
+                mode: themeMode,
+              }}
               i18n={{
                 locale: locale,
                 locales: generatedLocales,

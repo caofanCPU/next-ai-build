@@ -1,5 +1,20 @@
 # @windrun-huaiin/ddaas-website
 
+## 31.2.0
+
+### Minor Changes
+
+- fix(UI): support light-only | light-dark | light-dark-system mode, simple config by env
+
+### Patch Changes
+
+- Updated dependencies
+  - @windrun-huaiin/lib@31.0.1
+  - @windrun-huaiin/base-ui@31.0.0
+  - @windrun-huaiin/third-ui@31.2.0
+  - @windrun-huaiin/backend-core@31.0.0
+  - @windrun-huaiin/fumadocs-local-md@31.0.0
+
 ## 31.1.0
 
 ### Minor Changes

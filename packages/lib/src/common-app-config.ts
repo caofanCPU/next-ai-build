@@ -19,6 +19,30 @@ const ALL_LOCALE_LABELS = {
 } as const;
 
 export type SupportedLocale = keyof typeof ALL_LOCALE_LABELS;
+export type AppThemeMode =
+  | 'light-dark-system'
+  | 'light-only'
+  | 'dark-only';
+
+const APP_THEME_MODES = [
+  'light-dark-system',
+  'light-only',
+  'dark-only',
+] as const satisfies readonly AppThemeMode[];
+
+function getAppThemeMode(value: string | undefined): AppThemeMode {
+  if (APP_THEME_MODES.includes(value as AppThemeMode)) {
+    return value as AppThemeMode;
+  }
+
+  if (value) {
+    console.warn(
+      `[CommonAppConfig] Invalid NEXT_PUBLIC_STYLE_THEME_MODE: ${value}. Fallback to light-dark-system.`,
+    );
+  }
+
+  return 'light-dark-system';
+}
 
 // Helper function to get language configuration from environment variables
 function getLocaleLabels(locales: string[]) {
@@ -72,17 +96,20 @@ export function createCommonAppConfig(options?: {
     // Style configuration
     style: {
       icon: {
-        uniformColor: process.env.NEXT_PUBLIC_STYLE_ICON_COLOR || "text-purple-500"
+        uniformColor: process.env.NEXT_PUBLIC_STYLE_ICON_COLOR || "purple"
+      },
+      theme: {
+        mode: getAppThemeMode(process.env.NEXT_PUBLIC_STYLE_THEME_MODE),
       },
       showBanner: process.env.NEXT_PUBLIC_STYLE_SHOW_BANNER === 'true',
       clerkAuthInModal: process.env.NEXT_PUBLIC_STYLE_CLERK_AUTH_IN_MODAL === 'true',
       clerkPageBanner: process.env.NEXT_PUBLIC_STYLE_CLERK_PAGE_BANNER === 'true',
       watermark: {
         enabled: process.env.NEXT_PUBLIC_STYLE_WATERMARK_ENABLED === 'true',
-        text: process.env.NEXT_PUBLIC_STYLE_WATERMARK_TEXT || "巽川·怀因"
+        text: process.env.NEXT_PUBLIC_STYLE_WATERMARK_TEXT || "WindRun・Huaiin"
       },
-      cdnBaseUrl: process.env.NEXT_PUBLIC_STYLE_CDN_BASE_URL || "https://r2.d8ger.com",
-      cdnProxyUrl: process.env.NEXT_PUBLIC_STYLE_CDN_PROXY_URL || "https://r2-explorer-template.zcy777et.workers.dev/proxy",
+      cdnBaseUrl: process.env.NEXT_PUBLIC_STYLE_CDN_BASE_URL || "",
+      cdnProxyUrl: process.env.NEXT_PUBLIC_STYLE_CDN_PROXY_URL || "",
       placeHolder: {
         image: process.env.NEXT_PUBLIC_STYLE_PLACEHOLDER_IMAGE || "/default.webp"
       }
@@ -109,6 +136,7 @@ export function createCommonAppConfig(options?: {
   // Convenient constants - avoid deep nested access
   const shortcuts = {
     iconColor: config.style.icon.uniformColor,
+    themeMode: config.style.theme.mode,
     watermark: config.style.watermark,
     showBanner: config.style.showBanner,
     clerkPageBanner: config.style.clerkPageBanner,

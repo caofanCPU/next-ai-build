@@ -12,4 +12,4 @@ export const { localePrefixAsNeeded, defaultLocale } = appConfig.i18n;
 export const github = appConfig.github;
 
 // export shortcuts
-export const { iconColor, watermark, showBanner, clerkPageBanner, clerkAuthInModal, placeHolderImage } = appConfig.shortcuts;
+export const { iconColor, themeMode, watermark, showBanner, clerkPageBanner, clerkAuthInModal, placeHolderImage } = appConfig.shortcuts;

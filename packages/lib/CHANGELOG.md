@@ -1,5 +1,11 @@
 # @windrun-huaiin/lib
 
+## 31.0.1
+
+### Patch Changes
+
+- fix(UI): support light-only | light-dark | light-dark-system mode, simple config by env
+
 ## 31.0.0
 
 ### Major Changes

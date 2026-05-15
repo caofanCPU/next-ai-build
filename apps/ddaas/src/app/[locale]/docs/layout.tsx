@@ -47,9 +47,6 @@ export default async function Layout({
     <SiteDocsLayout
       config={{
         ...customeOptions,
-        themeSwitch: {
-          mode: 'light-only',
-        },
         sidebar: { enabled: true },
         searchToggle: { enabled: false },
       }}

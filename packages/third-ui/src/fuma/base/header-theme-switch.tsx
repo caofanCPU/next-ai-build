@@ -19,15 +19,14 @@ const itemVariants = cva('inline-flex size-6.5 items-center justify-center round
 const full = [['light', SunIcon] as const, ['dark', MoonIcon] as const, ['system', AirplayIcon] as const];
 
 export interface HeaderThemeSwitchProps extends ComponentProps<'div'> {
-  mode?: Exclude<SiteThemeSwitchMode, 'light-only' | 'dark-only'>;
+  mode?: 'light-dark-system';
 }
 
 export function HeaderThemeSwitch({
   className,
-  mode = 'light-dark',
   ...props
 }: HeaderThemeSwitchProps) {
-  const { setTheme, theme, resolvedTheme } = useTheme();
+  const { setTheme, theme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -39,35 +38,6 @@ export function HeaderThemeSwitch({
     className,
   );
   const iconClassName = 'size-3.5 text-neutral-600 dark:text-neutral-300';
-
-  if (mode === 'light-dark') {
-    const value = mounted ? resolvedTheme : null;
-
-    return (
-      <button
-        type="button"
-        className={container}
-        aria-label="Toggle Theme"
-        onClick={() => setTheme(value === 'light' ? 'dark' : 'light')}
-        data-theme-toggle=""
-      >
-        {full.map(([key, Icon]) => {
-          if (key === 'system') return null;
-
-          return (
-            <Icon
-              key={key}
-              fill="currentColor"
-              className={cn(
-                itemVariants({ active: value === key }),
-                iconClassName,
-              )}
-            />
-          );
-        })}
-      </button>
-    );
-  }
 
   const value = mounted ? theme : null;
 

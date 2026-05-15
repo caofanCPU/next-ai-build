@@ -58,12 +58,10 @@ export interface SiteBaseLayoutConfig {
   githubUrl?: string;
   links?: SiteNavItemConfig[];
   searchToggle?: HomeLayoutProps['searchToggle'];
-  themeSwitch?: SiteThemeSwitchConfig;
 }
 
 export type SiteThemeSwitchMode =
   | 'light-dark-system'
-  | 'light-dark'
   | 'light-only'
   | 'dark-only';
 

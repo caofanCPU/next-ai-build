@@ -43,14 +43,6 @@ function resolveThemeProviderProps(mode: SiteThemeSwitchMode): ThemeProviderProp
     };
   }
 
-  if (mode === 'light-dark') {
-    return {
-      enableSystem: false,
-      defaultTheme: 'light',
-      forcedTheme: undefined,
-    };
-  }
-
   return {
     enableSystem: true,
     defaultTheme: 'system',

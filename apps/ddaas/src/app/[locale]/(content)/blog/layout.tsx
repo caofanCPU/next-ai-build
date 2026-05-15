@@ -36,9 +36,6 @@ export default async function Layout({
     searchToggle: {
       enabled: false,
     },
-    themeSwitch: {
-      mode: 'dark-only',
-    },
   };
 
   return (
@@ -64,7 +61,6 @@ export default async function Layout({
             tree: blogSource.getPageTree(locale),
             sidebar: { enabled: false },
             searchToggle: { enabled: false },
-            themeProvider: false,
           }}
         >
           {children}

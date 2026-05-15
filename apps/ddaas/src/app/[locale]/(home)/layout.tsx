@@ -35,9 +35,6 @@ export default async function Layout({
     searchToggle: {
       enabled: false,
     },
-    themeSwitch: {
-      mode: 'light-dark-system',
-    },
   };
 
   return (

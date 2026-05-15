@@ -1,10 +1,21 @@
 # @windrun-huaiin/third-ui
 
+## 31.2.0
+
+### Minor Changes
+
+- fix(UI): support light-only | light-dark | light-dark-system mode, simple config by env
+
+### Patch Changes
+
+- Updated dependencies
+  - @windrun-huaiin/lib@31.0.1
+
 ## 31.1.0
 
 ### Minor Changes
 
-- feat(mdx): support light-only | dark-only | light-dark | light-dark-system mode
+- feat(mdx): support light-only | dark-only | light-dark-system mode
 
 ## 31.0.1
 

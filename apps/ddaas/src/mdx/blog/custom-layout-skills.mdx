@@ -6,14 +6,17 @@ date: 2026-05-07
 
 ## QuickStart
 
-### 根布局
+### 根布局统一主题
 
-<Callout title="app/[locale]/layout.tsx" type="info">
-  全局壳只保留 i18n 和基础 provider, 不在这里定主题
+<Callout title="layout.tsx" type="info">
+  全站主题只在根 layout 配一次, 子路由组不再感知 theme
 </Callout>
 
 ```tsx
 <DocsRootProvider
+  theme={{
+    mode: themeMode,
+  }}
   i18n={{
     locale,
     locales: generatedLocales,
@@ -24,18 +27,17 @@ date: 2026-05-07
 </DocsRootProvider>
 ```
 
+`themeMode` 来自 `appConfig.style.theme.mode`, 由 `NEXT_PUBLIC_STYLE_THEME_MODE` 控制。
+
 ### 网站HomePage布局
 
-<Callout title="app/[locale]/(home)/layout.tsx" type="info">
-  home 组单独定一份主题
+<Callout title="(home)/layout.tsx" type="info">
+  home 组只配置导航、Banner、Footer 等页面壳参数
 </Callout>
 
 ```tsx
-const themeMode = 'light-dark-system';
-
 const homeLayoutOptions = {
   ...customeOptions,
-  themeSwitch: { mode: themeMode },
 };
 
 <SiteHomeLayout
@@ -52,16 +54,13 @@ const homeLayoutOptions = {
 
 ### 网站BlogPage布局
 
-<Callout title="app/[locale]/(content)/blog/layout.tsx" type="warn">
-  blog 组是 `SiteHomeLayout -> SiteDocsLayout` 嵌套, 外层主题生效, 内层 docs 不再接管主题
+<Callout title="(content)/blog/layout.tsx" type="info">
+  blog 组可以继续使用 `SiteHomeLayout -> SiteDocsLayout` 嵌套, 不需要写主题去重配置
 </Callout>
 
 ```tsx
-const themeMode = 'dark-only';
-
 const homeLayoutOptions = {
   ...contentLayoutOptions,
-  themeSwitch: { mode: themeMode },
 };
 
 <SiteHomeLayout
@@ -80,23 +79,19 @@ const homeLayoutOptions = {
       tree: blogSource.getPageTree(locale),
       sidebar: { enabled: false },
       searchToggle: { enabled: false },
-      themeProvider: false,
     }}
   >
 ```
 
 ### 网站LegalPage布局
 
-<Callout title="app/[locale]/(content)/legal/layout.tsx" type="warn">
-  legal 组是 `SiteHomeLayout -> SiteDocsLayout` 嵌套, 外层主题生效, 内层 docs 不再接管主题
+<Callout title="(content)/legal/layout.tsx" type="info">
+  legal 组和 blog 一样, 只关心页面壳和 docs tree
 </Callout>
 
 ```tsx
-const themeMode = 'light-only';
-
 const homeLayoutOptions = {
   ...contentLayoutOptions,
-  themeSwitch: { mode: themeMode },
 };
 
 <SiteHomeLayout
@@ -115,25 +110,21 @@ const homeLayoutOptions = {
       tree: legalSource.getPageTree(locale),
       sidebar: { enabled: false },
       searchToggle: { enabled: false },
-      themeProvider: false,
     }}
   >
 ```
 
 ### 网站DocsPage布局
 
-<Callout title="app/[locale]/docs/layout.tsx" type="warn">
-  docs 组是单独的 docs 壳, 自己接管主题
+<Callout title="docs/layout.tsx" type="info">
+  docs 组只配置 docs tree、sidebar、search 等参数
 </Callout>
 
 
 ```tsx
-const themeMode = 'light-dark-system';
-
 <SiteDocsLayout
   config={{
     ...customeOptions,
-    themeSwitch: { mode: themeMode },
     sidebar: { enabled: true },
     searchToggle: { enabled: false },
   }}
@@ -142,17 +133,17 @@ const themeMode = 'light-dark-system';
 
 ### 结论
 
-- 全站统一主题时, 5 个 layout 都用同一个 `mode`
-- 多路由组差异主题时, 只改各自最外层 layout 的 `mode`
-- `blog / legal` 这种嵌套 docs 场景, `SiteDocsLayout` 里要显式 `themeProvider: false`
-- `themeProvider: false` 是 `third-ui` 为嵌套场景准备的内部去重处理, 应用侧一般只需要记住 `themeSwitch.mode`
+- 全站统一主题时, 只需要在根 layout 配一次 `mode`
+- 子路由组不需要再写 `themeSwitch`
+- `SiteHomeLayout -> SiteDocsLayout` 嵌套时也不需要写 `themeProvider: false`
+- `light-dark-system` 会显示主题切换按钮
+- `light-only` / `dark-only` 会强制单主题, 并隐藏主题切换按钮
 
 ## 主题规则
 
-`mode` 只有四种:
+`mode` 只有三种:
 
 - `light-dark-system`
-- `light-dark`
 - `light-only`
 - `dark-only`
 
@@ -160,8 +151,6 @@ const themeMode = 'light-dark-system';
 
 - `light-dark-system`
   显示切换按钮, 默认跟随系统
-- `light-dark`
-  显示切换按钮, 仅在亮/暗之间切换
 - `light-only`
   不显示切换按钮, 强制亮色
 - `dark-only`
