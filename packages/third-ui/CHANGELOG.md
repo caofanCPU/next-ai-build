@@ -1,5 +1,11 @@
 # @windrun-huaiin/third-ui
 
+## 31.3.1
+
+### Patch Changes
+
+- refactor(mdx): mdx sourceKey config fixed
+
 ## 31.3.0
 
 ### Minor Changes

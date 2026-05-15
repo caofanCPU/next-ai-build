@@ -1,6 +1,6 @@
 {
   "name": "@windrun-huaiin/third-ui",
-  "version": "31.3.0",
+  "version": "31.3.1",
   "description": "Third-party integrated UI components for windrun-huaiin projects",
   "exports": {
     "./clerk": {
