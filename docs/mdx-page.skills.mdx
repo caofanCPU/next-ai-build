@@ -1,0 +1,488 @@
+---
+title: MDX网页使用技巧
+description: 5分钟就学会mdx变为网页
+date: 2026-05-15
+---
+
+## 目标
+
+这篇 quickstart 说明怎么把 `src/mdx` 里的内容源接成网页
+
+最常见的流程是: 
+
+1. 在 `src/mdx` 下新增一个顶层目录, 例如 `arch`
+2. 在 `site-docs-base.ts` 里允许这个 `sourceKey`
+3. 新增一个页面入口, 调用 `siteDocs.getContentSource('arch')`
+4. 在 `site-docs.ts` 控制这个 MDX 源启用哪些能力
+
+## 内容源目录
+
+`local-md` 默认把 `sourceKey` 映射到同名目录: 
+
+<CheetTable>
+
+| sourceKey | 默认目录 | 说明 |
+| --- | --- | --- |
+| `docs` | `src/mdx/docs` | 产品文档 |
+| `blog` | `src/mdx/blog` | 技巧、教程、文章 |
+| `legal` | `src/mdx/legal` | 法务页面 |
+| `arch` | `src/mdx/arch` | 新增架构文档源 |
+| `beat` | `src/mdx/beat` | 新增节奏、日志或专题源 |
+
+</CheetTable>
+
+不改 `dir` 时, 目录名和 `sourceKey` 保持一致即可
+
+## 开放 sourceKey
+
+新增内容源时, 先改 `SourceKey`这里是应用层限制, 不是底层包限制
+
+```tsx title="site-docs-base.ts"
+type SourceKey = 'docs' | 'blog' | 'legal' | 'arch' | 'beat';
+type SourceFactory = ReturnType<typeof createConfiguredLocalMdSourceFactory>;
+```
+
+`SourceFactory` 只是工厂返回值的类型别名, 主要用于给 `getCachedSource` 的 overrides 参数补类型
+
+```tsx title="site-docs-base.ts"
+async getContentSource(
+  sourceKey: SourceKey,
+  overrides?: Parameters<SourceFactory['getCachedSource']>[1],
+) {
+  return sourceFactory.getCachedSource(sourceKey, overrides);
+}
+```
+
+调用时直接传目录同名 key: 
+
+```tsx title="page.tsx"
+const source = await siteDocs.getContentSource('arch');
+```
+
+## page.data 结构
+
+`createFumaPage()` 最终拿到的是 `source.getPage(slug, locale)` 返回的 `page`。业务最常直接读的是 `page.data`。
+
+### 固定字段
+
+这些字段是当前流程里稳定可用的:
+
+<CheetTable>
+
+| 字段 | 来源 | 说明 |
+| --- | --- | --- |
+| `title` | frontmatter / 文件名兜底 | 页面标题 |
+| `description` | frontmatter | 页面描述 |
+| `icon` | frontmatter | 页面图标 |
+| `date` | frontmatter | 文档日期, 常用于 footer 和排序 |
+| `body` | 渲染结果 | MDX 渲染后的正文 |
+| `load` | 渲染结果 | 延迟加载渲染器, 返回正文, TOC, 导出信息 |
+| `toc` | 渲染结果 / build 产物 | 目录数据 |
+| `structuredData` | 渲染结果 / build 产物 | 结构化数据 |
+
+</CheetTable>
+
+### 可透传字段
+
+frontmatter 里写的其他字段也会进入 `page.data`, 前提是字段名不和上面的固定字段冲突.
+
+<CheetTable>
+
+| 字段类型 | 示例 | 说明 |
+| --- | --- | --- |
+| `string` | `category: arch` | 字符串原样保留 |
+| `number` | `priority: 10` | 数字原样保留 |
+| `boolean` | `featured: true` | 布尔原样保留 |
+| `array` | `tags: [mdx, docs]` | 数组原样保留 |
+| `object` | `hero: { title: A }` | 对象原样保留 |
+
+</CheetTable>
+
+例如:
+
+```mdx title="index.mdx"
+---
+title: Arch 首页
+description: 架构资源入口
+date: 2026-05-15
+category: architecture
+priority: 10
+featured: true
+heroImage: /images/arch.png
+---
+```
+
+业务侧可以直接读取:
+
+```tsx title="page.tsx"
+const page = source.getPage(slug, locale);
+
+page.data.title;
+page.data.description;
+page.data.category;
+page.data.priority;
+page.data.featured;
+page.data.heroImage;
+```
+
+### build 和 runtime 的一致性
+
+build 和 runtime 都会保留这些字段:
+
+- `page.frontmatter` 先被解析出来
+- 然后透传到 `page.data`
+- 再补上 `body`, `load`, `toc`, `structuredData` 这些渲染期字段
+
+所以从业务方视角看, `page.data` 就是页面元数据, 自定义 frontmatter, 渲染结果的集合.
+
+## 资源首页和聚合页
+
+如果要做资源首页、专题页、列表页, 不需要改 `createFumaPage()`。业务方自己写一个聚合函数就行.
+
+### 数据来源
+
+推荐流程:
+
+1. `siteDocs.getContentSource(sourceKey)` 拿到 source
+2. `source.generateParams('slug', 'locale')` 拿到所有页面位置
+3. `source.getPage(slug, locale)` 拿到每篇 MDX 的 `page.data`
+4. 业务方把 `page.data` 组装成首页卡片数据
+5. 点击卡片跳转到对应 MDX 页面
+
+### slug 从哪里来
+
+`slug` 不是猜出来的, 也不是从 `page.path` 直接反推出来的。它来自 source 自己的路由生成结果:
+
+```tsx title="page.tsx"
+const source = await siteDocs.getContentSource('blog');
+const params = source.generateParams('slug', 'locale');
+```
+
+`params` 里的每一项都有 `slug` 和 `locale`, 业务方直接拿来做列表渲染就行。
+
+### href 怎么拼
+
+底层 `ZiaCard` 也是直接接收 `href`, 例如:
+
+```tsx title="index.mdx"
+<ZiaCard href="blog/readme" title="About Project Structure">
+  2026-05-14
+</ZiaCard>
+```
+
+业务方首页可以自己拼同样的链接:
+
+```tsx title="page.tsx"
+const cards = params.map(({ slug, locale }) => {
+  const page = source.getPage(slug, locale);
+
+  return {
+    title: page.data.title,
+    description: page.data.description,
+    href: `/${locale}/blog/${slug.join('/')}`,
+  };
+});
+```
+
+如果没有 locale 前缀, 就按现有路由规则去掉即可:
+
+```tsx title="page.tsx"
+href: `/blog/${slug.join('/')}`
+```
+
+### 首页和详情页怎么拆
+
+像 `blog` 这种资源, 最稳的方式是拆成两条路由:
+
+- 首页: `(home)/blog/page.tsx`
+- 详情页: `(content)/blog/[...slug]/page.tsx`
+
+首页本身也是 `blog` 路径, 只是它在 home 分组里渲染聚合页.
+详情页继续交给 `createFumaPage()`, 并放在 `SiteDocsLayout` 里.
+
+首页里只需要做一件事:
+
+```tsx title="blog-home.tsx"
+const source = await siteDocs.getContentSource('blog');
+const params = source.generateParams('slug', 'locale');
+```
+
+然后把每个 `slug` 组装成卡片链接:
+
+```tsx title="blog-home.tsx"
+href: `/${BLOG_SOURCE_KEY}/${slug.join('/')}`
+```
+
+如果你挂在 locale 路径下, 就用现成的 locale 拼接工具, 但资源路径还是跟 `sourceKey` 走.
+
+### 业务方可直接用的字段
+
+首页聚合页可以直接用:
+
+- `page.data.title`
+- `page.data.description`
+- `page.data.icon`
+- `page.data.date`
+- `page.data` 里的自定义 frontmatter 字段
+
+这样资源首页既能展示 MDX 的主要信息, 也能直接跳转到对应的 MDX 页面.
+
+例如博客可以额外使用 `author` 和 `tags`:
+
+```mdx title="button-skills.mdx"
+---
+title: Button Skills
+description: 按钮组件使用说明
+date: 2026-04-02
+author: d8ger
+tags: [ui, button]
+---
+```
+
+聚合函数读取这些字段:
+
+```tsx title="blog-home.tsx"
+const BLOG_SOURCE_KEY = 'blog';
+
+export async function buildBlogHomeItems(locale: string) {
+  const source = await siteDocs.getContentSource(BLOG_SOURCE_KEY);
+  const params = source.generateParams('slug', 'locale') as Array<{
+    slug: string[];
+    locale: string;
+  }>;
+
+  return params
+    .filter(({ locale: entryLocale }) => entryLocale === locale)
+    .map(({ slug, locale: entryLocale }) => {
+      const page = source.getPage(slug, entryLocale);
+
+      if (!page) return null;
+
+      return {
+        title: page.data.title ?? slug.join('/'),
+        description: page.data.description,
+        date: typeof page.data.date === 'string' ? page.data.date : undefined,
+        author: typeof page.data.author === 'string' ? page.data.author : undefined,
+        tags: Array.isArray(page.data.tags)
+          ? page.data.tags.filter((item): item is string => typeof item === 'string')
+          : undefined,
+        href: `/${BLOG_SOURCE_KEY}/${slug.join('/')}`,
+      };
+    })
+    .filter((item): item is NonNullable<typeof item> => item != null);
+}
+```
+
+## 页面入口
+
+页面入口负责把某个 `sourceKey` 接到路由上下面是典型写法, 照着 `blog` 页面改 `sourceKey` 即可
+
+```tsx title="page.tsx"
+import { appConfig } from '@/lib/appConfig';
+import { siteDocs } from '@/lib/site-docs';
+import { createFumaPage } from '@third-ui/fuma/server/page-generator';
+import { LLMCopyButton } from '@third-ui/fuma/mdx/toc-base';
+
+const sourceKey = 'arch';
+
+const { Page, generateStaticParams, generateMetadata } = createFumaPage({
+  sourceKey,
+  mdxContentSource: () => siteDocs.getContentSource(sourceKey),
+  getMDXComponents: siteDocs.getMDXComponents,
+  mdxSourceDir: appConfig.mdxSourceDir[sourceKey],
+  githubBaseUrl: appConfig.githubBaseUrl,
+  copyButtonComponent: <LLMCopyButton />,
+  showBreadcrumb: false,
+  showTableOfContent: true,
+  showTableOfContentPopover: false,
+  tocRenderMode: 'portable-clerk',
+});
+
+export default Page;
+export { generateMetadata, generateStaticParams };
+```
+
+关键参数: 
+
+<CheetTable>
+
+| 参数 | 作用 |
+| --- | --- |
+| `sourceKey` | 当前页面使用哪个 MDX 内容源 |
+| `mdxContentSource` | 返回当前源的数据, 通常写 `siteDocs.getContentSource(sourceKey)` |
+| `getMDXComponents` | 注入 MDX 渲染组件, 比如代码块、数学公式、表格增强 |
+| `mdxSourceDir` | 当前源的原始目录, 用于 GitHub 链接、复制、LLM 内容等能力 |
+| `githubBaseUrl` | 页面源码链接的 GitHub 根地址 |
+| `copyButtonComponent` | TOC 或页面工具区的复制按钮 |
+| `showBreadcrumb` | 是否显示面包屑 |
+| `showTableOfContent` | 是否显示右侧目录 |
+| `showTableOfContentPopover` | 是否显示弹出式目录 |
+| `tocRenderMode` | TOC 渲染模式, 常用 `portable-clerk` |
+
+</CheetTable>
+
+如果你新增了 `arch`, `appConfig.mdxSourceDir` 也要能取到它: 
+
+```tsx title="appConfig.ts"
+mdxSourceDir: {
+  docs: 'src/mdx/docs',
+  blog: 'src/mdx/blog',
+  legal: 'src/mdx/legal',
+  arch: 'src/mdx/arch',
+  beat: 'src/mdx/beat',
+}
+```
+
+## 包级能力开关
+
+`site-docs.ts` 是当前应用统一的 MDX 能力开关这里控制整套 MDX 页面能用哪些扩展能力
+
+```tsx title="site-docs.ts"
+import { createSiteDocs } from '@/lib/site-docs-base';
+
+export const siteDocs = createSiteDocs({
+  features: {
+    code: true,
+    math: true,
+    npm: true,
+    mermaid: true,
+    typeTable: true,
+  },
+  additionalComponents: {},
+});
+```
+
+开关含义: 
+
+<CheetTable>
+
+| 开关 | 用途 |
+| --- | --- |
+| `code` | 启用代码块增强、语法高亮等代码相关能力 |
+| `math` | 启用数学公式渲染 |
+| `npm` | 启用 npm 包信息相关的 MDX 能力 |
+| `mermaid` | 启用 Mermaid 图表渲染 |
+| `typeTable` | 启用类型表格渲染 |
+| `additionalComponents` | 注入业务自定义 MDX 组件 |
+
+</CheetTable>
+
+如果某类页面不需要全部能力, 可以新增一个单独的 `createSiteDocs` 配置, 再让页面入口引用它
+
+```tsx title="site-docs.ts"
+export const lightSiteDocs = createSiteDocs({
+  features: {
+    code: true,
+    math: false,
+    npm: false,
+    mermaid: false,
+    typeTable: false,
+  },
+  additionalComponents: {},
+});
+```
+
+页面入口使用对应实例: 
+
+```tsx title="page.tsx"
+const sourceKey = 'beat';
+const { Page, generateStaticParams, generateMetadata } = createFumaPage({
+  sourceKey,
+  mdxContentSource: () => lightSiteDocs.getContentSource(sourceKey),
+  getMDXComponents: lightSiteDocs.getMDXComponents,
+  mdxSourceDir: appConfig.mdxSourceDir.beat,
+  githubBaseUrl: appConfig.githubBaseUrl,
+});
+```
+
+## 构建和运行
+
+新增或修改 `src/mdx` 内容源后, 先生成 `.source`: 
+
+```bash title="terminal"
+pnpm exec local-md build
+```
+
+开发时默认也建议走 `.source`, 这样和生产环境一致
+
+如果只是在本地快速写文档, 可以临时启用 runtime: 
+
+```bash title="terminal"
+LOCAL_MD_DEV_RUNTIME=true pnpm dev
+```
+
+发布前使用: 
+
+```bash title="terminal"
+pnpm exec local-md build
+pnpm build
+```
+
+## Vercel 文件路径
+
+部署到 Vercel 时, Serverless Function 不一定会自动带上 `src/mdx` 和 `.source`如果线上页面或 `llm-content` API 读不到文件, 需要在 `next.config.ts` 顶层配置 `outputFileTracingIncludes`
+
+规则很简单: 
+
+<CheetTable>
+
+| 路由类型 | 需要包含的文件 |
+| --- | --- |
+| `/api/<sourceKey>/llm-content` | `./src/mdx/<sourceKey>/**/*` 和 `./.source/**/*` |
+| 页面路由 | `./.source/**/*` |
+| 新增 `arch` / `beat` | 按实际 API 和页面路由各补一组 |
+
+</CheetTable>
+
+线上成功配置示例: 
+
+```tsx title="next.config.ts"
+const nextConfig: NextConfig = {
+  outputFileTracingIncludes: {
+    '/api/blog/llm-content': ['./src/mdx/blog/**/*', './.source/**/*'],
+    '/api/legal/llm-content': ['./src/mdx/legal/**/*', './.source/**/*'],
+
+    '/blog': ['./.source/**/*'],
+    '/blog/[[...slug]]': ['./.source/**/*'],
+    '/[locale]/blog': ['./.source/**/*'],
+    '/[locale]/blog/[[...slug]]': ['./.source/**/*'],
+
+    '/legal': ['./.source/**/*'],
+    '/legal/[[...slug]]': ['./.source/**/*'],
+    '/[locale]/legal': ['./.source/**/*'],
+    '/[locale]/legal/[[...slug]]': ['./.source/**/*'],
+  },
+};
+```
+
+如果新增 `arch`, 就按同样模式补: 
+
+```tsx title="next.config.ts"
+const nextConfig: NextConfig = {
+  outputFileTracingIncludes: {
+    '/api/arch/llm-content': ['./src/mdx/arch/**/*', './.source/**/*'],
+    '/arch': ['./.source/**/*'],
+    '/arch/[[...slug]]': ['./.source/**/*'],
+    '/[locale]/arch': ['./.source/**/*'],
+    '/[locale]/arch/[[...slug]]': ['./.source/**/*'],
+  },
+};
+```
+
+注意 `outputFileTracingIncludes` 必须是 `nextConfig` 的顶层属性, 不要放进 `experimental`、`images` 或其他子配置里
+
+## 最小检查清单
+
+<CheetTable>
+
+| 检查项 | 正确状态 |
+| --- | --- |
+| 目录 | `src/mdx/<sourceKey>` 已存在 |
+| 类型 | `SourceKey` 已加入新的 key |
+| 页面 | `createFumaPage` 使用同一个 `sourceKey` |
+| 数据 | `mdxContentSource` 调用 `siteDocs.getContentSource(sourceKey)` |
+| 配置 | `appConfig.mdxSourceDir[sourceKey]` 有对应目录 |
+| Vercel | `next.config.ts` 已包含对应 `outputFileTracingIncludes` |
+| 构建 | 已运行 `pnpm exec local-md build` |
+
+</CheetTable>

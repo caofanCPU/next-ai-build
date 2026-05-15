@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "prisma generate && next dev",
     "build-local-md": "pnpm exec local-md build",
-    "build": "pnpm exec local-md build && pnpm generate-blog-index && prisma generate && next build",
-    "build:dev": "pnpm generate-blog-index && prisma generate && next build",
+    "build": "pnpm exec local-md build && prisma generate && next build",
+    "build:dev": "prisma generate && next build",
     "build:prod": "pnpm build-local-md && prisma generate && next build",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
@@ -17,10 +17,7 @@
     "i18n": "dev-scripts check-translations -v",
     "core-list-route": "dev-scripts backend-core routes:list",
     "core-sync-route": "dev-scripts backend-core routes:sync",
-    "whoareyou": "dev-scripts generate-nextjs-architecture -v",
-    "windrun": "pnpm add @windrun-huaiin/base-ui@latest @windrun-huaiin/lib@latest @windrun-huaiin/third-ui@latest @windrun-huaiin/backend-core@latest && pnpm add -D @windrun-huaiin/dev-scripts@latest",
-    "windrun3": "pnpm add @windrun-huaiin/third-ui@latest",
-    "windrunC": "pnpm add @windrun-huaiin/backend-core@latest"
+    "whoareyou": "dev-scripts generate-nextjs-architecture -v"
   },
   "dependencies": {
     "@clerk/nextjs": "catalog:",
