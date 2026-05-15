@@ -210,7 +210,7 @@ const params = source.generateParams('slug', 'locale');
 然后把每个 `slug` 组装成卡片链接:
 
 ```tsx title="blog-home.tsx"
-href: `/${BLOG_SOURCE_KEY}/${slug.join('/')}`
+href: `/${sourceKey}/${slug.join('/')}`
 ```
 
 如果你挂在 locale 路径下, 就用现成的 locale 拼接工具, 但资源路径还是跟 `sourceKey` 走.
@@ -242,10 +242,10 @@ tags: [ui, button]
 聚合函数读取这些字段:
 
 ```tsx title="blog-home.tsx"
-const BLOG_SOURCE_KEY = 'blog';
+const sourceKey = 'blog';
 
 export async function buildBlogHomeItems(locale: string) {
-  const source = await siteDocs.getContentSource(BLOG_SOURCE_KEY);
+  const source = await siteDocs.getContentSource(sourceKey);
   const params = source.generateParams('slug', 'locale') as Array<{
     slug: string[];
     locale: string;
@@ -266,7 +266,7 @@ export async function buildBlogHomeItems(locale: string) {
         tags: Array.isArray(page.data.tags)
           ? page.data.tags.filter((item): item is string => typeof item === 'string')
           : undefined,
-        href: `/${BLOG_SOURCE_KEY}/${slug.join('/')}`,
+        href: `/${sourceKey}/${slug.join('/')}`,
       };
     })
     .filter((item): item is NonNullable<typeof item> => item != null);
@@ -289,7 +289,6 @@ const { Page, generateStaticParams, generateMetadata } = createFumaPage({
   sourceKey,
   mdxContentSource: () => siteDocs.getContentSource(sourceKey),
   getMDXComponents: siteDocs.getMDXComponents,
-  mdxSourceDir: appConfig.mdxSourceDir[sourceKey],
   githubBaseUrl: appConfig.githubBaseUrl,
   copyButtonComponent: <LLMCopyButton />,
   showBreadcrumb: false,
@@ -311,7 +310,6 @@ export { generateMetadata, generateStaticParams };
 | `sourceKey` | 当前页面使用哪个 MDX 内容源 |
 | `mdxContentSource` | 返回当前源的数据, 通常写 `siteDocs.getContentSource(sourceKey)` |
 | `getMDXComponents` | 注入 MDX 渲染组件, 比如代码块、数学公式、表格增强 |
-| `mdxSourceDir` | 当前源的原始目录, 用于 GitHub 链接、复制、LLM 内容等能力 |
 | `githubBaseUrl` | 页面源码链接的 GitHub 根地址 |
 | `copyButtonComponent` | TOC 或页面工具区的复制按钮 |
 | `showBreadcrumb` | 是否显示面包屑 |
@@ -321,17 +319,7 @@ export { generateMetadata, generateStaticParams };
 
 </CheetTable>
 
-如果你新增了 `arch`, `appConfig.mdxSourceDir` 也要能取到它: 
-
-```tsx title="appConfig.ts"
-mdxSourceDir: {
-  docs: 'src/mdx/docs',
-  blog: 'src/mdx/blog',
-  legal: 'src/mdx/legal',
-  arch: 'src/mdx/arch',
-  beat: 'src/mdx/beat',
-}
-```
+详情页源码路径默认约定是 `src/mdx/${sourceKey}`, 例如 `sourceKey = 'arch'` 会使用 `src/mdx/arch`, 不需要额外传目录参数.
 
 ## 包级能力开关
 
@@ -390,7 +378,6 @@ const { Page, generateStaticParams, generateMetadata } = createFumaPage({
   sourceKey,
   mdxContentSource: () => lightSiteDocs.getContentSource(sourceKey),
   getMDXComponents: lightSiteDocs.getMDXComponents,
-  mdxSourceDir: appConfig.mdxSourceDir.beat,
   githubBaseUrl: appConfig.githubBaseUrl,
 });
 ```
@@ -481,7 +468,7 @@ const nextConfig: NextConfig = {
 | 类型 | `SourceKey` 已加入新的 key |
 | 页面 | `createFumaPage` 使用同一个 `sourceKey` |
 | 数据 | `mdxContentSource` 调用 `siteDocs.getContentSource(sourceKey)` |
-| 配置 | `appConfig.mdxSourceDir[sourceKey]` 有对应目录 |
+| 目录约定 | `src/mdx/<sourceKey>` 已存在 |
 | Vercel | `next.config.ts` 已包含对应 `outputFileTracingIncludes` |
 | 构建 | 已运行 `pnpm exec local-md build` |
 

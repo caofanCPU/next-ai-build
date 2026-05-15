@@ -5,9 +5,8 @@ import { createFumaPage } from '@third-ui/fuma/server/page-generator';
 const sourceKey = 'legal';
 const { Page, generateStaticParams, generateMetadata } = createFumaPage({
   sourceKey: sourceKey,
-  mdxContentSource: () => siteDocs.getContentSource('legal'),
+  mdxContentSource: () => siteDocs.getContentSource(sourceKey),
   getMDXComponents: siteDocs.getMDXComponents,
-  mdxSourceDir: appConfig.mdxSourceDir[sourceKey],
   githubBaseUrl: appConfig.githubBaseUrl,
   supportedLocales: appConfig.i18n.locales as string[],
   showBreadcrumb: false,

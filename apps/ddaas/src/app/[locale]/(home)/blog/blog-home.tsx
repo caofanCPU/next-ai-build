@@ -3,7 +3,7 @@ import { siteDocs } from '@/lib/site-docs';
 import { getAsNeededLocalizedUrl } from '@windrun-huaiin/lib/utils';
 import { BlogHomeClient } from './blog-home-client';
 
-const BLOG_SOURCE_KEY = 'blog';
+const sourceKey = 'blog';
 
 export type BlogHomeItem = {
   title: string;
@@ -15,7 +15,7 @@ export type BlogHomeItem = {
 };
 
 export async function buildBlogHomeItems(locale: string) {
-  const source = await siteDocs.getContentSource(BLOG_SOURCE_KEY);
+  const source = await siteDocs.getContentSource(sourceKey);
   const entries = source.generateParams('slug', 'locale') as Array<{
     slug: string[];
     locale: string;
@@ -40,7 +40,7 @@ export async function buildBlogHomeItems(locale: string) {
           : undefined,
         href: getAsNeededLocalizedUrl(
           entryLocale,
-          `/${BLOG_SOURCE_KEY}/${slug.join('/')}`,
+          `/${sourceKey}/${slug.join('/')}`,
           appConfig.i18n.localePrefixAsNeeded,
           appConfig.i18n.defaultLocale,
         ),

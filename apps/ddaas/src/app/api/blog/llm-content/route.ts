@@ -3,17 +3,20 @@
 import { type NextRequest, NextResponse } from 'next/server';
 
 import { appConfig } from '@/lib/appConfig';
+import { resolveMdxSourceDir } from '@/lib/mdx-source';
 import { siteDocs } from '@/lib/site-docs';
 import { LLMCopyHandler } from '@third-ui/fuma/server/llm-copy-handler';
+
+const sourceKey = 'blog';
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const locale = searchParams.get('locale') ?? appConfig.i18n.defaultLocale;
   const requestedPath = searchParams.get('path') || '';
-  const blogSource = await siteDocs.getContentSource('blog');
+  const blogSource = await siteDocs.getContentSource(sourceKey);
 
   const result = await LLMCopyHandler({
-    sourceDir: appConfig.mdxSourceDir.blog,
+    sourceDir: resolveMdxSourceDir(sourceKey),
     dataSource: blogSource,
     requestedPath,
     locale,

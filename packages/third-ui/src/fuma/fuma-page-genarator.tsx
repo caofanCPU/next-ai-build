@@ -26,10 +26,6 @@ interface FumaPageParams {
    */
   getMDXComponents: () => any;
   /* 
-   * The source directory of the mdx content, used to generate the edit path
-   */
-  mdxSourceDir: string;
-  /* 
    * The github base url, used to generate the edit path, if not provided, the edit path will not be shown
    */
   githubBaseUrl?: string;
@@ -79,7 +75,6 @@ export function createFumaPage({
   sourceKey,
   mdxContentSource,
   getMDXComponents,
-  mdxSourceDir,
   githubBaseUrl,
   copyButtonComponent,
   supportedLocales = ['en'],
@@ -90,6 +85,7 @@ export function createFumaPage({
   localePrefixAsNeeded = true,
   defaultLocale = 'en',
 }: FumaPageParams) {
+  const resolvedMdxSourceDir = `src/mdx/${sourceKey}`;
   const isLocalMdDebugEnabled = process.env.LOCAL_MD_DEBUG?.toLowerCase() === 'true';
   const now = () => (typeof performance !== 'undefined' ? performance.now() : Date.now());
   const durationMs = (startedAt: number) => Number((now() - startedAt).toFixed(1));
@@ -132,7 +128,7 @@ export function createFumaPage({
       notFound();
     }
 
-    const path = githubBaseUrl ? `${mdxSourceDir}/${page.path}` : undefined;
+    const path = githubBaseUrl ? `${resolvedMdxSourceDir}/${page.path}` : undefined;
     const tocFooterElement = (
       <TocFooterWrapper
         lastModified={page.data.date}
@@ -222,7 +218,7 @@ export function createFumaPage({
       };
     }
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL!;
-    const baseRoute = mdxSourceDir.replace('src/mdx/', '');
+    const baseRoute = resolvedMdxSourceDir.replace('src/mdx/', '');
     // build the current page path
     const currentPath = slug ? slug.join('/') : '';
     const localizedPath = getAsNeededLocalizedUrl(locale || defaultLocale, `/${baseRoute}${currentPath ? `/${currentPath}` : ''}`, localePrefixAsNeeded, defaultLocale);

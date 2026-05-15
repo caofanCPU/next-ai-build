@@ -125,12 +125,6 @@ export function createCommonAppConfig(options?: {
       debug: process.env.CLERK_DEBUG === 'true',
     },
 
-    // MDX source file directory configuration
-    mdxSourceDir: {
-      docs: process.env.NEXT_PUBLIC_MDX_DOCS_DIR || "src/mdx/docs",
-      blog: process.env.NEXT_PUBLIC_MDX_BLOG_DIR || "src/mdx/blog", 
-      legal: process.env.NEXT_PUBLIC_MDX_LEGAL_DIR || "src/mdx/legal"
-    },
   };
 
   // Convenient constants - avoid deep nested access
