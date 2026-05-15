@@ -48,8 +48,7 @@ export default async function Layout({
       config={{
         ...customeOptions,
         themeSwitch: {
-          enabled: true,
-          mode: 'light-dark-system',
+          mode: 'light-only',
         },
         sidebar: { enabled: true },
         searchToggle: { enabled: false },

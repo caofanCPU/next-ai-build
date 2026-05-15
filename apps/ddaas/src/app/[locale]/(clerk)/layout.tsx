@@ -31,8 +31,7 @@ export default async function RootLayout({
       enabled: false,
     },
     themeSwitch: {
-      enabled: true,
-      mode: 'light-dark-system',
+      mode: 'dark-only',
     },
   };
   return (

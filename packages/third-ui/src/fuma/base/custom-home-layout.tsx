@@ -3,13 +3,16 @@ import { HomeLayout, type HomeLayoutProps } from 'fumadocs-ui/layouts/home';
 import { FumaBannerSuit } from '../fuma-banner-suit';
 import { Footer } from '../../main/footer';
 import { GoToTop } from '../../main/go-to-top';
+import { SiteThemeProvider } from './site-theme-provider';
 import {
   NavbarCSSVars,
   CustomHomeHeader,
   type DesktopAction,
   type MobileBarAction,
   type MobileMenuAction,
+  type CustomHomeHeaderProps,
 } from './custom-header';
+import type { SiteThemeSwitchConfig } from './site-layout-shared';
 
 // - Set bannerHeight/headerHeight to the rem values expected by the project. Use bannerHeight = 0 when there is no banner.
 // - layoutStyle passes the variables to HomeLayout's main element, offsetting content without has-banner/no-banner classes.
@@ -91,6 +94,10 @@ export interface CustomHomeLayoutProps {
    * The default locale for the application (default: 'en')
    */
   defaultLocale?: string;
+  /**
+   * Theme mode for this layout group.
+   */
+  themeSwitch?: SiteThemeSwitchConfig;
   children?: ReactNode;
 }
 
@@ -119,6 +126,7 @@ export function CustomHomeLayout({
   actionOrders,
   localePrefixAsNeeded = true,
   defaultLocale = 'en',
+  themeSwitch,
 }: CustomHomeLayoutProps) {
   const resolvedBannerHeight = bannerHeight ?? (showBanner ? 3 : 0.5);
   const resolvedPaddingTop =
@@ -139,6 +147,7 @@ export function CustomHomeLayout({
     <CustomHomeHeader
       {...homeLayoutProps}
       nav={navOptions}
+      themeSwitch={themeSwitch}
       bannerHeight={resolvedBannerHeight}
       headerHeight={headerHeight}
       navbarClassName={navbarClassName}
@@ -148,6 +157,7 @@ export function CustomHomeLayout({
       mobileMenuActionsOrder={actionOrders?.mobileMenu}
     />
   );
+  const themeMode = themeSwitch?.mode ?? 'light-dark-system';
 
   return (
     <>
@@ -158,19 +168,21 @@ export function CustomHomeLayout({
           floating={floatingNav}
         />
       )}
+    <SiteThemeProvider mode={themeMode}>
       <HomeLayout
-        {...homeLayoutProps}
-        nav={{
-          ...navOptions,
-          component: header,
-        }}
-        className='bg-neutral-100 dark:bg-neutral-900'
-        style={layoutStyle}
-      >
-        {children}
-        {showFooter ? footer ?? <Footer locale={locale} localePrefixAsNeeded={localePrefixAsNeeded} defaultLocale={defaultLocale} /> : null}
-        {showGoToTop ? goToTop ?? <GoToTop /> : null}
-      </HomeLayout>
+          {...homeLayoutProps}
+          nav={{
+            ...navOptions,
+            component: header,
+          }}
+          className='bg-neutral-100 dark:bg-neutral-900'
+          style={layoutStyle}
+        >
+          {children}
+          {showFooter ? footer ?? <Footer locale={locale} localePrefixAsNeeded={localePrefixAsNeeded} defaultLocale={defaultLocale} /> : null}
+          {showGoToTop ? goToTop ?? <GoToTop /> : null}
+        </HomeLayout>
+      </SiteThemeProvider>
     </>
   );
 }

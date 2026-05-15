@@ -35,7 +35,11 @@ import { Popover, PopoverContent, PopoverTrigger } from 'fumadocs-ui/components/
 import { buttonVariants } from 'fumadocs-ui/components/ui/button';
 import { useI18n } from 'fumadocs-ui/contexts/i18n';
 import { HeaderThemeSwitch } from './header-theme-switch';
-import type { ExtendedLinkItem } from './site-layout-shared';
+import type {
+  ExtendedLinkItem,
+  SiteThemeSwitchConfig,
+  SiteThemeSwitchMode,
+} from './site-layout-shared';
 
 export type NavbarCSSVars = CSSProperties & {
   '--fd-banner-height'?: string;
@@ -47,7 +51,8 @@ const PrefetchLinkItem = LinkItem as (
   props: ComponentProps<typeof LinkItem> & { prefetch?: boolean },
 ) => ReactNode;
 
-export interface CustomHomeHeaderProps extends HomeLayoutProps {
+export interface CustomHomeHeaderProps
+  extends Omit<HomeLayoutProps, 'themeSwitch'> {
   /**
    * Banner height in rem units
    *
@@ -92,6 +97,7 @@ export interface CustomHomeHeaderProps extends HomeLayoutProps {
    * Control order of utilities inside the mobile dropdown.
    */
   mobileMenuActionsOrder?: MobileMenuAction[];
+  themeSwitch?: SiteThemeSwitchConfig;
 }
 
 export type DesktopAction =
@@ -175,8 +181,12 @@ export function CustomHomeHeader({
         ? searchToggle.components?.lg ?? null
         : null,
     theme:
-      themeSwitch.enabled !== false
-        ? themeSwitch.component ?? <HeaderThemeSwitch mode={themeSwitch?.mode} />
+      shouldShowThemeSwitch(themeSwitch?.mode)
+        ? (
+            <HeaderThemeSwitch
+              mode={normalizeThemeSwitchMode(themeSwitch?.mode)}
+            />
+          )
         : null,
     i18n: i18n ? (
       <CompactLanguageToggle>
@@ -238,8 +248,12 @@ export function CustomHomeHeader({
       </CompactLanguageToggle>
     ) : null,
     theme:
-      themeSwitch.enabled !== false
-        ? themeSwitch.component ?? <HeaderThemeSwitch mode={themeSwitch?.mode} />
+      shouldShowThemeSwitch(themeSwitch?.mode)
+        ? (
+            <HeaderThemeSwitch
+              mode={normalizeThemeSwitchMode(themeSwitch?.mode)}
+            />
+          )
         : null,
   };
   const shouldRenderMobileUtilities = mobileMenuActionsOrder.some(
@@ -354,6 +368,16 @@ export function CustomHomeHeader({
       </ul>
     </CustomNavbar>
   );
+}
+
+function shouldShowThemeSwitch(mode?: SiteThemeSwitchMode): boolean {
+  return mode === 'light-dark' || mode === 'light-dark-system' || mode == null;
+}
+
+function normalizeThemeSwitchMode(
+  mode?: SiteThemeSwitchMode,
+): 'light-dark' | 'light-dark-system' {
+  return mode === 'light-dark' ? 'light-dark' : 'light-dark-system';
 }
 
 interface CustomNavbarProps extends ComponentProps<'div'> {

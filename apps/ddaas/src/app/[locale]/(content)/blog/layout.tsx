@@ -37,8 +37,7 @@ export default async function Layout({
       enabled: false,
     },
     themeSwitch: {
-      enabled: true,
-      mode: 'light-dark-system',
+      mode: 'dark-only',
     },
   };
 
@@ -65,6 +64,7 @@ export default async function Layout({
             tree: blogSource.getPageTree(locale),
             sidebar: { enabled: false },
             searchToggle: { enabled: false },
+            themeProvider: false,
           }}
         >
           {children}

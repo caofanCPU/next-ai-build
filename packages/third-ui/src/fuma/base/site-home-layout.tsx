@@ -72,6 +72,7 @@ export function SiteHomeLayout({
     ...(showBanner != null ? { showBanner } : {}),
     ...(showFooter != null ? { showFooter } : {}),
     ...(showGoToTop != null ? { showGoToTop } : {}),
+    ...(config.themeSwitch ? { themeSwitch: config.themeSwitch } : {}),
   };
 
   return <CustomHomeLayout {...layoutProps}>{children}</CustomHomeLayout>;

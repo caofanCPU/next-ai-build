@@ -58,7 +58,17 @@ export interface SiteBaseLayoutConfig {
   githubUrl?: string;
   links?: SiteNavItemConfig[];
   searchToggle?: HomeLayoutProps['searchToggle'];
-  themeSwitch?: HomeLayoutProps['themeSwitch'];
+  themeSwitch?: SiteThemeSwitchConfig;
+}
+
+export type SiteThemeSwitchMode =
+  | 'light-dark-system'
+  | 'light-dark'
+  | 'light-only'
+  | 'dark-only';
+
+export interface SiteThemeSwitchConfig {
+  mode?: SiteThemeSwitchMode;
 }
 
 export interface SiteMenuLeafConfig {
@@ -185,6 +195,5 @@ export function toHomeLayoutOptions(config: SiteBaseLayoutConfig): HomeLayoutPro
     ...(config.githubUrl ? { githubUrl: config.githubUrl } : {}),
     ...(config.links ? { links: normalizeNavItems(config.links) } : {}),
     ...(config.searchToggle ? { searchToggle: config.searchToggle } : {}),
-    ...(config.themeSwitch ? { themeSwitch: config.themeSwitch } : {}),
   };
 }

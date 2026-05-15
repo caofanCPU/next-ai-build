@@ -5,6 +5,7 @@ import { AirplayIcon, MoonIcon, SunIcon } from '@windrun-huaiin/base-ui/icons';
 import { useTheme } from 'next-themes';
 import { type ComponentProps, useEffect, useState } from 'react';
 import { cn } from '@windrun-huaiin/lib/utils';
+import type { SiteThemeSwitchMode } from './site-layout-shared';
 
 const itemVariants = cva('inline-flex size-6.5 items-center justify-center rounded-full p-1.5', {
   variants: {
@@ -18,7 +19,7 @@ const itemVariants = cva('inline-flex size-6.5 items-center justify-center round
 const full = [['light', SunIcon] as const, ['dark', MoonIcon] as const, ['system', AirplayIcon] as const];
 
 export interface HeaderThemeSwitchProps extends ComponentProps<'div'> {
-  mode?: 'light-dark' | 'light-dark-system';
+  mode?: Exclude<SiteThemeSwitchMode, 'light-only' | 'dark-only'>;
 }
 
 export function HeaderThemeSwitch({
