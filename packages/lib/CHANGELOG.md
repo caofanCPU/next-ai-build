@@ -1,5 +1,11 @@
 # @windrun-huaiin/lib
 
+## 31.0.3
+
+### Patch Changes
+
+- fix(env): enhance `baseUrl` without rare `/` in tail
+
 ## 31.0.2
 
 ### Patch Changes

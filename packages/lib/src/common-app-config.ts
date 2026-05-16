@@ -71,9 +71,11 @@ export function createCommonAppConfig(options?: {
   
   const storagePrefix = process.env.NEXT_PUBLIC_I18N_STORAGE_PREFIX || 'WINDRUN-HUAIIN';
 
+  const rawBaseUrl = process.env.NEXT_PUBLIC_BASE_URL || '';
+
   const config = {
     // Basic configuration
-    baseUrl: process.env.NEXT_PUBLIC_BASE_URL || '',
+    baseUrl: rawBaseUrl.replace(/\/+$/, ''),
     githubBaseUrl: process.env.NEXT_PUBLIC_GITHUB_BASE_URL || '',
     github: process.env.NEXT_PUBLIC_GITHUB || '',
     githubInfoToken: process.env.NEXT_PUBLIC_FUMA_GITHUB_TOKEN || '',
