@@ -33,6 +33,7 @@ const entries = [
   'src/app/api/webhook/stripe/route.ts',
   'src/app/api/webhook/clerk/user/route.ts',
   'src/app/api/user/anonymous/init/route.ts',
+  'src/app/api/user/anonymous/init/fingerprint-only-route.ts',
   'src/app/api/user/credit-overview/route.ts',
   'src/app/api/user/pricing-context/route.ts',
   'src/app/api/ai/route.ts',

@@ -107,6 +107,11 @@
       "import": "./dist/app/api/user/anonymous/init/route.mjs",
       "require": "./dist/app/api/user/anonymous/init/route.js"
     },
+    "./app/api/user/anonymous/init/fingerprint-only-route": {
+      "types": "./dist/app/api/user/anonymous/init/fingerprint-only-route.d.ts",
+      "import": "./dist/app/api/user/anonymous/init/fingerprint-only-route.mjs",
+      "require": "./dist/app/api/user/anonymous/init/fingerprint-only-route.js"
+    },
     "./app/api/user/credit-overview/route": {
       "types": "./dist/app/api/user/credit-overview/route.d.ts",
       "import": "./dist/app/api/user/credit-overview/route.mjs",
