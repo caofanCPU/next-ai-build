@@ -1,5 +1,11 @@
 # @windrun-huaiin/backend-core
 
+## 31.0.1
+
+### Patch Changes
+
+- feat(user): fingerprint init user now support non-clerk route
+
 ## 31.0.0
 
 ### Major Changes
