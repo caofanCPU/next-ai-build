@@ -72,6 +72,15 @@ export default clerkMiddleware(
       return authResponse;
     }
 
+    // Canonicalize page URLs before locale handling so paths such as /blog/
+    // redirect externally to /blog instead of being internally rewritten.
+    if (!pathname.startsWith('/api/') && pathname.length > 1 && pathname.endsWith("/")) {
+      return NextResponse.redirect(
+        new URL(pathname.slice(0, -1), req.url),
+        301
+      );
+    }
+
     // Handle page requests without locale prefixes according to configuration.
     // This prevents requests from missing the [locale] route.
     if (!hasLocalePrefix && !pathname.startsWith('/api/')) {
@@ -86,14 +95,6 @@ export default clerkMiddleware(
     }
 
     // Use the default i18n middleware for all other routes.
-
-    // handle trailing slash redirect
-    if (req.nextUrl.pathname.length > 1 && req.nextUrl.pathname.endsWith("/")) {
-      return NextResponse.redirect(
-        new URL(req.nextUrl.pathname.slice(0, -1), req.url),
-        301
-      );
-    }
     // Default handling for other public page routes.
     return intlMiddleware(req);
   },
