@@ -72,11 +72,10 @@ export async function CTA({
           <h2 className="mb-6 text-3xl font-bold text-neutral-950 md:text-4xl dark:text-neutral-50">
             {data.title} <span className={themeIconColor}>{data.eyesOn}</span>?
           </h2>
-          <p className="mx-auto mb-8 max-w-3xl text-base text-neutral-700 sm:text-xl dark:text-neutral-300">
-            {data.description1}
-            <br />
-            <span className={cn(themeIconColor, "text-xl sm:text-2xl")}>{data.description2}</span>
-          </p>
+          <div className="mx-auto mb-8 space-y-2 max-w-4xl text-base text-neutral-700 sm:text-xl dark:text-neutral-300">
+            <p>{data.description1}</p>
+            <p className={cn(themeIconColor, "text-xl sm:text-2xl")}>{data.description2}</p>
+          </div>
           <GradientButton
             title={data.button}
             href={data.url}
