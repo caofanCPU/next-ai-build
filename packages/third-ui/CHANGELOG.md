@@ -1,5 +1,11 @@
 # @windrun-huaiin/third-ui
 
+## 31.3.2
+
+### Patch Changes
+
+- feat(seo): seo metadata fix and og image config
+
 ## 31.3.1
 
 ### Patch Changes
