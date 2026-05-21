@@ -77,6 +77,14 @@ function getOptionalTranslation(
   return t.has(key) ? t(key) : undefined;
 }
 
+function getNestedTranslation(
+  t: Awaited<ReturnType<typeof getTranslations>>,
+  key: string,
+  fallback: string | undefined,
+): string | undefined {
+  return getOptionalTranslation(t, key) ?? fallback;
+}
+
 function getAbsoluteUrl(baseUrl: string, value: string): string {
   if (/^https?:\/\//i.test(value)) {
     return value;
@@ -110,15 +118,17 @@ export async function resolveMetadataOverrides(options: {
   const ogType = getEnvText(process.env.NEXT_PUBLIC_OG_TYPE);
   const xSiteName = getEnvText(process.env.NEXT_PUBLIC_X_SITE_NAME);
   const baseUrl = getEnvText(process.env.NEXT_PUBLIC_BASE_URL) ?? '';
+  const title = getOptionalTranslation(t, 'title');
+  const description = getOptionalTranslation(t, 'description');
 
   return {
-    title: getOptionalTranslation(t, 'title'),
-    description: getOptionalTranslation(t, 'description'),
+    title,
+    description,
     keywords: getOptionalTranslation(t, 'keywords'),
     openGraph: {
       ...(ogType ? { type: ogType as any } : {}),
-      title: getOptionalTranslation(t, 'openGraph.title'),
-      description: getOptionalTranslation(t, 'openGraph.description'),
+      title: getNestedTranslation(t, 'openGraph.title', title),
+      description: getNestedTranslation(t, 'openGraph.description', description),
       images: getImageUrls(
         baseUrl,
         getOptionalTranslation(t, 'openGraph.image') ?? getOptionalTranslation(t, 'openGraph.images'),
@@ -126,8 +136,8 @@ export async function resolveMetadataOverrides(options: {
     },
     twitter: {
       ...(xSiteName ? { site: xSiteName } : {}),
-      title: getOptionalTranslation(t, 'twitter.title'),
-      description: getOptionalTranslation(t, 'twitter.description'),
+      title: getNestedTranslation(t, 'twitter.title', title),
+      description: getNestedTranslation(t, 'twitter.description', description),
       images: getImageUrls(
         baseUrl,
         getOptionalTranslation(t, 'twitter.image') ?? getOptionalTranslation(t, 'twitter.images'),
@@ -141,12 +151,33 @@ export async function createLocalizedSiteMetadata(
 ): Promise<LocalizedSiteMetadata> {
   const { locale } = options;
   const t = await getTranslations({ locale, namespace: 'home' });
+  const ogType = getEnvText(process.env.NEXT_PUBLIC_OG_TYPE);
+  const xSiteName = getEnvText(process.env.NEXT_PUBLIC_X_SITE_NAME);
+  const baseUrl = getEnvText(process.env.NEXT_PUBLIC_BASE_URL) ?? '';
+  const title = t('webTitle');
+  const description = t('webDescription');
+  const ogTitle = getNestedTranslation(t, 'openGraph.title', title);
+  const ogDescription = getNestedTranslation(t, 'openGraph.description', description);
+  const twitterTitle = getNestedTranslation(t, 'twitter.title', title);
+  const twitterDescription = getNestedTranslation(t, 'twitter.description', description);
 
   return {
-    title: t('webTitle'),
-    description: t('webDescription'),
+    title,
+    description,
     keywords: t('keywords'),
     icons: DEFAULT_SITE_ICONS,
+    openGraph: {
+      ...(ogType ? { type: ogType as any } : {}),
+      title: ogTitle,
+      description: ogDescription,
+      images: getImageUrls(baseUrl, getOptionalTranslation(t, 'openGraph.image')),
+    },
+    twitter: {
+      ...(xSiteName ? { site: xSiteName } : {}),
+      title: twitterTitle,
+      description: twitterDescription,
+      images: getImageUrls(baseUrl, getOptionalTranslation(t, 'twitter.image')),
+    },
   };
 }
 

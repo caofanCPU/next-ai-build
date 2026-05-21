@@ -4,7 +4,13 @@
     "banner": "Rethink | Redefine | Rebuild",
     "webTitle": "DDaaS - Launch a Paid Product Website Faster",
     "webDescription": "Build a polished product website with ready-to-use pages for pricing, Stripe payments, sign-in, docs, blog, SEO content, and mobile-friendly UI.",
-    "keywords": "SaaS website builder, product website template, Stripe payments, subscription website, documentation website, AI SaaS website, responsive web design, SEO website"
+    "keywords": "SaaS website builder, product website template, Stripe payments, subscription website, documentation website, AI SaaS website, responsive web design, SEO website",
+    "openGraph": {
+        "image": "/share-og.png"
+      },
+      "twitter": {
+        "image": "/share-og.png"
+      }
   },
   "hero": {
     "mainTitle": "Launch Your Website",
