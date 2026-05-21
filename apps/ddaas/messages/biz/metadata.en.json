@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "pricing": {
+      "title": "Pricing - DDaaS",
+      "description": "Compare DDaaS plans, subscriptions, and one-time credit packs to choose the pricing model that fits your product launch.",
+      "keywords": "DDaaS pricing, SaaS pricing page, subscription plans, credit packs, Stripe pricing",
+      "openGraph": {
+        "title": "Pricing - DDaaS",
+        "description": "Explore DDaaS pricing options for subscriptions and credit packs.",
+        "image": "/share-og.png"
+      },
+      "twitter": {
+        "title": "Pricing - DDaaS",
+        "description": "Explore DDaaS pricing options for subscriptions and credit packs.",
+        "image": "/share-og.png"
+      }
+    }
+  }
+}

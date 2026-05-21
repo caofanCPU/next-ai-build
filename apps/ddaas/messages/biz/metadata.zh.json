@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "pricing": {
+      "title": "价格方案 - DDaaS",
+      "description": "查看 DDaaS 的订阅套餐与一次性积分包，选择适合你产品上线节奏的定价方案。",
+      "keywords": "DDaaS 价格, SaaS 价格页, 订阅套餐, 积分包, Stripe 定价",
+      "openGraph": {
+        "title": "价格方案 - DDaaS",
+        "description": "查看 DDaaS 的订阅与积分包价格方案。",
+        "image": "https://r2.d8ger.com/Reve-Image/00.webp"
+      },
+      "twitter": {
+        "title": "价格方案 - DDaaS",
+        "description": "查看 DDaaS 的订阅与积分包价格方案。",
+        "image": "https://r2.d8ger.com/Reve-Image/00.webp"
+      }
+    }
+  }
+}

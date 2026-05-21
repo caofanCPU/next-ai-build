@@ -2,9 +2,30 @@
 import { appConfig } from '@/lib/appConfig';
 import { moneyPriceConfig } from '@core/config/money-price';
 import { FingerprintStatus } from "@third-ui/clerk/fingerprint";
+import { createLocalizedMetadata } from '@third-ui/lib/seo-metadata';
 import { buildMoneyPriceData } from "@third-ui/main/money-price/server";
 import { cn } from '@lib/utils';
+import { defaultLocale, localePrefixAsNeeded } from '@/lib/appConfig';
 import { PricingClient } from './pricing-client';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  return createLocalizedMetadata({
+    namespace: 'metadata.pricing',
+    url: {
+      locale,
+      pathname: '/pricing',
+      baseUrl: appConfig.baseUrl,
+      locales: appConfig.i18n.locales,
+      defaultLocale,
+      localePrefixAsNeeded,
+    },
+  });
+}
 
 export default async function Pricing({
   params,

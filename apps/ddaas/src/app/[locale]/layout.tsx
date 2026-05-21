@@ -1,6 +1,6 @@
 import { appConfig, generatedLocales, localePrefixAsNeeded, defaultLocale, themeMode } from "@/lib/appConfig";
 import { getFumaTranslations } from '@third-ui/fuma/fuma-translate-util';
-import { createLocalizedSiteMetadata } from '@third-ui/lib/seo-metadata';
+import { createLocalizedPageMetadata, createLocalizedSiteMetadata } from '@third-ui/lib/seo-metadata';
 import { NProgressBar } from '@third-ui/main/nprogress-bar';
 import { DocsRootProvider } from '@third-ui/fuma/base/docs-root-provider';
 import { ClerkProviderClient } from '@third-ui/clerk';
@@ -20,12 +20,23 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>
 }) {
   const { locale } = await paramsPromise;
-  return createLocalizedSiteMetadata({
+  const siteMetadata = await createLocalizedSiteMetadata({
     locale,
     baseUrl: appConfig.baseUrl,
     locales: appConfig.i18n.locales,
     defaultLocale,
     localePrefixAsNeeded,
+  });
+  return createLocalizedPageMetadata({
+    url: {
+      locale,
+      pathname: '/',
+      baseUrl: appConfig.baseUrl,
+      locales: appConfig.i18n.locales,
+      defaultLocale,
+      localePrefixAsNeeded,
+    },
+    site: siteMetadata,
   });
 }
 
