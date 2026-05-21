@@ -53,19 +53,30 @@ const DEFAULT_SITE_ICONS = [
   { rel: 'android-chrome', sizes: '512x512', url: '/favicon-512x512.png' },
 ];
 
+function joinBaseUrl(baseUrl: string, path: string): string {
+  const normalizedBaseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
+  if (path === '/') {
+    return `${normalizedBaseUrl}/`;
+  }
+
+  return `${normalizedBaseUrl}${path}`;
+}
+
 function buildAlternateUrls(options: LocalizedPageUrlOptions) {
   const { baseUrl, defaultLocale, locale, localePrefixAsNeeded, locales, pathname } = options;
   const canonicalPath = getAsNeededLocalizedUrl(locale, pathname, localePrefixAsNeeded, defaultLocale);
-  const canonical = `${baseUrl}${canonicalPath}`;
   const languages = Object.fromEntries(
     locales.map((siteLocale) => [
       siteLocale,
-      `${baseUrl}${getAsNeededLocalizedUrl(siteLocale, pathname, localePrefixAsNeeded, defaultLocale)}`,
+      joinBaseUrl(
+        baseUrl,
+        getAsNeededLocalizedUrl(siteLocale, pathname, localePrefixAsNeeded, defaultLocale),
+      ),
     ]),
   );
 
   return {
-    canonical,
+    canonical: joinBaseUrl(baseUrl, canonicalPath),
     languages,
   };
 }
@@ -107,6 +118,13 @@ function getImageUrls(baseUrl: string, value?: string | string[]): { url: string
 function getEnvText(value?: string): string | undefined {
   const trimmed = value?.trim();
   return trimmed ? trimmed : undefined;
+}
+
+function omitUndefined<T extends Record<string, unknown>>(value: T | undefined): Partial<T> | undefined {
+  if (!value) return undefined;
+
+  const entries = Object.entries(value).filter(([, item]) => item !== undefined);
+  return entries.length > 0 ? Object.fromEntries(entries) as Partial<T> : undefined;
 }
 
 export async function resolveMetadataOverrides(options: {
@@ -185,20 +203,22 @@ export function createLocalizedPageMetadata(
   options: CreateLocalizedPageMetadataOptions,
 ): Metadata {
   const { page, site, url } = options;
-  const { baseUrl } = url;
   const alternates = buildAlternateUrls(url);
+  const siteOpenGraph = omitUndefined(site?.openGraph as Record<string, unknown> | undefined);
+  const pageOpenGraph = omitUndefined(page?.openGraph as Record<string, unknown> | undefined);
   const openGraph = {
-    ...site?.openGraph,
-    ...page?.openGraph,
+    ...siteOpenGraph,
+    ...pageOpenGraph,
     url: alternates.canonical,
   } as Metadata['openGraph'];
+  const siteTwitter = omitUndefined(site?.twitter as Record<string, unknown> | undefined);
+  const pageTwitter = omitUndefined(page?.twitter as Record<string, unknown> | undefined);
   const twitter = {
-    ...site?.twitter,
-    ...page?.twitter,
+    ...siteTwitter,
+    ...pageTwitter,
   } as Metadata['twitter'];
 
   return {
-    metadataBase: new URL(baseUrl),
     title: page?.title ?? site?.title,
     description: page?.description ?? site?.description,
     keywords: page?.keywords ?? site?.keywords,

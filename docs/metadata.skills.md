@@ -111,9 +111,33 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 - `NEXT_PUBLIC_OG_TYPE` 为空时不输出 `og:type`
 - `NEXT_PUBLIC_X_SITE_NAME` 为空时不输出 `twitter:site`
 
+优先级规则：
+
+- 页面 `title`: `metadata.pricing.title > home.webTitle`
+- 页面 `description`: `metadata.pricing.description > home.webDescription`
+- `openGraph.title`: `metadata.pricing.openGraph.title > metadata.pricing.title > home.openGraph.title > home.webTitle`
+- `openGraph.description`: `metadata.pricing.openGraph.description > metadata.pricing.description > home.openGraph.description > home.webDescription`
+- `twitter.title`: `metadata.pricing.twitter.title > metadata.pricing.title > home.twitter.title > home.webTitle`
+- `twitter.description`: `metadata.pricing.twitter.description > metadata.pricing.description > home.twitter.description > home.webDescription`
+- `openGraph.image`: `metadata.pricing.openGraph.image > home.openGraph.image`
+- `twitter.image`: `metadata.pricing.twitter.image > home.twitter.image`
+
 ## 推荐约定
 
 - 首页用 `pathname: '/'`
 - 普通页面用实际路径，如 `/pricing`
 - page metadata 统一走 `createLocalizedMetadata`
 - 不要在根 layout 里固定写首页 canonical
+
+## 踩坑提示
+
+- 首页 canonical 如果必须保留尾斜杠，例如 `https://d8ger.com/`，不要依赖 `metadataBase + path` 的组合让 Next 去拼接。
+- 这次实测里，首页根路径在 Next metadata 输出阶段可能会被规范化成不带尾斜杠的 origin。
+- 更稳的做法是：
+  - `alternates.canonical` 直接返回完整绝对 URL
+  - `alternates.languages` 直接返回完整绝对 URL
+  - `openGraph.url` 跟随同一套 canonical
+  - 不再额外返回 `metadataBase`
+- 否则容易出现：
+  - 页面实际 URL: `https://d8ger.com/`
+  - canonical 输出却变成: `https://d8ger.com`

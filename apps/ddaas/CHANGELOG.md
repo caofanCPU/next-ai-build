@@ -1,5 +1,17 @@
 # @windrun-huaiin/ddaas-website
 
+## 31.4.1
+
+### Patch Changes
+
+- fix(seo): seo metadata fix and og image config
+- Updated dependencies
+  - @windrun-huaiin/lib@31.0.3
+  - @windrun-huaiin/base-ui@31.0.0
+  - @windrun-huaiin/third-ui@31.3.3
+  - @windrun-huaiin/backend-core@31.0.1
+  - @windrun-huaiin/fumadocs-local-md@31.0.0
+
 ## 31.4.0
 
 ### Minor Changes
