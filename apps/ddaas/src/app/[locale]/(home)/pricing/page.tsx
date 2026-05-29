@@ -29,18 +29,13 @@ export async function generateMetadata({
 
 export default async function Pricing({
   params,
-  searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams?: Promise<{ initialBillingType?: string }>;
 }) {
   const isDev = process.env.NODE_ENV !== 'production';
   const forceShow = process.env.SHOW_FINGERPRINT_STATUS === 'true'
   const enableSubscriptionUpgrade = process.env.ENABLE_STRIPE_SUBSCRIPTION_UPGRADE !== 'false';
   const { locale } =  await params;
-  const resolvedSearchParams = searchParams ? await searchParams : {};
-  const { initialBillingType } = resolvedSearchParams;
-  console.log(initialBillingType);
   const enabledBillingTypes = ['monthly', 'yearly', 'onetime'];
   const data = await buildMoneyPriceData({
     locale,
@@ -66,7 +61,6 @@ export default async function Pricing({
           enableClerkModal={appConfig.style.clerkAuthInModal}
           enabledBillingTypes={enabledBillingTypes}
           enableSubscriptionUpgrade={enableSubscriptionUpgrade}
-          initialBillingType={initialBillingType}
         />
       </section>
     </>

@@ -1,6 +1,8 @@
 import { getUpstashSnapshot } from './actions';
 import { TestPlayground } from './test-playground';
 
+export const dynamic = 'force-dynamic';
+
 export default async function UpstashTestPage() {
   const snapshot = await getUpstashSnapshot();
 
