@@ -1,5 +1,11 @@
 # @windrun-huaiin/third-ui
 
+## 31.3.4
+
+### Patch Changes
+
+- fix(mermaid): bugfix, rough hand drawn style not suitable for arrows, so remove all arrows rough style, just keep the original arrows style
+
 ## 31.3.3
 
 ### Patch Changes
