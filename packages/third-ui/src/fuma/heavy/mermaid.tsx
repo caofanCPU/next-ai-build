@@ -439,6 +439,11 @@ function applyHandDrawnStyle(svg: string) {
         target.setAttribute(attr, source.getAttribute(attr) ?? '');
       }
     };
+    const shouldSkipHandDrawn = (element: Element) => {
+      if (element.closest('defs')) return true;
+      if (element.hasAttribute('marker-start') || element.hasAttribute('marker-end') || element.hasAttribute('marker-mid')) return true;
+      return false;
+    };
     const createOptions = (element: Element) => {
       const stroke = getStyleValue(element, 'stroke') ?? '#000';
       const fill = getStyleValue(element, 'fill') ?? 'none';
@@ -469,6 +474,7 @@ function applyHandDrawnStyle(svg: string) {
     };
 
     svgElement.querySelectorAll('rect').forEach((element) => {
+      if (shouldSkipHandDrawn(element)) return;
       const x = getNumber(element.getAttribute('x'));
       const y = getNumber(element.getAttribute('y'));
       const width = getNumber(element.getAttribute('width'));
@@ -500,6 +506,7 @@ function applyHandDrawnStyle(svg: string) {
     });
 
     svgElement.querySelectorAll('line').forEach((element) => {
+      if (shouldSkipHandDrawn(element)) return;
       const node = rc.line(
         getNumber(element.getAttribute('x1')),
         getNumber(element.getAttribute('y1')),
@@ -511,6 +518,7 @@ function applyHandDrawnStyle(svg: string) {
     });
 
     svgElement.querySelectorAll('polyline').forEach((element) => {
+      if (shouldSkipHandDrawn(element)) return;
       const points = (element.getAttribute('points') ?? '')
         .trim()
         .split(/\s+/)
@@ -522,6 +530,7 @@ function applyHandDrawnStyle(svg: string) {
     });
 
     svgElement.querySelectorAll('polygon').forEach((element) => {
+      if (shouldSkipHandDrawn(element)) return;
       const points = (element.getAttribute('points') ?? '')
         .trim()
         .split(/\s+/)
@@ -533,6 +542,7 @@ function applyHandDrawnStyle(svg: string) {
     });
 
     svgElement.querySelectorAll('path').forEach((element) => {
+      if (shouldSkipHandDrawn(element)) return;
       const d = element.getAttribute('d');
       if (!d) return;
       const node = rc.path(d, createOptions(element));
