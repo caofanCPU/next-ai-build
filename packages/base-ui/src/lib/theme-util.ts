@@ -53,14 +53,41 @@ const THEME_COLOR_META_MAP = Object.freeze({
     borderColor: "border-rose-500",
     hex: "#F43F5E",
   },
+  clue: {
+    label: "天空蓝·X",
+    textColor: "text-clue-500",
+    bgColor: "bg-clue-500/20",
+    viaColor: "via-clue-500/20",
+    ringColor: "ring-clue-500/20",
+    borderColor: "border-clue-500",
+    hex: "#1D9BF0",
+  },
+  hose: {
+    label: "睡莲红·X",
+    textColor: "text-hose-500",
+    bgColor: "bg-hose-500/20",
+    viaColor: "via-hose-500/20",
+    ringColor: "ring-hose-500/20",
+    borderColor: "border-hose-500",
+    hex: "#F91980",
+  },
+  pika: {
+    label: "皮卡黄·X",
+    textColor: "text-pika-500",
+    bgColor: "bg-pika-500/20",
+    viaColor: "via-pika-500/20",
+    ringColor: "ring-pika-500/20",
+    borderColor: "border-pika-500",
+    hex: "#FFD400",
+  },
 } as const);
 
-export type SupportedThemeName = keyof typeof THEME_COLOR_META_MAP;
-export type SupportedThemeColor = (typeof THEME_COLOR_META_MAP)[SupportedThemeName]["textColor"];
-export type SupportedThemeBgColor = (typeof THEME_COLOR_META_MAP)[SupportedThemeName]["bgColor"];
-export type SupportedThemeViaColor = (typeof THEME_COLOR_META_MAP)[SupportedThemeName]["viaColor"];
-export type SupportedThemeRingColor = (typeof THEME_COLOR_META_MAP)[SupportedThemeName]["ringColor"];
-export type SupportedThemeBorderColor = (typeof THEME_COLOR_META_MAP)[SupportedThemeName]["borderColor"];
+export type SupportedThemeName = keyof typeof THEME_COLOR_NAME_TO_CLASS_MAP;
+export type SupportedThemeColor = (typeof THEME_COLOR_NAME_TO_CLASS_MAP)[SupportedThemeName];
+export type SupportedThemeBgColor = (typeof THEME_COLOR_NAME_TO_BG_CLASS_MAP)[SupportedThemeName];
+export type SupportedThemeViaColor = (typeof THEME_COLOR_NAME_TO_VIA_CLASS_MAP)[SupportedThemeName];
+export type SupportedThemeRingColor = (typeof THEME_COLOR_NAME_TO_RING_CLASS_MAP)[SupportedThemeName];
+export type SupportedThemeBorderColor = (typeof THEME_COLOR_NAME_TO_BORDER_CLASS_MAP)[SupportedThemeName];
 
 // Supported theme color classes (static for Tailwind scan)
 export const __SUPPORTED_THEME_COLORS = Object.freeze({
@@ -69,6 +96,9 @@ export const __SUPPORTED_THEME_COLORS = Object.freeze({
   "text-indigo-500": THEME_COLOR_META_MAP.indigo.label,
   "text-emerald-500": THEME_COLOR_META_MAP.emerald.label,
   "text-rose-500": THEME_COLOR_META_MAP.rose.label,
+  "text-clue-500": THEME_COLOR_META_MAP.clue.label,
+  "text-hose-500": THEME_COLOR_META_MAP.hose.label,
+  "text-pika-500": THEME_COLOR_META_MAP.pika.label,
 } as const);
 
 // Hex color map (uppercase, match Tailwind classes)
@@ -78,6 +108,9 @@ export const THEME_COLOR_HEX_MAP = Object.freeze({
   "text-indigo-500": THEME_COLOR_META_MAP.indigo.hex,
   "text-emerald-500": THEME_COLOR_META_MAP.emerald.hex,
   "text-rose-500": THEME_COLOR_META_MAP.rose.hex,
+  "text-clue-500": THEME_COLOR_META_MAP.clue.hex,
+  "text-hose-500": THEME_COLOR_META_MAP.hose.hex,
+  "text-pika-500": THEME_COLOR_META_MAP.pika.hex,
 } as const);
 
 // Short theme names for env configuration
@@ -87,6 +120,9 @@ export const THEME_COLOR_NAME_TO_CLASS_MAP = Object.freeze({
   indigo: THEME_COLOR_META_MAP.indigo.textColor,
   emerald: THEME_COLOR_META_MAP.emerald.textColor,
   rose: THEME_COLOR_META_MAP.rose.textColor,
+  clue: THEME_COLOR_META_MAP.clue.textColor,
+  hose: THEME_COLOR_META_MAP.hose.textColor,
+  pika: THEME_COLOR_META_MAP.pika.textColor,
 } as const);
 
 export const THEME_COLOR_NAME_TO_BG_CLASS_MAP = Object.freeze({
@@ -95,6 +131,9 @@ export const THEME_COLOR_NAME_TO_BG_CLASS_MAP = Object.freeze({
   indigo: THEME_COLOR_META_MAP.indigo.bgColor,
   emerald: THEME_COLOR_META_MAP.emerald.bgColor,
   rose: THEME_COLOR_META_MAP.rose.bgColor,
+  clue: THEME_COLOR_META_MAP.clue.bgColor,
+  hose: THEME_COLOR_META_MAP.hose.bgColor,
+  pika: THEME_COLOR_META_MAP.pika.bgColor,
 } as const);
 
 export const THEME_COLOR_NAME_TO_VIA_CLASS_MAP = Object.freeze({
@@ -103,6 +142,9 @@ export const THEME_COLOR_NAME_TO_VIA_CLASS_MAP = Object.freeze({
   indigo: THEME_COLOR_META_MAP.indigo.viaColor,
   emerald: THEME_COLOR_META_MAP.emerald.viaColor,
   rose: THEME_COLOR_META_MAP.rose.viaColor,
+  clue: THEME_COLOR_META_MAP.clue.viaColor,
+  hose: THEME_COLOR_META_MAP.hose.viaColor,
+  pika: THEME_COLOR_META_MAP.pika.viaColor,
 } as const);
 
 export const THEME_COLOR_NAME_TO_RING_CLASS_MAP = Object.freeze({
@@ -111,6 +153,9 @@ export const THEME_COLOR_NAME_TO_RING_CLASS_MAP = Object.freeze({
   indigo: THEME_COLOR_META_MAP.indigo.ringColor,
   emerald: THEME_COLOR_META_MAP.emerald.ringColor,
   rose: THEME_COLOR_META_MAP.rose.ringColor,
+  clue: THEME_COLOR_META_MAP.clue.ringColor,
+  hose: THEME_COLOR_META_MAP.hose.ringColor,
+  pika: THEME_COLOR_META_MAP.pika.ringColor,
 } as const);
 
 export const THEME_COLOR_NAME_TO_BORDER_CLASS_MAP = Object.freeze({
@@ -119,6 +164,9 @@ export const THEME_COLOR_NAME_TO_BORDER_CLASS_MAP = Object.freeze({
   indigo: THEME_COLOR_META_MAP.indigo.borderColor,
   emerald: THEME_COLOR_META_MAP.emerald.borderColor,
   rose: THEME_COLOR_META_MAP.rose.borderColor,
+  clue: THEME_COLOR_META_MAP.clue.borderColor,
+  hose: THEME_COLOR_META_MAP.hose.borderColor,
+  pika: THEME_COLOR_META_MAP.pika.borderColor,
 } as const);
 
 // Validate theme color class (type guard)
@@ -169,6 +217,9 @@ export const THEME_BUTTON_GRADIENT_CLASS_MAP = Object.freeze({
   "text-indigo-500": "bg-linear-to-r from-indigo-400 to-blue-500 dark:from-indigo-500 dark:to-blue-600",
   "text-emerald-500": "bg-linear-to-r from-emerald-400 to-teal-500 dark:from-emerald-500 dark:to-teal-600",
   "text-rose-500": "bg-linear-to-r from-rose-400 to-pink-500 dark:from-rose-500 dark:to-pink-600",
+  "text-clue-500": "bg-linear-to-r from-sky-400 to-clue-500 dark:from-clue-500 dark:to-cyan-500",
+  "text-hose-500": "bg-linear-to-r from-hose-500 to-pink-500 dark:from-hose-500 dark:to-pink-600",
+  "text-pika-500": "bg-linear-to-r from-pika-500 to-amber-500 dark:from-pika-500 dark:to-amber-500",
 } as const);
 
 // Theme button hover gradient classes (static for Tailwind scan)
@@ -178,6 +229,9 @@ export const THEME_BUTTON_GRADIENT_HOVER_CLASS_MAP = Object.freeze({
   "text-indigo-500": "hover:from-indigo-500 hover:to-blue-600 dark:hover:from-indigo-600 dark:hover:to-blue-700",
   "text-emerald-500": "hover:from-emerald-500 hover:to-teal-600 dark:hover:from-emerald-600 dark:hover:to-teal-700",
   "text-rose-500": "hover:from-rose-500 hover:to-pink-600 dark:hover:from-rose-600 dark:hover:to-pink-700",
+  "text-clue-500": "hover:from-clue-500 hover:to-cyan-600 dark:hover:from-clue-500 dark:hover:to-cyan-600",
+  "text-hose-500": "hover:from-hose-500 hover:to-pink-600 dark:hover:from-hose-500 dark:hover:to-pink-700",
+  "text-pika-500": "hover:from-pika-500 hover:to-amber-600 dark:hover:from-pika-500 dark:hover:to-amber-600",
 } as const);
 
 // Global button gradient classes (type-safe, follows themeIconColor)
@@ -191,6 +245,9 @@ export const THEME_HERO_EYES_ON_CLASS_MAP = Object.freeze({
   "text-indigo-500": "bg-linear-to-r from-indigo-400 to-blue-600",
   "text-emerald-500": "bg-linear-to-r from-emerald-400 to-teal-600",
   "text-rose-500": "bg-linear-to-r from-rose-400 to-pink-600",
+  "text-clue-500": "bg-linear-to-r from-sky-400 to-clue-500",
+  "text-hose-500": "bg-linear-to-r from-hose-500 to-pink-600",
+  "text-pika-500": "bg-linear-to-r from-pika-500 to-amber-600",
 } as const);
 
 export const themeHeroEyesOnClass = THEME_HERO_EYES_ON_CLASS_MAP[themeIconColor];
@@ -202,6 +259,9 @@ export const THEME_RICH_TEXT_MARK_CLASS_MAP = Object.freeze({
   "text-indigo-500": "bg-indigo-300 dark:bg-indigo-600",
   "text-emerald-500": "bg-emerald-300 dark:bg-emerald-600",
   "text-rose-500": "bg-rose-300 dark:bg-rose-600",
+  "text-clue-500": "bg-clue-500/30 dark:bg-clue-500/60",
+  "text-hose-500": "bg-hose-500/30 dark:bg-hose-500/60",
+  "text-pika-500": "bg-pika-500/40 dark:bg-pika-500/70",
 } as const);
 
 export const themeRichTextMarkClass = THEME_RICH_TEXT_MARK_CLASS_MAP[themeIconColor];

@@ -27,6 +27,9 @@ const THEME_BG_CLASS_MAP: Record<SupportedThemeColor, string> = {
   'text-indigo-500': 'bg-indigo-500/20',
   'text-emerald-500': 'bg-emerald-500/20',
   'text-rose-500': 'bg-rose-500/20',
+  'text-clue-500': 'bg-clue-500/20',
+  'text-hose-500': 'bg-hose-500/20',
+  'text-pika-500': 'bg-pika-500/20',
 };
 
 const THEME_VIA_CLASS_MAP: Record<SupportedThemeColor, string> = {
@@ -35,6 +38,9 @@ const THEME_VIA_CLASS_MAP: Record<SupportedThemeColor, string> = {
   'text-indigo-500': 'via-indigo-500/20',
   'text-emerald-500': 'via-emerald-500/20',
   'text-rose-500': 'via-rose-500/20',
+  'text-clue-500': 'via-clue-500/20',
+  'text-hose-500': 'via-hose-500/20',
+  'text-pika-500': 'via-pika-500/20',
 };
 
 export function NotFoundPage({

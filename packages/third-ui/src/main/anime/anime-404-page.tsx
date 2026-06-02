@@ -31,6 +31,9 @@ const THEME_BG_CLASS_MAP: Record<SupportedThemeColor, string> = {
   'text-indigo-500': 'bg-indigo-500/20',
   'text-emerald-500': 'bg-emerald-500/20',
   'text-rose-500': 'bg-rose-500/20',
+  'text-clue-500': 'bg-clue-500/20',
+  'text-hose-500': 'bg-hose-500/20',
+  'text-pika-500': 'bg-pika-500/20',
 };
 
 const dust = Array.from({ length: 10 }, (_, index) => ({

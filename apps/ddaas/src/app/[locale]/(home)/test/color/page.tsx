@@ -27,6 +27,9 @@ const THEME_TEXT_TITLE_CLASS_MAP: Record<SupportedThemeColor, string> = {
   'text-indigo-500': 'text-indigo-600 dark:text-indigo-300',
   'text-emerald-500': 'text-emerald-600 dark:text-emerald-300',
   'text-rose-500': 'text-rose-600 dark:text-rose-300',
+  'text-clue-500': 'text-clue-500 dark:text-clue-500',
+  'text-hose-500': 'text-hose-500 dark:text-hose-500',
+  'text-pika-500': 'text-pika-500 dark:text-pika-500',
 };
 
 const THEME_SELECTOR_CLASS_MAP: Record<SupportedThemeColor, string> = {
@@ -35,6 +38,9 @@ const THEME_SELECTOR_CLASS_MAP: Record<SupportedThemeColor, string> = {
   'text-indigo-500': 'border-indigo-200 bg-indigo-50/90 text-indigo-700 hover:border-indigo-400 hover:bg-indigo-100',
   'text-emerald-500': 'border-emerald-200 bg-emerald-50/90 text-emerald-700 hover:border-emerald-400 hover:bg-emerald-100',
   'text-rose-500': 'border-rose-200 bg-rose-50/90 text-rose-700 hover:border-rose-400 hover:bg-rose-100',
+  'text-clue-500': 'border-clue-500/30 bg-clue-500/10 text-clue-500 hover:border-clue-500/60 hover:bg-clue-500/15',
+  'text-hose-500': 'border-hose-500/30 bg-hose-500/10 text-hose-500 hover:border-hose-500/60 hover:bg-hose-500/15',
+  'text-pika-500': 'border-pika-500/40 bg-pika-500/15 text-yellow-700 hover:border-pika-500/70 hover:bg-pika-500/20',
 };
 
 const THEME_SELECTOR_ACTIVE_CLASS_MAP: Record<SupportedThemeColor, string> = {
@@ -43,6 +49,9 @@ const THEME_SELECTOR_ACTIVE_CLASS_MAP: Record<SupportedThemeColor, string> = {
   'text-indigo-500': 'border-indigo-600 bg-indigo-500 text-white shadow-[0_10px_30px_rgba(99,102,241,0.28)]',
   'text-emerald-500': 'border-emerald-600 bg-emerald-500 text-white shadow-[0_10px_30px_rgba(16,185,129,0.28)]',
   'text-rose-500': 'border-rose-600 bg-rose-500 text-white shadow-[0_10px_30px_rgba(244,63,94,0.28)]',
+  'text-clue-500': 'border-clue-500 bg-clue-500 text-white shadow-[0_10px_30px_rgba(29,155,240,0.28)]',
+  'text-hose-500': 'border-hose-500 bg-hose-500 text-white shadow-[0_10px_30px_rgba(249,25,128,0.28)]',
+  'text-pika-500': 'border-pika-500 bg-pika-500 text-neutral-950 shadow-[0_10px_30px_rgba(255,212,0,0.28)]',
 };
 
 function TonePreview({

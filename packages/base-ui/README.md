@@ -19,6 +19,9 @@ Supported theme palettes:
 - `indigo`: `#6366F1`
 - `emerald`: `#48C892`
 - `rose`: `#F43F5E`
+- `clue`: `#1D9BF0`
+- `hose`: `#F91980`
+- `pika`: `#FFD400`
 
 Core module:
 
