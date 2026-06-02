@@ -1,5 +1,11 @@
 # @windrun-huaiin/base-ui
 
+## 31.0.1
+
+### Patch Changes
+
+- fix(theme): add `clue`= X blue, `hose` = X role, `pika` = X yellow theme color
+
 ## 31.0.0
 
 ### Major Changes

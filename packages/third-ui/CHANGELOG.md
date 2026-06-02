@@ -1,5 +1,13 @@
 # @windrun-huaiin/third-ui
 
+## 31.3.5
+
+### Patch Changes
+
+- fix(theme): add `clue`= X blue, `hose` = X role, `pika` = X yellow theme color
+- Updated dependencies
+  - @windrun-huaiin/base-ui@31.0.1
+
 ## 31.3.4
 
 ### Patch Changes
