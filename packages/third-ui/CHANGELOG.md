@@ -1,5 +1,11 @@
 # @windrun-huaiin/third-ui
 
+## 31.3.6
+
+### Patch Changes
+
+- feat(ui): credit-overview now support ream-time refresh
+
 ## 31.3.5
 
 ### Patch Changes
