@@ -1,5 +1,17 @@
 # @windrun-huaiin/ddaas-website
 
+## 31.4.5
+
+### Patch Changes
+
+- fix(credit): credit-overview onetime and subscription split config
+- Updated dependencies
+  - @windrun-huaiin/lib@31.0.3
+  - @windrun-huaiin/base-ui@31.0.1
+  - @windrun-huaiin/third-ui@31.3.7
+  - @windrun-huaiin/backend-core@31.0.2
+  - @windrun-huaiin/fumadocs-local-md@31.0.0
+
 ## 31.4.4
 
 ### Patch Changes

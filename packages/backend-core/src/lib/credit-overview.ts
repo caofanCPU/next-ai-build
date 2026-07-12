@@ -21,12 +21,28 @@ export interface BuildCreditOverviewPayloadOptions {
   pricingPath?: string;
   checkoutApiEndpoint?: string;
   customerPortalApiEndpoint?: string;
+  enabledBillingTypes?: string[];
 }
 
 export interface CreditOverviewPayload {
   data: CreditOverviewData;
   totalLabel: string;
   translations: CreditOverviewTranslations;
+}
+
+const DEFAULT_ENABLED_BILLING_TYPES = ['monthly', 'yearly', 'onetime'];
+const SUBSCRIPTION_BILLING_TYPES = new Set(['monthly', 'yearly']);
+
+function normalizeEnabledBillingTypes(enabledBillingTypes: string[] | undefined) {
+  const normalized = Array.from(
+    new Set(
+      (enabledBillingTypes?.length ? enabledBillingTypes : DEFAULT_ENABLED_BILLING_TYPES)
+        .map((billingType) => billingType.trim())
+        .filter((billingType) => billingType.length > 0),
+    ),
+  );
+
+  return normalized.length ? normalized : DEFAULT_ENABLED_BILLING_TYPES;
 }
 
 export async function buildCreditOverviewPayload(
@@ -46,10 +62,16 @@ export async function buildCreditOverviewPayload(
     pricingPath = '/pricing',
     checkoutApiEndpoint = '/api/stripe/checkout',
     customerPortalApiEndpoint = '/api/stripe/customer-portal',
+    enabledBillingTypes: enabledBillingTypesOption,
   } = options;
 
   const { user } = authUser;
   const enableSubscriptionUpgrade = process.env.ENABLE_STRIPE_SUBSCRIPTION_UPGRADE !== 'false';
+  const enabledBillingTypes = normalizeEnabledBillingTypes(enabledBillingTypesOption);
+  const subscriptionBillingEnabled = enabledBillingTypes.some((billingType) =>
+    SUBSCRIPTION_BILLING_TYPES.has(billingType),
+  );
+  const onetimeBillingEnabled = enabledBillingTypes.includes('onetime');
 
   const [credit, subscription, moneyPriceData] = await Promise.all([
     creditService.getCredit(user.userId),
@@ -57,7 +79,7 @@ export async function buildCreditOverviewPayload(
     buildMoneyPriceData({
       locale,
       currency: moneyPriceConfig.display.currency,
-      enabledBillingTypes: ['monthly', 'yearly', 'onetime'],
+      enabledBillingTypes,
     }),
   ]);
 
@@ -73,11 +95,11 @@ export async function buildCreditOverviewPayload(
 
   const totalBalance =
     (credit.balanceFree ?? 0) +
-    (credit.balancePaid ?? 0) +
-    (credit.balanceOneTimePaid ?? 0);
+    (subscriptionBillingEnabled ? credit.balancePaid ?? 0 : 0) +
+    (onetimeBillingEnabled ? credit.balanceOneTimePaid ?? 0 : 0);
 
   const buckets = [
-    ...(credit.balancePaid > 0
+    ...(subscriptionBillingEnabled && credit.balancePaid > 0
       ? [{
           kind: 'subscription' as const,
           balance: credit.balancePaid,
@@ -85,7 +107,7 @@ export async function buildCreditOverviewPayload(
           expiresAt: viewLocalTime(credit.paidEnd),
         }]
       : []),
-    ...(credit.balanceOneTimePaid > 0
+    ...(onetimeBillingEnabled && credit.balanceOneTimePaid > 0
       ? [{
           kind: 'onetime' as const,
           balance: credit.balanceOneTimePaid,
@@ -122,22 +144,30 @@ export async function buildCreditOverviewPayload(
       initUserContext,
     },
     ctaBehaviors: {
-      subscribe: {
-        desktop: { kind: 'modal', mode: 'subscription' },
-        mobile: { kind: 'redirect', url: `${pricingPageBaseUrl}?initialBillingType=subscription` },
-      },
-      manage: {
-        desktop: { kind: 'auth' },
-        mobile: { kind: 'auth' },
-      },
-      onetime: {
-        desktop: { kind: 'modal', mode: 'onetime' },
-        mobile: { kind: 'redirect', url: `${pricingPageBaseUrl}?initialBillingType=onetime` },
-      },
+      ...(subscriptionBillingEnabled
+        ? {
+            subscribe: {
+              desktop: { kind: 'modal', mode: 'subscription' },
+              mobile: { kind: 'redirect', url: `${pricingPageBaseUrl}?initialBillingType=subscription` },
+            },
+            manage: {
+              desktop: { kind: 'auth' },
+              mobile: { kind: 'auth' },
+            },
+          }
+        : {}),
+      ...(onetimeBillingEnabled
+        ? {
+            onetime: {
+              desktop: { kind: 'modal', mode: 'onetime' },
+              mobile: { kind: 'redirect', url: `${pricingPageBaseUrl}?initialBillingType=onetime` },
+            },
+          }
+        : {}),
     },
   };
 
-  if (subscription) {
+  if (subscriptionBillingEnabled && subscription) {
     data.subscription = {
       planName: subscription.priceName ?? '',
       periodStart: viewLocalTime(subscription.subPeriodStart),

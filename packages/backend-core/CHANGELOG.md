@@ -1,5 +1,13 @@
 # @windrun-huaiin/backend-core
 
+## 31.0.2
+
+### Patch Changes
+
+- fix(credit): credit-overview onetime and subscription split config
+- Updated dependencies
+  - @windrun-huaiin/third-ui@31.3.7
+
 ## 31.0.1
 
 ### Patch Changes

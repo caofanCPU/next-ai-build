@@ -1,5 +1,11 @@
 # @windrun-huaiin/third-ui
 
+## 31.3.7
+
+### Patch Changes
+
+- fix(credit): credit-overview onetime and subscription split config
+
 ## 31.3.6
 
 ### Patch Changes

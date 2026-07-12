@@ -18,6 +18,11 @@ export interface CreditOverviewNavClientProps {
   locale: string;
   endpoint: string;
   /**
+   * Billing types enabled by the business app.
+   * Defaults are handled by the API/payload builder when omitted.
+   */
+  enabledBillingTypes?: string[];
+  /**
    * Browser event names that should trigger credit overview reload.
    * Business apps can dispatch these events after credit balance changes.
    *
@@ -32,9 +37,34 @@ export interface CreditOverviewNavClientProps {
   refreshDebounceMs?: number;
 }
 
-function buildCreditOverviewUrl(endpoint: string, locale: string) {
+function normalizeEnabledBillingTypes(enabledBillingTypes: string[] | undefined) {
+  if (!enabledBillingTypes?.length) {
+    return [];
+  }
+
+  return Array.from(
+    new Set(
+      enabledBillingTypes
+        .map((billingType) => billingType.trim())
+        .filter((billingType) => billingType.length > 0),
+    ),
+  );
+}
+
+function buildEnabledBillingTypesKey(enabledBillingTypes: string[] | undefined) {
+  return normalizeEnabledBillingTypes(enabledBillingTypes).join('\n');
+}
+
+function buildCreditOverviewUrl(
+  endpoint: string,
+  locale: string,
+  enabledBillingTypes: string[],
+) {
   const url = new URL(endpoint, window.location.origin);
   url.searchParams.set('locale', locale);
+  for (const billingType of enabledBillingTypes) {
+    url.searchParams.append('enabledBillingTypes', billingType);
+  }
   return url.toString();
 }
 
@@ -66,6 +96,7 @@ export function dispatchCreditOverviewRefresh(
 export function CreditOverviewNavClient({
   locale,
   endpoint,
+  enabledBillingTypes,
   refreshEvents,
   refreshDebounceMs = 300,
 }: CreditOverviewNavClientProps) {
@@ -77,6 +108,11 @@ export function CreditOverviewNavClient({
   const normalizedRefreshEvents = useMemo(
     () => refreshEventsKey.split('\n').filter(Boolean),
     [refreshEventsKey],
+  );
+  const enabledBillingTypesKey = buildEnabledBillingTypesKey(enabledBillingTypes);
+  const normalizedEnabledBillingTypes = useMemo(
+    () => enabledBillingTypesKey.split('\n').filter(Boolean),
+    [enabledBillingTypesKey],
   );
 
   useEffect(() => {
@@ -95,7 +131,11 @@ export function CreditOverviewNavClient({
     abortControllerRef.current = controller;
 
     try {
-      const response = await fetch(buildCreditOverviewUrl(endpoint, locale), {
+      const response = await fetch(buildCreditOverviewUrl(
+        endpoint,
+        locale,
+        normalizedEnabledBillingTypes,
+      ), {
         cache: 'no-store',
         credentials: 'same-origin',
         signal: controller.signal,
@@ -122,7 +162,7 @@ export function CreditOverviewNavClient({
         abortControllerRef.current = null;
       }
     }
-  }, [endpoint, locale]);
+  }, [endpoint, locale, normalizedEnabledBillingTypes]);
 
   useEffect(() => {
     if (!isLoaded) {

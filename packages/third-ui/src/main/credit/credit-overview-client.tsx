@@ -128,6 +128,11 @@ export function CreditOverviewClient({
   const subscription = data.subscription;
   const pricingContext = data.pricingContext;
   const ctaBehaviors = data.ctaBehaviors;
+  const billingOptions = pricingContext?.moneyPriceData.billingSwitch.options ?? [];
+  const subscriptionBillingEnabled = billingOptions.some(
+    (option) => option.key === 'monthly' || option.key === 'yearly',
+  );
+  const onetimeBillingEnabled = billingOptions.some((option) => option.key === 'onetime');
   const getModalMoneyPriceData = useCallback(
     (mode: PricingModalMode) => {
       if (!pricingContext) {
@@ -383,24 +388,28 @@ export function CreditOverviewClient({
           <div className="flex justify-center text-3xl font-semibold leading-tight sm:text-4xl">
             {formatNumber(locale, data.totalBalance)}
           </div>
-          <div className="flex-1 flex-col gap-1">
-            <p className="text-xs text-gray-700 dark:text-slate-100 sm:text-sm">
-              {translations.subscriptionPeriodLabel}
-            </p>
-            <h4 className="text-xl font-semibold sm:text-2xl">
-              {subscription ? subscription.planName : translations.subscriptionInactive}
-            </h4>
-          </div>
-          <div className="pt-2 sm:pt-0">
-            <GradientButton
-              title={subscription ? translations.subscriptionManage : translations.subscribePay}
-              align="center"
-              icon={subscription ? <Settings2Icon /> : <BellIcon />}
-              openInNewTab={false}
-              className="w-full"
-              onClick={subscription ? handleManageAction : handleSubscribeAction}
-            />
-          </div>
+          {subscriptionBillingEnabled ? (
+            <>
+              <div className="flex-1 flex-col gap-1">
+                <p className="text-xs text-gray-700 dark:text-slate-100 sm:text-sm">
+                  {translations.subscriptionPeriodLabel}
+                </p>
+                <h4 className="text-xl font-semibold sm:text-2xl">
+                  {subscription ? subscription.planName : translations.subscriptionInactive}
+                </h4>
+              </div>
+              <div className="pt-2 sm:pt-0">
+                <GradientButton
+                  title={subscription ? translations.subscriptionManage : translations.subscribePay}
+                  align="center"
+                  icon={subscription ? <Settings2Icon /> : <BellIcon />}
+                  openInNewTab={false}
+                  className="w-full"
+                  onClick={subscription ? handleManageAction : handleSubscribeAction}
+                />
+              </div>
+            </>
+          ) : null}
         </div>
         <div className="absolute right-3 top-3 sm:right-6 sm:top-6">
           <HoverInfo
@@ -482,13 +491,15 @@ export function CreditOverviewClient({
             {translations.bucketsEmpty}
           </div>
         )}
-        <GradientButton
-          title={translations.onetimeBuy}
-          icon={<ShoppingCartIcon />}
-          align="center"
-          className="w-full text-sm sm:text-base"
-          onClick={handleOnetimeAction}
-        />
+        {onetimeBillingEnabled ? (
+          <GradientButton
+            title={translations.onetimeBuy}
+            icon={<ShoppingCartIcon />}
+            align="center"
+            className="w-full text-sm sm:text-base"
+            onClick={handleOnetimeAction}
+          />
+        ) : null}
       </section>
     </section>
   );
