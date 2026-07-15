@@ -72,6 +72,18 @@ const CREDIT_PURGE_CONFIG: Record<
 
 export class CreditService {
 
+  private buildFreeWindow(now = new Date()): { start: Date; end: Date } {
+    const end = new Date(now);
+    end.setDate(end.getDate() + freeExpiredDays);
+    end.setHours(23, 59, 59, 999);
+
+    return { start: now, end };
+  }
+
+  private isExpired(end: Date | null | undefined, now = new Date()): boolean {
+    return !end || now >= end;
+  }
+
   private normalizeAmounts(amounts?: CreditAmounts): Required<CreditAmounts> {
     return {
       free: Math.trunc(amounts?.free ?? 0),
@@ -88,6 +100,24 @@ export class CreditService {
     if (amounts.free < 0 || amounts.paid < 0 || amounts.oneTimePaid < 0) {
       throw new Error(`${context}: negative credit adjustments are not allowed`);
     }
+  }
+
+  private protectExpiredBalances(credit: Credit, now = new Date()): Credit {
+    const protectedCredit: Credit = { ...credit };
+
+    if (this.isExpired(credit.freeEnd, now)) {
+      protectedCredit.balanceFree = 0;
+    }
+
+    if (this.isExpired(credit.paidEnd, now)) {
+      protectedCredit.balancePaid = 0;
+    }
+
+    if (this.isExpired(credit.oneTimePaidEnd, now)) {
+      protectedCredit.balanceOneTimePaid = 0;
+    }
+
+    return protectedCredit;
   }
 
   private ensureSufficientBalance(current: Credit, deduction: Required<CreditAmounts>) {
@@ -196,7 +226,7 @@ export class CreditService {
     }
 
     if (options.ensureSufficientBalance) {
-      this.ensureSufficientBalance(currentCredit, normalized);
+      this.ensureSufficientBalance(this.protectExpiredBalances(currentCredit), normalized);
     }
 
     if (options.ensureSufficientLimits && normalizedLimitAdjustments) {
@@ -291,11 +321,7 @@ export class CreditService {
     }, 
     tx?: Prisma.TransactionClient
   ): Promise<Credit> {
-    const now = new Date();
-    const freeStart = now;
-    const freeEnd = new Date(now);
-    freeEnd.setDate(freeEnd.getDate() + freeExpiredDays);
-    freeEnd.setHours(23, 59, 59, 999);
+    const { start: freeStart, end: freeEnd } = this.buildFreeWindow();
     const normalized = this.normalizeAmounts({ free: init.creditsChange });
     this.ensureNonNegative(normalized, 'initializeCredit');
     const client = checkAndFallbackWithNonTCClient(tx);
@@ -323,6 +349,101 @@ export class CreditService {
     await creditAuditLogService.recordCreditOperation( init, tx );
 
     return credit;
+  }
+
+  async grantFreeCredit(
+    userId: string,
+    amount: number,
+    options: {
+      feature?: string;
+      operationReferId: string;
+    },
+    tx?: Prisma.TransactionClient
+  ): Promise<{ credit: Credit; usage: CreditAuditLog[] }> {
+    const normalized = this.normalizeAmounts({ free: amount });
+    this.ensureNonNegative(normalized, 'grantFreeCredit');
+
+    if (normalized.free === 0) {
+      throw new Error('grantFreeCredit: no credit change specified');
+    }
+
+    const client = checkAndFallbackWithNonTCClient(tx);
+    const now = new Date();
+    const { start: freeStart, end: freeEnd } = this.buildFreeWindow(now);
+
+    let activeUpdate = await client.credit.updateMany({
+      where: {
+        userId,
+        freeEnd: { gt: now },
+      },
+      data: {
+        balanceFree: { increment: normalized.free },
+        totalFreeLimit: { increment: normalized.free },
+        freeStart,
+        freeEnd,
+      },
+    });
+
+    if (activeUpdate.count === 0) {
+      const expiredUpdate = await client.credit.updateMany({
+        where: {
+          userId,
+          OR: [
+            { freeEnd: null },
+            { freeEnd: { lte: now } },
+          ],
+        },
+        data: {
+          balanceFree: normalized.free,
+          totalFreeLimit: { increment: normalized.free },
+          freeStart,
+          freeEnd,
+        },
+      });
+
+      if (expiredUpdate.count === 0) {
+        activeUpdate = await client.credit.updateMany({
+          where: {
+            userId,
+            freeEnd: { gt: now },
+          },
+          data: {
+            balanceFree: { increment: normalized.free },
+            totalFreeLimit: { increment: normalized.free },
+            freeStart,
+            freeEnd,
+          },
+        });
+      }
+    }
+
+    let credit = await client.credit.findUnique({ where: { userId } });
+
+    if (!credit) {
+      console.error('grantFreeCredit failed: user credits not found', {
+        userId,
+        amount: normalized.free,
+        operationReferId: options.operationReferId,
+      });
+      throw new Error('User credits not found');
+    } else if (activeUpdate.count === 0 && this.isExpired(credit.freeEnd, now)) {
+      credit = await client.credit.update({
+        where: { userId },
+        data: {
+          balanceFree: normalized.free,
+          totalFreeLimit: { increment: normalized.free },
+          freeStart,
+          freeEnd,
+        },
+      });
+    }
+
+    const usage = await this.recordCreditAuditLog(client, userId, OperationType.SYS_GIFT, normalized, {
+      feature: options.feature,
+      operationReferId: options.operationReferId,
+    });
+
+    return { credit, usage };
   }
 
   async payFailedWatcher(
@@ -354,22 +475,7 @@ export class CreditService {
     }
 
     // Guard query result: if a credit block has no end time or is already expired, treat its balance as 0
-    const now = new Date();
-    const protectedCredit: Credit = { ...credit };
-
-    if (!credit.freeEnd || now >= credit.freeEnd) {
-      protectedCredit.balanceFree = 0;
-    }
-
-    if (!credit.paidEnd || now >= credit.paidEnd) {
-      protectedCredit.balancePaid = 0;
-    }
-
-    if (!credit.oneTimePaidEnd || now >= credit.oneTimePaidEnd) {
-      protectedCredit.balanceOneTimePaid = 0;
-    }
-
-    return protectedCredit;
+    return this.protectExpiredBalances(credit);
   }
 
   // Get Total Credit Balance
@@ -471,6 +577,34 @@ export class CreditService {
         operationReferId,
         updateMode: 'increment',
         feature: reason,
+      },
+      tx
+    );
+  }
+
+  async rollbackConsumeCredit(
+    userId: string,
+    amounts: CreditAmounts,
+    options: {
+      feature?: string;
+      operationReferId: string;
+    },
+    tx?: Prisma.TransactionClient
+  ): Promise<{ credit: Credit; usage: CreditAuditLog[] }> {
+    return this.executeCreditOperation(
+      userId,
+      amounts,
+      {
+        context: 'rollbackConsumeCredit',
+        operationType: OperationType.ADJUST_INCREASE,
+        updateMode: 'increment',
+        feature: options.feature ?? 'consume_rollback',
+        operationReferId: options.operationReferId,
+        limitAdjustments: {
+          free: 0,
+          paid: 0,
+          oneTimePaid: 0,
+        },
       },
       tx
     );
