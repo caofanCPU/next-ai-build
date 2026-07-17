@@ -56,7 +56,7 @@ date: 2026-07-17
 ```tsx title="pricing/page.tsx"
 import { appConfig } from '@/lib/appConfig';
 import { moneyPriceConfig } from '@core/config/money-price';
-import { buildMoneyPriceData } from '@third-ui/main/money-price/server';
+import { buildMoneyPriceData } from '@windrun-huaiin/third-ui/main/money-price/server';
 import { PricingClient } from './pricing-client';
 
 export default async function PricingPage({
@@ -92,12 +92,12 @@ export default async function PricingPage({
 ```tsx title="pricing/pricing-client.tsx"
 'use client';
 
-import { MoneyPriceInteractive } from '@third-ui/main/money-price';
+import { MoneyPriceInteractive } from '@windrun-huaiin/third-ui/main/money-price';
 import type {
   InitUserContext,
   MoneyPriceConfig,
   MoneyPriceData,
-} from '@third-ui/main/money-price';
+} from '@windrun-huaiin/third-ui/main/money-price';
 import { useEffect, useState } from 'react';
 
 interface PricingClientProps {
@@ -181,7 +181,7 @@ import {
   usePricingModal,
   type MoneyPriceConfig,
   type MoneyPriceData,
-} from '@third-ui/main/money-price';
+} from '@windrun-huaiin/third-ui/main/money-price';
 
 interface GeneratePanelProps {
   data: MoneyPriceData;
@@ -257,7 +257,7 @@ mobileBillingSwitchBehavior="sticky"
 `CreditOverviewNavClient` 适合放在站点导航栏。它会根据登录态自动请求积分概览，未登录或接口返回空时不展示。
 
 ```tsx title="layout.heavy.tsx"
-import { CreditOverviewNavClient } from '@third-ui/main/credit';
+import { CreditOverviewNavClient } from '@windrun-huaiin/third-ui/main/credit';
 
 export async function homeHeavyItems(locale: string) {
   const enabledBillingTypes = ['onetime'];
