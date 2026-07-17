@@ -16,5 +16,6 @@ export type {
   CreditOverviewData,
   CreditBucket,
   CreditBucketStatus,
+  MobileBillingSwitchBehavior,
   SubscriptionInfo,
 } from './types';

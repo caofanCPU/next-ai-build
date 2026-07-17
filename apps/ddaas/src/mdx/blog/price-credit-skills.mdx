@@ -1,0 +1,475 @@
+---
+title: Price & Credit Skills
+description: 价格组件、价格弹窗和积分组件的快速使用模板
+date: 2026-07-17
+---
+
+## 目标
+
+这份说明给新手和 AI 使用，目标是快速判断什么时候用价格组件、什么时候用积分组件，以及如何改一个 `billingType` 或 `enabledBillingTypes` 就能跑起来。
+
+本文只讲组件接入方式，不写金额、Price ID、密钥、支付环境变量等敏感配置。真实价格、积分发放和支付校验应由项目已有服务端配置负责，业务页面只传组件需要的展示参数和 API endpoint。
+
+## 先记住两个参数
+
+<CheetTable
+  title="计费参数"
+  description="多数场景只需要理解这两个参数。"
+>
+
+| 参数 | 作用 | 常用值 |
+| --- | --- | --- |
+| `enabledBillingTypes` | 当前组件允许展示哪些价格模式 | `['onetime']`、`['monthly', 'yearly']`、`['monthly', 'yearly', 'onetime']` |
+| `billingType` | 打开价格弹窗时默认激活哪个 tab | `'monthly'`、`'yearly'`、`'onetime'` |
+| `mobileBillingSwitchBehavior` | 移动端 billing 切换器是否吸顶 | 默认 `'static'`；需要吸顶时传 `'sticky'` |
+
+</CheetTable>
+
+业务语义保持统一：
+
+- `monthly`：月度订阅
+- `yearly`：年度订阅
+- `onetime`：一次性积分包
+
+底层支付语义里，`monthly` 和 `yearly` 都属于订阅模式，`onetime` 属于一次性购买模式。普通业务代码不需要直接操作这个映射。
+
+## 什么时候用哪个组件
+
+<CheetTable
+  title="组件选择"
+  description="按页面需求选择组件，不要重复造价格卡或积分卡。"
+>
+
+| 需求 | 推荐用法 |
+| --- | --- |
+| 做一个完整价格页 | `MoneyPriceInteractive` |
+| 在按钮点击后打开价格弹窗 | `PricingModalProvider` + `usePricingModal` |
+| 在导航栏显示用户积分余额 | `CreditOverviewNavClient` |
+| AI 生成失败后提示购买积分 | 在生成区域包一层 `PricingModalProvider`，接口返回积分不足时 `openPricingModal({ billingType: 'onetime' })` |
+
+</CheetTable>
+
+## 快速模板：完整价格页
+
+这个模板适合 `/pricing` 页面。服务端构建 `MoneyPriceData`，客户端渲染可交互价格卡。
+
+```tsx title="pricing/page.tsx"
+import { appConfig } from '@/lib/appConfig';
+import { moneyPriceConfig } from '@core/config/money-price';
+import { buildMoneyPriceData } from '@third-ui/main/money-price/server';
+import { PricingClient } from './pricing-client';
+
+export default async function PricingPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+
+  // 改这里即可控制页面展示哪些价格模式
+  const enabledBillingTypes = ['monthly', 'yearly', 'onetime'];
+
+  const data = await buildMoneyPriceData({
+    locale,
+    currency: moneyPriceConfig.display.currency,
+    enabledBillingTypes,
+  });
+
+  return (
+    <PricingClient
+      data={data}
+      config={moneyPriceConfig}
+      checkoutApiEndpoint="/api/stripe/checkout"
+      customerPortalApiEndpoint="/api/stripe/customer-portal"
+      enableClerkModal={appConfig.style.clerkAuthInModal}
+      enabledBillingTypes={enabledBillingTypes}
+      enableSubscriptionUpgrade={true}
+    />
+  );
+}
+```
+
+```tsx title="pricing/pricing-client.tsx"
+'use client';
+
+import { MoneyPriceInteractive } from '@third-ui/main/money-price';
+import type {
+  InitUserContext,
+  MoneyPriceConfig,
+  MoneyPriceData,
+} from '@third-ui/main/money-price';
+import { useEffect, useState } from 'react';
+
+interface PricingClientProps {
+  data: MoneyPriceData;
+  config: MoneyPriceConfig;
+  checkoutApiEndpoint: string;
+  customerPortalApiEndpoint: string;
+  enableClerkModal: boolean;
+  enabledBillingTypes: string[];
+  enableSubscriptionUpgrade: boolean;
+}
+
+export function PricingClient(props: PricingClientProps) {
+  const [initUserContext, setInitUserContext] = useState<InitUserContext>({
+    fingerprintId: null,
+    xUser: null,
+    xCredit: null,
+    xSubscription: null,
+    isClerkAuthenticated: false,
+  });
+  const [isInitLoading, setIsInitLoading] = useState(true);
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    async function loadPricingContext() {
+      try {
+        const response = await fetch('/api/user/pricing-context', {
+          credentials: 'same-origin',
+          signal: controller.signal,
+        });
+
+        if (response.ok) {
+          setInitUserContext((await response.json()) as InitUserContext);
+        }
+      } finally {
+        if (!controller.signal.aborted) {
+          setIsInitLoading(false);
+        }
+      }
+    }
+
+    void loadPricingContext();
+
+    return () => controller.abort();
+  }, []);
+
+  return (
+    <MoneyPriceInteractive
+      {...props}
+      initUserContext={initUserContext}
+      isInitLoading={isInitLoading}
+    />
+  );
+}
+```
+
+常见改法：
+
+```ts
+const enabledBillingTypes = ['onetime'];
+```
+
+```ts
+const enabledBillingTypes = ['monthly', 'yearly'];
+```
+
+```ts
+const enabledBillingTypes = ['monthly', 'yearly', 'onetime'];
+```
+
+## 快速模板：点击按钮打开价格弹窗
+
+这个模板适合 AI 生成、下载、导出等业务区域。Provider 不需要挂全站 layout，只包住需要打开价格弹窗的区域即可。
+
+```tsx title="generate-panel.tsx"
+'use client';
+
+import {
+  PricingModalProvider,
+  usePricingModal,
+  type MoneyPriceConfig,
+  type MoneyPriceData,
+} from '@third-ui/main/money-price';
+
+interface GeneratePanelProps {
+  data: MoneyPriceData;
+  config: MoneyPriceConfig;
+}
+
+function GenerateButton() {
+  const { openPricingModal } = usePricingModal();
+
+  async function handleGenerate() {
+    const response = await fetch('/api/ai/generate', {
+      method: 'POST',
+    });
+
+    // 推荐后端在积分不足时返回 402，前端只负责打开购买入口
+    if (response.status === 402) {
+      openPricingModal({ billingType: 'onetime' });
+      return;
+    }
+
+    // 正常处理生成结果
+  }
+
+  return (
+    <button type="button" onClick={handleGenerate}>
+      Generate
+    </button>
+  );
+}
+
+export function GeneratePanel({ data, config }: GeneratePanelProps) {
+  return (
+    <PricingModalProvider
+      data={data}
+      config={config}
+      checkoutApiEndpoint="/api/stripe/checkout"
+      customerPortalApiEndpoint="/api/stripe/customer-portal"
+      enabledBillingTypes={['onetime']}
+      pricingContextEndpoint="/api/user/pricing-context"
+    >
+      <GenerateButton />
+    </PricingModalProvider>
+  );
+}
+```
+
+想默认打开年度订阅，只改一行：
+
+```ts
+openPricingModal({ billingType: 'yearly' });
+```
+
+想让弹窗只展示一次性积分包：
+
+```tsx
+enabledBillingTypes={['onetime']}
+```
+
+想让弹窗展示完整三种模式：
+
+```tsx
+enabledBillingTypes={['monthly', 'yearly', 'onetime']}
+```
+
+想让移动端切换器滚动时吸顶：
+
+```tsx
+mobileBillingSwitchBehavior="sticky"
+```
+
+## 快速模板：导航栏积分组件
+
+`CreditOverviewNavClient` 适合放在站点导航栏。它会根据登录态自动请求积分概览，未登录或接口返回空时不展示。
+
+```tsx title="layout.heavy.tsx"
+import { CreditOverviewNavClient } from '@third-ui/main/credit';
+
+export async function homeHeavyItems(locale: string) {
+  const enabledBillingTypes = ['onetime'];
+
+  return [
+    {
+      type: 'custom',
+      secondary: true,
+      mobilePinned: true,
+      children: (
+        <CreditOverviewNavClient
+          locale={locale}
+          endpoint="/api/user/credit-overview"
+          enabledBillingTypes={enabledBillingTypes}
+        />
+      ),
+    },
+  ];
+}
+```
+
+如果业务同时开放订阅和一次性积分包：
+
+```tsx
+<CreditOverviewNavClient
+  locale={locale}
+  endpoint="/api/user/credit-overview"
+  enabledBillingTypes={['monthly', 'yearly', 'onetime']}
+/>
+```
+
+如果业务只开放订阅：
+
+```tsx
+<CreditOverviewNavClient
+  locale={locale}
+  endpoint="/api/user/credit-overview"
+  enabledBillingTypes={['monthly', 'yearly']}
+/>
+```
+
+## Provider 可以嵌套吗
+
+可以。`PricingModalProvider` 使用 React Context，子组件会读取最近一层 Provider。
+
+```tsx title="nested-provider.tsx"
+<PricingModalProvider
+  data={data}
+  config={config}
+  enabledBillingTypes={['onetime']}
+  checkoutApiEndpoint="/api/stripe/checkout"
+  customerPortalApiEndpoint="/api/stripe/customer-portal"
+  pricingContextEndpoint="/api/user/pricing-context"
+>
+  <OneTimeArea />
+
+  <PricingModalProvider
+    data={data}
+    config={config}
+    enabledBillingTypes={['monthly', 'yearly']}
+    checkoutApiEndpoint="/api/stripe/checkout"
+    customerPortalApiEndpoint="/api/stripe/customer-portal"
+    pricingContextEndpoint="/api/user/pricing-context"
+  >
+    <SubscriptionArea />
+  </PricingModalProvider>
+</PricingModalProvider>
+```
+
+结果：
+
+- `OneTimeArea` 打开的弹窗只显示一次性积分包。
+- `SubscriptionArea` 打开的弹窗只显示月度/年度订阅。
+- 内外层状态互不影响。
+
+如果同一页面多个区域配置完全一样，建议页面级挂一个 Provider；如果配置不同，就在各自区域分别挂 Provider。
+
+## 推荐测试页
+
+项目里有一个测试页专门验证不同组合：
+
+```txt
+/en/test/bi
+/zh/test/bi
+```
+
+它覆盖了：
+
+- 三种模式都开启
+- 只开启 `onetime`
+- 只开启 `monthly/yearly`
+- 嵌套 Provider
+- 请求了不可用 `billingType` 时的回退行为
+
+## 使用检查清单
+
+- 页面要展示完整价格卡：用 `MoneyPriceInteractive`。
+- 按钮点击打开价格弹窗：用 `PricingModalProvider` 和 `usePricingModal`。
+- 导航栏展示积分余额：用 `CreditOverviewNavClient`。
+- 只改展示模式：改 `enabledBillingTypes`。
+- 只改弹窗默认 tab：改 `openPricingModal({ billingType })`。
+- 不要在页面代码里写真实金额、Price ID、密钥或积分发放规则。
+- 前端只负责展示和发起 checkout，真实购买校验以服务端配置为准。
+
+## 核心原理
+
+价格组件和积分组件的关系可以理解为三层：
+
+1. 展示数据层：服务端生成 `MoneyPriceData`，包含标题、按钮文案、可切换的 billing type、卡片文案等展示信息。
+2. 业务配置层：业务传入 `MoneyPriceConfig` 和 endpoint。这里承载真实支付配置，但普通页面不要展开或硬编码敏感字段。
+3. 用户状态层：弹窗打开时需要知道当前用户是否登录、是否已有订阅、当前订阅状态等，用来决定按钮文案和跳转行为。
+
+`PricingModalProvider` 的作用是把“打开价格弹窗”变成局部能力：
+
+- Provider 挂在哪里，哪里下面的组件就能调用 `usePricingModal()`。
+- 嵌套 Provider 时，子组件读取最近的一层 Provider。
+- Provider 只管理弹窗开关、默认 `billingType`、轻量缓存和 endpoint，不是安全边界。
+- 安全校验仍在服务端 checkout、webhook 和业务后端里完成。
+
+### 用户数据为什么会请求
+
+价格弹窗需要用户数据，是因为同一张价格卡对不同用户显示不一样：
+
+- 未登录用户：按钮通常引导登录或注册。
+- 已登录但未订阅用户：按钮通常进入 checkout。
+- 已有订阅用户：按钮可能显示当前套餐、升级、隐藏或进入客户门户。
+- 一次性积分包：已登录用户可以直接购买，未登录用户先走登录。
+
+因此弹窗需要加载一个轻量用户上下文。当前设计里：
+
+- `PricingModalProvider` 默认不会在页面加载时立即请求用户数据。
+- 第一次调用 `openPricingModal()` 时，如果配置了 `pricingContextEndpoint`，Provider 会请求用户上下文。
+- 同一个 Provider 请求成功后会缓存本次结果，后续再次打开通常不会重复请求。
+- 如果页面上有多个 Provider，每个 Provider 都有自己的状态和缓存，所以可能分别请求一次。
+- 如果 Provider 被卸载后重新挂载，缓存会消失，下次打开会重新请求。
+- 如果前一次请求失败，没有成功写入缓存，下次打开还会再试。
+
+所以你实测“每次打开弹窗都会请求用户数据”不一定是底层必然要求，而要看 Provider 的挂载方式：
+
+- 同一个 Provider、请求成功、没有卸载：通常不会每次都请求。
+- 多个区域各自挂 Provider：每个区域首次打开都会请求。
+- 弹窗所在组件随业务状态反复卸载/重建：每次重建后的首次打开都会请求。
+
+如果希望同一页面多个按钮共享一次用户数据请求，把这些按钮放在同一个 `PricingModalProvider` 下即可。
+
+### 支付后用户数据缓存说明
+
+同一个 `PricingModalProvider` 请求成功后，会把用户上下文缓存在当前 Provider 实例里。关闭弹窗不会清空这份缓存。
+
+这意味着：
+
+- 关闭弹窗后再次打开，通常会复用上一次请求到的用户状态。
+- 如果用户在支付页面或客户门户完成了订阅升级、购买积分等操作，并且当前前端页面没有刷新，那么弹窗里可能仍然看到支付前的旧用户状态。
+- 常规支付流程通常会跳转到外部支付或门户页面，用户返回时页面往往会重新加载；重新加载后 Provider 会重新请求用户上下文。
+- 如果页面没有自动刷新，用户手动刷新页面即可拿到最新状态。
+
+当前这不影响核心支付安全，因为真实购买和积分发放以服务端配置、订单和支付回调为准；它只影响弹窗里按钮状态和当前套餐展示是否立即更新。
+
+后续可优化方向：
+
+- 暴露 `refreshPricingContext()`，业务在支付成功、portal 返回或积分刷新事件后主动刷新用户上下文。
+- 支持 `openPricingModal({ billingType, refreshContext: true })`，打开弹窗前强制拉一次最新用户状态。
+- 支持 `pricingContextStaleMs`，缓存超过指定时间后自动重新请求。
+- 支持和积分刷新事件联动，购买完成后同时刷新积分概览和价格弹窗用户状态。
+
+### 配置数据和敏感信息边界
+
+前端可以拿到展示所需的数据，因此不要把敏感配置当作前端安全边界：
+
+- 页面代码只传 `data`、`config`、endpoint 和 `enabledBillingTypes`。
+- 文档和业务页面不要写真实金额、真实支付标识、密钥或发放规则。
+- 前端可以控制展示哪个 tab，但不能决定真实可购买项。
+- 服务端必须按自己的配置校验 checkout 请求。
+- 积分发放必须以服务端订单和支付回调为准。
+
+### 整体流程图
+
+<Mermaid
+title="价格积分核心流程"
+chart={`
+flowchart TD
+    A[业务页面 Server Component] --> B[buildMoneyPriceData 生成展示数据]
+    A --> C[传入业务配置与 endpoint]
+    B --> D[PricingModalProvider]
+    C --> D
+
+    D --> E[业务按钮区域]
+    E --> F{用户点击按钮}
+    F -->|需要购买积分| G[openPricingModal billingType=onetime]
+    F -->|需要订阅| H[openPricingModal billingType=monthly/yearly]
+
+    G --> I{Provider 是否已有用户上下文缓存}
+    H --> I
+    I -->|没有| J[请求 pricingContextEndpoint 获取轻量用户上下文]
+    I -->|已有| K[打开 PricingModal]
+    J --> K
+
+    K --> L[MoneyPriceInteractive]
+    L --> M{billingType 是否可用}
+    M -->|可用| N[激活目标 tab]
+    M -->|不可用| O[回退到默认或第一个可用 tab]
+
+    N --> P{用户点击价格按钮}
+    O --> P
+    P -->|未登录| Q[登录或注册流程]
+    P -->|购买/升级| R[调用 checkout 或 customer portal endpoint]
+    R --> S[服务端校验真实配置]
+    S --> T[跳转支付或门户]
+
+    U[CreditOverviewNavClient] --> V[请求 credit overview endpoint]
+    V --> W[后端按 enabledBillingTypes 过滤积分桶和 CTA]
+    W --> X[CreditNavButton / CreditOverviewClient]
+    X --> Y[复用 PricingModal 打开价格弹窗]
+    Y --> L
+`}/>

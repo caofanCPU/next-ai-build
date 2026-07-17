@@ -11,6 +11,7 @@ export async function MoneyPrice({
   enableClerkModal = false,
   sectionClassName,
   enabledBillingTypes,
+  mobileBillingSwitchBehavior,
   enableSubscriptionUpgrade = true,
   initUserContext,
   initialBillingType,
@@ -36,6 +37,7 @@ export async function MoneyPrice({
         customerPortalApiEndpoint={customerPortalApiEndpoint}
         enableClerkModal={enableClerkModal}
         enabledBillingTypes={enabledBillingTypes}
+        mobileBillingSwitchBehavior={mobileBillingSwitchBehavior}
         enableSubscriptionUpgrade={enableSubscriptionUpgrade}
         initUserContext={initUserContext}
         initialBillingType={initialBillingType}

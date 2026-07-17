@@ -1,13 +1,8 @@
 'use client';
 
 import { cn } from '@windrun-huaiin/lib/utils';
-import { GemIcon, XIcon } from '@windrun-huaiin/base-ui/icons';
-import { themeMainBgColor } from '@windrun-huaiin/base-ui/lib';
+import { GemIcon } from '@windrun-huaiin/base-ui/icons';
 import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogTitle,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
@@ -21,16 +16,16 @@ import {
   useRef,
   useState,
 } from 'react';
-import { MoneyPriceInteractive } from '../money-price/money-price-interactive';
 import { getActiveProviderConfigUtil } from '../money-price/money-price-config-util';
 import type { MoneyPriceData, SubscriptionProductConfig } from '../money-price/money-price-types';
-import { dialogThemedOverlayClass } from '../alert-dialog/dialog-styles';
-import type { CreditPricingContext, PricingModalMode } from './types';
+import { PricingModal } from '../money-price/pricing-modal';
+import type { CreditPricingContext, MobileBillingSwitchBehavior, PricingModalMode } from './types';
 
 interface CreditNavButtonProps {
   locale: string;
   totalBalance: number;
   totalLabel: string;
+  mobileBillingSwitchBehavior?: MobileBillingSwitchBehavior;
   children: React.ReactNode;
 }
 
@@ -38,6 +33,7 @@ export function CreditNavButton({
   locale,
   totalBalance,
   totalLabel,
+  mobileBillingSwitchBehavior,
   children,
 }: CreditNavButtonProps) {
   const [open, setOpen] = useState(false);
@@ -243,7 +239,7 @@ export function CreditNavButton({
         </DropdownMenuContent>
       </DropdownMenu>
       {pricingModal.modalMoneyPriceData && pricingModal.pricingContext ? (
-        <AlertDialog
+        <PricingModal
           open={pricingModal.open}
           onOpenChange={(open) =>
             setPricingModal((prev) => ({
@@ -251,52 +247,15 @@ export function CreditNavButton({
               open,
             }))
           }
-        >
-          <AlertDialogContent
-            className={cn(
-              'mt-5 sm:mt-6 md:mt-10 lg:mt-15 w-[95vw] max-w-[1200px] overflow-hidden border border-slate-200 p-0 shadow-[0_32px_90px_rgba(15,23,42,0.25)] ring-1 ring-black/5 dark:border-white/12 dark:shadow-[0_40px_120px_rgba(0,0,0,0.6)] dark:ring-white/10',
-              themeMainBgColor,
-            )}
-            overlayClassName={dialogThemedOverlayClass}
-          >
-            <AlertDialogHeader className="flex flex-row items-center justify-between border-b border-slate-200 px-6 pt-4 pb-1 dark:border-slate-800">
-              <AlertDialogTitle asChild>
-                <div className="flex flex-wrap items-baseline gap-3 text-slate-900 dark:text-white">
-                  <span className="text-2xl font-semibold leading-tight">
-                    {pricingModal.modalMoneyPriceData.title}
-                  </span>
-                  {pricingModal.modalMoneyPriceData.subtitle ? (
-                    <span className="text-sm font-medium text-slate-500 dark:text-slate-300">
-                      {pricingModal.modalMoneyPriceData.subtitle}
-                    </span>
-                  ) : null}
-                </div>
-              </AlertDialogTitle>
-              <button
-                type="button"
-                className="rounded-full p-2 text-gray-400 transition hover:bg-gray-400 hover:text-gray-400 dark:text-white/80 dark:hover:bg-white/80 dark:hover:text-white/80"
-                onClick={closePricingModal}
-              >
-                <XIcon className="h-6 w-6" />
-              </button>
-            </AlertDialogHeader>
-            <div className="max-h-[60vh] sm:max-h-[80vh] overflow-y-auto px-4 pt-2 pb-6">
-              <div className="mx-auto w-full">
-                <MoneyPriceInteractive
-                  key={pricingModal.mode}
-                  data={pricingModal.modalMoneyPriceData}
-                  config={pricingModal.pricingContext.moneyPriceConfig}
-                  checkoutApiEndpoint={pricingModal.pricingContext.checkoutApiEndpoint}
-                  customerPortalApiEndpoint={pricingModal.pricingContext.customerPortalApiEndpoint}
-                  enableSubscriptionUpgrade={pricingModal.pricingContext.enableSubscriptionUpgrade}
-                  initialBillingType={modalInitialBillingType}
-                  disableAutoDetectBilling={isOnetimeModal}
-                  initUserContext={pricingModal.pricingContext.initUserContext}
-                />
-              </div>
-            </div>
-          </AlertDialogContent>
-        </AlertDialog>
+          data={pricingModal.modalMoneyPriceData}
+          config={pricingModal.pricingContext.moneyPriceConfig}
+          checkoutApiEndpoint={pricingModal.pricingContext.checkoutApiEndpoint}
+          customerPortalApiEndpoint={pricingModal.pricingContext.customerPortalApiEndpoint}
+          mobileBillingSwitchBehavior={mobileBillingSwitchBehavior}
+          enableSubscriptionUpgrade={pricingModal.pricingContext.enableSubscriptionUpgrade}
+          billingType={modalInitialBillingType}
+          initUserContext={pricingModal.pricingContext.initUserContext}
+        />
       ) : null}
     </CreditNavPopoverContext.Provider>
   );

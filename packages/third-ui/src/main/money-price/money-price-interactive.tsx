@@ -44,6 +44,7 @@ export function MoneyPriceInteractive({
   customerPortalApiEndpoint,
   enableClerkModal = false,
   enabledBillingTypes,
+  mobileBillingSwitchBehavior = 'static',
   enableSubscriptionUpgrade = true,
   initialBillingType,
   disableAutoDetectBilling = false,
@@ -71,6 +72,7 @@ export function MoneyPriceInteractive({
       return acc;
     }, {});
   }, [billingOptions]);
+  const showBillingSwitch = billingOptions.length > 1;
   const defaultBilling = useMemo<BillingType>(() => {
     const defaultKey = data.billingSwitch.defaultKey;
 
@@ -395,41 +397,49 @@ export function MoneyPriceInteractive({
     return selectedBillingOption.discountText.replace('{percent}', String(discountPercent));
   }, [selectedBillingOption, providerConfig, billingType]);
 
-  // Configure the mobile floating style for BillingTypeButton.
+  // Configure the mobile behavior for BillingTypeButton.
   return (
     <>
-      <div className="flex justify-center mb-6 max-md:sticky max-md:top-30 max-md:z-30 max-md:py-2 max-md:bg-transparent">
-        <div className="inline-flex bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-full px-2 py-2 sm:px-3 sm:py-3 max-md:w-full max-md:max-w-[340px] max-md:mx-auto shadow-sm" data-billing-switch>
-          {billingOptions.map(option => {
-            const isActive = option.key === billingType;
-            const buttonClasses = isActive
-              ? cn('text-white rounded-full shadow-sm', themeButtonGradientClass, themeButtonGradientHoverClass )
-              : 'text-gray-800 dark:text-gray-200 hover:text-gray-900 dark:hover:text-gray-100 rounded-full';
-            const showBadge = option.key === billingType && !!discountBadgeText;
+      {showBillingSwitch ? (
+        <div
+          className={cn(
+            'mb-6 flex justify-center',
+            mobileBillingSwitchBehavior === 'sticky' &&
+              'max-md:sticky max-md:top-2 max-md:z-30 max-md:py-2 max-md:bg-transparent',
+          )}
+        >
+          <div className="inline-flex max-w-[calc(100vw-2rem)] bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-full px-2 py-2 sm:px-3 sm:py-3 shadow-sm" data-billing-switch>
+            {billingOptions.map(option => {
+              const isActive = option.key === billingType;
+              const buttonClasses = isActive
+                ? cn('text-white rounded-full shadow-sm', themeButtonGradientClass, themeButtonGradientHoverClass )
+                : 'text-gray-800 dark:text-gray-200 hover:text-gray-900 dark:hover:text-gray-100 rounded-full';
+              const showBadge = option.key === billingType && !!discountBadgeText;
 
-            return (
-              <div key={option.key} className="relative flex items-center justify-center mx-1">
-                {showBadge && (
-                  <span className="absolute z-10 left-1/2 -translate-x-1/2 -top-3 sm:-top-4 translate-y-[-50%] px-3 py-0.5  text-[0.625rem] sm:text-xs rounded-md bg-yellow-100 text-yellow-800 font-semibold shadow-sm whitespace-nowrap">
-                    {discountBadgeText}
-                  </span>
-                )}
-                <button
-                  className={cn(
-                    'text-sm md:text-base font-medium transition relative text-center z-10 px-2 sm:px-4 py-2 min-w-[100px] sm:min-w-[120px]',
-                    buttonClasses
+              return (
+                <div key={option.key} className="relative flex items-center justify-center mx-1">
+                  {showBadge && (
+                    <span className="absolute z-10 left-1/2 -translate-x-1/2 -top-3 sm:-top-4 translate-y-[-50%] px-3 py-0.5  text-[0.625rem] sm:text-xs rounded-md bg-yellow-100 text-yellow-800 font-semibold shadow-sm whitespace-nowrap">
+                      {discountBadgeText}
+                    </span>
                   )}
-                  type="button"
-                  data-billing-button={option.key}
-                  onClick={() => setUserSelectedBillingType(option.key)}
-                >
-                  {option.name}
-                </button>
-              </div>
-            );
-          })}
+                  <button
+                    className={cn(
+                      'text-sm md:text-base font-medium transition relative text-center z-10 px-2 sm:px-4 py-2 min-w-[88px] min-[360px]:min-w-[100px] sm:min-w-[120px]',
+                      buttonClasses
+                    )}
+                    type="button"
+                    data-billing-button={option.key}
+                    onClick={() => setUserSelectedBillingType(option.key)}
+                  >
+                    {option.name}
+                  </button>
+                </div>
+              );
+            })}
+          </div>
         </div>
-      </div>
+      ) : null}
 
       <div className="w-full">
         <div className="flex flex-wrap justify-center gap-5 md:gap-6 xl:gap-8 w-full max-w-6xl mx-auto">

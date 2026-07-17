@@ -102,6 +102,7 @@ export interface MoneyPriceProps {
   enableClerkModal?: boolean;
   sectionClassName?: string;
   enabledBillingTypes?: string[];
+  mobileBillingSwitchBehavior?: 'sticky' | 'static';
   enableSubscriptionUpgrade?: boolean;
   initUserContext?: InitUserContext;
   initialBillingType?: string;
@@ -115,6 +116,7 @@ export interface MoneyPriceInteractiveProps {
   customerPortalApiEndpoint?: string;
   enableClerkModal?: boolean;
   enabledBillingTypes?: string[];
+  mobileBillingSwitchBehavior?: 'sticky' | 'static';
   enableSubscriptionUpgrade?: boolean;
   initialBillingType?: string;
   disableAutoDetectBilling?: boolean;

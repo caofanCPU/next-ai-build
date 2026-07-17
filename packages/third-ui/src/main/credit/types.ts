@@ -5,6 +5,7 @@ import type {
 } from '../money-price/money-price-types';
 
 export type PricingModalMode = 'subscription' | 'onetime';
+export type MobileBillingSwitchBehavior = 'sticky' | 'static';
 
 export type CreditActionConfig =
   | CreditModalAction

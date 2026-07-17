@@ -2,7 +2,7 @@
 
 ## 0. 客户端布局规范
 
-- **Billing Type 切换按钮**：`data-billing-switch` 容器在移动端整块 `sticky` 到弹窗顶部（`max-md:sticky top-30 z-30`），保证滚动长卡片时切换器始终可见；容器本身是 `inline-flex` 的圆角胶囊，移动端 `w-full max-w-[340px]` 并自动居中，桌面端宽度由内容决定但同样保留 `px-2/py-2` 的内边距和浅色描边；按钮采用固定的 `min-w-[100px]`（桌面 `120px`）和 `px-2 sm:px-4 py-2`，激活态切换到紫粉渐变并附带一个 `absolute` 的折扣 Badge（位于按钮上方居中），未激活态保持透明 pill，使得三种计费类型在不同语言长度下也能居中排布且视觉状态清晰。
+- **Billing Type 切换按钮**：`data-billing-switch` 容器默认按普通静态内容展示，移动端跟随页面滚动；如业务希望长卡片浏览时快速切换，可传 `mobileBillingSwitchBehavior="sticky"` 启用移动端吸顶（`max-md:sticky top-2 z-30`）。容器本身是 `inline-flex` 的圆角胶囊，移动端按内容自适应宽度并限制 `max-w-[calc(100vw-2rem)]`，避免只有两个选项时出现空白占位；桌面端宽度由内容决定但同样保留 `px-2/py-2` 的内边距和浅色描边。按钮移动端使用 `min-w-[88px]`（360px 以上为 `100px`，桌面为 `120px`）和 `px-2 sm:px-4 py-2`，激活态切换到紫粉渐变并附带一个 `absolute` 的折扣 Badge（位于按钮上方居中），未激活态保持透明 pill，使得三种计费类型在不同语言长度下也能居中排布且视觉状态清晰。只有一个 billing type 时不渲染切换按钮。
 - **价格卡栅格**：`MoneyPriceInteractive` 的卡片区域采用 `flex-wrap`。移动端每张卡宽度固定为 `90vw`（最多 360px），左右自动留 5% 边距；桌面端通过 `width: clamp(280px, 32vw, 360px)` 并 `flex-shrink-0` 控制卡片宽度，外层 `gap` + `justify-center` 保证自动排成 2 或 3 列。`maxFeaturesCount` 负责对齐卡片高度，底部按钮区域用 `flex-1` 撑开，从而在任何 billingType 切换下，三张卡的宽高都保持一致，视觉上不会跳动。
 
 ## 1. 组件分层总览
@@ -12,6 +12,7 @@ money-price/
 ├── money-price.tsx                        # 服务端组件，处理SSR、翻译、静态渲染
 ├── money-price-data.ts                    # 服务端 helper，复用 Money Price 文案&配置
 ├── money-price-interactive.tsx  # 客户端组件，处理交互逻辑
+├── pricing-modal.tsx            # 通用价格弹窗、局部 Provider 与 usePricingModal
 ├── money-price-config.ts            # 配置文件，包含价格和产品信息
 ├── money-price-types.ts              # 类型定义
 └── money-price-button.tsx         # 按钮组件，封装动态逻辑
@@ -28,6 +29,7 @@ lib/                                                  # 应用层 apps/ddaas/src
 - **服务端 helper `money-price-helper`**：应用层，数据包装器，封装好money-price组件需要的服务端渲染数据。
 - **服务端DB service`user-context-service.ts`**：应用层，统一查询用户信息，为money组件和初始化用户FingerprintContext提供一致的数据来源。
 - **客户端组件 `money-price-interactive.tsx`**：注入交互行为（计费周期切换、动态价格更新、用户状态检测、工具提示等），支持配置驱动的计费类型过滤。
+- **通用弹窗 `pricing-modal.tsx`**：封装 `AlertDialog + MoneyPriceInteractive`，并提供 `PricingModalProvider/usePricingModal`。业务可在需要的页面或局部区域挂 Provider，通过 `openPricingModal({ billingType })` 打开弹窗。
 - **按钮客户端组件 `money-price-button.tsx`**：独立封装按钮渲染与行为，支持订阅模式和OneTime模式的不同逻辑，依据 `UserContext` 与 `billingType` 决定按钮状态。
 - **配置与类型**：
   - `money-price-config-util.ts`：统一价格定位工具函数，支持订阅产品和积分包产品
@@ -53,6 +55,7 @@ lib/                                                  # 应用层 apps/ddaas/src
    - 配置驱动的计费类型过滤，移除硬编码约束
    - 支持订阅产品和积分包产品的统一价格检测
    - 用户状态根据服务端context数据渲染按钮
+   - `PricingModalProvider` 仅持有轻量状态；弹窗打开时才挂载 `MoneyPriceInteractive`，避免页面上多个 Provider 常驻渲染完整价格卡片
 6. **按钮行为配置**
    - 跳转Stripe Checkout
    - 跳转Stripe Portal
@@ -117,7 +120,7 @@ lib/                                                  # 应用层 apps/ddaas/src
 - **默认值确定**：
   - 服务端：根据翻译配置中的 `billingSwitch.defaultKey`（默认为 `yearly`）渲染初始样式
   - 客户端：动态检测用户当前订阅的计费类型，支持订阅产品和积分包产品的价格ID匹配
-  - 回退机制：若检测失败则使用配置的默认值或第一个可用选项
+  - 回退机制：若检测失败或传入的初始 billing type 不可用，则使用配置默认值或第一个可用选项
 - **动态计划切换**：
   - 根据当前 `billingType` 动态选择显示 `subscriptionPlans` 或 `creditsPlans`
   - OneTime 模式下显示积分包计划，其他模式显示订阅计划
@@ -248,8 +251,82 @@ const moneyPriceData = await buildMoneyPriceData({ locale, currency: '$' });
 ```
 
 ### 5.4 ✅ 弹窗复用注意事项
-- 保持 `enabledBillingTypes` 未传或传入完整列表，确保弹窗里可以自由切换订阅 / 一次性视图。
-- 只需覆盖 `billingSwitch.defaultKey` 即可调整初始展示（如积分弹窗默认切到 `onetime`）。
+- `PricingModal` 是受控弹窗组件，适合少量按钮或页面内手动管理状态。
+- `PricingModalProvider` 是局部命令式入口，适合业务区域内多个按钮共享同一个弹窗实例。
+- Provider 不要求挂在全站 layout；推荐按业务页面或业务区域挂载。嵌套 Provider 不报错，`usePricingModal()` 按 React Context 规则读取最近一层 Provider。
+- Provider 只负责体验和状态复用，不是安全边界。真实可购买项仍由服务端 `moneyPriceConfig` 和 checkout 校验决定。
+- `enabledBillingTypes` 控制弹窗可展示的 billing type 集合，例如 `['onetime']` 或 `['monthly', 'yearly', 'onetime']`。
+- `openPricingModal({ billingType })` 控制本次打开时默认激活哪个 tab。支持 `monthly`、`yearly`、`onetime`，并受 `enabledBillingTypes` 约束。
+- 若传入的 `billingType` 不在 `enabledBillingTypes` 内，弹窗会回退到 `billingSwitch.defaultKey`，再回退到第一个可用 billing type。
+
+#### 5.4.1 ✅ 局部 Provider 用法
+
+```tsx
+'use client';
+
+import { PricingModalProvider, usePricingModal } from '@third-ui/main/money-price';
+
+function GenerateButton() {
+  const { openPricingModal } = usePricingModal();
+
+  async function handleGenerate() {
+    const response = await fetch('/api/ai/generate', { method: 'POST' });
+    if (response.status === 402) {
+      openPricingModal({ billingType: 'onetime' });
+      return;
+    }
+    // handle success...
+  }
+
+  return <button onClick={handleGenerate}>Generate</button>;
+}
+
+export function GeneratePanel({ data, config }) {
+  return (
+    <PricingModalProvider
+      data={data}
+      config={config}
+      checkoutApiEndpoint="/api/stripe/checkout"
+      customerPortalApiEndpoint="/api/stripe/customer-portal"
+      enabledBillingTypes={['onetime']}
+      pricingContextEndpoint="/api/user/pricing-context"
+    >
+      <GenerateButton />
+    </PricingModalProvider>
+  );
+}
+```
+
+#### 5.4.2 ✅ 多 Provider 与嵌套规则
+
+```tsx
+<PricingModalProvider enabledBillingTypes={['onetime']} {...sharedProps}>
+  <AreaA />
+
+  <PricingModalProvider enabledBillingTypes={['monthly', 'yearly']} {...sharedProps}>
+    <AreaB />
+  </PricingModalProvider>
+</PricingModalProvider>
+```
+
+- `AreaA` 调用 `usePricingModal()` 时使用外层配置。
+- `AreaB` 调用 `usePricingModal()` 时使用内层配置。
+- 内外层弹窗状态互不影响；同一页面多个业务区域可共享一个 Provider，也可分别挂独立 Provider。
+
+#### 5.4.3 ✅ billingType 与支付模式关系
+
+业务调用方使用统一的 `billingType`：
+
+- `monthly`
+- `yearly`
+- `onetime`
+
+支付/后端语义中仍保留模式映射：
+
+- `monthly`、`yearly` 属于 `subscription`
+- `onetime` 属于一次性积分包
+
+因此公共弹窗 API 面向业务暴露 `billingType`，内部仍可根据 billing type 推导订阅或一次性支付流程。
 
 ## 6. 组件渲染逻辑
 

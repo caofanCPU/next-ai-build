@@ -4,7 +4,7 @@ import { useAuth } from '@clerk/nextjs';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { CreditNavButton } from './credit-nav-button';
 import { CreditOverviewClient, type CreditOverviewTranslations } from './credit-overview-client';
-import type { CreditOverviewData } from './types';
+import type { CreditOverviewData, MobileBillingSwitchBehavior } from './types';
 
 export const DEFAULT_CREDIT_OVERVIEW_REFRESH_EVENT = 'windrun-huaiin:credit-overview:refresh';
 
@@ -22,6 +22,11 @@ export interface CreditOverviewNavClientProps {
    * Defaults are handled by the API/payload builder when omitted.
    */
   enabledBillingTypes?: string[];
+  /**
+   * Mobile behavior for the pricing modal billing switch.
+   * Default: 'sticky'.
+   */
+  mobileBillingSwitchBehavior?: MobileBillingSwitchBehavior;
   /**
    * Browser event names that should trigger credit overview reload.
    * Business apps can dispatch these events after credit balance changes.
@@ -97,6 +102,7 @@ export function CreditOverviewNavClient({
   locale,
   endpoint,
   enabledBillingTypes,
+  mobileBillingSwitchBehavior,
   refreshEvents,
   refreshDebounceMs = 300,
 }: CreditOverviewNavClientProps) {
@@ -220,6 +226,7 @@ export function CreditOverviewNavClient({
       locale={locale}
       totalBalance={payload.data.totalBalance}
       totalLabel={payload.totalLabel}
+      mobileBillingSwitchBehavior={mobileBillingSwitchBehavior}
     >
       <CreditOverviewClient
         locale={locale}

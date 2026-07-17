@@ -1,6 +1,6 @@
 # CreditOverview 组件使用说明
 
-本组件位于 `packages/third-ui/src/main/credit`，用于在应用中统一展示积分总览信息，包含总余额、积分桶明细、订阅信息与一次性购买入口。当前推荐入口为 `CreditOverviewNavClient`：鉴权状态、登录退出后的数据清理、下拉按钮与卡片渲染统一下沉在 `third-ui`，应用侧只需要传入当前 `locale` 和积分总览 API 的 `endpoint`。
+本组件位于 `packages/third-ui/src/main/credit`，用于在应用中统一展示积分总览信息，包含总余额、积分桶明细、订阅信息与一次性购买入口。当前推荐入口为 `CreditOverviewNavClient`：鉴权状态、登录退出后的数据清理、下拉按钮与卡片渲染统一下沉在 `third-ui`，应用侧传入当前 `locale`、积分总览 API 的 `endpoint`，以及可选的 `enabledBillingTypes`。
 
 当前实现遵循最新的视觉与交互规范：
 
@@ -17,23 +17,25 @@
 ## 组件分层总览
 
 ```
-app/[locale]/(home)/layout.heavy.tsx                # 应用侧挂载点，只传 locale + endpoint
+app/[locale]/(home)/layout.heavy.tsx                # 应用侧挂载点，传 locale + endpoint + enabledBillingTypes?
 app/api/user/credit-overview/route.ts                # 应用侧 API，返回 CreditOverviewPayload | null
 ---------------------------------------
 credit/                                             # packages/third-ui/src/main/credit
 ├── credit-overview-nav-client.tsx                   # 登录态感知入口，负责请求 endpoint 与清理旧 payload
-├── credit-nav-button.tsx                            # 下拉触发按钮与弹窗生命周期
+├── credit-nav-button.tsx                            # 下拉触发按钮，复用 money-price/PricingModal
 ├── credit-overview-client.tsx                       # 下拉详情客户端组件
 ├── credit-overview.tsx                              # 下拉详情服务端组件
 ├── types.ts                                        # 类型定义
+money-price/
+├── pricing-modal.tsx                                # 通用价格弹窗、PricingModalProvider/usePricingModal
 ```
 
 ### 关键角色与职责
 
 | 组件 | 主要职责 |
 | ---- | ---- |
-| `CreditOverviewNavClient` | 推荐入口。内部使用 Clerk 登录态，未登录时返回 `null` 并清空旧 payload；登录后请求应用传入的 `endpoint`，将返回的 `CreditOverviewPayload` 渲染为 `CreditNavButton + CreditOverviewClient`。 |
-| `CreditNavButton` | 统一管理下拉展开/折叠、移动端滚动锁定、全局价格弹窗的生命周期，并通过 Context 让内部组件在需要时折叠下拉或唤起弹窗。 |
+| `CreditOverviewNavClient` | 推荐入口。内部使用 Clerk 登录态，未登录时返回 `null` 并清空旧 payload；登录后请求应用传入的 `endpoint`，将返回的 `CreditOverviewPayload` 渲染为 `CreditNavButton + CreditOverviewClient`。可通过 `enabledBillingTypes` 把业务允许的计费类型传给后端，作为展示过滤的双保险。 |
+| `CreditNavButton` | 统一管理下拉展开/折叠、移动端滚动锁定，并复用 Money Price 的 `PricingModal` 渲染价格弹窗；通过 Context 让内部组件在需要时折叠下拉或唤起弹窗。 |
 | `CreditOverviewClient` | 纯展示逻辑 + 行为编排。内部只需调用 `useCreditNavPopover()` 暴露的 `close`/`openPricingModal` 等方法，而不再直接渲染弹窗。 |
 | `CreditOverview` | Server Component，负责把已准备好的 `data + translations` 拼装为 `CreditOverviewClient`。当前导航场景优先使用 `CreditOverviewNavClient`。 |
 
@@ -43,8 +45,8 @@ credit/                                             # packages/third-ui/src/main
 
 - Clerk 未加载时不请求接口，避免渲染错误账号的旧数据。
 - 未登录时立即 `setPayload(null)`，积分按钮与卡片都不展示。
-- 已登录时请求应用传入的 `endpoint`，并自动追加 `locale` 查询参数。
-- `userId`、`locale`、`endpoint` 或登录态变化时重新同步。
+- 已登录时请求应用传入的 `endpoint`，并自动追加 `locale` 与 `enabledBillingTypes` 查询参数。
+- `userId`、`locale`、`endpoint`、`enabledBillingTypes` 或登录态变化时重新同步。
 - 接口返回 `null`、非 2xx 或请求异常时都清空旧 payload，避免退出登录后组件残留。
 
 应用侧 API 路径不固定在 `third-ui` 内，由调用方显式传入：
@@ -53,10 +55,13 @@ credit/                                             # packages/third-ui/src/main
 <CreditOverviewNavClient
   locale={locale}
   endpoint="/api/user/credit-overview"
+  enabledBillingTypes={['onetime']}
 />
 ```
 
-> ⚠️ 价格弹窗的 UI 现在由 `CreditNavButton` 统一渲染，通过 `MoneyPriceInteractive` 复用计费模块视觉；`CreditOverviewClient` 调用 `navPopover.openPricingModal` 时需传入 `pricingContext` 和按模式处理后的 `moneyPriceData`。
+`enabledBillingTypes` 默认由后端底层按 `['monthly', 'yearly', 'onetime']` 处理。业务如果只开放一次性积分包，应显式传入 `['onetime']`，后端会同步过滤订阅积分桶、订阅摘要、订阅 CTA 与弹窗可见 tab。
+
+> ⚠️ 价格弹窗 UI 已抽到 Money Price 的 `PricingModal`。`CreditNavButton` 只是复用该弹窗；其它业务场景应优先使用 `PricingModalProvider/usePricingModal`，不要复用积分下拉的 Context。
 
 ## 交互流程
 
@@ -68,7 +73,7 @@ credit/                                             # packages/third-ui/src/main
    - `redirect`：先设置 `window.location.href`，再调用 `closeNavPopover()` 解除滚动锁；对用户而言几乎等同于“跳转前一瞬间自动收起”。
    - `auth`：点击后按钮进入 `GradientButton` 自带的 loading，保持下拉展开，待 `redirectToCustomerPortal` 成功（包括 302 跳 Portal、401/403 触发 Clerk 登录）后才折叠；若接口失败则保留下拉并提示 warning，便于用户重试或走 fallback。
    - `custom`：等待业务 handler resolve 后再折叠，确保所有副作用完成。
-3. 弹窗与下拉的生命周期解耦：即使下拉已经折叠，弹窗仍挂载在 `CreditNavButton` 下，直到用户点击关闭或 ESC。
+3. 弹窗与下拉的生命周期解耦：即使下拉已经折叠，弹窗仍由通用 `PricingModal` 负责，直到用户点击关闭或 ESC。
 4. 通过`w-[90vw] max-w-[90vw] max-h-[80vh] overflow-y-auto overflow-x-hidden sm:w-[410px] sm:max-h-[90vh] sm:max-w-[95vw]`来控制积分下拉框的宽度、高度以及竖直滚动条
 
 > CTA 按钮统一使用 `GradientButton`，`preventDoubleClick=true` + loading 反馈可以确保异步阶段不会触发第二次点击，同时让用户明确“正在处理”。
@@ -84,7 +89,7 @@ credit/                                             # packages/third-ui/src/main
    - `custom`：等待 handler 执行完毕再收起（很多 Native Bridge 操作也需要一些时间）。
 4. 弹窗本身不锁定页面，仍由 Radix `AlertDialog` 控制，关闭时会恢复滚动；其内容同样可滚动，按钮点击只影响弹窗，不会重新展开下拉。
 
-> 通过 Context 将“折叠 + 弹窗”能力上提到 `CreditNavButton`，任何新增按钮只要调用 `navPopover.close()` 或 `navPopover.openPricingModal(...)` 就能遵循一致的交互规范。
+> 积分组件内部仍通过 `CreditNavPopoverContext` 编排“折叠 + 打开价格弹窗”。该 Context 只服务积分下拉；普通业务按钮应使用 Money Price 的 `PricingModalProvider/usePricingModal`。
 
 ## 数据结构说明
 
@@ -118,6 +123,7 @@ import { CreditOverviewNavClient } from '@third-ui/main/credit';
 <CreditOverviewNavClient
   locale={locale}
   endpoint="/api/user/credit-overview"
+  enabledBillingTypes={['monthly', 'yearly', 'onetime']}
 />
 ```
 
@@ -148,7 +154,7 @@ sequenceDiagram
     participant UI as CreditNavButton / CreditOverviewClient
     participant Pay as pricing / customer portal
 
-    App->>Third: render locale + endpoint
+    App->>Third: render locale + endpoint + enabledBillingTypes?
     Third->>Clerk: read isLoaded / isSignedIn / userId
     alt Clerk not loaded
         Third-->>App: render null
@@ -156,8 +162,8 @@ sequenceDiagram
         Third->>Third: clear payload
         Third-->>App: render null
     else signed in
-        Third->>Api: GET endpoint?locale=...
-        Api->>Core: buildCreditOverviewPayload(locale, translations)
+        Third->>Api: GET endpoint?locale=...&enabledBillingTypes=...
+        Api->>Core: buildCreditOverviewPayload(locale, translations, enabledBillingTypes?)
         Core->>Clerk: getOptionalServerAuthUser()
         alt no server auth or no credit
             Core-->>Api: null
@@ -166,6 +172,7 @@ sequenceDiagram
             Third-->>App: render null
         else server auth ok
             Core->>DB: load credit + subscription
+            Core->>Core: filter subscription/onetime buckets and CTA by enabledBillingTypes
             Core-->>Api: CreditOverviewPayload
             Api-->>Third: JSON payload
             Third->>UI: render nav button + overview card
@@ -189,7 +196,7 @@ sequenceDiagram
 ```
 
 `CreditPricingContext` 结构：
-- `moneyPriceData: MoneyPriceData`：调用 `buildMoneyPriceData` 生成的多语言静态内容；`CreditOverviewClient` 会根据按钮模式（订阅 / 一次性）动态设置 `billingSwitch.defaultKey`。
+- `moneyPriceData: MoneyPriceData`：调用 `buildMoneyPriceData` 生成的多语言静态内容；其 `billingSwitch.options` 已按 `enabledBillingTypes` 过滤。积分弹窗打开时会通过 `billingType` 激活目标 tab。
 - `moneyPriceConfig: MoneyPriceConfig`：与 Money Price 主区域共用的支付配置。
 - `checkoutApiEndpoint?: string`、`customerPortalApiEndpoint?: string`：Stripe 结算/门户接口。
 - `enableSubscriptionUpgrade?: boolean`：沿用 Money Price 行为，用于控制订阅升级按钮是否可点击。
@@ -197,9 +204,10 @@ sequenceDiagram
 
 提供 `pricingContext` 时请注意：
 
-1. 入口在积分弹窗中默认聚焦一次性计费，可通过 `moneyPriceData.billingSwitch.defaultKey = 'onetime'` 覆盖默认值，但不要过滤 `billingSwitch.options`，这样用户仍可切换订阅视图。
+1. `enabledBillingTypes` 是业务允许集合。只开放 `onetime` 时，后端不返回订阅 bucket、订阅 summary、订阅 CTA，前端也不渲染订阅区域。
 2. CTA 不再走 `<a href>`，全部通过 `onClick` 调用 `requestPricingModal` 或直接跳转，以便在移动端先折叠菜单再进入下一步。
-3. 弹窗使用与 Money Price 主区域完全相同的 `MoneyPriceInteractive`，继续复用 `redirectToCustomerPortal` 等逻辑，支持点击遮罩/ESC 关闭。
+3. 弹窗使用 Money Price 的 `PricingModal`，内部仍是与主价格页相同的 `MoneyPriceInteractive`，继续复用 `redirectToCustomerPortal` 等逻辑，支持点击遮罩/ESC 关闭。
+4. `subscription` 仍是积分/支付内部语义，用于表示 `monthly/yearly` 所属的订阅模式；业务入口参数仍使用 `billingType` / `enabledBillingTypes`。
 
 ## CTA 动作配置
 

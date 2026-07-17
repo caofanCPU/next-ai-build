@@ -1,5 +1,11 @@
 # @windrun-huaiin/third-ui
 
+## 31.4.0
+
+### Minor Changes
+
+- fix(pricing): pricing components now support easy modal
+
 ## 31.3.7
 
 ### Patch Changes
